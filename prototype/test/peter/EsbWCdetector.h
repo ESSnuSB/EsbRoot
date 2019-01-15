@@ -5,8 +5,8 @@
  *              GNU Lesser General Public Licence (LGPL) version 3,             *  
  *                  copied verbatim in the file "LICENSE"                       *
  ********************************************************************************/
-#ifndef NEWDETECTOR_H
-#define NEWDETECTOR_H
+#ifndef ESBWCDETECTOR_H
+#define ESBWCDETECTOR_H
 
 #include "FairDetector.h"
 

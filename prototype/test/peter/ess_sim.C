@@ -16,7 +16,7 @@
 
 void ess_sim(TString outFileName = "evetest.root",
              Int_t nStartEvent = 0, 
-	     Int_t nEvents = 10)
+	     Int_t nEvents = 1)
 {
    FairRunSim* fRun = new FairRunSim(); // create the FairRun Class
 
@@ -25,6 +25,8 @@ void ess_sim(TString outFileName = "evetest.root",
 
    // Set Material Definition file
    fRun->SetMaterials("media.geo");
+
+	 cout << "\nHello!\n" << endl;
 
    // Add Passive Modules
    FairModule *Cave= new FairCave("CAVE");
@@ -39,6 +41,7 @@ void ess_sim(TString outFileName = "evetest.root",
    FairPrimaryGenerator* primGen = new FairPrimaryGenerator();
    fRun->SetGenerator(primGen);
 
+   //~ FairParticleGenerator* partGen = new FairParticleGenerator(13, 1, 0, 0, 1, 0, 0, 0);
    FairParticleGenerator* partGen = new FairParticleGenerator(13, 1, 0, 0, 1, 0, 0, 0);
    primGen->AddGenerator(partGen);
 

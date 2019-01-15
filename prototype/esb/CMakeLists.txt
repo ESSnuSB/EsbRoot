@@ -35,6 +35,8 @@ EsbEsbContFact.cxx
 EsbEsbGeo.cxx
 EsbEsbGeoPar.cxx
 EsbEsbPoint.cxx
+EsbWCdetector.cxx
+EsbWCdetectorPoint.cxx
 )
 
 Set(LINKDEF EsbEsbLinkDef.h)

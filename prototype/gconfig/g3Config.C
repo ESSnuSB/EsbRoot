@@ -12,6 +12,7 @@
 
 void Config()
 {
+  cout << "G3Config!" << endl;
   FairRunSim *fRun = FairRunSim::Instance();
   TString* gModel = fRun->GetGeoModel();
   TGeant3* geant3 = NULL;

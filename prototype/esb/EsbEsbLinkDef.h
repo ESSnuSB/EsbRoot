@@ -16,5 +16,7 @@
 #pragma link C++ class EsbEsbGeoPar;
 #pragma link C++ class EsbEsb;
 #pragma link C++ class EsbEsbPoint+;
+#pragma link C++ class EsbWCdetector+;
+#pragma link C++ class EsbWCdetectorPoint+;
 
 #endif

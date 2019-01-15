@@ -29,8 +29,9 @@
 #include "TLorentzVector.h"             // for TLorentzVector
 #include "TMath.h"                      // for Sqrt
 #include "TVector3.h"                   // for TVector3
+#include "TParticle.h"                   
 
-class TParticle;
+//~ class TParticle;
 
 class EsbMCTrack : public TObject
 {
