@@ -17,6 +17,11 @@
 //#include "FairRuntimeDb.h"
 //#include "EnuDetectorList.h"
 #include "FairGenericStack.h"
+#include "FairStack.h"
+#include "FairGeoLoader.h"
+#include "FairGeoInterface.h"
+#include "FairGeoBuilder.h"
+#include "FairGeoMedia.h"
 
 #include "TClonesArray.h"
 #include "TVirtualMC.h"
@@ -81,26 +86,56 @@ void EsbWCdetector::Initialize()
 //___________________________________________________________________
 Bool_t  EsbWCdetector::ProcessHits(FairVolume* vol)
 {
+	cout << __PRETTY_FUNCTION__ << endl;
   /** This method is called from the MC stepping */
 
-  // We could define the emission point for the photons. In that way we would
-  // have the "track" we want to reconstruct.
+  if ( TVirtualMC::GetMC()->IsTrackEntering() ) {
+    fELoss  = 0.;
+    fTime   = TVirtualMC::GetMC()->TrackTime() * 1.0e09;
+    fLength = TVirtualMC::GetMC()->TrackLength();
+    TVirtualMC::GetMC()->TrackPosition(fPos);
+    TVirtualMC::GetMC()->TrackMomentum(fMom);
+  }
 
-  // Create EsbWCdetectorPoint at exit of active volume
-  if ( gMC->IsTrackExiting() ) {
+  // Sum energy loss for all steps in the active volume
+  fELoss += TVirtualMC::GetMC()->Edep();
 
-    fTrackID  = gMC->GetStack()->GetCurrentTrackNumber();
+  // Create FairTutorialDet1Point at exit of active volume
+  if ( TVirtualMC::GetMC()->IsTrackExiting()    ||
+       TVirtualMC::GetMC()->IsTrackStop()       ||
+       TVirtualMC::GetMC()->IsTrackDisappeared()   ) {
+
+    fTrackID  = TVirtualMC::GetMC()->GetStack()->GetCurrentTrackNumber();
     fVolumeID = vol->getMCid();
+    //~ if (fELoss == 0. ) { return kFALSE; }
     AddHit(fTrackID, fVolumeID, TVector3(fPos.X(),  fPos.Y(),  fPos.Z()),
            TVector3(fMom.Px(), fMom.Py(), fMom.Pz()), fTime);
 
-    // PC: work around
-    // // Increment number of EsbWCdetector det points in TParticle
-    // FairGenericStack* stack = (FairGenericStack*) gMC->GetStack();
-    // stack->AddPoint(kEsbWCdetector);
+    // Increment number of tutorial det points in TParticle
+    //~ FairStack* stack = static_cast<FairStack*>(TVirtualMC::GetMC()->GetStack());
+    //~ stack->AddPoint(kEsbWCdetector);
   }
-  
+
   return kTRUE;
+
+  //~ // We could define the emission point for the photons. In that way we would
+  //~ // have the "track" we want to reconstruct.
+
+  //~ // Create EsbWCdetectorPoint at exit of active volume
+  //~ if ( gMC->IsTrackExiting() ) {
+
+    //~ fTrackID  = gMC->GetStack()->GetCurrentTrackNumber();
+    //~ fVolumeID = vol->getMCid();
+    //~ AddHit(fTrackID, fVolumeID, TVector3(fPos.X(),  fPos.Y(),  fPos.Z()),
+           //~ TVector3(fMom.Px(), fMom.Py(), fMom.Pz()), fTime);
+
+    //~ // PC: work around
+    //~ // // Increment number of EsbWCdetector det points in TParticle
+    //~ // FairGenericStack* stack = (FairGenericStack*) gMC->GetStack();
+    //~ // stack->AddPoint(kEsbWCdetector);
+  //~ }
+  
+  //~ return kTRUE;
 }
 
 void EsbWCdetector::EndOfEvent()
@@ -143,14 +178,43 @@ void EsbWCdetector::ConstructGeometry()
   cout << __PRETTY_FUNCTION__ << endl;
   TGeoVolume *top = gGeoManager->GetTopVolume();
 
+	FairGeoLoader *geoLoad = FairGeoLoader::Instance();
+	FairGeoInterface *geoFace = geoLoad->getGeoInterface();
+	
+	FairGeoMedia *geoMedia = geoFace->getMedia();
+	FairGeoBuilder* geoBuild = geoLoad->getGeoBuilder();
+	
+	FairGeoMedium* mWC = geoMedia->getMedium("H2O_ESSnuSB");
+	geoBuild->createMedium(mWC);
+  TGeoMedium *WC_med = gGeoManager->GetMedium("H2O_ESSnuSB");
+  
+  WC_med->Print();
+	
+	//~ exit(0);
+
   // Create water material and medium 
   // density should eventually be controlled via settable parameters
-  TGeoMaterial *water_mat = new TGeoMaterial("WcWater", 18, 10, 1.0);
-  TGeoMedium   *water_med = new TGeoMedium("WcWater", 1, water_mat);
+  //~ TGeoMaterial *water_mat = new TGeoMaterial("WcWater", 18, 10, 1.0);
+  //~ TGeoMedium   *water_med = new TGeoMedium("WcWater", 100, water_mat);
   
-  // Create cylinder
-  TGeoVolume *wc = gGeoManager->MakeTube("wc", water_med, 0, 300, 500);
-  AddSensitiveVolume(wc);
+  TGeoMaterial *Al_mat = new TGeoMaterial("Al", 26.98, 13, 2.7);
+  TGeoMedium *Al_med = new TGeoMedium("Al", 101, Al_mat);
+  
+  // Create water cylinder
+  TGeoVolume *wc = gGeoManager->MakeTube("wc", WC_med, 0.0, 300.0, 500.0);
+  
+  // Create thin wall around the water cylinder, 1 cm thick, to act as sensitive volume
+  TGeoVolume *wall = gGeoManager->MakeTube("wall", Al_med, 300.0, 300.1, 500.0);
+  TGeoVolume *endwall = gGeoManager->MakeTube("endwall", Al_med, 0, 300, 0.05);
+
+  TList* media = gGeoManager->GetListOfMedia();
+  for(TObject *obj : *media) {
+		obj->Print();
+	}	
+
+  AddSensitiveVolume(wall);
+  AddSensitiveVolume(endwall);
+
   // Probably need to rotate it
   TGeoRotation r1;
   r1.SetAngles(0,0,0);
@@ -158,6 +222,10 @@ void EsbWCdetector::ConstructGeometry()
   TGeoCombiTrans c1(t1, r1);
   TGeoHMatrix *h1 = new TGeoHMatrix(c1);
   top->AddNode(wc, 1, h1);
+  top->AddNode(wall, 1, h1); 
+  top->AddNode(endwall, 1, new TGeoTranslation(0.0, 0.0, 500.05));
+  top->AddNode(endwall, 2, new TGeoTranslation(0.0, 0.0, -500.05));
+
   wc->SetLineColor(kRed);
 
   // Set Cherenkov parameters
@@ -207,17 +275,17 @@ void EsbWCdetector::ConstructGeometry()
   static Double_t efficiency[nEnergies];
   for(Int_t i = 0; i < nEnergies; i++) {
     
-    //~ efficiency[i] = 0;
+    //efficiency[i] = 0;
     efficiency[i] = 1;
   }
   
-  const Int_t waterId  = gMC->MediumId("WcWater");
-  gMC->SetCerenkov(waterId, nEnergies,
-		   photEnergies, absSeaWater,
-		   efficiency, refractIdxSeaWater);
-  //~ gMC->SetCerenkov(waterId, seaWaterRef.GetN(),
-		   //~ seaWaterRef.GetX(), seaWaterAbs.GetY(),
-		   //~ efficiency, seaWaterRef.GetY());
+  //~ const Int_t waterId  = gMC->MediumId("WcWater");
+  //~ gMC->SetCerenkov(101, nEnergies,
+		   //~ photEnergies, absSeaWater,
+		   //~ efficiency, refractIdxSeaWater);
+  //gMC->SetCerenkov(waterId, seaWaterRef.GetN(),
+		//~ //   seaWaterRef.GetX(), seaWaterAbs.GetY(),
+		  //~ // efficiency, seaWaterRef.GetY());
 }
 
 //___________________________________________________________________

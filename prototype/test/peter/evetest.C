@@ -16,6 +16,9 @@ void evetest(void)
 
 	simtree->GetEntry(0);
 	cout << mctrack_arr->GetEntries() << endl;
+	cout << detpoint_arr->GetEntries() << endl;
+
+	//~ exit(0);
 
 	for(int a = 0; a < mctrack_arr->GetEntries(); ++a) {
 		EsbMCTrack *mctrack = (EsbMCTrack*) mctrack_arr->At(a);

@@ -77,7 +77,7 @@ void ess_sim(TString outFileName = "evetest.root",
    FairRunSim* fRun = new FairRunSim(); // create the FairRun Class
 
    // Choose the Geant Navigation System
-   fRun->SetName("TGeant3"); // TGeant3
+   fRun->SetName("TGeant4"); // TGeant3
 
    // Set Material Definition file
    fRun->SetMaterials("media.geo");
@@ -106,7 +106,7 @@ void ess_sim(TString outFileName = "evetest.root",
    // skip magnetic field
 
    fRun->Init();
-	 SetWCParameters();
+	 //~ SetWCParameters();
 
 
    // Transport nEvents
