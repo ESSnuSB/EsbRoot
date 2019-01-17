@@ -26,7 +26,7 @@ endforeach()
 
 # Set name of our project to “ESBROOT". Has to be done
 # after check of cmake version since this is a new feature                  
-project(ESBROOT)
+project(ESBROOTPROTOTYPE)
 
 #In case you need Fortran 
 #ENABLE_LANGUAGE(Fortran)
@@ -180,6 +180,8 @@ add_subdirectory (EsbGenerators)
 add_subdirectory (esb)
 add_subdirectory (passive)
 add_subdirectory (field)  
+
+SET(ROOT_INCLUDE_PATH "${ROOT_INCLUDE_PATH}:${CMAKE_SOURCE_DIR}")
 
 WRITE_CONFIG_FILE(config.sh)
  

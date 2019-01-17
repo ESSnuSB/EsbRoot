@@ -11,10 +11,10 @@
 #pragma link off all classes;
 #pragma link off all functions;
 
-#pragma link C++ class EsbEsbContFact;
-#pragma link C++ class EsbEsbGeo;
-#pragma link C++ class EsbEsbGeoPar;
-#pragma link C++ class EsbEsb;
+#pragma link C++ class EsbEsbContFact+;
+#pragma link C++ class EsbEsbGeo+;
+#pragma link C++ class EsbEsbGeoPar+;
+#pragma link C++ class EsbEsb+;
 #pragma link C++ class EsbEsbPoint+;
 #pragma link C++ class EsbWCdetector+;
 #pragma link C++ class EsbWCdetectorPoint+;

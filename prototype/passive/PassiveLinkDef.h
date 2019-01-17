@@ -19,8 +19,8 @@
 
 #pragma link C++ class  EsbMagnet+;
 #pragma link C++ class  EsbCave+;
-#pragma link C++ class EsbGeoCave;
-#pragma link C++ class EsbPassiveContFact;
+#pragma link C++ class EsbGeoCave+;
+#pragma link C++ class EsbPassiveContFact+;
 #pragma link C++ class  EsbPipe+;
 
 #endif

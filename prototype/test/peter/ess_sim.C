@@ -1,22 +1,23 @@
 /*
-  .L EsbWCdetectorPoint.cxx+
+  .L EsbWCdetectorPoint.cxroot -x+
   .L EsbWCdetector.cxx+
   .L ess_sim.C+
   ess_sim()
  */
 
-#include <FairRunSim.h>
-#include <FairModule.h>
-#include <FairCave.h>
-#include <FairDetector.h>
-#include <FairPrimaryGenerator.h>
-#include <FairParticleGenerator.h>
+//~ #include <FairRunSim.h>
+//~ #include <FairModule.h>
+//~ #include <FairCave.h>
+//~ #include <FairDetector.h>
+//~ #include <FairPrimaryGenerator.h>
+//~ #include <FairParticleGenerator.h>
 
-#include "EsbWCdetector.h"
+//~ #include <esb/EsbWCdetector.h>
+//~ #include <passive/EsbCave.h>
 
 void SetWCParameters()
 {
-   // Set Cherenkov parameters
+  // Set Cherenkov parameters
   // Just some I found online for seawater for now
   // TGeo units are GeV and cm
   const Double_t eV = 1.0e-9;
@@ -77,15 +78,15 @@ void ess_sim(TString outFileName = "evetest.root",
    FairRunSim* fRun = new FairRunSim(); // create the FairRun Class
 
    // Choose the Geant Navigation System
-   fRun->SetName("TGeant4"); // TGeant3
-
+   fRun->SetName("TGeant4"); // TGeant3/4
+	 //~ fRun->SetIsMT(true);
+	 
    // Set Material Definition file
    fRun->SetMaterials("media.geo");
 
-	 cout << "\nHello!\n" << endl;
-
    // Add Passive Modules
-   FairModule *Cave= new FairCave("CAVE");
+   FairModule *Cave= new EsbCave("CAVE");
+   //~ FairModule *Cave= new FairCave("CAVE");
    Cave->SetGeometryFileName("cave.geo");
    fRun->AddModule(Cave);
 
@@ -97,7 +98,7 @@ void ess_sim(TString outFileName = "evetest.root",
    FairPrimaryGenerator* primGen = new FairPrimaryGenerator();
    fRun->SetGenerator(primGen);
 
-   //~ FairParticleGenerator* partGen = new FairParticleGenerator(13, 1, 0, 0, 1, 0, 0, 0);
+   //~ FairParticleGenerator* partGen = new FairParticleGenerator(2212, 1, 0, 0, 1, 0, 0, 0);
    FairParticleGenerator* partGen = new FairParticleGenerator(13, 1, 0, 0, 1, 0, 0, 0);
    primGen->AddGenerator(partGen);
 
@@ -108,6 +109,8 @@ void ess_sim(TString outFileName = "evetest.root",
    fRun->Init();
 	 //~ SetWCParameters();
 
+	 //~ cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! " << nearWc->svList->GetEntries() << endl;
+	 //~ exit(0);
 
    // Transport nEvents
    fRun->Run(nEvents);

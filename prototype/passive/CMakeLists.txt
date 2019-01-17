@@ -18,10 +18,10 @@ ${FAIRROOT_LIBRARY_DIR}
 link_directories( ${LINK_DIRECTORIES})
 
 set(SRCS
-EsbCave.cxx           
-EsbPipe.cxx 
-EsbGeoCave.cxx        
-EsbMagnet.cxx         
+EsbCave.cxx
+EsbPipe.cxx
+EsbGeoCave.cxx
+EsbMagnet.cxx
 EsbPassiveContFact.cxx
 )
 

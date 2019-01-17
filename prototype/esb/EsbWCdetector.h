@@ -17,6 +17,8 @@ class EsbWCdetectorPoint;
 class FairVolume;
 class TClonesArray;
 
+//Inheritance: EsbWCdetector <- FairDetector <- FairModule <- TNamed
+
 class EsbWCdetector: public FairDetector
 {
 
