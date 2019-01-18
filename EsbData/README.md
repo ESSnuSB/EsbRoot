@@ -1,0 +1,1 @@
+This directory contains all classes used to store ESSnuSB data (both MC and "real" data). MC data are all simulaed data that is not possible to measure (MC truth). "Real" data are responses (called digits) of various detectors (e.g. PMT's). 

@@ -1,0 +1,1 @@
+This directory contains all geometry related code for ESSnuSB. It includes detector geometries, passive material geometries (e.g. caves, support structures, ...),  magnetic field definitions, coordinate system definitions, etc..
