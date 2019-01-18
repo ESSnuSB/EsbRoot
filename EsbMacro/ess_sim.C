@@ -1,6 +1,6 @@
 /*
-  .L EsbWCdetectorPoint.cxroot -x+
-  .L EsbWCdetector.cxx+
+  .L EsbWCDetectorPoint.cxroot -x+
+  .L EsbWCDetector.cxx+
   .L ess_sim.C+
   ess_sim()
  */
@@ -12,7 +12,7 @@
 //~ #include <FairPrimaryGenerator.h>
 //~ #include <FairParticleGenerator.h>
 
-//~ #include <esb/EsbWCdetector.h>
+//~ #include <esb/EsbWCDetector.h>
 //~ #include <passive/EsbCave.h>
 
 void SetWCParameters()
@@ -91,7 +91,7 @@ void ess_sim(TString outFileName = "evetest.root",
    fRun->AddModule(Cave);
 
    // Add Detectors
-   FairDetector *nearWc = new EsbWCdetector("NearWcDetector", kTRUE);
+   FairDetector *nearWc = new EsbWCDetector("NearWcDetector", kTRUE);
    fRun->AddModule(nearWc);
 
    // Create and Set Event Generator

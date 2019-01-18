@@ -15,7 +15,7 @@
 
 #pragma link C++ class EsbStack+;
 #pragma link C++ class EsbMCTrack+;
-#pragma link C++ class EsbWCdetectorPoint+;
+#pragma link C++ class EsbWCDetectorPoint+;
 
 #endif
 

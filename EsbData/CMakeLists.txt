@@ -19,7 +19,7 @@ link_directories( ${LINK_DIRECTORIES})
 set(SRCS
 EsbStack.cxx
 EsbMCTrack.cxx
-EsbWCdetectorPoint.cxx
+EsbWCDetectorPoint.cxx
 )
 
 Set(HEADERS )

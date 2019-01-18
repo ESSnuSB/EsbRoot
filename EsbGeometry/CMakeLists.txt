@@ -29,7 +29,7 @@ link_directories( ${LINK_DIRECTORIES})
 
 set(SRCS
 #Put here your sourcefiles
-EsbWCdetector.cxx
+EsbWCDetector.cxx
 EsbCave.cxx
 EsbGeoCave.cxx
 )

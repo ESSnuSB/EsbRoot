@@ -11,8 +11,8 @@ void evetest(void)
 
 	TClonesArray *mctrack_arr = new TClonesArray("EsbMCTrack");
 	simtree->SetBranchAddress("MCTrack", &mctrack_arr);
-	TClonesArray *detpoint_arr = new TClonesArray("EsbWCdetectorPoint");
-	simtree->SetBranchAddress("EsbWCdetectorPoint", &detpoint_arr);
+	TClonesArray *detpoint_arr = new TClonesArray("EsbWCDetectorPoint");
+	simtree->SetBranchAddress("EsbWCDetectorPoint", &detpoint_arr);
 
 	simtree->GetEntry(0);
 	cout << mctrack_arr->GetEntries() << endl;
@@ -34,7 +34,7 @@ void evetest(void)
 
 
 	for(int a = 0; a < detpoint_arr->GetEntries(); ++a) {
-		EsbWCdetectorPoint *detpoint = (EsbWCdetectorPoint*) detpoint_arr->At(a);
+		EsbWCDetectorPoint *detpoint = (EsbWCDetectorPoint*) detpoint_arr->At(a);
 		//~ cout << a << " " 
 			//~ << mctrack->GetPdgCode() << " "
 			//~ << mctrack->GetMotherId() << " "

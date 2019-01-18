@@ -12,7 +12,7 @@
 #pragma link off all functions;
 #pragma link C++ nestedclasses;
 
-#pragma link C++ class EsbWCdetector+;
+#pragma link C++ class EsbWCDetector+;
 #pragma link C++ class EsbCave+;
 #pragma link C++ class EsbGeoCave+;
 

@@ -14,13 +14,13 @@
 #include "TObject.h"
 #include "TVector3.h"
 
-class EsbWCdetectorPoint : public FairMCPoint
+class EsbWCDetectorPoint : public FairMCPoint
 {
 
   public:
 
     /** Default constructor **/
-    EsbWCdetectorPoint();
+    EsbWCDetectorPoint();
 
 
     /** Constructor with arguments
@@ -30,21 +30,21 @@ class EsbWCdetectorPoint : public FairMCPoint
      *@param mom      Momentum of track at entrance [GeV]
      *@param tof      Time since event start [ns]
      **/
-    EsbWCdetectorPoint(Int_t trackID, Int_t detID, TVector3 pos, TVector3 mom,
+    EsbWCDetectorPoint(Int_t trackID, Int_t detID, TVector3 pos, TVector3 mom,
 		       Double_t tof);
     
     /** Destructor **/
-    virtual ~EsbWCdetectorPoint();
+    virtual ~EsbWCDetectorPoint();
     
     /** Output to screen **/
     virtual void Print(const Option_t* opt) const;
 
   private:
     /** Copy constructor **/
-    EsbWCdetectorPoint(const EsbWCdetectorPoint& point);
-    EsbWCdetectorPoint operator=(const EsbWCdetectorPoint& point);
+    EsbWCDetectorPoint(const EsbWCDetectorPoint& point);
+    EsbWCDetectorPoint operator=(const EsbWCDetectorPoint& point);
 
-    ClassDef(EsbWCdetectorPoint,1)
+    ClassDef(EsbWCDetectorPoint,1)
 };
 
 #endif

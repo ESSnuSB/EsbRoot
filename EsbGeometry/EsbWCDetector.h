@@ -13,13 +13,13 @@
 #include "TVector3.h"
 #include "TLorentzVector.h"
 
-class EsbWCdetectorPoint;
+class EsbWCDetectorPoint;
 class FairVolume;
 class TClonesArray;
 
-//Inheritance: EsbWCdetector <- FairDetector <- FairModule <- TNamed
+//Inheritance: EsbWCDetector <- FairDetector <- FairModule <- TNamed
 
-class EsbWCdetector: public FairDetector
+class EsbWCDetector: public FairDetector
 {
 
   public:
@@ -28,13 +28,13 @@ class EsbWCdetector: public FairDetector
      *       Active: kTRUE for active detectors (ProcessHits() will be called)
      *               kFALSE for inactive detectors
     */
-    EsbWCdetector(const char* Name, Bool_t Active);
+    EsbWCDetector(const char* Name, Bool_t Active);
 
     /**      default constructor    */
-    EsbWCdetector();
+    EsbWCDetector();
 
     /**       destructor     */
-    virtual ~EsbWCdetector();
+    virtual ~EsbWCDetector();
 
     /**      Initialization of the detector is done here    */
     virtual void   Initialize();
@@ -59,9 +59,9 @@ class EsbWCdetector: public FairDetector
 
 
     /**      This method is an example of how to add your own point
-     *       of type EsbWCdetectorPoint to the clones array
+     *       of type EsbWCDetectorPoint to the clones array
     */
-    EsbWCdetectorPoint* AddHit(Int_t trackID, Int_t detID,
+    EsbWCDetectorPoint* AddHit(Int_t trackID, Int_t detID,
                              TVector3 pos, TVector3 mom,
                              Double_t time);
 
@@ -94,12 +94,12 @@ class EsbWCdetector: public FairDetector
 
     /** container for data points */
 
-    TClonesArray*  fEsbWCdetectorPointCollection;  //!
+    TClonesArray*  fEsbWCDetectorPointCollection;  //!
 
-    EsbWCdetector(const EsbWCdetector&);
-    EsbWCdetector& operator=(const EsbWCdetector&);
+    EsbWCDetector(const EsbWCDetector&);
+    EsbWCDetector& operator=(const EsbWCDetector&);
 
-    ClassDef(EsbWCdetector,1)
+    ClassDef(EsbWCDetector,1)
 };
 
 #endif //NEWDETECTOR_H

@@ -5,11 +5,11 @@
  *              GNU Lesser General Public Licence (LGPL) version 3,             *  
  *                  copied verbatim in the file "LICENSE"                       *
  ********************************************************************************/
-#include "EsbWCdetector.h"
+#include "EsbWCDetector.h"
 
-#include "EsbWCdetectorPoint.h"
-//#include "EsbWCdetectorGeo.h"
-//#include "EsbWCdetectorGeoPar.h"
+#include "EsbWCDetectorPoint.h"
+//#include "EsbWCDetectorGeo.h"
+//#include "EsbWCDetectorGeoPar.h"
 
 
 #include "FairVolume.h"
@@ -35,11 +35,11 @@ using std::cout;
 using std::endl;
 
 // PC: work around
-static const Int_t kEsbWCdetector = 1;
+static const Int_t kEsbWCDetector = 1;
 
 //___________________________________________________________________
-EsbWCdetector::EsbWCdetector()
-  : FairDetector("EsbWCdetector", kTRUE, kEsbWCdetector),
+EsbWCDetector::EsbWCDetector()
+  : FairDetector("EsbWCDetector", kTRUE, kEsbWCDetector),
     fTrackID(-1),
     fVolumeID(-1),
     fPos(),
@@ -47,13 +47,13 @@ EsbWCdetector::EsbWCdetector()
     fTime(-1.),
     fLength(-1.),
     fELoss(-1),
-    fEsbWCdetectorPointCollection(new TClonesArray("EsbWCdetectorPoint"))
+    fEsbWCDetectorPointCollection(new TClonesArray("EsbWCDetectorPoint"))
 {
 }
 
 //___________________________________________________________________
-EsbWCdetector::EsbWCdetector(const char* name, Bool_t active)
-  : FairDetector(name, active, kEsbWCdetector),
+EsbWCDetector::EsbWCDetector(const char* name, Bool_t active)
+  : FairDetector(name, active, kEsbWCDetector),
     fTrackID(-1),
     fVolumeID(-1),
     fPos(),
@@ -61,30 +61,30 @@ EsbWCdetector::EsbWCdetector(const char* name, Bool_t active)
     fTime(-1.),
     fLength(-1.),
     fELoss(-1),
-    fEsbWCdetectorPointCollection(new TClonesArray("EsbWCdetectorPoint"))
+    fEsbWCDetectorPointCollection(new TClonesArray("EsbWCDetectorPoint"))
 {
 }
 
 //___________________________________________________________________
-EsbWCdetector::~EsbWCdetector()
+EsbWCDetector::~EsbWCDetector()
 {
-  if (fEsbWCdetectorPointCollection) {
-    fEsbWCdetectorPointCollection->Delete();
-    delete fEsbWCdetectorPointCollection;
+  if (fEsbWCDetectorPointCollection) {
+    fEsbWCDetectorPointCollection->Delete();
+    delete fEsbWCDetectorPointCollection;
   }
 }
 
 //___________________________________________________________________
-void EsbWCdetector::Initialize()
+void EsbWCDetector::Initialize()
 {
   FairDetector::Initialize();
   //  FairRuntimeDb* rtdb= FairRun::Instance()->GetRuntimeDb();
   //  PC: This is where we will load the detector parameters 
-  //  EsbWCdetectorGeoPar* par=(EsbWCdetectorGeoPar*)(rtdb->getContainer("EsbWCdetectorGeoPar"));
+  //  EsbWCDetectorGeoPar* par=(EsbWCDetectorGeoPar*)(rtdb->getContainer("EsbWCDetectorGeoPar"));
 }
 
 //___________________________________________________________________
-Bool_t  EsbWCdetector::ProcessHits(FairVolume* vol)
+Bool_t  EsbWCDetector::ProcessHits(FairVolume* vol)
 {
 	cout << __PRETTY_FUNCTION__ << endl;
   /** This method is called from the MC stepping */
@@ -113,7 +113,7 @@ Bool_t  EsbWCdetector::ProcessHits(FairVolume* vol)
 
     // Increment number of tutorial det points in TParticle
     //~ FairStack* stack = static_cast<FairStack*>(TVirtualMC::GetMC()->GetStack());
-    //~ stack->AddPoint(kEsbWCdetector);
+    //~ stack->AddPoint(kEsbWCDetector);
   }
 
   return kTRUE;
@@ -121,7 +121,7 @@ Bool_t  EsbWCdetector::ProcessHits(FairVolume* vol)
   //~ // We could define the emission point for the photons. In that way we would
   //~ // have the "track" we want to reconstruct.
 
-  //~ // Create EsbWCdetectorPoint at exit of active volume
+  //~ // Create EsbWCDetectorPoint at exit of active volume
   //~ if ( gMC->IsTrackExiting() ) {
 
     //~ fTrackID  = gMC->GetStack()->GetCurrentTrackNumber();
@@ -130,50 +130,50 @@ Bool_t  EsbWCdetector::ProcessHits(FairVolume* vol)
            //~ TVector3(fMom.Px(), fMom.Py(), fMom.Pz()), fTime);
 
     //~ // PC: work around
-    //~ // // Increment number of EsbWCdetector det points in TParticle
+    //~ // // Increment number of EsbWCDetector det points in TParticle
     //~ // FairGenericStack* stack = (FairGenericStack*) gMC->GetStack();
-    //~ // stack->AddPoint(kEsbWCdetector);
+    //~ // stack->AddPoint(kEsbWCDetector);
   //~ }
   
   //~ return kTRUE;
 }
 
-void EsbWCdetector::EndOfEvent()
+void EsbWCDetector::EndOfEvent()
 {
 
-  fEsbWCdetectorPointCollection->Clear();
+  fEsbWCDetectorPointCollection->Clear();
 
 }
 
 
 
-void EsbWCdetector::Register()
+void EsbWCDetector::Register()
 {
 
   /** This will create a branch in the output tree called
-      EsbWCdetectorPoint, setting the last parameter to kFALSE means:
+      EsbWCDetectorPoint, setting the last parameter to kFALSE means:
       this collection will not be written to the file, it will exist
       only during the simulation.
   */
 
-  FairRootManager::Instance()->Register("EsbWCdetectorPoint", "EsbWCdetector",
-                                        fEsbWCdetectorPointCollection, kTRUE);
+  FairRootManager::Instance()->Register("EsbWCDetectorPoint", "EsbWCDetector",
+                                        fEsbWCDetectorPointCollection, kTRUE);
 
 }
 
 
-TClonesArray* EsbWCdetector::GetCollection(Int_t iColl) const
+TClonesArray* EsbWCDetector::GetCollection(Int_t iColl) const
 {
-  if (iColl == 0) { return fEsbWCdetectorPointCollection; }
+  if (iColl == 0) { return fEsbWCDetectorPointCollection; }
   else { return NULL; }
 }
 
-void EsbWCdetector::Reset()
+void EsbWCDetector::Reset()
 {
-  fEsbWCdetectorPointCollection->Clear();
+  fEsbWCDetectorPointCollection->Clear();
 }
 
-void EsbWCdetector::ConstructGeometry()
+void EsbWCDetector::ConstructGeometry()
 {
 	//TODO: Make a function for this a into EsbTools directory
 	FairGeoLoader *geoLoad = FairGeoLoader::Instance();
@@ -216,16 +216,16 @@ void EsbWCdetector::ConstructGeometry()
 }
 
 //___________________________________________________________________
-EsbWCdetectorPoint* EsbWCdetector::AddHit(Int_t trackID, Int_t detID,
+EsbWCDetectorPoint* EsbWCDetector::AddHit(Int_t trackID, Int_t detID,
 					  TVector3 pos, TVector3 mom,
 					  Double_t time)
 {
-  TClonesArray& clref = *fEsbWCdetectorPointCollection;
+  TClonesArray& clref = *fEsbWCDetectorPointCollection;
   Int_t size = clref.GetEntriesFast();
   //~ cout << __PRETTY_FUNCTION__ << ": Size=" << size << " " << trackID << " " << detID << endl;
   //~ exit(1);
-  return new(clref[size]) EsbWCdetectorPoint(trackID, detID, pos, mom,
+  return new(clref[size]) EsbWCDetectorPoint(trackID, detID, pos, mom,
 					     time);
 }
 
-ClassImp(EsbWCdetector)
+ClassImp(EsbWCDetector)

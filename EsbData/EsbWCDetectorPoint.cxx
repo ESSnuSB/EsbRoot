@@ -5,7 +5,7 @@
  *              GNU Lesser General Public Licence (LGPL) version 3,             *  
  *                  copied verbatim in the file "LICENSE"                       *
  ********************************************************************************/
-#include "EsbWCdetectorPoint.h"
+#include "EsbWCDetectorPoint.h"
 
 #include <iostream>
 using std::cout;
@@ -13,14 +13,14 @@ using std::endl;
 
 
 // -----   Default constructor   -------------------------------------------
-EsbWCdetectorPoint::EsbWCdetectorPoint()
+EsbWCDetectorPoint::EsbWCDetectorPoint()
   : FairMCPoint()
 {
 }
 // -------------------------------------------------------------------------
 
 // -----   Standard constructor   ------------------------------------------
-EsbWCdetectorPoint::EsbWCdetectorPoint(Int_t trackID, Int_t detID,
+EsbWCDetectorPoint::EsbWCDetectorPoint(Int_t trackID, Int_t detID,
                                    TVector3 pos, TVector3 mom,
                                    Double_t tof)
   : FairMCPoint(trackID, detID, pos, mom, tof, 0, 0)
@@ -29,13 +29,13 @@ EsbWCdetectorPoint::EsbWCdetectorPoint(Int_t trackID, Int_t detID,
 // -------------------------------------------------------------------------
 
 // -----   Destructor   ----------------------------------------------------
-EsbWCdetectorPoint::~EsbWCdetectorPoint() { }
+EsbWCDetectorPoint::~EsbWCDetectorPoint() { }
 // -------------------------------------------------------------------------
 
 // -----   Public method Print   -------------------------------------------
-void EsbWCdetectorPoint::Print(const Option_t* /*opt*/) const
+void EsbWCDetectorPoint::Print(const Option_t* /*opt*/) const
 {
-  cout << "-I- EsbWCdetectorPoint: EsbWCdetector point for track " << fTrackID
+  cout << "-I- EsbWCDetectorPoint: EsbWCDetector point for track " << fTrackID
        << " in detector " << fDetectorID << endl;
   cout << "    Position (" << fX << ", " << fY << ", " << fZ
        << ") cm" << endl;
@@ -45,5 +45,5 @@ void EsbWCdetectorPoint::Print(const Option_t* /*opt*/) const
 }
 // -------------------------------------------------------------------------
 
-ClassImp(EsbWCdetectorPoint)
+ClassImp(EsbWCDetectorPoint)
 

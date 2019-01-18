@@ -35,7 +35,7 @@ void display_event_ND(const Char_t* fileName="evetest.root", Int_t event=0)
   cout << " nEvents = " << nEvent << endl;
 
   TClonesArray* photonArray = 0;
-  tree->SetBranchAddress("EsbWCdetectorPoint"  , &photonArray);
+  tree->SetBranchAddress("EsbWCDetectorPoint"  , &photonArray);
 
   tree->GetEntry(event);
 
@@ -45,8 +45,8 @@ void display_event_ND(const Char_t* fileName="evetest.root", Int_t event=0)
   
   for (Int_t n = 0; n < nPhotons; n++) {
     
-    EsbWCdetectorPoint* photon = 
-      (EsbWCdetectorPoint*)photonArray->At(n);
+    EsbWCDetectorPoint* photon = 
+      (EsbWCDetectorPoint*)photonArray->At(n);
     
     const Double_t xP = photon->GetX();
     const Double_t yP = photon->GetY();
