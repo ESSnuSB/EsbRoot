@@ -20,6 +20,9 @@ void ess_sim(TString outFileName = "evetest.root",
 	     Int_t nEvents = 1)
 {
    FairRunSim* fRun = new FairRunSim(); // create the FairRun Class
+   // Peter: SetStoreTraj seems to be needed for the official Eve
+   // visualization. It creates the branch GeoTracks in the output tree.
+   fRun->SetStoreTraj();
 
    // Choose the Geant Navigation System
    fRun->SetName("TGeant4"); // TGeant3/4
@@ -54,6 +57,16 @@ void ess_sim(TString outFileName = "evetest.root",
 	 //~ cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! " << nearWc->svList->GetEntries() << endl;
 
    // Transport nEvents
+
+   // Peter: for the event display to work one need to create a "parameter"
+   // file. The code is taken from the example from Konstantin Gertsenberger.
+   FairRuntimeDb *rtdb = fRun->GetRuntimeDb();
+   Bool_t kParameterMerged = kTRUE;
+   FairParRootFileIo* output = new FairParRootFileIo(kParameterMerged);
+   output->open("params.root");
+   rtdb->setOutput(output);
+   rtdb->saveOutput();
+
    fRun->Run(nEvents);
    
    fRun->CreateGeometryFile("geo_full.root");  // for additional full geometry file
