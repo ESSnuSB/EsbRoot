@@ -9,7 +9,7 @@ This goes quite smoothly, but it might take a long time to compile everything. I
 2. Go to FairRoot install dir, source the config script and set FAIRROOTPATH:\
 cd <your FairRoot installation directory>\
 source bin/FairRootConfig.sh\
-export FAIRROOTPATH="$PWD"\
+export FAIRROOTPATH="$PWD"
 
 3. compile ESSnuSB software\
 cd <directory which will contain ESSnuSB-soft/ directory)\
