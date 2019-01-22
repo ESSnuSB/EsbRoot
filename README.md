@@ -12,7 +12,7 @@ source bin/FairRootConfig.sh\
 export FAIRROOTPATH="$PWD"
 
 3. compile ESSnuSB software\
-cd [directory which will contain ESSnuSB-soft/ directory] 
+cd [directory which will contain ESSnuSB-soft/ directory] \
 git clone https://github.com/ESSnuSB/ESSnuSB-soft \
 cd ESSnuSB-soft/ \
 mkdir build \
