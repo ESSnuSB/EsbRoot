@@ -6,7 +6,7 @@ ESSnuSB software
 http://essnusb.eu/docdbprivate/ShowDocument?docid=186 \
 This goes quite smoothly, but it might take a long time to compile everything. If it doesnt work on your GNU/Linux distro, try to do it in our virtual machine (worked out-of-the-box for me on Mint 18.2).
 
-2. Go to FairRoot install dir, source the config script and set FAIRROOTPATH:
+2. Go to FairRoot install dir, source the config script and set FAIRROOTPATH: \
 cd [your FairRoot installation directory] \
 source bin/FairRootConfig.sh\
 export FAIRROOTPATH="$PWD"
