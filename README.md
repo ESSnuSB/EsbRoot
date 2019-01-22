@@ -3,7 +3,7 @@ ESSnuSB software
 
 # How to install
 1. Install FairSoft and FairRoot as described here:
-http://essnusb.eu/docdbprivate/ShowDocument?docid=186
+http://essnusb.eu/docdbprivate/ShowDocument?docid=186 .
 This goes quite smoothly, but it might take a long time to compile everything. If it doesnt work on your GNU/Linux distro, try to do it in our virtual machine (worked out-of-the-box for me on Mint 18.2).
 
 2. Go to FairRoot install dir, source the config script and set FAIRROOTPATH:
@@ -22,7 +22,7 @@ make
 
 The software should now be compiled!
 
-#How to use
+# How to use
 1. Set up the environment
 cd <ESSnuSB-soft directory>/build
 source config.sh
