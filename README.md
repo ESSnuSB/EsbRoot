@@ -18,18 +18,18 @@ cd ESSnuSB-soft/ \
 mkdir build \
 cd build \
 cmake .. \
-make \
+make
 
 The software should now be compiled!
 
 # How to use
-1. Set up the environment\
+1. Set up the environment \
 cd <ESSnuSB-soft directory>/build \
-source config.sh \
+source config.sh
 
 2. Try running macros
-Go to EsbMacro directory, try running: \
-- ess_sim.C (root -l -b ess_sim.C) - this shoud produce evetest.root file which contains tracks and (Cherenkov) hits in a small cherenkov detector using muon as a primary track (for now). \
-- evetest.C - read the evetest.root file and output some information. \
-- diplay_event_ND.C - simple display of hits on walls of the detector \
-- eventDisplay.C - full 3D event display, still not working properly \
+Go to EsbMacro directory, try running:
+- ess_sim.C (root -l -b ess_sim.C) - this shoud produce evetest.root file which contains tracks and (Cherenkov) hits in a small cherenkov detector using muon as a primary track (for now).
+- evetest.C - read the evetest.root file and output some information.
+- diplay_event_ND.C - simple display of hits on walls of the detector
+- eventDisplay.C - full 3D event display, still not working properly
