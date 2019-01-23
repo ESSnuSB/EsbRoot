@@ -5,6 +5,41 @@
 # This difference is important for the base classes which are in FAIRROOT 
 # and the experiment part.
 
+#Make Doxygen documentation
+#This is at the beginning of this file because we might want to build only
+#documentation.
+
+option (BUILD_DOC "Build documentation using Doxygen" ON)
+option (BUILD_ONLY_DOC "Build only the documentation" OFF)
+
+if(BUILD_DOC)
+	find_package(Doxygen)
+	if (DOXYGEN_FOUND)
+		#Input and output files
+		set(DOXYGEN_IN ${CMAKE_SOURCE_DIR}/Doxyfile.in)
+		set(DOXYGEN_OUT ${CMAKE_BINARY_DIR}/Doxyfile)
+		
+		#Configure file
+		configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
+		
+		#Create doxygen target
+		add_custom_target( doc_doxygen ALL
+			COMMAND rm -rf ${CMAKE_BINARY_DIR}/doxygen
+			COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
+			COMMENT "Generating documentation with Doxygen"
+			VERBATIM
+		)
+	else (DOXYGEN_FOUND)
+		message("Doxygen not found" FATAL_ERROR)
+	endif (DOXYGEN_FOUND)
+	
+	if(BUILD_ONLY_DOC)
+		message("Will only generate documentation using doxygen.")
+		return()
+	endif(BUILD_ONLY_DOC)
+	
+endif(BUILD_DOC)
+
 # Check if cmake has the required version
 CMAKE_MINIMUM_REQUIRED(VERSION 3.7.2 FATAL_ERROR)
 
@@ -72,8 +107,7 @@ set(LIBRARY_OUTPUT_PATH "${CMAKE_BINARY_DIR}/lib")
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}/bin")
 set(INCLUDE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/include")
 Set(VMCWORKDIR ${CMAKE_SOURCE_DIR})
-Option(USE_PATH_INFO "Information from PATH and LD_LIBRARY_PATH are
-used."OFF)
+Option(USE_PATH_INFO "Information from PATH and LD_LIBRARY_PATH are used." OFF)
 If(USE_PATH_INFO)
   Set(PATH "$PATH")
   If (APPLE)
