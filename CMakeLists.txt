@@ -9,7 +9,7 @@
 #This is at the beginning of this file because we might want to build only
 #documentation.
 
-option (BUILD_DOC "Build documentation using Doxygen" ON)
+option (BUILD_DOC "Build documentation using Doxygen" OFF)
 option (BUILD_ONLY_DOC "Build only the documentation" OFF)
 
 if(BUILD_DOC)
@@ -23,7 +23,7 @@ if(BUILD_DOC)
 		configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
 		
 		#Create doxygen target
-		add_custom_target( doc_doxygen ALL
+		add_custom_target( doc_doxygen
 			COMMAND rm -rf ${CMAKE_BINARY_DIR}/doxygen
 			COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
 			COMMENT "Generating documentation with Doxygen"
