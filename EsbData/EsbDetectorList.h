@@ -17,7 +17,12 @@
 
 #ifndef EsbDetectorList_H
 #define EsbDetectorList_H 1
+
+namespace esbroot {
+	
 // kSTOPHERE is needed for iteration over the enum. All detectors have to be put before.
 enum DetectorId {kEsbEsb, kSTOPHERE};
+
+}
 
 #endif

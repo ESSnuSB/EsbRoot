@@ -34,6 +34,8 @@
 using std::cout;
 using std::endl;
 
+namespace esbroot {
+
 // PC: work around
 static const Int_t kEsbWCDetector = 1;
 
@@ -47,7 +49,7 @@ EsbWCDetector::EsbWCDetector()
     fTime(-1.),
     fLength(-1.),
     fELoss(-1),
-    fEsbWCDetectorPointCollection(new TClonesArray("EsbWCDetectorPoint"))
+    fEsbWCDetectorPointCollection(new TClonesArray(EsbWCDetectorPoint::Class()))
 {
 }
 
@@ -61,7 +63,7 @@ EsbWCDetector::EsbWCDetector(const char* name, Bool_t active)
     fTime(-1.),
     fLength(-1.),
     fELoss(-1),
-    fEsbWCDetectorPointCollection(new TClonesArray("EsbWCDetectorPoint"))
+    fEsbWCDetectorPointCollection(new TClonesArray(EsbWCDetectorPoint::Class()))
 {
 }
 
@@ -228,4 +230,6 @@ EsbWCDetectorPoint* EsbWCDetector::AddHit(Int_t trackID, Int_t detID,
 					     time);
 }
 
-ClassImp(EsbWCDetector)
+}
+
+//~ ClassImp(EsbWCDetector)

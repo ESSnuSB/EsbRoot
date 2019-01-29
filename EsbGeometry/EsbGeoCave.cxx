@@ -31,8 +31,10 @@
 #include <string.h>                     // for strcmp
 #include <iostream>                     // for cout
 
-using namespace std;
-ClassImp(EsbGeoCave)
+//~ using namespace std;
+//~ ClassImp(EsbGeoCave)
+
+namespace esbroot {
 
 EsbGeoCave::EsbGeoCave()
   : FairGeoSet(),
@@ -44,7 +46,7 @@ EsbGeoCave::EsbGeoCave()
   maxModules=1;
 }
 
-Bool_t EsbGeoCave::read(fstream& fin,FairGeoMedia* media)
+Bool_t EsbGeoCave::read(std::fstream& fin,FairGeoMedia* media)
 {
   // Reads the geometry from file
   if (!media) { return kFALSE; }
@@ -97,8 +99,9 @@ void EsbGeoCave::addRefNodes()
   if (volu) { masterNodes->Add(new FairGeoNode(*volu)); }
 }
 
-void EsbGeoCave::write(fstream& fout)
+void EsbGeoCave::write(std::fstream& fout)
 {
+  using namespace std;
   // Writes the geometry to file
   fout.setf(ios::fixed,ios::floatfield);
   FairGeoNode* volu=getVolume(name);
@@ -114,7 +117,8 @@ void EsbGeoCave::write(fstream& fout)
 
 void EsbGeoCave::print()
 {
-  // Prints the geometry
+  using namespace std;
+// Prints the geometry
   FairGeoNode* volu=getVolume(name);
   if (volu) {
     FairGeoBasicShape* sh=volu->getShapePointer();
@@ -124,4 +128,6 @@ void EsbGeoCave::print()
       sh->printPoints(volu);
     }
   }
+}
+
 }

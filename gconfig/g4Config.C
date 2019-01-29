@@ -9,6 +9,7 @@
 // Configuration macro for Geant4 VirtualMC
 void Config()
 {
+	using namespace esbroot;
 ///    Create the run configuration
 /// In constructor user has to specify the geometry input
 /// and select geometry navigation via the following options:

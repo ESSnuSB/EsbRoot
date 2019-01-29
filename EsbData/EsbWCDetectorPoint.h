@@ -14,6 +14,8 @@
 #include "TObject.h"
 #include "TVector3.h"
 
+namespace esbroot {
+
 class EsbWCDetectorPoint : public FairMCPoint
 {
 
@@ -44,7 +46,9 @@ class EsbWCDetectorPoint : public FairMCPoint
     EsbWCDetectorPoint(const EsbWCDetectorPoint& point);
     EsbWCDetectorPoint operator=(const EsbWCDetectorPoint& point);
 
-    ClassDef(EsbWCDetectorPoint,1)
+    ClassDef(EsbWCDetectorPoint,2)
 };
+
+}
 
 #endif

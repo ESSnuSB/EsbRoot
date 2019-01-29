@@ -13,11 +13,13 @@
 #include "TVector3.h"
 #include "TLorentzVector.h"
 
-class EsbWCDetectorPoint;
 class FairVolume;
 class TClonesArray;
 
 //Inheritance: EsbWCDetector <- FairDetector <- FairModule <- TNamed
+
+namespace esbroot {
+class EsbWCDetectorPoint;
 
 class EsbWCDetector: public FairDetector
 {
@@ -99,7 +101,9 @@ class EsbWCDetector: public FairDetector
     EsbWCDetector(const EsbWCDetector&);
     EsbWCDetector& operator=(const EsbWCDetector&);
 
-    ClassDef(EsbWCDetector,1)
+    ClassDef(EsbWCDetector,2)
 };
+
+}
 
 #endif //NEWDETECTOR_H

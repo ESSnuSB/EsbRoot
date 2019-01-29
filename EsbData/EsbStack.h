@@ -50,6 +50,8 @@ class TParticle;
 class TRefArray;
 class FairLogger;
 
+namespace esbroot {
+
 class EsbStack : public FairGenericStack
 {
 
@@ -255,12 +257,12 @@ class EsbStack : public FairGenericStack
     EsbStack(const EsbStack&);
     EsbStack& operator=(const EsbStack&);
 
-    ClassDef(EsbStack,1)
+    ClassDef(EsbStack,2)
 
 
 };
 
-
+}
 
 
 

@@ -16,6 +16,7 @@ using namespace std;
 
 void display_event_ND(const Char_t* fileName="evetest.root", Int_t event=0)
 {
+  using namespace esbroot;
   gStyle->SetOptStat(0);
   
   // if(!geomLoaded)
