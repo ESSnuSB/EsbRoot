@@ -1,5 +1,5 @@
-# ESSnuSB-soft
-ESSnuSB software
+# EsbRoot
+Software for physics simulation of ESSnuSB project
 
 # How to install
 1. Install FairSoft and FairRoot as described here:\
@@ -12,9 +12,9 @@ source bin/FairRootConfig.sh\
 export FAIRROOTPATH="$PWD"
 
 3. compile ESSnuSB software\
-cd [directory which will contain ESSnuSB-soft/ directory] \
-git clone https://github.com/ESSnuSB/ESSnuSB-soft \
-cd ESSnuSB-soft/ \
+cd [directory which will contain EsbRoot/ directory] \
+git clone https://github.com/ESSnuSB/EsbRoot \
+cd EsbRoot/ \
 mkdir build \
 cd build \
 cmake .. \
@@ -24,7 +24,7 @@ The software should now be compiled!
 
 # How to use
 1. Set up the environment \
-cd <ESSnuSB-soft directory>/build \
+cd [EsbRoot directory]/build \
 source config.sh
 
 2. Try running macros
