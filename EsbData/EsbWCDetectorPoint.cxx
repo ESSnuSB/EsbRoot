@@ -11,6 +11,7 @@
 using std::cout;
 using std::endl;
 
+namespace esbroot {
 
 // -----   Default constructor   -------------------------------------------
 EsbWCDetectorPoint::EsbWCDetectorPoint()
@@ -45,5 +46,4 @@ void EsbWCDetectorPoint::Print(const Option_t* /*opt*/) const
 }
 // -------------------------------------------------------------------------
 
-ClassImp(EsbWCDetectorPoint)
-
+}

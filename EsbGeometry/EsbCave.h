@@ -19,6 +19,8 @@
 
 #include "Rtypes.h"                     // for EsbCave::Class, ClassDef, etc
 
+namespace esbroot {
+
 class EsbCave : public FairModule
 {
   public:
@@ -30,8 +32,10 @@ class EsbCave : public FairModule
 
   private:
     Double_t world[3];
-    ClassDef(EsbCave,1) //PNDCaveSD
+    ClassDef(EsbCave,2) //PNDCaveSD
 };
+
+}
 
 #endif //Cave_H
 

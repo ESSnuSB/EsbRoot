@@ -27,7 +27,9 @@
 
 #include <stddef.h>                     // for NULL
 
-ClassImp(EsbCave)
+//~ ClassImp(EsbCave)
+
+namespace esbroot {
 
 void EsbCave::ConstructGeometry()
 {
@@ -55,4 +57,6 @@ EsbCave::EsbCave(const char* name,  const char* Title)
   world[0] = 0;
   world[1] = 0;
   world[2] = 0;
+}
+
 }

@@ -34,13 +34,14 @@ using std::cout;
 using std::endl;
 using std::pair;
 
+namespace esbroot {
 
 // -----   Default constructor   -------------------------------------------
 EsbStack::EsbStack(Int_t size)
   : FairGenericStack(),
     fStack(),
-    fParticles(new TClonesArray("TParticle", size)),
-    fTracks(new TClonesArray("EsbMCTrack", size)),
+    fParticles(new TClonesArray(TParticle::Class(), size)),
+    fTracks(new TClonesArray(EsbMCTrack::Class(), size)),
     fStoreMap(),
     fStoreIter(),
     fIndexMap(),
@@ -484,6 +485,6 @@ void EsbStack::SelectTracks()
 }
 // -------------------------------------------------------------------------
 
+}
 
-
-ClassImp(EsbStack)
+//~ ClassImp(EsbStack)

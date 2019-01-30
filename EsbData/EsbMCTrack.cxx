@@ -21,6 +21,8 @@
 #include "TParticle.h"                  // for TParticle
 #include "TParticlePDG.h"               // for TParticlePDG
 
+namespace esbroot {
+
 // -----   Default constructor   -------------------------------------------
 EsbMCTrack::EsbMCTrack()
   : TObject(),
@@ -192,7 +194,6 @@ void EsbMCTrack::SetNPoints(Int_t iDet, Int_t nPoints)
 }
 // -------------------------------------------------------------------------
 
+}
 
-
-
-ClassImp(EsbMCTrack)
+//~ ClassImp(EsbMCTrack)

@@ -12,10 +12,13 @@
 #pragma link off all classes;
 #pragma link off all functions;
 #pragma link C++ nestedclasses;
+#pragma link C++ nestedtypedef;
 
-#pragma link C++ class EsbStack+;
-#pragma link C++ class EsbMCTrack+;
-#pragma link C++ class EsbWCDetectorPoint+;
+#pragma link C++ namespace esbroot;
+
+#pragma link C++ class esbroot::EsbStack+;
+#pragma link C++ class esbroot::EsbMCTrack+;
+#pragma link C++ class esbroot::EsbWCDetectorPoint+;
 
 #endif
 

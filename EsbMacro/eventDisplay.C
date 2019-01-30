@@ -22,6 +22,8 @@ FairEventManager* eventDisplay(Bool_t addTracks=kTRUE,
 			       Bool_t addPoints=kFALSE)
 {
 
+  using namespace esbroot;
+  
   TString inFile  = "evetest.root";
   TString parFile = "params.root";
   TString outFile = "out.root";
@@ -30,16 +32,18 @@ FairEventManager* eventDisplay(Bool_t addTracks=kTRUE,
   FairRunAna *fRun= new FairRunAna();
   FairFileSource *fFileSource = new FairFileSource(inFile);
   fRun->SetSource(fFileSource);
-  
+ 
   fRun->SetSink(new FairRootFileSink(outFile));
 
   // -----  Parameter database   --------------------------------------------
   FairRuntimeDb* rtdb = fRun->GetRuntimeDb();
 
   FairParRootFileIo* parIo1 = new FairParRootFileIo();
-  parIo1->open(parFile);
-  rtdb->setFirstInput(parIo1);
+	parIo1->open(parFile);
+	rtdb->setFirstInput(parIo1);
   // ------------------------------------------------------------------------
+
+
 
   FairEventManager   *fMan      = new FairEventManager   ();
   FairMCTracks       *Track     = new FairMCTracks       ("MCTrack");
@@ -49,6 +53,7 @@ FairEventManager* eventDisplay(Bool_t addTracks=kTRUE,
     fMan->AddTask(Track);
   if(addPoints)
     fMan->AddTask(EsbPoints);
+
 
   fMan->Init();
   return fMan;

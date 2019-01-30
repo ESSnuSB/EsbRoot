@@ -33,6 +33,8 @@
 
 //~ class TParticle;
 
+namespace esbroot {
+
 class EsbMCTrack : public TObject
 {
 
@@ -158,7 +160,7 @@ inline void EsbMCTrack::GetStartVertex(TVector3& vertex)
   vertex.SetXYZ(fStartX,fStartY,fStartZ);
 }
 
-
+}
 
 
 
