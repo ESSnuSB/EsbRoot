@@ -111,9 +111,9 @@ EsbMCTrack::~EsbMCTrack() { }
 void EsbMCTrack::Print(Int_t trackId) const
 {
   //~ LOG(debug) << "Track " << trackId << ", mother : " << fMotherId << ", Type "
-  LOG(debug) << "Track " << trackId << ", mother : " << fMotherId << ", Type "
-             << fPdgCode << ", momentum (" << fPx << ", " << fPy << ", "
-             << fPz << ") GeV";
+  //LOG(debug) << "Track " << trackId << ", mother : " << fMotherId << ", Type "
+  //           << fPdgCode << ", momentum (" << fPx << ", " << fPy << ", "
+  //           << fPz << ") GeV";
  /* LOG(debug2) << "       Ref " << GetNPoints(kREF)
               << ", TutDet " << GetNPoints(kTutDet)
               << ", Rutherford " << GetNPoints(kFairRutherford);
