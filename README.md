@@ -4,7 +4,8 @@ Software for physics simulation of ESSnuSB project
 # How to install
 1. Install FairSoft and FairRoot as described here:\
 http://essnusb.eu/docdbprivate/ShowDocument?docid=186 \
-**IMPORTANT:** Do **not** check-out specific versions of FairSoft and FairRoot.
+
+**IMPORTANT:** Do **not** check-out specific versions of FairSoft and FairRoot as described in the slides above.
 
 That is, when installing FairSoft, ignore this line:
 ```
