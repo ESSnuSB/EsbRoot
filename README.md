@@ -4,7 +4,17 @@ Software for physics simulation of ESSnuSB project
 # How to install
 1. Install FairSoft and FairRoot as described here:\
 http://essnusb.eu/docdbprivate/ShowDocument?docid=186 \
-This goes quite smoothly, but it might take a long time to compile everything. If it doesnt work on your GNU/Linux distro, try to do it in our virtual machine (worked out-of-the-box for me on Mint 18.2).
+**IMPORTANT:** Do **not** check-out specific versions of FairSoft and FairRoot.
+
+That is, when installing FairSoft, ignore this line:
+```
+git checkout may18
+```
+When istalling FairRoot, ignore this line:
+```
+git checkout v-17.10d
+```
+This goes quite smoothly, but it might take a long time to compile everything. If it doesnt work on your GNU/Linux distro, try to do it in our virtual machine (worked out-of-the-box for me on Mint 18.x).
 
 2. Go to FairRoot install dir, source the config script and set FAIRROOTPATH: \
 cd [your FairRoot installation directory] \
