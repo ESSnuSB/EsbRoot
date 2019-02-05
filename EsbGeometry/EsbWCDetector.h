@@ -30,7 +30,7 @@ class EsbWCDetector: public FairDetector
      *       Active: kTRUE for active detectors (ProcessHits() will be called)
      *               kFALSE for inactive detectors
     */
-    EsbWCDetector(const char* Name, Bool_t Active);
+  EsbWCDetector(const char* Name, Double_t wcRadius, Double_t wcHalflength, Bool_t Active);
 
     /**      default constructor    */
     EsbWCDetector();
@@ -94,6 +94,9 @@ class EsbWCDetector: public FairDetector
     Double32_t     fLength;            //!  length
     Double32_t     fELoss;             //!  energy loss
 
+    Double_t       fWCradius;          // radius of WC cylinder 
+    Double_t       fWChalflength;      // halflength of WC cylinder
+    
     /** container for data points */
 
     TClonesArray*  fEsbWCDetectorPointCollection;  //!

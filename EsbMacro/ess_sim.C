@@ -40,8 +40,12 @@ void ess_sim(TString outFileName = "evetest.root",
    fRun->AddModule(Cave);
 
    // Add Detectors
-   FairDetector *nearWc = new EsbWCDetector("NearWcDetector", kTRUE);
+   FairDetector *nearWc = new EsbWCDetector("NearWcDetector", 300, 500, kTRUE);
    fRun->AddModule(nearWc);
+
+   // Far Detector
+   // FairDetector *farWc = new EsbWCDetector("FarWcDetector", 1000, 2000, kTRUE);
+   // fRun->AddModule(farWc);
 
    // Create and Set Event Generator
    FairPrimaryGenerator* primGen = new FairPrimaryGenerator();

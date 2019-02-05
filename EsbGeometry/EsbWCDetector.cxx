@@ -49,12 +49,15 @@ EsbWCDetector::EsbWCDetector()
     fTime(-1.),
     fLength(-1.),
     fELoss(-1),
+    fWCradius(-1),
+    fWChalflength(-1),
     fEsbWCDetectorPointCollection(new TClonesArray(EsbWCDetectorPoint::Class()))
 {
 }
 
 //___________________________________________________________________
-EsbWCDetector::EsbWCDetector(const char* name, Bool_t active)
+  EsbWCDetector::EsbWCDetector(const char* name, Double_t wcRadius, 
+			       Double_t wcHalflength, Bool_t active)
   : FairDetector(name, active, kEsbWCDetector),
     fTrackID(-1),
     fVolumeID(-1),
@@ -63,6 +66,8 @@ EsbWCDetector::EsbWCDetector(const char* name, Bool_t active)
     fTime(-1.),
     fLength(-1.),
     fELoss(-1),
+    fWCradius(wcRadius),
+    fWChalflength(wcHalflength),
     fEsbWCDetectorPointCollection(new TClonesArray(EsbWCDetectorPoint::Class()))
 {
 }
@@ -193,11 +198,11 @@ void EsbWCDetector::ConstructGeometry()
   TGeoMedium *Al_med = new TGeoMedium("Al", 101, Al_mat);
   
   // Create water cylinder
-  TGeoVolume *wc = gGeoManager->MakeTube("wc", WC_med, 0.0, 300.0, 500.0);
+  TGeoVolume *wc = gGeoManager->MakeTube("wc", WC_med, 0.0, fWCradius, fWChalflength);
   
   // Create thin wall around the water cylinder, 1 cm thick, to act as sensitive volume
-  TGeoVolume *wall = gGeoManager->MakeTube("wall", Al_med, 300.0, 300.1, 500.0);
-  TGeoVolume *endwall = gGeoManager->MakeTube("endwall", Al_med, 0, 300, 0.05);
+  TGeoVolume *wall = gGeoManager->MakeTube("wall", Al_med, fWCradius, fWCradius+0.1, fWChalflength);
+  TGeoVolume *endwall = gGeoManager->MakeTube("endwall", Al_med, 0, fWCradius, 0.05);
 
   TList* media = gGeoManager->GetListOfMedia();
   for(TObject *obj : *media) {
@@ -210,8 +215,8 @@ void EsbWCDetector::ConstructGeometry()
   TGeoVolume *top = gGeoManager->GetTopVolume();
   top->AddNode(wc, 1);
   top->AddNode(wall, 1); 
-  top->AddNode(endwall, 1, new TGeoTranslation(0.0, 0.0, 500.05));
-  top->AddNode(endwall, 2, new TGeoTranslation(0.0, 0.0, -500.05));
+  top->AddNode(endwall, 1, new TGeoTranslation(0.0, 0.0, fWChalflength+0.05));
+  top->AddNode(endwall, 2, new TGeoTranslation(0.0, 0.0, -fWChalflength-0.05));
 
   wc->SetLineColor(kRed);
 
