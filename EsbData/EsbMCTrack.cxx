@@ -21,6 +21,8 @@
 #include "TParticle.h"                  // for TParticle
 #include "TParticlePDG.h"               // for TParticlePDG
 
+namespace esbroot {
+
 // -----   Default constructor   -------------------------------------------
 EsbMCTrack::EsbMCTrack()
   : TObject(),
@@ -109,9 +111,9 @@ EsbMCTrack::~EsbMCTrack() { }
 void EsbMCTrack::Print(Int_t trackId) const
 {
   //~ LOG(debug) << "Track " << trackId << ", mother : " << fMotherId << ", Type "
-  LOG(debug) << "Track " << trackId << ", mother : " << fMotherId << ", Type "
-             << fPdgCode << ", momentum (" << fPx << ", " << fPy << ", "
-             << fPz << ") GeV";
+  //LOG(debug) << "Track " << trackId << ", mother : " << fMotherId << ", Type "
+  //           << fPdgCode << ", momentum (" << fPx << ", " << fPy << ", "
+  //           << fPz << ") GeV";
  /* LOG(debug2) << "       Ref " << GetNPoints(kREF)
               << ", TutDet " << GetNPoints(kTutDet)
               << ", Rutherford " << GetNPoints(kFairRutherford);
@@ -192,7 +194,6 @@ void EsbMCTrack::SetNPoints(Int_t iDet, Int_t nPoints)
 }
 // -------------------------------------------------------------------------
 
+}
 
-
-
-ClassImp(EsbMCTrack)
+//~ ClassImp(EsbMCTrack)

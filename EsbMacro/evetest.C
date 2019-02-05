@@ -2,6 +2,8 @@
 
 void evetest(void)
 {
+	using namespace esbroot;
+	
 	fair::Logger::SetConsoleSeverity("DEBUG");	
 	auto infile = new TFile("evetest.root");
 	TTree *simtree; infile->GetObject("cbmsim", simtree);
@@ -9,9 +11,11 @@ void evetest(void)
 	//~ int ntrack;
 	//~ simtree->SetBranchAddress("MCTrack", &ntrack);
 
-	TClonesArray *mctrack_arr = new TClonesArray("EsbMCTrack");
+	//~ TClonesArray *mctrack_arr = new TClonesArray("EsbMCTrack");
+	TClonesArray *mctrack_arr = nullptr;
 	simtree->SetBranchAddress("MCTrack", &mctrack_arr);
-	TClonesArray *detpoint_arr = new TClonesArray("EsbWCDetectorPoint");
+	//~ TClonesArray *detpoint_arr = new TClonesArray("EsbWCDetectorPoint");
+	TClonesArray *detpoint_arr = nullptr;
 	simtree->SetBranchAddress("EsbWCDetectorPoint", &detpoint_arr);
 
 	simtree->GetEntry(0);

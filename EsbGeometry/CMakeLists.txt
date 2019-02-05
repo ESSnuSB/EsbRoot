@@ -37,7 +37,7 @@ EsbGeoCave.cxx
 Set(LINKDEF EsbGeometryLinkDef.h)
 Set(LIBRARY_NAME EsbGeometry)
 Set(DEPENDENCIES
-    Base
+    Base EsbData
 )
 
 GENERATE_LIBRARY()

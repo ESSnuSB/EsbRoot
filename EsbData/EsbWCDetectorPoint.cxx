@@ -11,6 +11,7 @@
 using std::cout;
 using std::endl;
 
+namespace esbroot {
 
 // -----   Default constructor   -------------------------------------------
 EsbWCDetectorPoint::EsbWCDetectorPoint()
@@ -32,6 +33,22 @@ EsbWCDetectorPoint::EsbWCDetectorPoint(Int_t trackID, Int_t detID,
 EsbWCDetectorPoint::~EsbWCDetectorPoint() { }
 // -------------------------------------------------------------------------
 
+Int_t EsbWCDetectorPoint::Compare(const TObject *obj) const {
+  
+  cout << "In compare!" << endl;
+
+  EsbWCDetectorPoint* photonObj = (EsbWCDetectorPoint*)obj;
+  if(photonObj == 0)
+    return 0;
+
+  if(fZ > photonObj->GetZ())
+    return 1;
+  else if(fZ < photonObj->GetZ())
+    return -1;
+  else
+    return 0;
+}
+
 // -----   Public method Print   -------------------------------------------
 void EsbWCDetectorPoint::Print(const Option_t* /*opt*/) const
 {
@@ -45,5 +62,4 @@ void EsbWCDetectorPoint::Print(const Option_t* /*opt*/) const
 }
 // -------------------------------------------------------------------------
 
-ClassImp(EsbWCDetectorPoint)
-
+}

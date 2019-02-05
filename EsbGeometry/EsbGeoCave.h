@@ -25,6 +25,8 @@
 
 class FairGeoMedia;
 
+namespace esbroot {
+
 class  EsbGeoCave : public FairGeoSet
 {
   protected:
@@ -39,5 +41,7 @@ class  EsbGeoCave : public FairGeoSet
     void print();
     ClassDef(EsbGeoCave,0) // Class for the geometry of CAVE
 };
+
+}
 
 #endif  /* !PNDGEOCAVE_H */

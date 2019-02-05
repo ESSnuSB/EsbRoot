@@ -1,0 +1,99 @@
+Try to keep to the FairRoot standards.
+
+Global variables:
+Only if can be declared as constexpr. Then they are compile-time constants.
+
+Private/public members and their getters and setters:
+Class data members can be either public, private, or protected. If all data members are public use struct, otherwise use class.
+For getters and setters there are two options:
+1. class member private: Getter returns const reference, setter is required (the default) 
+2. Class member public: No getters and setters
+
+Default values of members:
+interers and the like: 0 (or -1)
+floating points: NaN
+ponters (don't use pointers): nullptr
+strings: empty string
+
+Const-correctness:
+Try to make things const if possible.
+
+Function parameters
+All input parameters are const&, with the exception of built-in types that may be passed by value. If there is more than one output, or it is a complex class, pass it as reference argument. In that case, function returns true if output is successfull, else it's false. Define empty OUT macro.
+Example: bool CalculateThings(int const& start, int end, /*OUT*/ double& result1, /*OUT*/ double& result2)
+
+Pointers
+Do not work with raw pointers. If necessary use std::unique_ptr and if absolutely necessary std::shared_ptr. All of this obviously doesn't apply when dealing with ROOT and possibly Geant4.
+
+ROOT
+Collections: We use ROOT collections for I/O only. So: use only TClonesArray.
+ROOT class versions start with 2. E.g. ClassDef(myClass, 2).
+
+Containers
+Use std:: containers for non-perisitent data (the one you don't need to write to disk).
+std::vector instead of C dynamic array. Instead of: {int *a = new int[100];} use {std::vector<int> a; a.reserve(100);}
+std::array instead of C static array. Instead of: {int a[10];} use {std::array<int, 10> a;}
+
+Magic numbers
+No magic numbers. 
+Instead of:
+a = a + 3.564748;
+Do:
+a = a + cube_pitch; //Define cube_pitch somewhere.
+
+Error recovery
+Don't waste time trying to recover from errors like missing files; throw exception instead.
+
+C++ exceptions
+Exceptions are used in panic mode, i.e. catching them is very limited. The are either not caught, or are caught at a very broad scope in which case the entire operation is aborted. The example of latter is exception thrown during a generation of a single MC event, in which case program moves on the next event.
+
+Lambda functions
+Yes.
+
+Templates
+Absolutely, but don't overdo it. Be careful with ROOT I/O and dictionar generation.
+
+Floating points
+Always use double (64-bit), never use float (32-bit).
+
+Doxygen
+Brief descriptions together with declarations, detailed descriptions together with definitions. All functions must be documented, including getters and setters. Trivial getters/setters do not need detailed description, all other entities do.
+
+Warnings
+No -Wall warnings should be issued by compiler, unless there is a good reason.
+
+Naming:
+Class names: CamelCase for class names. Words *always* start with capital letter (correct: WCDetector, not correct: WCdetector), this is different from ROOT and EsbRoot. Without "Esb" prefix
+e.g. EsbMCTrack -> MCTrack (but in esbroot::data namespace).
+Method names: CamelCase starting with capital letters
+Class member names start with f (e.g. int fMyInt) (f is "field")
+Standalone functions use CamelCase
+Local names use snake case (e.g. my_local_variable) radius
+
+Getters and setters:
+Variable name: int fVar;
+Getter: int const& GetVar()
+Setter: void SetVar(int const& newVar)
+
+Filenames:
+.h c++ header
+.cxx c++ source
+Directories: Esb*
+Files: no "Esb" (EsbMCTrack.h -> MCTrack)
+#include "EsbData/MCTrack.h"
+
+Namespaces:
+Names are lowercase.
+global: esbroot
+local: foldername without Esb (EsbData -> data)
+e.g: esbroot::data::MCTrack
+
+Headerguards:
+#ifndef ESBROOT_DIRNAME_CLASSNAME_H
+#define ESBROOT_DIRNAME_CLASSNAME_H
+
+#endif //ESBROOT_DIRNAME_CLASSNAME_H
+
+Verbosity:
+Use FairLogger.h
+In production, the program should be quiet (i.e. no output to stdout and stderr).

@@ -19,6 +19,8 @@ void ess_sim(TString outFileName = "evetest.root",
              Int_t nStartEvent = 0, 
 	     Int_t nEvents = 1)
 {
+   using namespace esbroot;
+   
    FairRunSim* fRun = new FairRunSim(); // create the FairRun Class
    // Peter: SetStoreTraj seems to be needed for the official Eve
    // visualization. It creates the branch GeoTracks in the output tree.
@@ -38,8 +40,12 @@ void ess_sim(TString outFileName = "evetest.root",
    fRun->AddModule(Cave);
 
    // Add Detectors
-   FairDetector *nearWc = new EsbWCDetector("NearWcDetector", kTRUE);
+   FairDetector *nearWc = new EsbWCDetector("NearWcDetector", 300, 500, kTRUE);
    fRun->AddModule(nearWc);
+
+   // Far Detector
+   // FairDetector *farWc = new EsbWCDetector("FarWcDetector", 1000, 2000, kTRUE);
+   // fRun->AddModule(farWc);
 
    // Create and Set Event Generator
    FairPrimaryGenerator* primGen = new FairPrimaryGenerator();
