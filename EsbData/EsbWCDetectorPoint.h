@@ -37,6 +37,12 @@ class EsbWCDetectorPoint : public FairMCPoint
     
     /** Destructor **/
     virtual ~EsbWCDetectorPoint();
+
+
+    Bool_t IsSortable() const { return kTRUE; }
+
+    /// To be able to sort the photon hits according to their z position
+    Int_t Compare(const TObject *obj) const;
     
     /** Output to screen **/
     virtual void Print(const Option_t* opt) const;
