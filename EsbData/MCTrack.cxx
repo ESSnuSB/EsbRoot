@@ -7,14 +7,14 @@
  ********************************************************************************/
 
 // -------------------------------------------------------------------------
-// -----                   EsbMCTrack source file                   -----
+// -----                   MCTrack source file                   -----
 // -----                  M. Al-Turany   June 2014                     -----
 // ----- This is a light weight particle class that is saved to disk
 // ----- instead of saveing the TParticle class
 // ----- IT is also used for filtring the stack
 // -------------------------------------------------------------------------
 
-#include "EsbMCTrack.h"
+#include "EsbData/MCTrack.h"
 
 #include "FairLogger.h"                 // for FairLogger, etc
 #include "TDatabasePDG.h"               // for TDatabasePDG
@@ -23,8 +23,10 @@
 
 namespace esbroot {
 
+namespace data {
+
 // -----   Default constructor   -------------------------------------------
-EsbMCTrack::EsbMCTrack()
+MCTrack::MCTrack()
   : TObject(),
     fPdgCode(0),
     fMotherId(-1),
@@ -43,7 +45,7 @@ EsbMCTrack::EsbMCTrack()
 
 
 // -----   Standard constructor   ------------------------------------------
-EsbMCTrack::EsbMCTrack(Int_t pdgCode, Int_t motherId, Double_t px,
+MCTrack::MCTrack(Int_t pdgCode, Int_t motherId, Double_t px,
                          Double_t py, Double_t pz, Double_t x, Double_t y,
                          Double_t z, Double_t t, Int_t nPoints = 0)
   : TObject(),
@@ -64,7 +66,7 @@ EsbMCTrack::EsbMCTrack(Int_t pdgCode, Int_t motherId, Double_t px,
 
 
 // -----   Copy constructor   ----------------------------------------------
-EsbMCTrack::EsbMCTrack(const EsbMCTrack& track)
+MCTrack::MCTrack(const MCTrack& track)
   : TObject(track),
     fPdgCode(track.fPdgCode),
     fMotherId(track.fMotherId),
@@ -83,7 +85,7 @@ EsbMCTrack::EsbMCTrack(const EsbMCTrack& track)
 
 
 // -----   Constructor from TParticle   ------------------------------------
-EsbMCTrack::EsbMCTrack(TParticle* part)
+MCTrack::MCTrack(TParticle* part)
   : TObject(),
     fPdgCode(part->GetPdgCode()),
     fMotherId(part->GetMother(0)),
@@ -102,13 +104,13 @@ EsbMCTrack::EsbMCTrack(TParticle* part)
 
 
 // -----   Destructor   ----------------------------------------------------
-EsbMCTrack::~EsbMCTrack() { }
+MCTrack::~MCTrack() { }
 // -------------------------------------------------------------------------
 
 
 
 // -----   Public method Print   -------------------------------------------
-void EsbMCTrack::Print(Int_t trackId) const
+void MCTrack::Print(Int_t trackId) const
 {
   //~ LOG(debug) << "Track " << trackId << ", mother : " << fMotherId << ", Type "
   //LOG(debug) << "Track " << trackId << ", mother : " << fMotherId << ", Type "
@@ -124,7 +126,7 @@ void EsbMCTrack::Print(Int_t trackId) const
 
 
 // -----   Public method GetMass   -----------------------------------------
-Double_t EsbMCTrack::GetMass() const
+Double_t MCTrack::GetMass() const
 {
   if ( TDatabasePDG::Instance() ) {
     TParticlePDG* particle = TDatabasePDG::Instance()->GetParticle(fPdgCode);
@@ -139,7 +141,7 @@ Double_t EsbMCTrack::GetMass() const
 
 
 // -----   Public method GetRapidity   -------------------------------------
-Double_t EsbMCTrack::GetRapidity() const
+Double_t MCTrack::GetRapidity() const
 {
   Double_t e = GetEnergy();
   Double_t y = 0.5 * TMath::Log( (e+fPz) / (e-fPz) );
@@ -151,7 +153,7 @@ Double_t EsbMCTrack::GetRapidity() const
 
 
 // -----   Public method GetNPoints   --------------------------------------
-Int_t EsbMCTrack::GetNPoints(DetectorId detId) const
+Int_t MCTrack::GetNPoints(DetectorId detId) const
 {
 /*  // TODO: Where does this come from
   if      ( detId == kREF  ) { return (  fNPoints &   1); }
@@ -168,7 +170,7 @@ Int_t EsbMCTrack::GetNPoints(DetectorId detId) const
 
 
 // -----   Public method SetNPoints   --------------------------------------
-void EsbMCTrack::SetNPoints(Int_t iDet, Int_t nPoints)
+void MCTrack::SetNPoints(Int_t iDet, Int_t nPoints)
 {
 /*
   if ( iDet == kREF ) {
@@ -194,6 +196,8 @@ void EsbMCTrack::SetNPoints(Int_t iDet, Int_t nPoints)
 }
 // -------------------------------------------------------------------------
 
-}
+} //namespace data
 
-//~ ClassImp(EsbMCTrack)
+}//namespace esbroot
+
+//~ ClassImp(MCTrack)

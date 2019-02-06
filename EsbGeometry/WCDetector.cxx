@@ -5,9 +5,9 @@
  *              GNU Lesser General Public Licence (LGPL) version 3,             *  
  *                  copied verbatim in the file "LICENSE"                       *
  ********************************************************************************/
-#include "EsbWCDetector.h"
+#include "EsbGeometry/WCDetector.h"
 
-#include "EsbWCDetectorPoint.h"
+#include "EsbData/WCDetectorPoint.h"
 //#include "EsbWCDetectorGeo.h"
 //#include "EsbWCDetectorGeoPar.h"
 
@@ -36,12 +36,13 @@ using std::endl;
 
 namespace esbroot {
 
+namespace geometry {
 // PC: work around
-static const Int_t kEsbWCDetector = 1;
+static const Int_t kWCDetector = 1;
 
 //___________________________________________________________________
-EsbWCDetector::EsbWCDetector()
-  : FairDetector("EsbWCDetector", kTRUE, kEsbWCDetector),
+WCDetector::WCDetector()
+  : FairDetector("EsbWCDetector", kTRUE, kWCDetector),
     fTrackID(-1),
     fVolumeID(-1),
     fPos(),
@@ -51,14 +52,14 @@ EsbWCDetector::EsbWCDetector()
     fELoss(-1),
     fWCradius(-1),
     fWChalflength(-1),
-    fEsbWCDetectorPointCollection(new TClonesArray(EsbWCDetectorPoint::Class()))
+    fWCDetectorPointCollection(new TClonesArray(data::WCDetectorPoint::Class()))
 {
 }
 
 //___________________________________________________________________
-  EsbWCDetector::EsbWCDetector(const char* name, Double_t wcRadius, 
+  WCDetector::WCDetector(const char* name, Double_t wcRadius, 
 			       Double_t wcHalflength, Bool_t active)
-  : FairDetector(name, active, kEsbWCDetector),
+  : FairDetector(name, active, kWCDetector),
     fTrackID(-1),
     fVolumeID(-1),
     fPos(),
@@ -68,21 +69,21 @@ EsbWCDetector::EsbWCDetector()
     fELoss(-1),
     fWCradius(wcRadius),
     fWChalflength(wcHalflength),
-    fEsbWCDetectorPointCollection(new TClonesArray(EsbWCDetectorPoint::Class()))
+    fWCDetectorPointCollection(new TClonesArray(data::WCDetectorPoint::Class()))
 {
 }
 
 //___________________________________________________________________
-EsbWCDetector::~EsbWCDetector()
+WCDetector::~WCDetector()
 {
-  if (fEsbWCDetectorPointCollection) {
-    fEsbWCDetectorPointCollection->Delete();
-    delete fEsbWCDetectorPointCollection;
+  if (fWCDetectorPointCollection) {
+    fWCDetectorPointCollection->Delete();
+    delete fWCDetectorPointCollection;
   }
 }
 
 //___________________________________________________________________
-void EsbWCDetector::Initialize()
+void WCDetector::Initialize()
 {
   FairDetector::Initialize();
   //  FairRuntimeDb* rtdb= FairRun::Instance()->GetRuntimeDb();
@@ -91,7 +92,7 @@ void EsbWCDetector::Initialize()
 }
 
 //___________________________________________________________________
-Bool_t  EsbWCDetector::ProcessHits(FairVolume* vol)
+Bool_t  WCDetector::ProcessHits(FairVolume* vol)
 {
 	cout << __PRETTY_FUNCTION__ << endl;
   /** This method is called from the MC stepping */
@@ -145,16 +146,16 @@ Bool_t  EsbWCDetector::ProcessHits(FairVolume* vol)
   //~ return kTRUE;
 }
 
-void EsbWCDetector::EndOfEvent()
+void WCDetector::EndOfEvent()
 {
 
-  fEsbWCDetectorPointCollection->Clear();
+  fWCDetectorPointCollection->Clear();
 
 }
 
 
 
-void EsbWCDetector::Register()
+void WCDetector::Register()
 {
 
   /** This will create a branch in the output tree called
@@ -164,23 +165,23 @@ void EsbWCDetector::Register()
   */
 
   FairRootManager::Instance()->Register("EsbWCDetectorPoint", "EsbWCDetector",
-                                        fEsbWCDetectorPointCollection, kTRUE);
+                                        fWCDetectorPointCollection, kTRUE);
 
 }
 
 
-TClonesArray* EsbWCDetector::GetCollection(Int_t iColl) const
+TClonesArray* WCDetector::GetCollection(Int_t iColl) const
 {
-  if (iColl == 0) { return fEsbWCDetectorPointCollection; }
+  if (iColl == 0) { return fWCDetectorPointCollection; }
   else { return NULL; }
 }
 
-void EsbWCDetector::Reset()
+void WCDetector::Reset()
 {
-  fEsbWCDetectorPointCollection->Clear();
+  fWCDetectorPointCollection->Clear();
 }
 
-void EsbWCDetector::ConstructGeometry()
+void WCDetector::ConstructGeometry()
 {
 	//TODO: Make a function for this a into EsbTools directory
 	FairGeoLoader *geoLoad = FairGeoLoader::Instance();
@@ -223,18 +224,19 @@ void EsbWCDetector::ConstructGeometry()
 }
 
 //___________________________________________________________________
-EsbWCDetectorPoint* EsbWCDetector::AddHit(Int_t trackID, Int_t detID,
+data::WCDetectorPoint* WCDetector::AddHit(Int_t trackID, Int_t detID,
 					  TVector3 pos, TVector3 mom,
 					  Double_t time)
 {
-  TClonesArray& clref = *fEsbWCDetectorPointCollection;
+  TClonesArray& clref = *fWCDetectorPointCollection;
   Int_t size = clref.GetEntriesFast();
   //~ cout << __PRETTY_FUNCTION__ << ": Size=" << size << " " << trackID << " " << detID << endl;
   //~ exit(1);
-  return new(clref[size]) EsbWCDetectorPoint(trackID, detID, pos, mom,
+  return new(clref[size]) data::WCDetectorPoint(trackID, detID, pos, mom,
 					     time);
 }
 
 }
+}
 
-//~ ClassImp(EsbWCDetector)
+//~ ClassImp(WCDetector)

@@ -18,7 +18,7 @@
 //
 /////////////////////////////////////////////////////////////
 
-#include "EsbGeoCave.h"
+#include "EsbGeometry/GeoCave.h"
 
 #include "FairGeoBasicShape.h"          // for FairGeoBasicShape
 #include "FairGeoMedia.h"               // for FairGeoMedia
@@ -36,7 +36,9 @@
 
 namespace esbroot {
 
-EsbGeoCave::EsbGeoCave()
+namespace geometry {
+	
+GeoCave::GeoCave()
   : FairGeoSet(),
     name("cave")
 {
@@ -46,7 +48,7 @@ EsbGeoCave::EsbGeoCave()
   maxModules=1;
 }
 
-Bool_t EsbGeoCave::read(std::fstream& fin,FairGeoMedia* media)
+Bool_t GeoCave::read(std::fstream& fin,FairGeoMedia* media)
 {
   // Reads the geometry from file
   if (!media) { return kFALSE; }
@@ -92,14 +94,14 @@ Bool_t EsbGeoCave::read(std::fstream& fin,FairGeoMedia* media)
   return rc;
 }
 
-void EsbGeoCave::addRefNodes()
+void GeoCave::addRefNodes()
 {
   // Adds the reference node
   FairGeoNode* volu=getVolume(name);
   if (volu) { masterNodes->Add(new FairGeoNode(*volu)); }
 }
 
-void EsbGeoCave::write(std::fstream& fout)
+void GeoCave::write(std::fstream& fout)
 {
   using namespace std;
   // Writes the geometry to file
@@ -115,7 +117,7 @@ void EsbGeoCave::write(std::fstream& fout)
   }
 }
 
-void EsbGeoCave::print()
+void GeoCave::print()
 {
   using namespace std;
 // Prints the geometry
@@ -130,4 +132,5 @@ void EsbGeoCave::print()
   }
 }
 
+}
 }

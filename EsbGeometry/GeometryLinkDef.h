@@ -13,10 +13,11 @@
 #pragma link C++ nestedclasses;
 #pragma link C++ nestedtypedef;
 
-//~ #pragma link C++ namespace esbroot+;
+#pragma link C++ namespace esbroot+;
+#pragma link C++ namespace esbroot::geometry+;
 
-#pragma link C++ class esbroot::EsbWCDetector+;
-#pragma link C++ class esbroot::EsbCave+;
-#pragma link C++ class esbroot::EsbGeoCave+;
+#pragma link C++ class esbroot::geometry::WCDetector+;
+#pragma link C++ class esbroot::geometry::Cave+;
+#pragma link C++ class esbroot::geometry::GeoCave+;
 
 #endif

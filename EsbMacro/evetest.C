@@ -25,7 +25,7 @@ void evetest(void)
 	exit(0);
 
 	for(int a = 0; a < mctrack_arr->GetEntries(); ++a) {
-		EsbMCTrack *mctrack = (EsbMCTrack*) mctrack_arr->At(a);
+		auto *mctrack = (data::MCTrack*) mctrack_arr->At(a);
 		if(mctrack->GetPdgCode() == 50000050) continue; //cherenkov photon
 		cout << a << " " 
 			<< mctrack->GetPdgCode() << " "
@@ -38,7 +38,7 @@ void evetest(void)
 
 
 	for(int a = 0; a < detpoint_arr->GetEntries(); ++a) {
-		EsbWCDetectorPoint *detpoint = (EsbWCDetectorPoint*) detpoint_arr->At(a);
+		auto *detpoint = (data::WCDetectorPoint*) detpoint_arr->At(a);
 		//~ cout << a << " " 
 			//~ << mctrack->GetPdgCode() << " "
 			//~ << mctrack->GetMotherId() << " "

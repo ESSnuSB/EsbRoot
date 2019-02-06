@@ -11,8 +11,9 @@
 // -----                    EsbCave  file                               -----
 // -----                Created 26/03/14  by M. Al-Turany              -----
 // -------------------------------------------------------------------------
-#include "EsbCave.h"
-#include "EsbGeoCave.h"                // for EsbGeoCave
+#include "EsbGeometry/Cave.h"
+#include "EsbGeometry/GeoCave.h"                // for EsbGeoCave
+
 #include "FairGeoInterface.h"           // for FairGeoInterface
 #include "FairGeoLoader.h"              // for FairGeoLoader
 #include "FairGeoNode.h"                // for FairGeoNode
@@ -30,28 +31,31 @@
 //~ ClassImp(EsbCave)
 
 namespace esbroot {
+namespace geometry {
 
-void EsbCave::ConstructGeometry()
+void Cave::ConstructGeometry()
 {
   FairGeoLoader* loader=FairGeoLoader::Instance();
   FairGeoInterface* GeoInterface =loader->getGeoInterface();
-  EsbGeoCave* MGeo=new EsbGeoCave();
+  GeoCave* MGeo=new GeoCave();
   MGeo->setGeomFile(GetGeometryFileName());
   GeoInterface->addGeoModule(MGeo);
   Bool_t rc = GeoInterface->readSet(MGeo);
   if ( rc ) { MGeo->create(loader->getGeoBuilder()); }
  
 }
-EsbCave::EsbCave()
+
+Cave::Cave()
 :FairModule()
 {
 }
 
-EsbCave::~EsbCave()
+Cave::~Cave()
 {
 
 }
-EsbCave::EsbCave(const char* name,  const char* Title)
+
+Cave::Cave(const char* name,  const char* Title)
   : FairModule(name ,Title)
 {
   world[0] = 0;
@@ -59,4 +63,5 @@ EsbCave::EsbCave(const char* name,  const char* Title)
   world[2] = 0;
 }
 
+}
 }

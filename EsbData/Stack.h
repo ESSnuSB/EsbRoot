@@ -7,18 +7,18 @@
  ********************************************************************************/
 
 // -------------------------------------------------------------------------
-// -----                       EsbStack header file                 -----
+// -----                       Stack header file                 -----
 // -----                  M. Al-Turany   June 2014                     -----
 // -------------------------------------------------------------------------
 
 
-/** EsbStack.h
+/** Stack.h
  **
  ** This class handles the particle stack for the transport simulation.
  ** For the stack FILO functunality, it uses the STL stack. To store
  ** the tracks during transport, a TParticle array is used.
  ** At the end of the event, tracks satisfying the filter criteria
- ** are copied to a EsbMCTrack array, which is stored in the output.
+ ** are copied to a MCTrack array, which is stored in the output.
  **
  ** The filtering criteria for the output tracks are:
  ** - primary tracks are stored in any case.
@@ -31,12 +31,12 @@
  **/
 
 
-#ifndef EsbStack_H
-#define EsbStack_H
+#ifndef ESBROOT_STACK_H
+#define ESBROOT_STACK_H 1
 
 #include "FairGenericStack.h"           // for FairGenericStack
 
-#include "EsbDetectorList.h"           // for DetectorId
+#include "EsbData/DetectorList.h"           // for DetectorId
 
 #include "Rtypes.h"                     // for Int_t, Double_t, Bool_t, etc
 #include "TMCProcess.h"                 // for TMCProcess
@@ -52,7 +52,9 @@ class FairLogger;
 
 namespace esbroot {
 
-class EsbStack : public FairGenericStack
+namespace data {
+
+class Stack : public FairGenericStack
 {
 
   public:
@@ -60,11 +62,11 @@ class EsbStack : public FairGenericStack
     /** Default constructor
      *param size  Estimated track number
      **/
-    EsbStack(Int_t size = 100);
+    Stack(Int_t size = 100);
 
 
     /** Destructor  **/
-    virtual ~EsbStack();
+    virtual ~Stack();
 
 
     /** Add a TParticle to the stack.
@@ -254,17 +256,15 @@ class EsbStack : public FairGenericStack
     /** Mark tracks for output using selection criteria  **/
     void SelectTracks();
 
-    EsbStack(const EsbStack&);
-    EsbStack& operator=(const EsbStack&);
+    Stack(const Stack&);
+    Stack& operator=(const Stack&);
 
-    ClassDef(EsbStack,2)
-
-
+    ClassDef(Stack,2)
 };
 
-}
+}//namespace data
 
-
+}//namespace esbroot
 
 
 #endif

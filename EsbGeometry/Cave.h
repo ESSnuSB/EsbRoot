@@ -12,30 +12,32 @@
 // -------------------------------------------------------------------------
 
 
-#ifndef Cave_H
-#define Cave_H
+#ifndef ESBROOT_ESBGEOMETRY_CAVE_H
+#define ESBROOT_ESBGEOMETRY_CAVE_H
 
 #include "FairModule.h"                 // for FairModule
 
 #include "Rtypes.h"                     // for EsbCave::Class, ClassDef, etc
 
 namespace esbroot {
+namespace geometry {
 
-class EsbCave : public FairModule
+class Cave : public FairModule
 {
   public:
-    EsbCave(const char* name, const char* Title="Exp Cave");
-    EsbCave();
-    virtual ~EsbCave();
+    Cave(const char* name, const char* Title="Exp Cave");
+    Cave();
+    virtual ~Cave();
     virtual void ConstructGeometry();
 
 
   private:
     Double_t world[3];
-    ClassDef(EsbCave,2) //PNDCaveSD
+    ClassDef(Cave,2) //PNDCaveSD
 };
 
 }
+}
 
-#endif //Cave_H
+#endif //ESBROOT_ESBGEOMETRY_GEOCAVE_H
 

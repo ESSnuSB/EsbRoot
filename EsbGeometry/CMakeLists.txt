@@ -12,8 +12,9 @@
 set(INCLUDE_DIRECTORIES
 ${BASE_INCLUDE_DIRECTORIES}
 #put here all directories where header files are located
-${CMAKE_SOURCE_DIR}/EsbGeometry
-${CMAKE_SOURCE_DIR}/EsbData
+${CMAKE_SOURCE_DIR}
+#${CMAKE_SOURCE_DIR}/EsbGeometry
+#${CMAKE_SOURCE_DIR}/EsbData
 #${CMAKE_SOURCE_DIR}/esb
 )
 
@@ -29,12 +30,18 @@ link_directories( ${LINK_DIRECTORIES})
 
 set(SRCS
 #Put here your sourcefiles
-EsbWCDetector.cxx
-EsbCave.cxx
-EsbGeoCave.cxx
+WCDetector.cxx
+Cave.cxx
+GeoCave.cxx
 )
 
-Set(LINKDEF EsbGeometryLinkDef.h)
+Set(HEADERS 
+	${CMAKE_SOURCE_DIR}/EsbGeometry/WCDetector.h
+	${CMAKE_SOURCE_DIR}/EsbGeometry/Cave.h
+	${CMAKE_SOURCE_DIR}/EsbGeometry/GeoCave.h
+)
+
+Set(LINKDEF ${CMAKE_SOURCE_DIR}/EsbGeometry/GeometryLinkDef.h)
 Set(LIBRARY_NAME EsbGeometry)
 Set(DEPENDENCIES
     Base EsbData

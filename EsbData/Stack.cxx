@@ -7,16 +7,16 @@
  ********************************************************************************/
 
 // -------------------------------------------------------------------------
-// -----                     EsbStack source file                   -----
+// -----                     Stack source file                   -----
 // -----                  M. Al-Turany   June 2014                     -----
 // -------------------------------------------------------------------------
 
-#include "EsbStack.h"
+#include "EsbData/Stack.h"
 
 #include "FairDetector.h"               // for FairDetector
 #include "FairLink.h"                   // for FairLink
 #include "FairMCPoint.h"                // for FairMCPoint
-#include "EsbMCTrack.h"                // for EsbMCTrack
+#include "EsbData/MCTrack.h"            // for MCTrack
 #include "FairRootManager.h"            // for FairRootManager
 #include "FairLogger.h"                 // for FairLogger, MESSAGE_ORIGIN
 
@@ -36,12 +36,14 @@ using std::pair;
 
 namespace esbroot {
 
+namespace data {
+
 // -----   Default constructor   -------------------------------------------
-EsbStack::EsbStack(Int_t size)
+Stack::Stack(Int_t size)
   : FairGenericStack(),
     fStack(),
     fParticles(new TClonesArray(TParticle::Class(), size)),
-    fTracks(new TClonesArray(EsbMCTrack::Class(), size)),
+    fTracks(new TClonesArray(MCTrack::Class(), size)),
     fStoreMap(),
     fStoreIter(),
     fIndexMap(),
@@ -65,7 +67,7 @@ EsbStack::EsbStack(Int_t size)
 
 
 // -----   Destructor   ----------------------------------------------------
-EsbStack::~EsbStack()
+Stack::~Stack()
 {
   if (fParticles) {
     fParticles->Delete();
@@ -78,7 +80,7 @@ EsbStack::~EsbStack()
 }
 // -------------------------------------------------------------------------
 
-void EsbStack::PushTrack(Int_t toBeDone, Int_t parentId, Int_t pdgCode,
+void Stack::PushTrack(Int_t toBeDone, Int_t parentId, Int_t pdgCode,
                           Double_t px, Double_t py, Double_t pz,
                           Double_t e, Double_t vx, Double_t vy, Double_t vz,
                           Double_t time, Double_t polx, Double_t poly,
@@ -97,7 +99,7 @@ void EsbStack::PushTrack(Int_t toBeDone, Int_t parentId, Int_t pdgCode,
 
 
 // -----   Virtual public method PushTrack   -------------------------------
-void EsbStack::PushTrack(Int_t toBeDone, Int_t parentId, Int_t pdgCode,
+void Stack::PushTrack(Int_t toBeDone, Int_t parentId, Int_t pdgCode,
                           Double_t px, Double_t py, Double_t pz,
                           Double_t e, Double_t vx, Double_t vy, Double_t vz,
                           Double_t time, Double_t polx, Double_t poly,
@@ -137,7 +139,7 @@ void EsbStack::PushTrack(Int_t toBeDone, Int_t parentId, Int_t pdgCode,
 
 
 // -----   Virtual method PopNextTrack   -----------------------------------
-TParticle* EsbStack::PopNextTrack(Int_t& iTrack)
+TParticle* Stack::PopNextTrack(Int_t& iTrack)
 {
 
   // If end of stack: Return empty pointer
@@ -166,7 +168,7 @@ TParticle* EsbStack::PopNextTrack(Int_t& iTrack)
 
 
 // -----   Virtual method PopPrimaryForTracking   --------------------------
-TParticle* EsbStack::PopPrimaryForTracking(Int_t iPrim)
+TParticle* Stack::PopPrimaryForTracking(Int_t iPrim)
 {
 
   // Get the iPrimth particle from the fStack TClonesArray. This
@@ -174,16 +176,16 @@ TParticle* EsbStack::PopPrimaryForTracking(Int_t iPrim)
 
   // Test for index
   if (iPrim < 0 || iPrim >= fNPrimaries) {
-    fLogger->Fatal(MESSAGE_ORIGIN, "EsbStack: Primary index out of range! %i ", iPrim );
-    Fatal("EsbStack::PopPrimaryForTracking", "Index out of range");
+    fLogger->Fatal(MESSAGE_ORIGIN, "Stack: Primary index out of range! %i ", iPrim );
+    Fatal("Stack::PopPrimaryForTracking", "Index out of range");
   }
 
   // Return the iPrim-th TParticle from the fParticle array. This should be
   // a primary.
   TParticle* part = (TParticle*)fParticles->At(iPrim);
   if ( ! (part->GetMother(0) < 0) ) {
-    fLogger->Fatal(MESSAGE_ORIGIN, "EsbStack:: Not a primary track! %i ",iPrim);
-    Fatal("EsbStack::PopPrimaryForTracking", "Not a primary track");
+    fLogger->Fatal(MESSAGE_ORIGIN, "Stack:: Not a primary track! %i ",iPrim);
+    Fatal("Stack::PopPrimaryForTracking", "Not a primary track");
   }
 
   return part;
@@ -194,12 +196,12 @@ TParticle* EsbStack::PopPrimaryForTracking(Int_t iPrim)
 
 
 // -----   Virtual public method GetCurrentTrack   -------------------------
-TParticle* EsbStack::GetCurrentTrack() const
+TParticle* Stack::GetCurrentTrack() const
 {
   TParticle* currentPart = GetParticle(fCurrentTrack);
   if ( ! currentPart) {
-    fLogger->Warning(MESSAGE_ORIGIN,"EsbStack: Current track not found in stack!");
-    Warning("EsbStack::GetCurrentTrack", "Track not found in stack");
+    fLogger->Warning(MESSAGE_ORIGIN,"Stack: Current track not found in stack!");
+    Warning("Stack::GetCurrentTrack", "Track not found in stack");
   }
   return currentPart;
 }
@@ -208,7 +210,7 @@ TParticle* EsbStack::GetCurrentTrack() const
 
 
 // -----   Public method AddParticle   -------------------------------------
-void EsbStack::AddParticle(TParticle* oldPart)
+void Stack::AddParticle(TParticle* oldPart)
 {
   TClonesArray& array = *fParticles;
   TParticle* newPart = new(array[fIndex]) TParticle(*oldPart);
@@ -221,10 +223,10 @@ void EsbStack::AddParticle(TParticle* oldPart)
 
 
 // -----   Public method FillTrackArray   ----------------------------------
-void EsbStack::FillTrackArray()
+void Stack::FillTrackArray()
 {
 
-  fLogger->Debug(MESSAGE_ORIGIN, "EsbStack: Filling MCTrack array...");
+  fLogger->Debug(MESSAGE_ORIGIN, "Stack: Filling MCTrack array...");
 
   // --> Reset index map and number of output tracks
   fIndexMap.clear();
@@ -238,15 +240,15 @@ void EsbStack::FillTrackArray()
 
     fStoreIter = fStoreMap.find(iPart);
     if (fStoreIter == fStoreMap.end() ) {
-      fLogger->Fatal(MESSAGE_ORIGIN, "EsbStack: Particle %i not found in storage map! ", iPart);
-      Fatal("EsbStack::FillTrackArray",
+      fLogger->Fatal(MESSAGE_ORIGIN, "Stack: Particle %i not found in storage map! ", iPart);
+      Fatal("Stack::FillTrackArray",
             "Particle not found in storage map.");
     }
     Bool_t store = (*fStoreIter).second;
 
     if (store) {
-      EsbMCTrack* track =
-        new( (*fTracks)[fNTracks]) EsbMCTrack(GetParticle(iPart));
+      MCTrack* track =
+        new( (*fTracks)[fNTracks]) MCTrack(GetParticle(iPart));
       fIndexMap[iPart] = fNTracks;
       // --> Set the number of points in the detectors for this track
       for (Int_t iDet=kEsbEsb; iDet<kSTOPHERE; iDet++) {
@@ -270,20 +272,20 @@ void EsbStack::FillTrackArray()
 
 
 // -----   Public method UpdateTrackIndex   --------------------------------
-void EsbStack::UpdateTrackIndex(TRefArray* detList)
+void Stack::UpdateTrackIndex(TRefArray* detList)
 {
 
-  fLogger->Debug(MESSAGE_ORIGIN, "EsbStack: Updating track indizes...");
+  fLogger->Debug(MESSAGE_ORIGIN, "Stack: Updating track indizes...");
   Int_t nColl = 0;
 
   // First update mother ID in MCTracks
   for (Int_t i=0; i<fNTracks; i++) {
-    EsbMCTrack* track = (EsbMCTrack*)fTracks->At(i);
+    MCTrack* track = (MCTrack*)fTracks->At(i);
     Int_t iMotherOld = track->GetMotherId();
     fIndexIter = fIndexMap.find(iMotherOld);
     if (fIndexIter == fIndexMap.end()) {
-      fLogger->Fatal(MESSAGE_ORIGIN, "EsbStack: Particle index %i not found in dex map! ", iMotherOld);
-      Fatal("EsbStack::UpdateTrackIndex", "Particle index not found in map");
+      fLogger->Fatal(MESSAGE_ORIGIN, "Stack: Particle index %i not found in dex map! ", iMotherOld);
+      Fatal("Stack::UpdateTrackIndex", "Particle index not found in map");
     }
     track->SetMotherId( (*fIndexIter).second );
   }
@@ -315,8 +317,8 @@ void EsbStack::UpdateTrackIndex(TRefArray* detList)
 
         fIndexIter = fIndexMap.find(iTrack);
         if (fIndexIter == fIndexMap.end()) {
-          fLogger->Fatal(MESSAGE_ORIGIN, "EsbStack: Particle index %i not found in index map! ", iTrack);
-          Fatal("EsbStack::UpdateTrackIndex", "Particle index not found in map");
+          fLogger->Fatal(MESSAGE_ORIGIN, "Stack: Particle index %i not found in index map! ", iTrack);
+          Fatal("Stack::UpdateTrackIndex", "Particle index not found in map");
         }
         point->SetTrackID((*fIndexIter).second);
         point->SetLink(FairLink("MCTrack", (*fIndexIter).second));
@@ -331,7 +333,7 @@ void EsbStack::UpdateTrackIndex(TRefArray* detList)
 
 
 // -----   Public method Reset   -------------------------------------------
-void EsbStack::Reset()
+void Stack::Reset()
 {
   fIndex = 0;
   fCurrentTrack = -1;
@@ -346,7 +348,7 @@ void EsbStack::Reset()
 
 
 // -----   Public method Register   ----------------------------------------
-void EsbStack::Register()
+void Stack::Register()
 {
   FairRootManager::Instance()->Register("MCTrack", "Stack", fTracks,kTRUE);
 }
@@ -355,9 +357,9 @@ void EsbStack::Register()
 
 
 // -----   Public method Print  --------------------------------------------
-void EsbStack::Print(Int_t iVerbose) const
+void Stack::Print(Int_t iVerbose) const
 {
-  cout << "-I- EsbStack: Number of primaries        = "
+  cout << "-I- Stack: Number of primaries        = "
        << fNPrimaries << endl;
   cout << "              Total number of particles  = "
        << fNParticles << endl;
@@ -365,7 +367,7 @@ void EsbStack::Print(Int_t iVerbose) const
        << fNTracks << endl;
   if (iVerbose) {
     for (Int_t iTrack=0; iTrack<fNTracks; iTrack++) {
-      ((EsbMCTrack*) fTracks->At(iTrack))->Print(iTrack);
+      ((MCTrack*) fTracks->At(iTrack))->Print(iTrack);
     }
   }
 }
@@ -374,7 +376,7 @@ void EsbStack::Print(Int_t iVerbose) const
 
 
 // -----   Public method AddPoint (for current track)   --------------------
-void EsbStack::AddPoint(DetectorId detId)
+void Stack::AddPoint(DetectorId detId)
 {
   Int_t iDet = detId;
 // cout << "Add point for Detektor" << iDet << endl;
@@ -387,7 +389,7 @@ void EsbStack::AddPoint(DetectorId detId)
 
 
 // -----   Public method AddPoint (for arbitrary track)  -------------------
-void EsbStack::AddPoint(DetectorId detId, Int_t iTrack)
+void Stack::AddPoint(DetectorId detId, Int_t iTrack)
 {
   if ( iTrack < 0 ) { return; }
   Int_t iDet = detId;
@@ -401,7 +403,7 @@ void EsbStack::AddPoint(DetectorId detId, Int_t iTrack)
 
 
 // -----   Virtual method GetCurrentParentTrackNumber   --------------------
-Int_t EsbStack::GetCurrentParentTrackNumber() const
+Int_t Stack::GetCurrentParentTrackNumber() const
 {
   TParticle* currentPart = GetCurrentTrack();
   if ( currentPart ) { return currentPart->GetFirstMother(); }
@@ -412,11 +414,11 @@ Int_t EsbStack::GetCurrentParentTrackNumber() const
 
 
 // -----   Public method GetParticle   -------------------------------------
-TParticle* EsbStack::GetParticle(Int_t trackID) const
+TParticle* Stack::GetParticle(Int_t trackID) const
 {
   if (trackID < 0 || trackID >= fNParticles) {
-    fLogger->Debug(MESSAGE_ORIGIN, "EsbStack: Particle index %i out of range.",trackID);
-    Fatal("EsbStack::GetParticle", "Index out of range");
+    fLogger->Debug(MESSAGE_ORIGIN, "Stack: Particle index %i out of range.",trackID);
+    Fatal("Stack::GetParticle", "Index out of range");
   }
   return (TParticle*)fParticles->At(trackID);
 }
@@ -425,7 +427,7 @@ TParticle* EsbStack::GetParticle(Int_t trackID) const
 
 
 // -----   Private method SelectTracks   -----------------------------------
-void EsbStack::SelectTracks()
+void Stack::SelectTracks()
 {
 
   // --> Clear storage map
@@ -485,6 +487,8 @@ void EsbStack::SelectTracks()
 }
 // -------------------------------------------------------------------------
 
-}
+}//namespace data
 
-//~ ClassImp(EsbStack)
+}//namespace esbroot
+
+//~ ClassImp(Stack)

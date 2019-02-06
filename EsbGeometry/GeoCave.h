@@ -13,8 +13,8 @@
 // -------------------------------------------------------------------------
 
 
-#ifndef MYGEOCAVE_H
-#define MYGEOCAVE_H
+#ifndef ESBROOT_ESBGEOMETRY_GEOCAVE_H
+#define ESBROOT_ESBGEOMETRY_GEOCAVE_H
 
 #include "FairGeoSet.h"                 // for FairGeoSet
 #include <iosfwd>                       // for fstream
@@ -26,22 +26,24 @@
 class FairGeoMedia;
 
 namespace esbroot {
+namespace geometry {
 
-class  EsbGeoCave : public FairGeoSet
+class GeoCave : public FairGeoSet
 {
   protected:
     TString name;
   public:
-    EsbGeoCave();
-    ~EsbGeoCave() {}
+    GeoCave();
+    ~GeoCave() {}
     const char* getModuleName(Int_t) {return name.Data();}
     Bool_t read(std::fstream&,FairGeoMedia*);
     void addRefNodes();
     void write(std::fstream&);
     void print();
-    ClassDef(EsbGeoCave,0) // Class for the geometry of CAVE
+    ClassDef(GeoCave,2) // Class for the geometry of CAVE
 };
 
 }
+}
 
-#endif  /* !PNDGEOCAVE_H */
+#endif  //ESBROOT_ESBGEOMETRY_ESBGEOCAVE_H

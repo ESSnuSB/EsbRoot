@@ -7,24 +7,24 @@
  ********************************************************************************/
 
 // -------------------------------------------------------------------------
-// -----                  EsbMCTrack header file                  -----
+// -----                  MCTrack header file                  -----
 // -----                  M. Al-Turany   June 2014                     -----
 // -------------------------------------------------------------------------
 
 
 
-/** EsbMCTrack.h
- ** Data class for storing Monte Carlo tracks processed by the EsbStack.
- ** A EsbMCTrack can be a primary track put into the simulation or a
+/** MCTrack.h
+ ** Data class for storing Monte Carlo tracks processed by the Stack.
+ ** A MCTrack can be a primary track put into the simulation or a
  ** secondary one produced by the transport through decay or interaction.
  **/
 
 
-#ifndef EsbMCTrack_H
-#define EsbMCTrack_H 1
+#ifndef ESBROOT_MCTRACK_H
+#define ESBROOT_MCTRACK_H 1
 
 #include "TObject.h"                    // for TObject
-#include "EsbDetectorList.h"         // for DetectorId
+#include "EsbData/DetectorList.h"               // for DetectorId
 #include "Rtypes.h"                     // for Double_t, Int_t, Double32_t, etc
 #include "TLorentzVector.h"             // for TLorentzVector
 #include "TMath.h"                      // for Sqrt
@@ -35,31 +35,33 @@
 
 namespace esbroot {
 
-class EsbMCTrack : public TObject
+namespace data {
+
+class MCTrack : public TObject
 {
 
   public:
 
 
     /**  Default constructor  **/
-    EsbMCTrack();
+    MCTrack();
 
 
     /**  Standard constructor  **/
-    EsbMCTrack(Int_t pdgCode, Int_t motherID, Double_t px, Double_t py,
+    MCTrack(Int_t pdgCode, Int_t motherID, Double_t px, Double_t py,
                 Double_t pz, Double_t x, Double_t y, Double_t z,
                 Double_t t, Int_t nPoints);
 
     /**  Copy constructor  **/
-    EsbMCTrack(const EsbMCTrack& track);
+    MCTrack(const MCTrack& track);
 
 
     /**  Constructor from TParticle  **/
-    EsbMCTrack(TParticle* particle);
+    MCTrack(TParticle* particle);
 
 
     /**  Destructor  **/
-    virtual ~EsbMCTrack();
+    virtual ~MCTrack();
 
 
     /**  Output to screen  **/
@@ -128,7 +130,7 @@ class EsbMCTrack : public TObject
     Int_t fNPoints;
 
 
-    ClassDef(EsbMCTrack,1);
+    ClassDef(MCTrack,1);
 
 };
 
@@ -136,31 +138,33 @@ class EsbMCTrack : public TObject
 
 // ==========   Inline functions   ========================================
 
-inline Double_t EsbMCTrack::GetEnergy() const
+inline Double_t MCTrack::GetEnergy() const
 {
   Double_t mass = GetMass();
   return TMath::Sqrt(mass*mass + fPx*fPx + fPy*fPy + fPz*fPz );
 }
 
 
-inline void EsbMCTrack::GetMomentum(TVector3& momentum)
+inline void MCTrack::GetMomentum(TVector3& momentum)
 {
   momentum.SetXYZ(fPx,fPy,fPz);
 }
 
 
-inline void EsbMCTrack::Get4Momentum(TLorentzVector& momentum)
+inline void MCTrack::Get4Momentum(TLorentzVector& momentum)
 {
   momentum.SetXYZT(fPx,fPy,fPz,GetEnergy());
 }
 
 
-inline void EsbMCTrack::GetStartVertex(TVector3& vertex)
+inline void MCTrack::GetStartVertex(TVector3& vertex)
 {
   vertex.SetXYZ(fStartX,fStartY,fStartZ);
 }
 
-}
+} //namespace data
+
+} //namespace esbroot
 
 
 
