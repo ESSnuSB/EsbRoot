@@ -2,7 +2,57 @@
 Software for physics simulation of ESSnuSB project
 
 # How to install
-1. Install FairSoft and FairRoot as described here:\
+## 0. Prepare the directory
+For example, we will install everything in ~/ESSnuSB/soft/ . Change the INSTALL_PATH variable if you want to put it somewhere else.
+```
+export INSTALL_PATH=~/ESSnuSB/soft/
+mkdir -p $INSTALL_PATH
+cd $INSTALL_PATH
+```
+We will put soures in $INSTALL_PATH/src
+```
+mkdir src
+cd src
+```
+## 1. Install FairSoft
+``` 
+git clone https://github.com/ESSnuSB/FairSoft.git FairSoft
+cd FairSoft
+./configure
+```
+In the configrue script chose:
+```
+1) GCC (on Linux)|| Intel Compiler (Linux) || CC (Solaris) || Portland Compiler || Clang (Mac OSX)
+1) No Debug Info|| Debug Info || Optimize || Optimize with Debug Info
+2) No (install FairMQOnly)|| Yes
+1) Yes (install Simulation engines and event generators)|| No
+2) Internet (install G4 additional files from internet)|| Don't install || Directory
+2) No (install the python bindings for ROOT and Geant4)|| Yes
+path: $INSTALL_PATH/fairsoft
+```
+Go get a cofee until it compiles.
+
+## 2. Install FairRoot
+Prepare the environment:
+```
+export SIMPATH=$INSTALL_PATH/fairsoft
+export PATH=$SIMPATH/bin:$PATH
+```
+Get FairRoot
+```
+cd $INSTALL_PATH/src
+gitclone https://github.com/FairRootGroup/FairRoot.git FairRoot
+```
+Build and install
+```
+cd FairRoot
+mkdir build
+cd build
+cmake-DCMAKE_INSTALL_PREFIX="$INSTALL_PATH/fairroot" ..
+make
+make install
+```
+
 http://essnusb.eu/docdbprivate/ShowDocument?docid=186 \
 
 **IMPORTANT:** Do **not** check-out specific versions of FairSoft and FairRoot as described in the slides above.
