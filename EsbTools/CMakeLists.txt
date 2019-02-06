@@ -25,7 +25,7 @@ Set(HEADERS
     ${CMAKE_SOURCE_DIR}/EsbTools/PMTubeGeoCreator.h
 )
 
-Set(LINKDEF ${CMAKE_SOURCE_DIR}/EsbTools/DataLinkDef.h)
+Set(LINKDEF ${CMAKE_SOURCE_DIR}/EsbTools/ToolsLinkDef.h)
 Set(LIBRARY_NAME EsbTools)
 Set(DEPENDENCIES EsbGeometry)
 

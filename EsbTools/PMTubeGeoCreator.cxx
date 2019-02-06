@@ -56,10 +56,7 @@ PMTubeGeoCreator::~PMTubeGeoCreator() { }
 TClonesArray* PMTubeGeoCreator::CreateGeometry()
 {
   TClonesArray* pmt_array = nullptr;
-  { 
-    geometry::PMTube pmtube;
-    pmt_array = new TClonesArray(pmtube.Class(), 1000);
-  }
+  pmt_array = new TClonesArray(geometry::PMTube::Class(), 1000);
 
   Int_t n_pmt = 0;
   // Create Barrel
