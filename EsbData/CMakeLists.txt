@@ -17,13 +17,18 @@ ${CMAKE_SOURCE_DIR}/EsbData
 link_directories( ${LINK_DIRECTORIES})
 
 set(SRCS
-EsbStack.cxx
-EsbMCTrack.cxx
-EsbWCDetectorPoint.cxx
+    Stack.cxx
+    MCTrack.cxx
+    WCDetectorPoint.cxx
 )
 
-Set(HEADERS )
-Set(LINKDEF EsbDataLinkDef.h)
+Set(HEADERS 
+    ${CMAKE_SOURCE_DIR}/Stack.h
+    ${CMAKE_SOURCE_DIR}/MCTrack.h
+    ${CMAKE_SOURCE_DIR}/WCDetectorPoint.h
+)
+
+Set(LINKDEF DataLinkDef.h)
 Set(LIBRARY_NAME EsbData)
 Set(DEPENDENCIES Base EG Physics Core)
 
