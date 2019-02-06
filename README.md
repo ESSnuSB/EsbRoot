@@ -2,7 +2,8 @@
 Software for physics simulation of ESSnuSB project
 
 # How to install
-http://essnusb.eu/docdbprivate/ShowDocument?docid=186
+This guide is heavily based on this talk: \
+http://essnusb.eu/docdbprivate/ShowDocument?docid=186 \
 
 ## 0. Prepare the directory
 For example, we will install everything in ~/ESSnuSB/soft/ . Change the INSTALL_PATH variable if you want to put it somewhere else.
@@ -32,7 +33,7 @@ In the configrue script chose:
 2) No (install the python bindings for ROOT and Geant4)|| Yes
 path: $INSTALL_PATH/fairsoft
 ```
-Go get a cofee until it compiles.
+Go get a cofee until it compiles. It takes a while.
 
 ## 2. Install FairRoot
 Prepare the environment:
