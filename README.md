@@ -2,6 +2,8 @@
 Software for physics simulation of ESSnuSB project
 
 # How to install
+http://essnusb.eu/docdbprivate/ShowDocument?docid=186
+
 ## 0. Prepare the directory
 For example, we will install everything in ~/ESSnuSB/soft/ . Change the INSTALL_PATH variable if you want to put it somewhere else.
 ```
@@ -41,56 +43,48 @@ export PATH=$SIMPATH/bin:$PATH
 Get FairRoot
 ```
 cd $INSTALL_PATH/src
-gitclone https://github.com/FairRootGroup/FairRoot.git FairRoot
+git clone https://github.com/ESSnuSB/FairRoot.git FairRoot
 ```
 Build and install
 ```
 cd FairRoot
 mkdir build
 cd build
-cmake-DCMAKE_INSTALL_PREFIX="$INSTALL_PATH/fairroot" ..
+cmake -DCMAKE_INSTALL_PREFIX="$INSTALL_PATH/fairroot" ..
 make
 make install
 ```
+Now FairRoot and Fairsoft should be installed in $INSTALL_PATH. Take a look
 
-http://essnusb.eu/docdbprivate/ShowDocument?docid=186 \
-
-**IMPORTANT:** Do **not** check-out specific versions of FairSoft and FairRoot as described in the slides above.
-
-That is, when installing FairSoft, ignore this line:
+## 3. Install EsbRoot
+Go to FairRoot install dir, source the config script and set FAIRROOTPATH:
 ```
-git checkout may18
-```
-When istalling FairRoot, ignore this line:
-```
-git checkout v-17.10d
-```
-This goes quite smoothly, but it might take a long time to compile everything. If it doesnt work on your GNU/Linux distro, try to do it in our virtual machine (worked out-of-the-box for me on Mint 18.x).
-
-2. Go to FairRoot install dir, source the config script and set FAIRROOTPATH: \
-cd [your FairRoot installation directory] \
-source bin/FairRootConfig.sh\
+cd $INSTALL_PATH/fairroot
+source bin/FairRootConfig.sh
 export FAIRROOTPATH="$PWD"
-
-3. compile ESSnuSB software\
-cd [directory which will contain EsbRoot/ directory] \
-git clone https://github.com/ESSnuSB/EsbRoot \
-cd EsbRoot/ \
-mkdir build \
-cd build \
-cmake .. \
+```
+Build EsbRoot
+```
+cd $INSTALL_PATH
+git clone https://github.com/ESSnuSB/EsbRoot
+cd EsbRoot
+mkdir build
+cd build
+cmake ..
 make
-
+```
 The software should now be compiled!
 
 # How to use
-1. Set up the environment \
-cd [EsbRoot directory]/build \
+1. Set up the environment
+```
+cd [EsbRoot directory]/build
 source config.sh
+```
 
 2. Try running macros
 Go to EsbMacro directory, try running:
-- ess_sim.C (root -l -b ess_sim.C) - this shoud produce evetest.root file which contains tracks and (Cherenkov) hits in a small cherenkov detector using muon as a primary track (for now).
+- ess_sim.C (```root -l -b ess_sim.C```) - this shoud produce evetest.root file which contains tracks and (Cherenkov) hits in a small cherenkov detector using muon as a primary track (for now).
 - evetest.C - read the evetest.root file and output some information.
 - diplay_event_ND.C - simple display of hits on walls of the detector
 - eventDisplay.C - full 3D event display, still not working properly
