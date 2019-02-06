@@ -5,8 +5,8 @@
  *              GNU Lesser General Public Licence (LGPL) version 3,             *  
  *                  copied verbatim in the file "LICENSE"                       *
  ********************************************************************************/
-#ifndef ESBWCDETECTORPOINT_H
-#define ESBWCDETECTORPOINT_H 1
+#ifndef ESBROOT_WCDETECTOR_POINT_H
+#define ESBROOT_WCDETECTOR_POINT_H 1
 
 
 #include "FairMCPoint.h"
@@ -16,13 +16,15 @@
 
 namespace esbroot {
 
-class EsbWCDetectorPoint : public FairMCPoint
+namespace data {
+
+class WCDetectorPoint : public FairMCPoint
 {
 
   public:
 
     /** Default constructor **/
-    EsbWCDetectorPoint();
+    WCDetectorPoint();
 
 
     /** Constructor with arguments
@@ -32,11 +34,11 @@ class EsbWCDetectorPoint : public FairMCPoint
      *@param mom      Momentum of track at entrance [GeV]
      *@param tof      Time since event start [ns]
      **/
-    EsbWCDetectorPoint(Int_t trackID, Int_t detID, TVector3 pos, TVector3 mom,
+    WCDetectorPoint(Int_t trackID, Int_t detID, TVector3 pos, TVector3 mom,
 		       Double_t tof);
     
     /** Destructor **/
-    virtual ~EsbWCDetectorPoint();
+    virtual ~WCDetectorPoint();
 
 
     Bool_t IsSortable() const { return kTRUE; }
@@ -49,12 +51,14 @@ class EsbWCDetectorPoint : public FairMCPoint
 
   private:
     /** Copy constructor **/
-    EsbWCDetectorPoint(const EsbWCDetectorPoint& point);
-    EsbWCDetectorPoint operator=(const EsbWCDetectorPoint& point);
+    WCDetectorPoint(const WCDetectorPoint& point);
+    WCDetectorPoint operator=(const WCDetectorPoint& point);
 
-    ClassDef(EsbWCDetectorPoint,2)
+    ClassDef(WCDetectorPoint,2)
 };
 
-}
+}//namespace data
+
+} //namespace esbroot
 
 #endif
