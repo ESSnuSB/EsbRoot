@@ -46,8 +46,8 @@ void display_event_ND(const Char_t* fileName="evetest.root", Int_t event=0)
   
   for (Int_t n = 0; n < nPhotons; n++) {
     
-    EsbWCDetectorPoint* photon = 
-      (EsbWCDetectorPoint*)photonArray->At(n);
+    auto photon = 
+      (data::WCDetectorPoint*)photonArray->At(n);
     
     const Double_t xP = photon->GetX();
     const Double_t yP = photon->GetY();

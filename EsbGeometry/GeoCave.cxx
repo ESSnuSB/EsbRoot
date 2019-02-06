@@ -38,7 +38,7 @@ namespace esbroot {
 
 namespace geometry {
 	
-WCDetectorCave::WCDetectorCave()
+GeoCave::GeoCave()
   : FairGeoSet(),
     name("cave")
 {
@@ -48,7 +48,7 @@ WCDetectorCave::WCDetectorCave()
   maxModules=1;
 }
 
-Bool_t WCDetectorCave::read(std::fstream& fin,FairGeoMedia* media)
+Bool_t GeoCave::read(std::fstream& fin,FairGeoMedia* media)
 {
   // Reads the geometry from file
   if (!media) { return kFALSE; }
@@ -94,14 +94,14 @@ Bool_t WCDetectorCave::read(std::fstream& fin,FairGeoMedia* media)
   return rc;
 }
 
-void WCDetectorCave::addRefNodes()
+void GeoCave::addRefNodes()
 {
   // Adds the reference node
   FairGeoNode* volu=getVolume(name);
   if (volu) { masterNodes->Add(new FairGeoNode(*volu)); }
 }
 
-void WCDetectorCave::write(std::fstream& fout)
+void GeoCave::write(std::fstream& fout)
 {
   using namespace std;
   // Writes the geometry to file
@@ -117,7 +117,7 @@ void WCDetectorCave::write(std::fstream& fout)
   }
 }
 
-void WCDetectorCave::print()
+void GeoCave::print()
 {
   using namespace std;
 // Prints the geometry

@@ -48,7 +48,7 @@ void Config()
    cout << "Geant4 has been created." << endl;
 
 /// create the Specific stack
-   EsbStack *stack = new EsbStack(1000);
+   data::Stack *stack = new data::Stack(1000);
    stack->StoreSecondaries(kTRUE);
    stack->SetMinPoints(0);
    geant4->SetStack(stack);

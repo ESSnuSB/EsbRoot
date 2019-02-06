@@ -12,8 +12,8 @@
 // -------------------------------------------------------------------------
 
 
-#ifndef ESBROOT_ESBGEOMETRY_GEOCAVE_H
-#define ESBROOT_ESBGEOMETRY_GEOCAVE_H
+#ifndef ESBROOT_ESBGEOMETRY_CAVE_H
+#define ESBROOT_ESBGEOMETRY_CAVE_H
 
 #include "FairModule.h"                 // for FairModule
 

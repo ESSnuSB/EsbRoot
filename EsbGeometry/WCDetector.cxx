@@ -69,7 +69,7 @@ WCDetector::WCDetector()
     fELoss(-1),
     fWCradius(wcRadius),
     fWChalflength(wcHalflength),
-    fWCDetectorPointCollection(new TClonesArray(EsbWCDetectorPoint::Class()))
+    fWCDetectorPointCollection(new TClonesArray(data::WCDetectorPoint::Class()))
 {
 }
 

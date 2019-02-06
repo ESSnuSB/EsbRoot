@@ -34,13 +34,13 @@ void ess_sim(TString outFileName = "evetest.root",
    fRun->SetMaterials("media.geo");
 
    // Add Passive Modules
-   FairModule *Cave= new EsbCave("CAVE");
+   FairModule *cave= new geometry::Cave("CAVE");
    //~ FairModule *Cave= new FairCave("CAVE");
-   Cave->SetGeometryFileName("cave.geo");
-   fRun->AddModule(Cave);
+   cave->SetGeometryFileName("cave.geo");
+   fRun->AddModule(cave);
 
    // Add Detectors
-   FairDetector *nearWc = new EsbWCDetector("NearWcDetector", 300, 500, kTRUE);
+   FairDetector *nearWc = new geometry::WCDetector("NearWcDetector", 300, 500, kTRUE);
    fRun->AddModule(nearWc);
 
    // Far Detector

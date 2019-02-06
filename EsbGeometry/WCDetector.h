@@ -19,7 +19,8 @@ class TClonesArray;
 //Inheritance: EsbWCDetector <- FairDetector <- FairModule <- TNamed
 
 namespace esbroot {
-class data::WCDetectorPoint;
+
+namespace data {class WCDetectorPoint;};
 
 namespace geometry {
 	class WCDetector: public FairDetector
@@ -102,8 +103,8 @@ namespace geometry {
 
 		TClonesArray*  fWCDetectorPointCollection;  //!
 
-		WCDetector(const EsbWCDetector&);
-		WCDetector& operator=(const EsbWCDetector&);
+		WCDetector(const WCDetector&);
+		WCDetector& operator=(const WCDetector&);
 
 		ClassDef(WCDetector,2)
 	};
