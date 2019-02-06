@@ -139,8 +139,6 @@ void WCDigitizer::Exec(Option_t* opt) {
       // Now we know that we have a hit
       pmt_charge++;
       pmt_time += photon->GetTime();
-
-      cout << pmt_charge << ", " << pmt_time << endl;
     } // end loop over photons
     
     // decide if we make a hit or not
