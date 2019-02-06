@@ -30,7 +30,7 @@ In the configrue script chose:
 2) No (install FairMQOnly)|| Yes
 1) Yes (install Simulation engines and event generators)|| No
 2) Internet (install G4 additional files from internet)|| Don't install || Directory
-2) No (install the python bindings for ROOT and Geant4)|| Yes
+1) Yes (install the python bindings for ROOT and Geant4)|| No
 path: $INSTALL_PATH/fairsoft
 ```
 Go get a cofee until it compiles. It takes a while.
