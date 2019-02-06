@@ -24,7 +24,7 @@
 #define ESBROOT_MCTRACK_H 1
 
 #include "TObject.h"                    // for TObject
-#include "DetectorList.h"               // for DetectorId
+#include "EsbData/DetectorList.h"               // for DetectorId
 #include "Rtypes.h"                     // for Double_t, Int_t, Double32_t, etc
 #include "TLorentzVector.h"             // for TLorentzVector
 #include "TMath.h"                      // for Sqrt
