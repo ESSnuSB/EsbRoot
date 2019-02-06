@@ -15,8 +15,8 @@
 /** Defines unique identifier for all Esb detectors system **/
 /** THis is needed for stack filtring **/
 
-#ifndef EsbDetectorList_H
-#define EsbDetectorList_H 1
+#ifndef ESBROOT_DETECTOR_LIST_H
+#define ESBROOT_DETECTOR_LIST_H 1
 
 namespace esbroot {
 	

@@ -16,9 +16,9 @@
 
 #pragma link C++ namespace esbroot;
 
-#pragma link C++ class esbroot::EsbStack+;
-#pragma link C++ class esbroot::EsbMCTrack+;
-#pragma link C++ class esbroot::EsbWCDetectorPoint+;
+#pragma link C++ class esbroot::Stack+;
+#pragma link C++ class esbroot::MCTrack+;
+#pragma link C++ class esbroot::WCDetectorPoint+;
 
 #endif
 
