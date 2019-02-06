@@ -37,8 +37,6 @@ WCDetectorPoint::~WCDetectorPoint() { }
 
 Int_t WCDetectorPoint::Compare(const TObject *obj) const {
   
-  cout << "In compare!" << endl;
-
   WCDetectorPoint* photonObj = (WCDetectorPoint*)obj;
   if(photonObj == 0)
     return 0;
