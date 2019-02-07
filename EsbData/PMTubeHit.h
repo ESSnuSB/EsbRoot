@@ -22,7 +22,7 @@ namespace data {
 /// center of the PMT, the radius, the energy signal and the time. There are
 /// thus many of the parameters in the class FairHit that are not defined. In
 /// the future one could even imagine to have the time structure of the
-/// signal. This is a test.
+/// signal.
 class PMTubeHit : public FairHit
 {
  public:
