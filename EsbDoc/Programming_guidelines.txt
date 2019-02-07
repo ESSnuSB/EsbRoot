@@ -67,8 +67,8 @@ Class names: CamelCase for class names. Words *always* start with capital letter
 e.g. EsbMCTrack -> MCTrack (but in esbroot::data namespace).
 Method names: CamelCase starting with capital letters
 Class member names start with f (e.g. int fMyInt) (f is "field")
-Standalone functions use CamelCase
-Local names use snake case (e.g. my_local_variable) radius
+Standalone functions use snake_case
+Local names use snake_case (e.g. my_local_variable) radius
 
 Getters and setters:
 Variable name: int fVar;
