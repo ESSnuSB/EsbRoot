@@ -7,6 +7,7 @@
 
 #include <FairTask.h>
 #include <TClonesArray.h>
+#include <TSpline.h>
 
 namespace esbroot {
 namespace digitizer {
@@ -36,6 +37,12 @@ class WCDigitizer : public FairTask
   ~WCDigitizer();
 
 
+  /// Setter for Quantum Efficiency spline
+  void SetQEffSpline(TSpline* spline) { fQEffSpline = spline; }
+
+  /// Getter for Quantum Efficiency spline
+  TSpline* GetQEffSpline() { return fQEffSpline; }
+
   /** Virtual method Init **/
   virtual InitStatus Init();
 
@@ -54,6 +61,7 @@ class WCDigitizer : public FairTask
   /** Output array with EsbPMThit(s) **/
   TClonesArray* fHitArray;        //!
 
+  TSpline* fQEffSpline;           //! Quantum Efficiency Spline
   /*
     Is this needed?
     WCDigitizer(const WCDigitizer&);

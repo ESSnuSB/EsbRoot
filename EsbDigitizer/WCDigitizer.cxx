@@ -1,7 +1,11 @@
 #include "WCDigitizer.h"
 
 #include <TClonesArray.h>
+#include <TSpline.h>
+#include <TRandom.h>
+
 #include <FairRootManager.h>
+
 #include "EsbData/WCDetectorPoint.h"
 #include "EsbGeometry/PMTube.h"
 #include "EsbData/PMTubeHit.h"
@@ -18,7 +22,8 @@ WCDigitizer::WCDigitizer() :
   FairTask(),
   fPhotonArray(nullptr),
   fPMTubeArray(nullptr),
-  fHitArray(nullptr)
+  fHitArray(nullptr),
+  fQEffSpline(nullptr)
 { 
 }
 // -------------------------------------------------------------------------
@@ -28,7 +33,8 @@ WCDigitizer::WCDigitizer(const char* name, TClonesArray* pmt_array, Int_t i_verb
   FairTask(name, i_verbose),
   fPhotonArray(nullptr),
   fPMTubeArray(pmt_array),
-  fHitArray(nullptr)
+  fHitArray(nullptr),
+  fQEffSpline(nullptr)
 { 
   fPMTubeArray->Sort();
 }
@@ -72,6 +78,22 @@ InitStatus WCDigitizer::Init() {
   // Create and register output array
   fHitArray = new TClonesArray(data::PMTubeHit::Class(), 1000);
   manager->Register("PMTubeHit", "WCDetector", fHitArray, kTRUE);
+
+  // Create the MEMPHYS spline if no other spline is given
+  if(!fQEffSpline) {
+
+    // Taken from MEMPHYS code StackingAction.cpp:
+    const Int_t nPoints = 20;
+    Double_t wavelength[nPoints] = 
+      { 280., 300., 320., 340., 360., 380., 400., 420., 440., 460.,  
+	480., 500., 520., 540., 560., 580., 600., 620., 640., 660.};
+    
+    Double_t qEfficiency[nPoints] =
+      { 0.00, .0139, .0854, .169,  .203,  .206,  .211,   .202,   .188,   .167, 
+	.140,  .116, .0806, .0432, .0265, .0146, .00756, .00508, .00158, 0.00};
+    
+    fQEffSpline = new TSpline3("q_eff", wavelength, qEfficiency, nPoints);
+  }
   
   cout << "-I- WCDigitizer: Intialisation successfull " << kSUCCESS<< endl;
   return kSUCCESS;
@@ -133,27 +155,73 @@ void WCDigitizer::Exec(Option_t* opt) {
 
       if(d_x*d_x + d_y*d_y + d_z*d_z > r*r)
 	continue; // photon id not hit PMT
-      
-      // Here we should check that the photon produces a hit (to be done)
-      
-      // Now we know that we have a hit
-      pmt_charge++;
-      pmt_time += photon->GetTime();
+
+      if(kFALSE) { // Old primitive diitization
+	
+	// Now we know that we have a hit
+	pmt_charge++;
+	pmt_time += photon->GetTime();
+      } else { 
+	// MEMPHYS like digitization, inspired/Taken from WCDigitizer.cpp
+	
+	// First check that the photon produces a photo electron
+
+	// Calculate wavelength:
+	// lambda = hc/E ~ 2*pi*200eV*nm / E (in eV)
+	const Double_t E = photon->GetP() * 1e9; // [eV]
+	const Double_t wavelength = TMath::TwoPi()*197.33/E; // [nm]
+	if(wavelength<fQEffSpline->GetXmin() ||
+	   wavelength>fQEffSpline->GetXmax())
+	  continue; // no photo electron
+	if(gRandom->Rndm()>fQEffSpline->Eval(wavelength))
+	  continue; // no photo electron
+	
+	// Now we know that we have a photo electron
+	pmt_charge++;
+	if(pmt_charge==1) { // first photo electron
+	  
+	  pmt_time = photon->GetTime();
+	} else {
+	  if(pmt_time > photon->GetTime())
+	    pmt_time = photon->GetTime();
+	}
+      }
     } // end loop over photons
     
-    // decide if we make a hit or not
-    if(pmt_time > 0) {
-      pmt_time /= pmt_charge; 
-      
-      new((*fHitArray)[n_pmt_hits]) 
-	data::PMTubeHit(pmt->GetX(), pmt->GetY(), pmt->GetZ(),
-			pmt->GetRadius(), pmt_charge, pmt_time);
-      n_pmt_hits++;
-    }
+    // decide if we make a digit or not
+    if(pmt_charge == 0)
+      continue;
 
+    if(kFALSE) { // primitive weighted average digitization
+      pmt_time /= pmt_charge; 
+    } else { // MEMPHYS Like digitization
+      
+      { // Smear the charge 
+	// Peter: I modified the code here to require that the final signal is
+	// > 0.1. One could instead have some threshold.
+	Double_t pmt_charge_smeared = 0;
+	do {
+	  pmt_charge_smeared = 
+	    gRandom->Gaus(pmt_charge, TMath::Sqrt(pmt_charge));
+	} while (pmt_charge_smeared < 0.1 );
+	pmt_charge = pmt_charge_smeared;
+      }
+      
+      const Double_t timingConstant = 1.890; // MEMPHYS (12"?)
+      const Double_t Q = (pmt_charge > 0.5) ? pmt_charge : 0.5;      
+      Double_t timingResolution = 0.33 + TMath::Sqrt(timingConstant / Q);
+      if (timingResolution < 0.58) 
+	timingResolution=0.58;
+      pmt_time += gRandom->Gaus(0, timingResolution);
+    }
+    
+    new((*fHitArray)[n_pmt_hits]) 
+      data::PMTubeHit(pmt->GetX(), pmt->GetY(), pmt->GetZ(),
+		      pmt->GetRadius(), pmt_charge, pmt_time);
+    n_pmt_hits++;
   } // end loop over PMTs
 }
-// -------------------------------------------------------------------------
-
+  // -------------------------------------------------------------------------
+  
 }
 }
