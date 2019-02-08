@@ -33,12 +33,14 @@ set(SRCS
 WCDetector.cxx
 Cave.cxx
 GeoCave.cxx
+PMTube.cxx
 )
 
 Set(HEADERS 
 	${CMAKE_SOURCE_DIR}/EsbGeometry/WCDetector.h
 	${CMAKE_SOURCE_DIR}/EsbGeometry/Cave.h
 	${CMAKE_SOURCE_DIR}/EsbGeometry/GeoCave.h
+	${CMAKE_SOURCE_DIR}/EsbGeometry/PMTube.h
 )
 
 Set(LINKDEF ${CMAKE_SOURCE_DIR}/EsbGeometry/GeometryLinkDef.h)

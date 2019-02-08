@@ -210,8 +210,13 @@ ENDIF(HAS_CXX11_SHAREDPOINTER)
 # the project's entire directory structure.
 add_subdirectory (EsbData)
 add_subdirectory (EsbGeometry)
+
 add_subdirectory (EsbGenerators)
-#add_subdirectory (esb) 
+add_subdirectory (EsbDigitizer)
+add_subdirectory (EsbTools)
+#add_subdirectory (EsbGenerators)
+#add_subdirectory (esb)
+
 #add_subdirectory (passive)
 #add_subdirectory (field)  
 

@@ -1,17 +1,8 @@
 /*
-#include <TFile.h>
-#include <TTree.h>
-#include <TError.h>
-#include <TMath.h>
-#include <TH2.h>
-#include <TStyle.h>
-#include <TEllipse.h>
-#include <TBox.h>
-#include <TLatex.h>
 
-#include <iostream>
+  This was the first version of the macro. 
+  It is recommended to use display_event_photons.C instead.
 
-using namespace std;
 */
 
 void display_event_ND(const Char_t* fileName="evetest.root", Int_t event=0)
