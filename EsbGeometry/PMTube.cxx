@@ -5,63 +5,65 @@
  *              GNU Lesser General Public Licence (LGPL) version 3,             *  
  *                  copied verbatim in the file "LICENSE"                       *
  ********************************************************************************/
-#include "EsbData/WCDetectorPoint.h"
+#include "EsbGeometry/PMTube.h"
+
+#include <cmath>
 
 #include <iostream>
 using std::cout;
 using std::endl;
 
 namespace esbroot {
-
-namespace data {
+namespace geometry {
 
 // -----   Default constructor   -------------------------------------------
-WCDetectorPoint::WCDetectorPoint()
-  : FairMCPoint()
+PMTube::PMTube()
+  : TObject(),
+    fX(std::nan("NI")),
+    fY(std::nan("NI")),
+    fZ(std::nan("NI")),
+    fRadius(std::nan("NI"))
 {
 }
 // -------------------------------------------------------------------------
 
 // -----   Standard constructor   ------------------------------------------
-WCDetectorPoint::WCDetectorPoint(Int_t trackID, Int_t detID,
-                                   TVector3 pos, TVector3 mom,
-                                   Double_t tof)
-  : FairMCPoint(trackID, detID, pos, mom, tof, 0, 0)
+PMTube::PMTube(Double_t x, Double_t y, Double_t z, Double_t r)
+  : TObject(),
+    fX(x),
+    fY(y),
+    fZ(z),
+    fRadius(r)
 {
 }
 // -------------------------------------------------------------------------
 
 // -----   Destructor   ----------------------------------------------------
-WCDetectorPoint::~WCDetectorPoint() { }
+PMTube::~PMTube() { }
 // -------------------------------------------------------------------------
-
-Int_t WCDetectorPoint::Compare(const TObject *obj) const {
   
-  WCDetectorPoint* photonObj = (WCDetectorPoint*)obj;
-  if(photonObj == 0)
+Int_t PMTube::Compare(const TObject *obj) const {
+  
+  PMTube* pmt_obj = (PMTube*)obj;
+  if(pmt_obj == 0)
     return 0;
 
-  if(fZ > photonObj->GetZ())
+  if(fZ > pmt_obj->GetZ())
     return 1;
-  else if(fZ < photonObj->GetZ())
+  else if(fZ < pmt_obj->GetZ())
     return -1;
   else
     return 0;
 }
 
 // -----   Public method Print   -------------------------------------------
-void WCDetectorPoint::Print(const Option_t* /*opt*/) const
+void PMTube::Print(const Option_t* /*opt*/) const
 {
-  cout << "-I- WCDetectorPoint: WCDetector point for track " << fTrackID
-       << " in detector " << fDetectorID << endl;
-  cout << "    Position (" << fX << ", " << fY << ", " << fZ
+  cout << "-I- PMTube: Radius: " << fRadius << " cm, Position (" << fX << ", " << fY << ", " << fZ
        << ") cm" << endl;
-  cout << "    Momentum (" << fPx << ", " << fPy << ", " << fPz
-       << ") GeV" << endl;
-  cout << "    Time " << fTime << " ns" << endl;
 }
 // -------------------------------------------------------------------------
 
-}//namespace data
 
-}//namespace esbroot
+}
+}

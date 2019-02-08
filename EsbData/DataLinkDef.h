@@ -19,6 +19,7 @@
 #pragma link C++ class esbroot::data::Stack+;
 #pragma link C++ class esbroot::data::MCTrack+;
 #pragma link C++ class esbroot::data::WCDetectorPoint+;
+#pragma link C++ class esbroot::data::PMTubeHit+;
 
 #endif
 

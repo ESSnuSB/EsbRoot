@@ -21,12 +21,14 @@ set(SRCS
     Stack.cxx
     MCTrack.cxx
     WCDetectorPoint.cxx
+    PMTubeHit.cxx
 )
 
 Set(HEADERS 
     ${CMAKE_SOURCE_DIR}/EsbData/Stack.h
     ${CMAKE_SOURCE_DIR}/EsbData/MCTrack.h
     ${CMAKE_SOURCE_DIR}/EsbData/WCDetectorPoint.h
+    ${CMAKE_SOURCE_DIR}/EsbData/PMTubeHit.h
 )
 
 Set(LINKDEF ${CMAKE_SOURCE_DIR}/EsbData/DataLinkDef.h)

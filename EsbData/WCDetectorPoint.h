@@ -46,6 +46,9 @@ class WCDetectorPoint : public FairMCPoint
     /// To be able to sort the photon hits according to their z position
     Int_t Compare(const TObject *obj) const;
     
+    /// Get the total momentum to easily calculate the wavelength
+    Double_t GetP() const { return TMath::Sqrt(fPx*fPx + fPy*fPy + fPz*fPz);}
+
     /** Output to screen **/
     virtual void Print(const Option_t* opt) const;
 
