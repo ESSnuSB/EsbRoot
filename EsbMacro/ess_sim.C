@@ -52,7 +52,22 @@ void ess_sim(TString outFileName = "evetest.root",
    fRun->SetGenerator(primGen);
 
    //~ FairParticleGenerator* partGen = new FairParticleGenerator(2212, 1, 0, 0, 1, 0, 0, 0);
-   FairParticleGenerator* partGen = new FairParticleGenerator(13, 1, 0, 0, 0.4, 0, 0, 150);
+   //FairParticleGenerator* partGen = new FairParticleGenerator(13, 1, 0, 0, 0.4, 0, 0, 150);
+   gSystem->Load("libGFwMsg");
+   gSystem->Load("libGFwReg");
+   gSystem->Load("libGFwAlg");
+   gSystem->Load("libGFwParDat");
+   gSystem->Load("libPhysics");
+   gSystem->Load("libGFwInt");
+   gSystem->Load("libGFwGHEP");
+   gSystem->Load("libxml2");
+   gSystem->Load("libTree");
+   gSystem->Load("libGFwEG");
+   gSystem->Load("libGFwNtp");
+   gSystem->Load("libHist");
+   gSystem->Load("libGFwNum");
+   gSystem->Load("libGFwUtl");
+   generators::GenieGenerator* partGen = new generators::GenieGenerator(14,200*1000*1000);
    primGen->AddGenerator(partGen);
 
    fRun->SetOutputFile(outFileName.Data()); // set output file
