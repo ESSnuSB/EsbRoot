@@ -35,6 +35,13 @@ GenieGenerator::~GenieGenerator()
 */
 Bool_t GenieGenerator::Init()
 {
+    // Initialize cross section xml data
+    // file to cross section should be set 
+    XSecSplineList * xspl = XSecSplineList::Instance();
+    std::string xmlfile = std::string(std::getenv("CSFILE"));
+    xspl->LoadFromXml(xmlfile, false);
+    unsetenv("GSPLOAD"); // if it is not unset, the cross sections cannot be read
+
     fmcj_driver = make_shared<GMCJDriver>();
 
     FluxInit();
@@ -44,13 +51,6 @@ Bool_t GenieGenerator::Init()
     fmcj_driver->UseSplines();
     fmcj_driver->ForceSingleProbScale();
 
-    // Initialize cross section xml data
-    // file to cross section should be set 
-    XSecSplineList * xspl = XSecSplineList::Instance();
-    std::string xmlfile = std::string(std::getenv("CSFILE"));
-    xspl->LoadFromXml(xmlfile, false);
-    unsetenv("GSPLOAD"); // if it is not unset, the cross sections cannot be read
-    
     fIsInit = true;
 
     return true; // No initialization checks done, return true
