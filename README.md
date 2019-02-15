@@ -1,5 +1,5 @@
 # EsbRoot
-Software for physics simulation of ESSnuSB project
+Software for physics simulation of ESSnuSB project. Test.
 
 # How to install
 This guide is heavily based on this talk: \
