@@ -88,6 +88,15 @@ global: esbroot
 local: foldername without Esb (EsbData -> data)
 e.g: esbroot::data::MCTrack
 
+using namespace somenamespace;
+directive is **forbidden** in headers and highly discouraged elsewhere. It can lead to poor code readability and unintentional shadowing of identifiers (i.e. there could be esbroot::SomeClass and std::SomeClass). If you must, please use *using* directive like this (this **must** all be in the body of a function).:
+using std::cout;
+using std::endl;
+cout << "I don't feel like writing std:: every time" << endl;
+
+The only explicitly allowed usage of "using namespace" directive is this (if used inside the body of a function):
+using namespace std::placeholders;
+
 Headerguards:
 #ifndef ESBROOT_DIRNAME_CLASSNAME_H
 #define ESBROOT_DIRNAME_CLASSNAME_H
