@@ -65,7 +65,8 @@ Bool_t GenieGenerator::ReadEvent(FairPrimaryGenerator* primGen)
     //flag indicates that an event has been generated
     Bool_t rc(false);
 
-    EventRecord* event = fmcj_driver->GenerateEvent();
+    //EventRecord* event = fmcj_driver->GenerateEvent();
+    shared_ptr<EventRecord> event(fmcj_driver->GenerateEvent());
     if(event!=nullptr)
     {
         TLorentzVector* v = event->Vertex();
@@ -83,7 +84,7 @@ Bool_t GenieGenerator::ReadEvent(FairPrimaryGenerator* primGen)
             }
         }
         
-        delete event;
+        //delete event;
     }
 
     return rc;

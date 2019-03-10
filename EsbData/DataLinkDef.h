@@ -21,5 +21,7 @@
 #pragma link C++ class esbroot::data::WCDetectorPoint+;
 #pragma link C++ class esbroot::data::PMTubeHit+;
 
+#pragma link C++ class esbroot::data::superfgd::detector::CubeHit+;
+
 #endif
 
