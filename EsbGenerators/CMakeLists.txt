@@ -2,6 +2,8 @@
 # the array .
 # The extension is already found.  Any number of sources could be listed here.
 
+message(STATUS "Using Genie : $ENV{GENIE}")
+
 set(INCLUDE_DIRECTORIES
     ${PYTHIA8_INCLUDE_DIR}
     ${SIMPATH}/include
