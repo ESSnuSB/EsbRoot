@@ -19,7 +19,7 @@ Const-correctness:
 Try to make things const if possible.
 
 Function parameters
-All input parameters are const&, with the exception of built-in types that may be passed by value. If there is more than one output, or it is a complex class, pass it as reference argument. In that case, function returns true if output is successfull, else it's false. Define empty OUT macro.
+All input parameters are const&, with the exception of built-in types that may be passed by value. If there is more than one output, or it is a complex class, pass it as reference argument. In that case, function returns true if output is successfull, else it's false. Use OUT comment for output variables.
 Example: bool CalculateThings(int const& start, int end, /*OUT*/ double& result1, /*OUT*/ double& result2)
 
 Pointers
