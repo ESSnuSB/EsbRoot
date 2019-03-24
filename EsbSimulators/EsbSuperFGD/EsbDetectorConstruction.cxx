@@ -1,14 +1,13 @@
 #include "EsbSimulators/EsbSuperFGD/EsbDetectorConstruction.h"
 
-#include "EsbData/EsbSuperFGD/EsbDetector/EsbFgdDetectorParameters.h"
 #include "EsbSimulators/EsbSuperFGD/EsbCubeSD.h"
+#include "EsbSimulators/EsbSuperFGD/EsbCubeParametrisation.h"
+#include "EsbSimulators/EsbSuperFGD/EsbFiberParametrisation.h"
+#include "EsbSimulators/EsbSuperFGD/EsbFiberSD.h"
+#include "EsbSimulators/EsbSuperFGD/EsbFgdStepAction.h"
+#include "EsbSimulators/EsbSuperFGD/EsbSlabParametrization.h"
 
-#include "Simulation/include/NFStepAction.hh"
-#include "Simulation/include/NFFiberSD.hh"
-
-#include "Simulation/include/NFSlabParametrisation.hh"
-#include "Simulation/include/NFCubeParametrisation.hh"
-#include "Simulation/include/NFFiberParametrisation.hh"
+#include "EsbData/EsbSuperFGD/EsbDetector/EsbFgdDetectorParameters.h"
 
 #include "G4NistManager.hh"
 #include "G4LogicalVolume.hh"

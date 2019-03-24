@@ -12,6 +12,12 @@
 
 using namespace std;
 
+#define THROW(msg)\
+        std::ostringstream strb; \
+        strb << msg << " file: " << __FILE__ << " line: " << __LINE__ << endl;\
+        cerr << strb.str() << endl;\
+        throw invalid_argument(strb.str()); \
+        
 namespace esbroot {
 
 namespace data {

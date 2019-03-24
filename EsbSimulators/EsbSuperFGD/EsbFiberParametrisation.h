@@ -1,5 +1,5 @@
-#ifndef ESBROOT_SIMULATION_SUPERFGD_CUBE_PARAMETRIZATION_H
-#define ESBROOT_SIMULATION_SUPERFGD_CUBE_PARAMETRIZATION_H 1
+#ifndef ESBROOT_SIMULATION_SUPERFGD_FIBER_PARAMETRIZATION_H
+#define ESBROOT_SIMULATION_SUPERFGD_FIBER_PARAMETRIZATION_H 1
 
 #include "globals.hh"
 #include "G4VPVParameterisation.hh"
@@ -24,34 +24,25 @@ namespace esbroot {
 namespace simulators {
 namespace superfgd {
 
-class CubeParametrisation :  public G4VPVParameterisation
+class FiberParametrisation :  public G4VPVParameterisation
 {
 public:
-
-    /** Default constructor **/
-    CubeParametrisation(G4double cube_X, G4int cube_X_N, G4double cube_Y, G4int cube_Y_N);
+     /** Default constructor **/
+    FiberParametrisation(G4double initialX, G4double spacing);
 
     /** Destructor **/
-    virtual ~CubeParametrisation();
+    virtual ~NFFibFiberParametrisationerParametrisation();
 
-    /** To ease the detector construction we make one cube and copy it
+    /** To ease the detector construction we make one fiber and copy it
      * this computes the position of the copy
-     *@param copyNo - the number of the copy from the original cube
+     *@param copyNo - the number of the copy from the original fiber
      *@param physVol - the physical volume
      **/
     void ComputeTransformation (const G4int copyNo,
                                 G4VPhysicalVolume* physVol) const;
-private:
-
-    
-    G4double fcube_X;
-    G4int fcube_X_N;
-
-    G4double fcube_Y;   
-    G4int fcube_Y_N;  
-    
-    std::vector<G4double> fxpos;
-    std::vector<G4double> fypos;
+private: 
+    G4double fSpacing;
+    G4double finitialX;           
 };
 
 }   //superfgd

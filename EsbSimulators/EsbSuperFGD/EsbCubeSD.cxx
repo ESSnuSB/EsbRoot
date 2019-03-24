@@ -1,7 +1,7 @@
 #include "EsbSimulators/EsbSuperFGD/EsbCubeSD.h"
 
 #include "EsbSimulators/EsbSuperFGD/EsbFgdRunManager.h"
-#include "Simulation/include/NFDetectorConstruction.hh"
+#include "EsbSimulators/EsbSuperFGD/EsbDetectorConstruction.h"
 
 namespace esbroot {
 namespace simulators {

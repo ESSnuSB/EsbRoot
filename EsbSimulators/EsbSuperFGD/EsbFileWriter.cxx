@@ -2,8 +2,8 @@
 
 #include "EsbSimulators/EsbSuperFGD/EsbFileWriter.h"
 
-#include "Simulation/include/NFRunManager.hh"
-#include "Simulation/include/NFDetectorConstruction.hh"
+#include "EsbSimulators/EsbSuperFGD/EsbFgdRunManager.h"
+#include "EsbSimulators/EsbSuperFGD/EsbDetectorConstruction.h"
 
 namespace esbroot {
 namespace simulators {
@@ -171,11 +171,11 @@ void FileWriter::SumStep(CubeHit* hit, DetectorParameters& dp)
 
 void FileWriter::AddVertexPos(double xpos, double ypos, double zpos)
 {
-    NFRunManager* man = dynamic_cast<NFRunManager*>(G4RunManager::GetRunManager());
+    FgdRunManager* man = dynamic_cast<FgdRunManager*>(G4RunManager::GetRunManager());
     G4VUserDetectorConstruction* g4dc = const_cast<G4VUserDetectorConstruction*>(man->GetUserDetectorConstruction());
-    DetectorConstruction* detector = dynamic_cast<DetectorConstruction*>(g4dc);
+    FgdDetectorConstruction* detector = dynamic_cast<FgdDetectorConstruction*>(g4dc);
 
-    DetectorParameters& dp = detector->getDetectorParams();
+    FgdDetectorParameters& dp = detector->GetDetectorParams();
 
     static double step_X  = dp.ParamAsDouble(DP::length_X) * dp.getLenghtUnit();
     static double step_Y  = dp.ParamAsDouble(DP::length_Y) * dp.getLenghtUnit();
