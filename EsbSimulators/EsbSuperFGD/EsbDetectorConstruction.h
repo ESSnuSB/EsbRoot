@@ -43,7 +43,7 @@ public:
     FgdDetectorParameters& GetDetectorParams(){return fdetector;}
 
 protected:
-    FgdDetectorParameters fdetector;
+    data::superfgd::detector::FgdDetectorParameters fdetector;
     void AddScintillatonProperties(G4Material* scintillator);
 };
 

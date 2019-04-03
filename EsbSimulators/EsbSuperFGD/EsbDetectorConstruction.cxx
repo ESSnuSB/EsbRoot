@@ -53,16 +53,16 @@ G4VPhysicalVolume* FgdDetectorConstruction::Construct()
   // Envelope parameters
   Double_t lunit =fdetector.getLenghtUnit();
 
-  Double_t cube_X = fdetector.ParamAsDouble(DP::length_X) * lunit;
-  Double_t cube_X_N = fdetector.ParamAsDouble(DP::number_cubes_X);
+  Double_t cube_X = fdetector.ParamAsDouble(data::superfgd::detector::DP::length_X) * lunit;
+  Double_t cube_X_N = fdetector.ParamAsDouble(data::superfgd::detector::DP::number_cubes_X);
   G4double lengthX =  cube_X * cube_X_N;
 
-  Double_t cube_Y = fdetector.ParamAsDouble(DP::length_Y) * lunit;
-  Double_t cube_Y_N = fdetector.ParamAsDouble(DP::number_cubes_Y);
+  Double_t cube_Y = fdetector.ParamAsDouble(data::superfgd::detector::DP::length_Y) * lunit;
+  Double_t cube_Y_N = fdetector.ParamAsDouble(data::superfgd::detector::DP::number_cubes_Y);
   G4double lengthY =  cube_Y * cube_Y_N;
 
-  Double_t cube_Z = fdetector.ParamAsDouble(DP::length_Z) * lunit;
-  Double_t cube_Z_N = fdetector.ParamAsDouble(DP::number_cubes_Z);
+  Double_t cube_Z = fdetector.ParamAsDouble(data::superfgd::detector::DP::length_Z) * lunit;
+  Double_t cube_Z_N = fdetector.ParamAsDouble(data::superfgd::detector::DP::number_cubes_Z);
   G4double lengthZ =  cube_Z * cube_Z_N;
   
 
@@ -161,8 +161,8 @@ G4VPhysicalVolume* FgdDetectorConstruction::Construct()
   //-------------------------------------------------------------------------
 
   // Fiber             ------------------------------------------------------
-  G4Material* fiberMaterial = nist->FindOrBuildMaterial(fdetector.ParamAsString(DP::fiber_g4material));
-  Double_t fiber_radius = fdetector.ParamAsDouble(DP::fiber_radius) * lunit;
+  G4Material* fiberMaterial = nist->FindOrBuildMaterial(fdetector.ParamAsString(data::superfgd::detector::DP::fiber_g4material));
+  Double_t fiber_radius = fdetector.ParamAsDouble(data::superfgd::detector::DP::fiber_radius) * lunit;
 
   G4VSolid* fiber_solid = 
       new G4Tubs("fiber_solid",
@@ -193,8 +193,8 @@ G4VPhysicalVolume* FgdDetectorConstruction::Construct()
 					     G4ThreeVector(0,0,0));
 
   //Initialize scintillator props
-  G4Material* scintillator = nist->FindOrBuildMaterial(fdetector.ParamAsString(DP::scintillator));
-  if(fdetector.ParamAsBool(DP::optPhotonOn))
+  G4Material* scintillator = nist->FindOrBuildMaterial(fdetector.ParamAsString(data::superfgd::detector::DP::scintillator));
+  if(fdetector.ParamAsBool(data::superfgd::detector::DP::optPhotonOn))
   {
     addScintillatonProperties(scintillator);
   };
@@ -240,7 +240,7 @@ G4VPhysicalVolume* FgdDetectorConstruction::Construct()
 
   //attach sensitive detector to cubes
   G4String cubeSDname = "/mydet/cubeSD";
-  NFCubeSD *cubeSD = new NFCubeSD(cubeSDname , DP::NF_DETECTOR_CUBE_SD);
+  NFCubeSD *cubeSD = new NFCubeSD(cubeSDname , data::superfgd::detector::DP::NF_DETECTOR_CUBE_SD);
   SDman->AddNewDetector(cubeSD);
   logic_Ext_Cube->SetSensitiveDetector(cubeSD);
 
@@ -258,12 +258,12 @@ G4VPhysicalVolume* FgdDetectorConstruction::Construct()
   //-------------------------------------------------------------------------
   // Magnetic field
   //-------------------------------------------------------------------------
-  if (fdetector.existsParam(DP::magField)) 
+  if (fdetector.existsParam(data::superfgd::detector::DP::magField)) 
   {
         cout << "InMagneticField" << endl;
-        G4double magField_X = fdetector.ParamAsDouble(DP::magField_X) * CLHEP::tesla;
-        G4double magField_Y = fdetector.ParamAsDouble(DP::magField_Y) * CLHEP::tesla;
-        G4double magField_Z = fdetector.ParamAsDouble(DP::magField_Z) * CLHEP::tesla;
+        G4double magField_X = fdetector.ParamAsDouble(data::superfgd::detector::DP::magField_X) * CLHEP::tesla;
+        G4double magField_Y = fdetector.ParamAsDouble(data::superfgd::detector::DP::magField_Y) * CLHEP::tesla;
+        G4double magField_Z = fdetector.ParamAsDouble(data::superfgd::detector::DP::magField_Z) * CLHEP::tesla;
 
         G4UniformMagField* magField = new G4UniformMagField(G4ThreeVector(magField_X,magField_Y,magField_Z));
         G4FieldManager* localFieldManager = G4TransportationManager::GetTransportationManager()->GetFieldManager();
@@ -277,7 +277,7 @@ G4VPhysicalVolume* FgdDetectorConstruction::Construct()
   //-------------------------------------------------------------------------
   // Visualization - Start
   //-------------------------------------------------------------------------
-  bool isDetailed = (fdetector.ParamAsInt(DP::visdetail) > 0);
+  bool isDetailed = (fdetector.ParamAsInt(data::superfgd::detector::DP::visdetail) > 0);
 
   if(!isDetailed)
   {

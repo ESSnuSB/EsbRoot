@@ -1,9 +1,9 @@
-#include <math.h>
-
 #include "EsbSimulators/EsbSuperFGD/EsbFileWriter.h"
 
 #include "EsbSimulators/EsbSuperFGD/EsbFgdRunManager.h"
 #include "EsbSimulators/EsbSuperFGD/EsbDetectorConstruction.h"
+
+#include <math.h>
 
 namespace esbroot {
 namespace simulators {
@@ -18,7 +18,7 @@ FileWriter::FileWriter(const char* filename, int compressionLevel):fverbose(fals
     ffile->SetCompressionLevel(compressionLevel);
 
     fhitsTree = make_shared<TTree>("hits", "G4 event hits");
-    fhitsTree->Branch(DP::NF_CUBE_HIT_BRANCH.c_str(), &fcubeHits);
+    fhitsTree->Branch(data::superfgd::detector::DP::NF_CUBE_HIT_BRANCH.c_str(), &fcubeHits);
 }
 
 FileWriter::~FileWriter() 
@@ -91,7 +91,7 @@ void FileWriter::AddCubeHit(CubeHit* hit)
     fcubeHits->addCubeHit(*hit);
 }
 
-void FileWriter::SumStep(CubeHit* hit, DetectorParameters& dp)
+void FileWriter::SumStep(CubeHit* hit, data::superfgd::detector::DetectorParameters& dp)
 {
     if(fverbose)
     {
@@ -103,13 +103,13 @@ void FileWriter::SumStep(CubeHit* hit, DetectorParameters& dp)
     //================================================================
     //    Retrive the cube position from the detector parameters
     //================================================================
-    static double step_X  = dp.ParamAsDouble(DP::length_X) * dp.getLenghtUnit();
-    static double step_Y  = dp.ParamAsDouble(DP::length_Y) * dp.getLenghtUnit();
-    static double step_Z  = dp.ParamAsDouble(DP::length_Z) * dp.getLenghtUnit();
+    static double step_X  = dp.ParamAsDouble(data::superfgd::detector::DP::length_X) * dp.getLenghtUnit();
+    static double step_Y  = dp.ParamAsDouble(data::superfgd::detector::DP::length_Y) * dp.getLenghtUnit();
+    static double step_Z  = dp.ParamAsDouble(data::superfgd::detector::DP::length_Z) * dp.getLenghtUnit();
 
-    static int bins_x = dp.ParamAsInt(DP::number_cubes_X);
-    static int bins_y = dp.ParamAsInt(DP::number_cubes_Y);
-    static int bins_z = dp.ParamAsInt(DP::number_cubes_Z);
+    static int bins_x = dp.ParamAsInt(data::superfgd::detector::DP::number_cubes_X);
+    static int bins_y = dp.ParamAsInt(data::superfgd::detector::DP::number_cubes_Y);
+    static int bins_z = dp.ParamAsInt(data::superfgd::detector::DP::number_cubes_Z);
 
     static double total_X = step_X * bins_x;
     static double total_Y = step_Y * bins_y;
@@ -177,13 +177,13 @@ void FileWriter::AddVertexPos(double xpos, double ypos, double zpos)
 
     FgdDetectorParameters& dp = detector->GetDetectorParams();
 
-    static double step_X  = dp.ParamAsDouble(DP::length_X) * dp.getLenghtUnit();
-    static double step_Y  = dp.ParamAsDouble(DP::length_Y) * dp.getLenghtUnit();
-    static double step_Z  = dp.ParamAsDouble(DP::length_Z) * dp.getLenghtUnit();
+    static double step_X  = dp.ParamAsDouble(data::superfgd::detector::DP::length_X) * dp.getLenghtUnit();
+    static double step_Y  = dp.ParamAsDouble(data::superfgd::detector::DP::length_Y) * dp.getLenghtUnit();
+    static double step_Z  = dp.ParamAsDouble(data::superfgd::detector::DP::length_Z) * dp.getLenghtUnit();
 
-    static int bins_x = dp.ParamAsInt(DP::number_cubes_X);
-    static int bins_y = dp.ParamAsInt(DP::number_cubes_Y);
-    static int bins_z = dp.ParamAsInt(DP::number_cubes_Z);
+    static int bins_x = dp.ParamAsInt(data::superfgd::detector::DP::number_cubes_X);
+    static int bins_y = dp.ParamAsInt(data::superfgd::detector::DP::number_cubes_Y);
+    static int bins_z = dp.ParamAsInt(data::superfgd::detector::DP::number_cubes_Z);
 
     static double total_X = step_X * bins_x;
     static double total_Y = step_Y * bins_y;

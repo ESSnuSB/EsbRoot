@@ -59,7 +59,7 @@ public:
      *@param hit - cube hit
      *@param dp - current detector parameters
      **/
-    void SumStep(CubeHit* hit, DetectorParameters& dp);
+    void SumStep(CubeHit* hit, data::superfgd::detector::DetectorParameters& dp);
 
     /** Write hit to external file **/
     void WriteHit();

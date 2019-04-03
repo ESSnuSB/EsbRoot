@@ -184,7 +184,7 @@ G4LogicalVolume* ND280CubeScintConstructor::GetPiece(void)
     
   // Define the volume of plastic scintillator as sensitive detector
   G4String cubeSDname = "/mydet/cubeSD";
-  CubeSD *cubeSD = new CubeSD(cubeSDname, DP::SUPER_FGD_CUBE_SD);
+  CubeSD *cubeSD = new CubeSD(cubeSDname, data::superfgd::detector::DP::SUPER_FGD_CUBE_SD);
   SDman->AddNewDetector(cubeSD);
   scintVolume->SetSensitiveDetector( cubeSD ); 
 
