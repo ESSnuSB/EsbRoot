@@ -48,18 +48,18 @@ public:
     /** Add fiber hit to be process and written to file
      *@param hit - fiber hit
      **/
-    void AddFiberHit(FiberHit* hit);
+    void AddFiberHit(data::superfgd::detector::FiberHit* hit);
 
     /** Add CubeHit to be process and written to file
      *@param hit - cube hit
      **/
-    void AddCubeHit(CubeHit* hit);
+    void AddCubeHit(data::superfgd::detector::CubeHit* hit);
 
     /** Sum all the steps for the given cube in the event
      *@param hit - cube hit
      *@param dp - current detector parameters
      **/
-    void SumStep(CubeHit* hit, data::superfgd::detector::DetectorParameters& dp);
+    void SumStep(shared_ptr<data::superfgd::detector::CubeHit> hit, data::superfgd::detector::FgdDetectorParameters& dp);
 
     /** Write hit to external file **/
     void WriteHit();
@@ -80,10 +80,10 @@ private:
     shared_ptr<TFile> ffile;
     shared_ptr<TTree> fhitsTree;
 
-    shared_ptr<G4EventRecord>  fcubeHits;
-    std::vector<G4StepsRecord> fsteps;
-    std::map<int,std::vector<G4StepsRecord>> ftracks;
-    G4StepsRecord fvertex;
+    shared_ptr<data::superfgd::detector::G4EventRecord>  fcubeHits;
+    std::vector<data::superfgd::detector::G4StepsRecord> fsteps;
+    std::map<int,std::vector<data::superfgd::detector::G4StepsRecord>> ftracks;
+    data::superfgd::detector::G4StepsRecord fvertex;
 
     bool fverbose;
 };

@@ -10,13 +10,9 @@
 #include <TGeoVolume.h>
 #include <sstream>
 
-using namespace std;
+#include "EsbTools/EsbDefines.h"
 
-#define THROW(msg)\
-        std::ostringstream strb; \
-        strb << msg << " file: " << __FILE__ << " line: " << __LINE__ << endl;\
-        cerr << strb.str() << endl;\
-        throw invalid_argument(strb.str()); \
+using namespace std;
         
 namespace esbroot {
 

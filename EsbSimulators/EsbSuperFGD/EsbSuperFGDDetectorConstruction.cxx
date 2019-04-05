@@ -35,7 +35,7 @@ G4VPhysicalVolume* SuperFGDDetectorConstruction::Construct()
 
     G4String nameSuperFGD1 = fSuperFGDConstructor1->GetName();
 
-    Double_t lunit = fdetector.getLenghtUnit();
+    Double_t lunit = fdetector.GetLenghtUnit();
     Double_t cube_X = fdetector.ParamAsDouble(data::superfgd::detector::DP::length_X) * lunit;
 
     Double_t cube_X_N = fdetector.ParamAsDouble(data::superfgd::detector::DP::number_cubes_X);

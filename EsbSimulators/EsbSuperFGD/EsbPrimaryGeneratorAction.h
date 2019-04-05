@@ -4,11 +4,10 @@
 #include "G4VUserPrimaryGeneratorAction.hh"
 #include "G4ParticleGun.hh"
 #include "globals.hh"
-#include "PhysicsList.hh"
 
 #include "G4ParticleDefinition.hh"
 #include "Framework/GHEP/GHepParticle.h"
-#include "CLHEP/Units/GlobalPhysicalConstants.h"
+#include "CLHEP/Units/PhysicalConstants.h"
 
 #include "Framework/Ntuple/NtpMCEventRecord.h"
 #include <TFile.h>
@@ -30,7 +29,7 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
      *@param eventsFile - file containing the generated events to read from
      *@param phys - physical list of the allowed events and particle types
      **/
-    PrimaryGeneratorAction(std::string eventsFile, PhysicsList* phys);
+    PrimaryGeneratorAction(std::string eventsFile);
 
     /** Destructor **/
     virtual ~PrimaryGeneratorAction();
@@ -75,9 +74,6 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 
     /** verbose mode **/
     bool fverboseMode;
-
-    /** Physics list of the allowed particles and events **/
-    PhysicsList* fphys;
 
     /** Total number of events **/
     int fchainNEvents;

@@ -1,4 +1,4 @@
-#include "Simulation/include/NFParticleGunPrimaryGenerator.hh"
+#include "EsbSimulators/EsbSuperFGD/EsbParticleGunPrimaryGenerator.h"
 #include "G4ParticleTable.hh"
 #include "G4ParticleDefinition.hh"
 #include "Randomize.hh"

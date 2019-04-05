@@ -15,6 +15,8 @@
 
 #include <G4Tubs.hh>
 
+#include "EsbTools/EsbDefines.h"
+
 namespace esbroot {
 namespace simulators {
 namespace superfgd {

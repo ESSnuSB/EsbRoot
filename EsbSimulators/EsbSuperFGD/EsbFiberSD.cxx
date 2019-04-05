@@ -8,7 +8,7 @@ namespace superfgd {
 FiberSD::FiberSD(G4String name)
     :G4VSensitiveDetector(name), fverbose(false)
 {
-    fhitBuffer = = make_shared<FiberHit>(); 
+    fhitBuffer = = make_shared<data::superfgd::detector::FiberHit>(); 
 }
 
 FiberSD::~FiberSD()
@@ -72,7 +72,7 @@ G4bool FiberSD::ProcessHits(G4Step* aStep,G4TouchableHistory* ROHist)
     }
     else if(fverbose)
     {
-        cout    << "NFFileWriter is nullptr in " 
+        cout    << "FileWriter is nullptr in " 
                 << __FILE__ << " " 
                 << __LINE__ << endl;
     }

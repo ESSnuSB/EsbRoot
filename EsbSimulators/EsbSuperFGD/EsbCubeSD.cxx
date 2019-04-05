@@ -10,7 +10,7 @@ namespace superfgd {
 CubeSD::CubeSD(G4String name, G4String detector_sd_type)
     :G4VSensitiveDetector(name),fverbose(false), fdetector_sd_type(detector_sd_type) 
 {
-    fhitBuffer =  = make_shared<CubeHit>();
+    fhitBuffer =  make_shared<data::superfgd::detector::CubeHit>();
 }
 
 CubeSD::~CubeSD()
@@ -35,14 +35,14 @@ This is done to be more memory efficient for large simulations.
 G4bool CubeSD::ProcessTotalHits(G4Step* aStep,G4TouchableHistory* ROHist)
 {
     if(fverbose)
-        cout << "NFCubeSD::ProcessHitsSuperFGD " << endl;
+        cout << "CubeSD::ProcessHitsSuperFGD " << endl;
 
     //==========================================================================
     //              Get Runmanager and detector to analyze the step data
     //==========================================================================
     FgdRunManager* man = dynamic_cast<FgdRunManager*>(G4RunManager::GetRunManager());
     G4VUserDetectorConstruction* g4dc = const_cast<G4VUserDetectorConstruction*>(man->GetUserDetectorConstruction());
-    NFDetectorConstruction* detector = dynamic_cast<NFDetectorConstruction*>(g4dc);
+    FgdDetectorConstruction* detector = dynamic_cast<FgdDetectorConstruction*>(g4dc);
     if(detector==nullptr) 
         return false;
 
@@ -75,7 +75,7 @@ G4bool CubeSD::ProcessTotalHits(G4Step* aStep,G4TouchableHistory* ROHist)
     
     if(man!=nullptr)
     {
-        fwriter = man->getFileWriter();
+        fwriter = man->GetFileWriter();
     }
 
     //================================================================
@@ -84,34 +84,34 @@ G4bool CubeSD::ProcessTotalHits(G4Step* aStep,G4TouchableHistory* ROHist)
     if(fwriter!=nullptr)
     {
         if(fverbose)
-             cout<<" ======  NFCubeSD:fverbose ====="<< __FILE__ << " " << __LINE__ << endl;
+             cout<<" ======  CubeSD:fverbose ====="<< __FILE__ << " " << __LINE__ << endl;
 
-        fhitBuffer->setEdep(edep);
-        fhitBuffer->setNonIonizingEnergyDeposit(nonIon);
+        fhitBuffer->SetEdep(edep);
+        fhitBuffer->SetNonIonizingEnergyDeposit(nonIon);
 
-        fhitBuffer->setHitPostion(hitPosition.x(), hitPosition.y(), hitPosition.z());
-        fhitBuffer->setPostHitPostion(postHitPosition.x(), postHitPosition.y(), postHitPosition.z());
-        fhitBuffer->setKinEnergy(kineticEnergy);
-        fhitBuffer->setHitMomentum(momentum.x(), momentum.y(), momentum.z());
+        fhitBuffer->SetHitPostion(hitPosition.x(), hitPosition.y(), hitPosition.z());
+        fhitBuffer->SetPostHitPostion(postHitPosition.x(), postHitPosition.y(), postHitPosition.z());
+        fhitBuffer->SetKinEnergy(kineticEnergy);
+        fhitBuffer->SetHitMomentum(momentum.x(), momentum.y(), momentum.z());
 
-        fhitBuffer->setTime(time);
-        fhitBuffer->setPostTime(postTime);
-        fhitBuffer->setTracklength(trackLength);
+        fhitBuffer->SetTime(time);
+        fhitBuffer->SetPostTime(postTime);
+        fhitBuffer->SetTracklength(trackLength);
 
-        fhitBuffer->setTrackId(trackID);
-        fhitBuffer->setParentId(parentID);
-        fhitBuffer->setPdg(pdg);
-        fhitBuffer->setCharge(charge);
+        fhitBuffer->SetTrackId(trackID);
+        fhitBuffer->SetParentId(parentID);
+        fhitBuffer->SetPdg(pdg);
+        fhitBuffer->SetCharge(charge);
 
         //================================================================
         //     Check in which cube is the step position and accumulate it
         //================================================================
-        NFDetectorParameters& dp = detector->getDetectorParams();
-        f_writer->sumStep(fhitBuffer, dp);
+        data::superfgd::detector::FgdDetectorParameters& dp = detector->GetDetectorParams();
+        fwriter->SumStep(fhitBuffer, dp);
     }
     else if(fverbose)
     {
-        cout    << "NFFileWriter is nullptr in " 
+        cout    << "FileWriter is nullptr in " 
                 << __FILE__ << " " 
                 << __LINE__ << endl;
     }

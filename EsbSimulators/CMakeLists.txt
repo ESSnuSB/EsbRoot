@@ -40,6 +40,6 @@ Set(HEADERS
 )
 
 Set(LIBRARY_NAME EsbSimulators)
-Set(DEPENDENCIES Base EG Physics Core)
+Set(DEPENDENCIES Base EG Physics Core EsbTools)
 
 GENERATE_LIBRARY()

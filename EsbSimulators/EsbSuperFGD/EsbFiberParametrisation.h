@@ -31,7 +31,7 @@ public:
     FiberParametrisation(G4double initialX, G4double spacing);
 
     /** Destructor **/
-    virtual ~NFFibFiberParametrisationerParametrisation();
+    virtual ~FiberParametrisation();
 
     /** To ease the detector construction we make one fiber and copy it
      * this computes the position of the copy

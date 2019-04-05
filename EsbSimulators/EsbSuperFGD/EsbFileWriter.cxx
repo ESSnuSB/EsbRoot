@@ -11,7 +11,7 @@ namespace superfgd {
 
 FileWriter::FileWriter(const char* filename, int compressionLevel):fverbose(false)
 {
-    fcubeHits = make_shared<G4EventRecord>();
+    fcubeHits = make_shared<data::superfgd::detector::G4EventRecord>();
 
     // open output file
     ffile = make_shared<TFile>(filename, "RECREATE", "NF Geant4 Simulation Hits");
@@ -57,41 +57,41 @@ void FileWriter::AddGHepParticle(GHepParticle* p)
     }
 }
 
-void FileWriter::AddFiberHit(NFFiberHit* hit)
+void FileWriter::AddFiberHit(data::superfgd::detector::FiberHit* hit)
 {
     // Fibers are not required, info is only gathered from the
     // cubes
     if(fverbose)
     {
-        cout<<" =============  NFFileWriter ============" << endl;
+        cout<<" =============  FileWriter ============" << endl;
         cout<<" Adding hit " << endl;
-        cout<<" FiberCopyNo" << hit->getfiberCopyNo() << endl;
-        cout<<" Momentum:X " << hit->getHitMomentum().x() << endl;
-        cout<<" Momentum:Y " << hit->getHitMomentum().y() << endl;
-        cout<<" Momentum:Z " << hit->getHitMomentum().z() << endl;
-        cout<<" Pdg " << hit->getPdg() << endl;
+        cout<<" FiberCopyNo" << hit->GetfiberCopyNo() << endl;
+        cout<<" Momentum:X " << hit->GetHitMomentum().x() << endl;
+        cout<<" Momentum:Y " << hit->GetHitMomentum().y() << endl;
+        cout<<" Momentum:Z " << hit->GetHitMomentum().z() << endl;
+        cout<<" Pdg " << hit->GetPdg() << endl;
         cout<<" ========================================" << endl;
     }
 }
 
-void FileWriter::AddCubeHit(CubeHit* hit)
+void FileWriter::AddCubeHit(data::superfgd::detector::CubeHit* hit)
 {
     if(fverbose)
     {
-        cout<<" =============  NFFileWriter ============" << endl;
+        cout<<" =============  FileWriter ============" << endl;
         cout<<" Adding hit " << endl;
-        cout<<" CubeCopyNo " << hit->getCubeCopyNo() << endl;
-        cout<<" Momentum:X " << hit->getHitMomentum().x() << endl;
-        cout<<" Momentum:Y " << hit->getHitMomentum().y() << endl;
-        cout<<" Momentum:Z " << hit->getHitMomentum().z() << endl;
-        cout<<" Pdg " << hit->getPdg() << endl;
+        cout<<" CubeCopyNo " << hit->GetCubeCopyNo() << endl;
+        cout<<" Momentum:X " << hit->GetHitMomentum().x() << endl;
+        cout<<" Momentum:Y " << hit->GetHitMomentum().y() << endl;
+        cout<<" Momentum:Z " << hit->GetHitMomentum().z() << endl;
+        cout<<" Pdg " << hit->GetPdg() << endl;
         cout<<" ========================================" << endl;
     }
 
     fcubeHits->addCubeHit(*hit);
 }
 
-void FileWriter::SumStep(CubeHit* hit, data::superfgd::detector::DetectorParameters& dp)
+void FileWriter::SumStep(shared_ptr<data::superfgd::detector::CubeHit> hit, data::superfgd::detector::FgdDetectorParameters& dp)
 {
     if(fverbose)
     {
@@ -103,9 +103,9 @@ void FileWriter::SumStep(CubeHit* hit, data::superfgd::detector::DetectorParamet
     //================================================================
     //    Retrive the cube position from the detector parameters
     //================================================================
-    static double step_X  = dp.ParamAsDouble(data::superfgd::detector::DP::length_X) * dp.getLenghtUnit();
-    static double step_Y  = dp.ParamAsDouble(data::superfgd::detector::DP::length_Y) * dp.getLenghtUnit();
-    static double step_Z  = dp.ParamAsDouble(data::superfgd::detector::DP::length_Z) * dp.getLenghtUnit();
+    static double step_X  = dp.ParamAsDouble(data::superfgd::detector::DP::length_X) * dp.GetLenghtUnit();
+    static double step_Y  = dp.ParamAsDouble(data::superfgd::detector::DP::length_Y) * dp.GetLenghtUnit();
+    static double step_Z  = dp.ParamAsDouble(data::superfgd::detector::DP::length_Z) * dp.GetLenghtUnit();
 
     static int bins_x = dp.ParamAsInt(data::superfgd::detector::DP::number_cubes_X);
     static int bins_y = dp.ParamAsInt(data::superfgd::detector::DP::number_cubes_Y);
@@ -115,54 +115,54 @@ void FileWriter::SumStep(CubeHit* hit, data::superfgd::detector::DetectorParamet
     static double total_Y = step_Y * bins_y;
     static double total_Z = step_Z * bins_z;
 
-    int bin_x = (hit->getHitPosition().X() + total_X/2)/step_X;
-    int bin_y = (hit->getHitPosition().Y() + total_Y/2)/step_Y;
-    int bin_z = (hit->getHitPosition().Z() + total_Z/2)/step_Z;
+    int bin_x = (hit->GetHitPosition().X() + total_X/2)/step_X;
+    int bin_y = (hit->GetHitPosition().Y() + total_Y/2)/step_Y;
+    int bin_z = (hit->GetHitPosition().Z() + total_Z/2)/step_Z;
 
-    G4StepsRecord step;
-    step.addPdg(hit->getPdg());
+    data::superfgd::detector::G4StepsRecord step;
+    step.addPdg(hit->GetPdg());
     step.setBinPosition(bin_x,bin_y,bin_z);
 
-    std::vector<G4StepsRecord>::iterator iter = std::find(fsteps.begin(), fsteps.end(),step);
+    std::vector<data::superfgd::detector::G4StepsRecord>::iterator iter = std::find(fsteps.begin(), fsteps.end(),step);
     if(iter==fsteps.end())
     {
-        step.accStartTime(hit->getTime());
-        step.accEndTime(hit->getPostTime());
-        step.accEdep(hit->getEdep());
-        step.accNonIon(hit->getNonIonizingEnergyDeposit());
-        step.accTrackLenght(hit->getTracklength());
-        step.addTrackId(hit->getTrackId());
-        step.addParentId(hit->getParentId());
-        //step.addPdg(hit->getPdg());
+        step.accStartTime(hit->GetTime());
+        step.accEndTime(hit->GetPostTime());
+        step.accEdep(hit->GetEdep());
+        step.accNonIon(hit->GetNonIonizingEnergyDeposit());
+        step.accTrackLenght(hit->GetTracklength());
+        step.addTrackId(hit->GetTrackId());
+        step.addParentId(hit->GetParentId());
+        //step.addPdg(hit->GetPdg());
         fsteps.push_back(step);
     }
     else
     {
-        G4StepsRecord& s = *iter;
-        s.accStartTime(hit->getTime());
-        s.accEndTime(hit->getPostTime());
-        s.accEdep(hit->getEdep());
-        s.accNonIon(hit->getNonIonizingEnergyDeposit());
-        s.accTrackLenght(hit->getTracklength());
-        s.addTrackId(hit->getTrackId());
-        s.addParentId(hit->getParentId());
-        s.addPdg(hit->getPdg());
+        data::superfgd::detector::G4StepsRecord& s = *iter;
+        s.accStartTime(hit->GetTime());
+        s.accEndTime(hit->GetPostTime());
+        s.accEdep(hit->GetEdep());
+        s.accNonIon(hit->GetNonIonizingEnergyDeposit());
+        s.accTrackLenght(hit->GetTracklength());
+        s.addTrackId(hit->GetTrackId());
+        s.addParentId(hit->GetParentId());
+        s.addPdg(hit->GetPdg());
     } 
 
-    int trackId = hit->getTrackId();
-    bool isCharged = hit->getCharge()!=0;
+    int trackId = hit->GetTrackId();
+    bool isCharged = hit->GetCharge()!=0;
     if(isCharged)
     {
-        std::map<int,std::vector<G4StepsRecord>>::iterator iterTrack = m_tracks.find(trackId);
+        std::map<int,std::vector<data::superfgd::detector::G4StepsRecord>>::iterator iterTrack = m_tracks.find(trackId);
         if(iterTrack!=m_tracks.end())
         {
-            std::vector<G4StepsRecord>& vec = iterTrack->second;
+            std::vector<data::superfgd::detector::G4StepsRecord>& vec = iterTrack->second;
             if(std::find(vec.begin(), vec.end(), step) == vec.end())
                 vec.push_back(step);
         }
         else
         {
-            std::vector<G4StepsRecord> cubesHitByParticle;
+            std::vector<data::superfgd::detector::G4StepsRecord> cubesHitByParticle;
             cubesHitByParticle.push_back(step);
             m_tracks[trackId]=cubesHitByParticle;
         }
@@ -177,9 +177,9 @@ void FileWriter::AddVertexPos(double xpos, double ypos, double zpos)
 
     FgdDetectorParameters& dp = detector->GetDetectorParams();
 
-    static double step_X  = dp.ParamAsDouble(data::superfgd::detector::DP::length_X) * dp.getLenghtUnit();
-    static double step_Y  = dp.ParamAsDouble(data::superfgd::detector::DP::length_Y) * dp.getLenghtUnit();
-    static double step_Z  = dp.ParamAsDouble(data::superfgd::detector::DP::length_Z) * dp.getLenghtUnit();
+    static double step_X  = dp.ParamAsDouble(data::superfgd::detector::DP::length_X) * dp.GetLenghtUnit();
+    static double step_Y  = dp.ParamAsDouble(data::superfgd::detector::DP::length_Y) * dp.GetLenghtUnit();
+    static double step_Z  = dp.ParamAsDouble(data::superfgd::detector::DP::length_Z) * dp.GetLenghtUnit();
 
     static int bins_x = dp.ParamAsInt(data::superfgd::detector::DP::number_cubes_X);
     static int bins_y = dp.ParamAsInt(data::superfgd::detector::DP::number_cubes_Y);
@@ -199,7 +199,7 @@ void FileWriter::AddVertexPos(double xpos, double ypos, double zpos)
 void FileWriter::WriteHit()
 {
 
-    std::vector<G4StepsRecord>::iterator iter = fsteps.begin();
+    std::vector<data::superfgd::detector::G4StepsRecord>::iterator iter = fsteps.begin();
     while(iter!=fteps.end())
     {
         fcubeHits->addSumStep(*iter);

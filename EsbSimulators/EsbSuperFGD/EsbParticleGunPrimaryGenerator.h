@@ -9,7 +9,7 @@
 #include "EsbData/EsbSuperFGD/EsbDetector/EsbFgdDetectorParameters.h"
 #include "CLHEP/Units/SystemOfUnits.h"
 #include "CLHEP/Units/PhysicalConstants.h"
-#include "Utils/ParamReader.h"
+#include "EsbTools/ParamReader.h"
 
 #include <memory>
 
@@ -69,7 +69,7 @@ class ParticleGunPrimaryGenerator : public G4VUserPrimaryGeneratorAction
     data::superfgd::detector::FgdDetectorParameters fdetector;
 
     /** Utility class to read the gun configuration from a file **/
-    ParamReader fparamReader;
+    tools::ParamReader fparamReader;
 
     /** Geant particle gun**/
     shared_ptr<G4ParticleGun> fparticleGun;  

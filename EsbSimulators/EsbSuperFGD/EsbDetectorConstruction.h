@@ -40,7 +40,7 @@ public:
     virtual G4VPhysicalVolume* Construct();
 
     /** Get the currently set detector parameters **/
-    FgdDetectorParameters& GetDetectorParams(){return fdetector;}
+    data::superfgd::detector::FgdDetectorParameters& GetDetectorParams(){return fdetector;}
 
 protected:
     data::superfgd::detector::FgdDetectorParameters fdetector;

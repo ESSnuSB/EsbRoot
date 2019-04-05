@@ -24,11 +24,7 @@
 #include <iostream>
 #include <exception>
 
-#define THROW(msg)\
-        std::ostringstream strb; \
-        strb << msg << " file: " << __FILE__ << " line: " << __LINE__ << endl;\
-        cerr << strb.str() << endl;\
-        throw invalid_argument(strb.str()); \
+#include "EsbTools/EsbDefines.h"
    
 using namespace std;
 
@@ -36,8 +32,8 @@ namespace esbroot {
 namespace simulators {
 namespace superfgd {
 
-PrimaryGeneratorAction::PrimaryGeneratorAction(std::string eventsFile, PhysicsList* phys)
-: G4VUserPrimaryGeneratorAction(),feventsFile(eventsFile), fverboseMode(false), fphys(phys)
+PrimaryGeneratorAction::PrimaryGeneratorAction(std::string eventsFile)
+: G4VUserPrimaryGeneratorAction(),feventsFile(eventsFile), fverboseMode(false)
 {
     foldbuffer = new NtpMCEventRecord();
     fbuffer = new NtpMCEventRecord();
@@ -109,10 +105,6 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
       if ((p->Status() == kIStStableFinalState) && (p->Pdg() < 2000000000) &&
           (abs(p->Pdg()) != 12) && (abs(p->Pdg()) != 14) && (abs(p->Pdg()) != 16)) {
                 
-            // create new primaries and set them to the vertex
-            if (!fphys->IsDeffined(p->Pdg()) && (p->Pdg() < 1000000000)) {
-                 cout << "### Warning " << p->Name() << " - " << p->Pdg() << " is not defined ###" << endl;
-            }
             AddParticleToVertex(vertex, p);
 
             if(writer!=nullptr && p->Charge()!=0)

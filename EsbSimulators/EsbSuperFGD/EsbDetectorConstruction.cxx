@@ -39,8 +39,8 @@ FgdDetectorConstruction::FgdDetectorConstruction()
 FgdDetectorConstruction::FgdDetectorConstruction(std::string detectorFile)
   : G4VUserDetectorConstruction()
 {
-  fdetector.loadPartParams(detectorFile);
-  fdetector.createRootGeometry();
+  fdetector.LoadPartParams(detectorFile);
+  fdetector.CreateRootGeometry();
 }
 
 FgdDetectorConstruction::~FgdDetectorConstruction()
@@ -51,7 +51,7 @@ FgdDetectorConstruction::~FgdDetectorConstruction()
 G4VPhysicalVolume* FgdDetectorConstruction::Construct()
 {
   // Envelope parameters
-  Double_t lunit =fdetector.getLenghtUnit();
+  Double_t lunit =fdetector.GetLenghtUnit();
 
   Double_t cube_X = fdetector.ParamAsDouble(data::superfgd::detector::DP::length_X) * lunit;
   Double_t cube_X_N = fdetector.ParamAsDouble(data::superfgd::detector::DP::number_cubes_X);
@@ -144,7 +144,7 @@ G4VPhysicalVolume* FgdDetectorConstruction::Construct()
                         vacuum,          //its material
                         "Slab_LV");      //its name
 
-  NFSlabParametrisation* slabParam = new NFSlabParametrisation((-0.5*lengthZ + cube_Z/2) ,cube_Z);
+  SlabParametrisation* slabParam = new SlabParametrisation((-0.5*lengthZ + cube_Z/2) ,cube_Z);
     new G4PVParameterised("Slab_Placement",// their name
                         logicSlab,        // their logical volume
                         logicEnvDetector, // Mother logical volume
@@ -196,7 +196,7 @@ G4VPhysicalVolume* FgdDetectorConstruction::Construct()
   G4Material* scintillator = nist->FindOrBuildMaterial(fdetector.ParamAsString(data::superfgd::detector::DP::scintillator));
   if(fdetector.ParamAsBool(data::superfgd::detector::DP::optPhotonOn))
   {
-    addScintillatonProperties(scintillator);
+    AddScintillatonProperties(scintillator);
   };
 
   G4LogicalVolume* logic_Ext_Cube =                         
@@ -214,7 +214,7 @@ G4VPhysicalVolume* FgdDetectorConstruction::Construct()
                     0,                       //copy number
                     checkOverlaps);          //overlaps checking
 
-  NFCubeParametrisation* cubeParam = new NFCubeParametrisation(cube_X,cube_X_N,cube_Y,cube_Y_N);
+  CubeParametrisation* cubeParam = new CubeParametrisation(cube_X,cube_X_N,cube_Y,cube_Y_N);
     new G4PVParameterised("Cube_Placement",// their name
                         logic_Ext_Cube,   // their logical volume
                         logicSlab,        // Mother logical volume !!!
@@ -234,13 +234,13 @@ G4VPhysicalVolume* FgdDetectorConstruction::Construct()
 
   // attach sensitive detector to fibers
   G4String fiberSDname = "/mydet/fiberSD";
-  NFFiberSD *fiberSD = new NFFiberSD(fiberSDname);
+  FiberSD *fiberSD = new FiberSD(fiberSDname);
   SDman->AddNewDetector(fiberSD);
   logic_fiber->SetSensitiveDetector(fiberSD);
 
   //attach sensitive detector to cubes
   G4String cubeSDname = "/mydet/cubeSD";
-  NFCubeSD *cubeSD = new NFCubeSD(cubeSDname , data::superfgd::detector::DP::NF_DETECTOR_CUBE_SD);
+  CubeSD *cubeSD = new CubeSD(cubeSDname , data::superfgd::detector::DP::NF_DETECTOR_CUBE_SD);
   SDman->AddNewDetector(cubeSD);
   logic_Ext_Cube->SetSensitiveDetector(cubeSD);
 
@@ -249,7 +249,7 @@ G4VPhysicalVolume* FgdDetectorConstruction::Construct()
   //------------------------------------------------------------------
   
   // Don`t know, took it from basic/B1 example :P
-  NFStepAction* steppingAction = NFStepAction::Instance(); 
+  FgdStepAction* steppingAction = FgdStepAction::Instance(); 
   if(steppingAction!=nullptr && steppingAction!=0)
   {
     steppingAction->SetVolume(logicEnvDetector);
@@ -258,7 +258,7 @@ G4VPhysicalVolume* FgdDetectorConstruction::Construct()
   //-------------------------------------------------------------------------
   // Magnetic field
   //-------------------------------------------------------------------------
-  if (fdetector.existsParam(data::superfgd::detector::DP::magField)) 
+  if (fdetector.ExistsParam(data::superfgd::detector::DP::magField)) 
   {
         cout << "InMagneticField" << endl;
         G4double magField_X = fdetector.ParamAsDouble(data::superfgd::detector::DP::magField_X) * CLHEP::tesla;
