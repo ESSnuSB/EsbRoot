@@ -8,7 +8,7 @@ namespace superfgd {
 FiberSD::FiberSD(G4String name)
     :G4VSensitiveDetector(name), fverbose(false)
 {
-    fhitBuffer = = make_shared<data::superfgd::detector::FiberHit>(); 
+    fhitBuffer = make_shared<data::superfgd::detector::FiberHit>(); 
 }
 
 FiberSD::~FiberSD()
@@ -53,22 +53,22 @@ G4bool FiberSD::ProcessHits(G4Step* aStep,G4TouchableHistory* ROHist)
         if(fverbose)
              cout<<" ======  FiberSD:fverbose ====="<< __FILE__ << " " << __LINE__ << endl;
 
-        fhitBuffer->setEdep(edep);
+        fhitBuffer->SetEdep(edep);
 
-        fhitBuffer->setHitPostion(hitPosition.x(), hitPosition.y(), hitPosition.z());
-        fhitBuffer->setKinEnergy(kineticEnergy);
-        fhitBuffer->setHitMomentum(momentum.x(), momentum.y(), momentum.z());
+        fhitBuffer->SetHitPostion(hitPosition.x(), hitPosition.y(), hitPosition.z());
+        fhitBuffer->SetKinEnergy(kineticEnergy);
+        fhitBuffer->SetHitMomentum(momentum.x(), momentum.y(), momentum.z());
 
-        fhitBuffer->setfiberCopyNo(fiberCopyNo);
-        fhitBuffer->setslabCopyNo(slabCopyNo);
+        fhitBuffer->SetfiberCopyNo(fiberCopyNo);
+        fhitBuffer->SetslabCopyNo(slabCopyNo);
 
-        fhitBuffer->setTime(time);
+        fhitBuffer->SetTime(time);
 
-        fhitBuffer->setTrackId(trackID);
-        fhitBuffer->setParentId(parentID);
-        fhitBuffer->setPdg(pdg);
+        fhitBuffer->SetTrackId(trackID);
+        fhitBuffer->SetParentId(parentID);
+        fhitBuffer->SetPdg(pdg);
 
-        fwriter->AddFiberHit(m_hitBuffer);
+        fwriter->AddFiberHit(*fhitBuffer.get());
     }
     else if(fverbose)
     {
@@ -86,13 +86,13 @@ G4bool FiberSD::ProcessHits(G4Step* aStep,G4TouchableHistory* ROHist)
 
         G4cout << "*******************************  " << G4endl;
         G4cout << "             HIT                 " << G4endl;
-        G4cout << "  Total_Energy_Deposit           " << edep/eV << " eV"  << G4endl;
-        G4cout << "  Total_Energy_NonIoniziong      " << nonIon/eV << " eV"  << G4endl;
+        G4cout << "  Total_Energy_Deposit           " << edep/CLHEP::eV << " eV"  << G4endl;
+        G4cout << "  Total_Energy_NonIoniziong      " << nonIon/CLHEP::eV << " eV"  << G4endl;
         G4cout << "  Particle:                      " << particleName << G4endl;
         G4cout << "  Volume:                        " << thisVolume << G4endl;
-        G4cout << "  Energy (eV) :                  " << kineticEnergy/eV << G4endl;
+        G4cout << "  Energy (eV) :                  " << kineticEnergy/CLHEP::eV << G4endl;
         G4cout << "  POSITION (mm) :                " 
-         << hitPosition.x()/mm << " " << hitPosition.y()/mm << " " << hitPosition.z()/mm << G4endl;
+         << hitPosition.x()/CLHEP::mm << " " << hitPosition.y()/CLHEP::mm << " " << hitPosition.z()/CLHEP::mm << G4endl;
         G4cout << "*******************************" << G4endl;
     }
 

@@ -19,6 +19,29 @@
 #include "G4LossTableManager.hh"
 #include "G4EmSaturation.hh"
 
+#include "G4ComptonScattering.hh"
+#include "G4GammaConversion.hh"
+#include "G4PhotoElectricEffect.hh"
+
+#include "G4eMultipleScattering.hh"
+#include "G4hMultipleScattering.hh"
+
+#include "G4eIonisation.hh"
+#include "G4eBremsstrahlung.hh"
+#include "G4eplusAnnihilation.hh"
+
+#include "G4MuIonisation.hh"
+#include "G4MuBremsstrahlung.hh"
+#include "G4MuPairProduction.hh"
+
+#include "G4hIonisation.hh"
+#include "G4hBremsstrahlung.hh"
+#include "G4hPairProduction.hh"
+
+#include "G4ionIonisation.hh"
+
+#include "G4Decay.hh"
+
 namespace esbroot {
 namespace simulators {
 namespace superfgd {
@@ -163,34 +186,13 @@ void PhysicsList::ConstructIons()
     G4GenericIon::GenericIon();
 }
 
-#include "G4ComptonScattering.hh"
-#include "G4GammaConversion.hh"
-#include "G4PhotoElectricEffect.hh"
-
-#include "G4eMultipleScattering.hh"
-#include "G4hMultipleScattering.hh"
-
-#include "G4eIonisation.hh"
-#include "G4eBremsstrahlung.hh"
-#include "G4eplusAnnihilation.hh"
-
-#include "G4MuIonisation.hh"
-#include "G4MuBremsstrahlung.hh"
-#include "G4MuPairProduction.hh"
-
-#include "G4hIonisation.hh"
-#include "G4hBremsstrahlung.hh"
-#include "G4hPairProduction.hh"
-
-#include "G4ionIonisation.hh"
-
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void PhysicsList::ConstructEM()
 {
-  theParticleIterator->reset();
-  while( (*theParticleIterator)() ){
-    G4ParticleDefinition* particle = theParticleIterator->value();
+  _theParticleIterator->reset();
+  while( (*_theParticleIterator)() ){
+    G4ParticleDefinition* particle = _theParticleIterator->value();
     G4ProcessManager* pmanager = particle->GetProcessManager();
     G4String particleName = particle->GetParticleName();
     G4cout<< particle->GetParticleName()<<" "<<particle->GetPDGEncoding()<<G4endl;
@@ -247,15 +249,13 @@ void PhysicsList::ConstructEM()
   }
 }
 
-#include "G4Decay.hh"
-
 void PhysicsList::ConstructGeneral()
 {
   // Add Decay Process
   G4Decay* theDecayProcess = new G4Decay();
-  theParticleIterator->reset();
-  while( (*theParticleIterator)() ){
-    G4ParticleDefinition* particle = theParticleIterator->value();
+  _theParticleIterator->reset();
+  while( (*_theParticleIterator)() ){
+    G4ParticleDefinition* particle = _theParticleIterator->value();
     G4ProcessManager* pmanager = particle->GetProcessManager();
     if (theDecayProcess->IsApplicable(*particle)) {
       pmanager ->AddProcess(theDecayProcess);
@@ -268,9 +268,9 @@ void PhysicsList::ConstructGeneral()
 
 bool PhysicsList::IsDefined(G4int p)
 {
-    theParticleIterator->reset();
-    while( (*theParticleIterator)() ){
-        G4ParticleDefinition* particle = theParticleIterator->value();
+    _theParticleIterator->reset();
+    while( (*_theParticleIterator)() ){
+        G4ParticleDefinition* particle = _theParticleIterator->value();
         G4int pid = particle->GetPDGEncoding();
         if(p==pid) return true;
     }
@@ -284,10 +284,10 @@ void PhysicsList::AddVirtualScoringProcess() {
       = new G4ParallelWorldScoringProcess("ParaWorldScoringProc");
   theParallelWorldScoringProcess->SetParallelWorld("ParallelScoringWorld");
 
-  theParticleIterator->reset();
-  while( (*theParticleIterator)() )
+  _theParticleIterator->reset();
+  while( (*_theParticleIterator)() )
   {
-    G4ParticleDefinition* particle = theParticleIterator->value();
+    G4ParticleDefinition* particle = _theParticleIterator->value();
     if (!particle->IsShortLived() && particle->GetParticleName() != "gamma")
     {
       G4ProcessManager* pmanager = particle->GetProcessManager();
@@ -327,12 +327,12 @@ void PhysicsList::ConstructOp()
   G4EmSaturation* emSaturation = G4LossTableManager::Instance()->EmSaturation();
   theScintillationProcess->AddSaturation(emSaturation);
 
-  G4OpticalSurfaceModel themodel = unified;
-  theBoundaryProcess->SetModel(themodel);
+  //G4OpticalSurfaceModel themodel = unified;
+  //theBoundaryProcess->SetModel(themodel);
 
-  theParticleIterator->reset();
-  while( (*theParticleIterator)() ){
-    G4ParticleDefinition* particle = theParticleIterator->value();
+  _theParticleIterator->reset();
+  while( (*_theParticleIterator)() ){
+    G4ParticleDefinition* particle = _theParticleIterator->value();
     G4ProcessManager* pmanager = particle->GetProcessManager();
     G4String particleName = particle->GetParticleName();
     if (theCerenkovProcess->IsApplicable(*particle)) {

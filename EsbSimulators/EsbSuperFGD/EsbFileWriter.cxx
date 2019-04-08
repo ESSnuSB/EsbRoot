@@ -5,6 +5,8 @@
 
 #include <math.h>
 
+using namespace std;
+
 namespace esbroot {
 namespace simulators {
 namespace superfgd {
@@ -23,7 +25,7 @@ FileWriter::FileWriter(const char* filename, int compressionLevel):fverbose(fals
 
 FileWriter::~FileWriter() 
 {
-    ffile->WriteTObject(fhitsTree);
+    ffile->WriteTObject(fhitsTree.get());
     ffile->Close();
     std::cout << "Root file written.\n";
 }
@@ -49,15 +51,15 @@ void FileWriter::AddGHepParticle(GHepParticle* p)
 
         double angle = std::acos(pz/total)* (180 / PI);
 
-        fcubeHits->addCos(p->Pdg(), angle); // Add to map
-        fcubeHits->addCos(angle); // Add to know all angles
+        fcubeHits->AddCos(p->Pdg(), angle); // Add to map
+        fcubeHits->AddCos(angle); // Add to know all angles
 
-        fcubeHits->addMomentum(p->Pdg(), total); // Add to map
-        fcubeHits->addMomentum(total); // Add to all particle momentums
+        fcubeHits->AddMomentum(p->Pdg(), total); // Add to map
+        fcubeHits->AddMomentum(total); // Add to all particle momentums
     }
 }
 
-void FileWriter::AddFiberHit(data::superfgd::detector::FiberHit* hit)
+void FileWriter::AddFiberHit(data::superfgd::detector::FiberHit& hit)
 {
     // Fibers are not required, info is only gathered from the
     // cubes
@@ -65,33 +67,33 @@ void FileWriter::AddFiberHit(data::superfgd::detector::FiberHit* hit)
     {
         cout<<" =============  FileWriter ============" << endl;
         cout<<" Adding hit " << endl;
-        cout<<" FiberCopyNo" << hit->GetfiberCopyNo() << endl;
-        cout<<" Momentum:X " << hit->GetHitMomentum().x() << endl;
-        cout<<" Momentum:Y " << hit->GetHitMomentum().y() << endl;
-        cout<<" Momentum:Z " << hit->GetHitMomentum().z() << endl;
-        cout<<" Pdg " << hit->GetPdg() << endl;
+        cout<<" FiberCopyNo" << hit.GetfiberCopyNo() << endl;
+        cout<<" Momentum:X " << hit.GetHitMomentum().x() << endl;
+        cout<<" Momentum:Y " << hit.GetHitMomentum().y() << endl;
+        cout<<" Momentum:Z " << hit.GetHitMomentum().z() << endl;
+        cout<<" Pdg " << hit.GetPdg() << endl;
         cout<<" ========================================" << endl;
     }
 }
 
-void FileWriter::AddCubeHit(data::superfgd::detector::CubeHit* hit)
+void FileWriter::AddCubeHit(data::superfgd::detector::CubeHit& hit)
 {
     if(fverbose)
     {
         cout<<" =============  FileWriter ============" << endl;
         cout<<" Adding hit " << endl;
-        cout<<" CubeCopyNo " << hit->GetCubeCopyNo() << endl;
-        cout<<" Momentum:X " << hit->GetHitMomentum().x() << endl;
-        cout<<" Momentum:Y " << hit->GetHitMomentum().y() << endl;
-        cout<<" Momentum:Z " << hit->GetHitMomentum().z() << endl;
-        cout<<" Pdg " << hit->GetPdg() << endl;
+        cout<<" CubeCopyNo " << hit.GetCubeCopyNo() << endl;
+        cout<<" Momentum:X " << hit.GetHitMomentum().x() << endl;
+        cout<<" Momentum:Y " << hit.GetHitMomentum().y() << endl;
+        cout<<" Momentum:Z " << hit.GetHitMomentum().z() << endl;
+        cout<<" Pdg " << hit.GetPdg() << endl;
         cout<<" ========================================" << endl;
     }
 
-    fcubeHits->addCubeHit(*hit);
+    fcubeHits->AddCubeHit(hit);
 }
 
-void FileWriter::SumStep(shared_ptr<data::superfgd::detector::CubeHit> hit, data::superfgd::detector::FgdDetectorParameters& dp)
+void FileWriter::SumStep(data::superfgd::detector::CubeHit& hit, data::superfgd::detector::FgdDetectorParameters& dp)
 {
     if(fverbose)
     {
@@ -115,46 +117,46 @@ void FileWriter::SumStep(shared_ptr<data::superfgd::detector::CubeHit> hit, data
     static double total_Y = step_Y * bins_y;
     static double total_Z = step_Z * bins_z;
 
-    int bin_x = (hit->GetHitPosition().X() + total_X/2)/step_X;
-    int bin_y = (hit->GetHitPosition().Y() + total_Y/2)/step_Y;
-    int bin_z = (hit->GetHitPosition().Z() + total_Z/2)/step_Z;
+    int bin_x = (hit.GetHitPosition().X() + total_X/2)/step_X;
+    int bin_y = (hit.GetHitPosition().Y() + total_Y/2)/step_Y;
+    int bin_z = (hit.GetHitPosition().Z() + total_Z/2)/step_Z;
 
     data::superfgd::detector::G4StepsRecord step;
-    step.addPdg(hit->GetPdg());
-    step.setBinPosition(bin_x,bin_y,bin_z);
+    step.AddPdg(hit.GetPdg());
+    step.SetBinPosition(bin_x,bin_y,bin_z);
 
     std::vector<data::superfgd::detector::G4StepsRecord>::iterator iter = std::find(fsteps.begin(), fsteps.end(),step);
     if(iter==fsteps.end())
     {
-        step.accStartTime(hit->GetTime());
-        step.accEndTime(hit->GetPostTime());
-        step.accEdep(hit->GetEdep());
-        step.accNonIon(hit->GetNonIonizingEnergyDeposit());
-        step.accTrackLenght(hit->GetTracklength());
-        step.addTrackId(hit->GetTrackId());
-        step.addParentId(hit->GetParentId());
+        step.AccStartTime(hit.GetTime());
+        step.AccEndTime(hit.GetPostTime());
+        step.AccEdep(hit.GetEdep());
+        step.AccNonIon(hit.GetNonIonizingEnergyDeposit());
+        step.AccTrackLenght(hit.GetTracklength());
+        step.AddTrackId(hit.GetTrackId());
+        step.AddParentId(hit.GetParentId());
         //step.addPdg(hit->GetPdg());
         fsteps.push_back(step);
     }
     else
     {
         data::superfgd::detector::G4StepsRecord& s = *iter;
-        s.accStartTime(hit->GetTime());
-        s.accEndTime(hit->GetPostTime());
-        s.accEdep(hit->GetEdep());
-        s.accNonIon(hit->GetNonIonizingEnergyDeposit());
-        s.accTrackLenght(hit->GetTracklength());
-        s.addTrackId(hit->GetTrackId());
-        s.addParentId(hit->GetParentId());
-        s.addPdg(hit->GetPdg());
+        s.AccStartTime(hit.GetTime());
+        s.AccEndTime(hit.GetPostTime());
+        s.AccEdep(hit.GetEdep());
+        s.AccNonIon(hit.GetNonIonizingEnergyDeposit());
+        s.AccTrackLenght(hit.GetTracklength());
+        s.AddTrackId(hit.GetTrackId());
+        s.AddParentId(hit.GetParentId());
+        s.AddPdg(hit.GetPdg());
     } 
 
-    int trackId = hit->GetTrackId();
-    bool isCharged = hit->GetCharge()!=0;
+    int trackId = hit.GetTrackId();
+    bool isCharged = hit.GetCharge()!=0;
     if(isCharged)
     {
-        std::map<int,std::vector<data::superfgd::detector::G4StepsRecord>>::iterator iterTrack = m_tracks.find(trackId);
-        if(iterTrack!=m_tracks.end())
+        std::map<int,std::vector<data::superfgd::detector::G4StepsRecord>>::iterator iterTrack = ftracks.find(trackId);
+        if(iterTrack!=ftracks.end())
         {
             std::vector<data::superfgd::detector::G4StepsRecord>& vec = iterTrack->second;
             if(std::find(vec.begin(), vec.end(), step) == vec.end())
@@ -164,7 +166,7 @@ void FileWriter::SumStep(shared_ptr<data::superfgd::detector::CubeHit> hit, data
         {
             std::vector<data::superfgd::detector::G4StepsRecord> cubesHitByParticle;
             cubesHitByParticle.push_back(step);
-            m_tracks[trackId]=cubesHitByParticle;
+            ftracks[trackId]=cubesHitByParticle;
         }
     }
 }
@@ -175,7 +177,7 @@ void FileWriter::AddVertexPos(double xpos, double ypos, double zpos)
     G4VUserDetectorConstruction* g4dc = const_cast<G4VUserDetectorConstruction*>(man->GetUserDetectorConstruction());
     FgdDetectorConstruction* detector = dynamic_cast<FgdDetectorConstruction*>(g4dc);
 
-    FgdDetectorParameters& dp = detector->GetDetectorParams();
+    data::superfgd::detector::FgdDetectorParameters& dp = detector->GetDetectorParams();
 
     static double step_X  = dp.ParamAsDouble(data::superfgd::detector::DP::length_X) * dp.GetLenghtUnit();
     static double step_Y  = dp.ParamAsDouble(data::superfgd::detector::DP::length_Y) * dp.GetLenghtUnit();
@@ -193,23 +195,23 @@ void FileWriter::AddVertexPos(double xpos, double ypos, double zpos)
     int bin_y = (ypos + total_Y/2)/step_Y;
     int bin_z = (zpos + total_Z/2)/step_Z;
 
-    fvertex.setBinPosition(bin_x,bin_y,bin_z);
+    fvertex.SetBinPosition(bin_x,bin_y,bin_z);
 }
 
 void FileWriter::WriteHit()
 {
 
     std::vector<data::superfgd::detector::G4StepsRecord>::iterator iter = fsteps.begin();
-    while(iter!=fteps.end())
+    while(iter!=fsteps.end())
     {
-        fcubeHits->addSumStep(*iter);
+        fcubeHits->AddSumStep(*iter);
         iter++;
     }
 
-    fcubeHits->extractTrackCos(ftracks, fvertex);
+    fcubeHits->ExtractTrackCos(ftracks, fvertex);
 
     fhitsTree->Fill();
-    fcubeHits->reset();
+    fcubeHits->Reset();
     fsteps.clear();
     ftracks.clear();
 }

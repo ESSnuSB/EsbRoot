@@ -24,7 +24,7 @@ void FiberParametrisation::ComputeTransformation (const G4int copyNo, G4VPhysica
   physVol->SetTranslation(origin);
 
   G4RotationMatrix* rotmY = new G4RotationMatrix();
-  rotmY->rotateX(90*deg);
+  rotmY->rotateX(90*CLHEP::deg);
 
   physVol->SetRotation(rotmY); // Rotate by 90 in Y
 }

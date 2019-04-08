@@ -11,6 +11,7 @@
 #include "G4RunManager.hh"
 #include "G4ParticleGun.hh"
 #include "G4ParticleTable.hh"
+#include "G4IonTable.hh"
 #include "G4ParticleDefinition.hh"
 #include "Randomize.hh"
 
@@ -18,11 +19,12 @@
 #include "Framework/GHEP/GHepParticle.h"
 #include <Framework/ParticleData/PDGUtils.h>
 
-#include <Conventions/Units.h>
+#include <Framework/Conventions/Units.h>
 #include <TLorentzVector.h>
 
 #include <iostream>
 #include <exception>
+#include <memory>
 
 #include "EsbTools/EsbDefines.h"
    
@@ -48,7 +50,7 @@ PrimaryGeneratorAction::~PrimaryGeneratorAction()
 
 void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 {
-  if(!readEvent())
+  if(!ReadEvent())
     cout << "No more events to process!" << endl;
 
   const NtpMCEventRecord* ntpMCEvent = PopEvent();
@@ -63,7 +65,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
   TLorentzVector* v = event->Vertex();
   //Double_t normalization = (genie::units::meter/CLHEP::meter);
-  Double_t normlunit =  FgdDetectorParameters::GetLenghtUnit();
+  Double_t normlunit =  data::superfgd::detector::FgdDetectorParameters::GetLenghtUnit();
   G4PrimaryVertex* vertex = new G4PrimaryVertex(v->X() * normlunit, v->Y() * normlunit, v->Z() * normlunit, 0.);
 
   if (fverboseMode) {
@@ -80,7 +82,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   GHepParticle* fspl = event->Particle(fspl_index);
   AddParticleToVertex(vertex, fspl);
 
-  FileWriter* writer = ((FgdRunManager*)G4RunManager::GetRunManager())->getFileWriter();
+  shared_ptr<FileWriter> writer = ((FgdRunManager*)G4RunManager::GetRunManager())->GetFileWriter();
   if(writer!=nullptr)
   {
     writer->AddEvent(event);
@@ -124,16 +126,16 @@ void PrimaryGeneratorAction::AddParticleToVertex(G4PrimaryVertex* v, GHepParticl
 
     if (p->Pdg() < 1000000000) {
         primaryParticle = new G4PrimaryParticle(p->Pdg());
-        primaryParticle->Set4Momentum(p->Px()*GeV, p->Py()*GeV, p->Pz()*GeV, p->E()*GeV);
+        primaryParticle->Set4Momentum(p->Px()*CLHEP::GeV, p->Py()*CLHEP::GeV, p->Pz()*CLHEP::GeV, p->E()*CLHEP::GeV);
     }
     else {
-        G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
+        G4IonTable* ionTable = G4ParticleTable::GetParticleTable()->GetIonTable();
         int Z = genie::pdg::IonPdgCodeToZ(p->Pdg());
         int A = genie::pdg::IonPdgCodeToA(p->Pdg());
-        G4ParticleDefinition* particle = particleTable->GetIon(Z,A,0,0);
+        G4ParticleDefinition* particle = ionTable->GetIon(Z,A,0,0);
         //G4ParticleDefinition* particle = particleTable->GetIon(6,12,0,0);
         primaryParticle = new G4PrimaryParticle(particle);
-        primaryParticle->SetMomentum(p->Px()*GeV, p->Py()*GeV, p->Pz()*GeV);
+        primaryParticle->SetMomentum(p->Px()*CLHEP::GeV, p->Py()*CLHEP::GeV, p->Pz()*CLHEP::GeV);
         primaryParticle->SetMass(particle->GetPDGMass());
 
         if (fverboseMode) 
@@ -142,7 +144,7 @@ void PrimaryGeneratorAction::AddParticleToVertex(G4PrimaryVertex* v, GHepParticl
         }
     }
 
-    primaryParticle->SetCharge(p->Charge()*(eplus/3));
+    primaryParticle->SetCharge(p->Charge()*(CLHEP::eplus/3));
     TVector3 polz;
     p->GetPolarization(polz);
     primaryParticle->SetPolarization(polz.X(), polz.Y(), polz.Z());

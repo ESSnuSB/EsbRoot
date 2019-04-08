@@ -11,12 +11,14 @@ class G4OpAbsorption;
 class G4OpRayleigh;
 class G4OpMieHG;
 class G4OpBoundaryProcess;
+class G4VUPLData;
 
 namespace esbroot {
 namespace simulators {
 namespace superfgd {
 
-class PhysicsList: public G4VUserPhysicsList
+class PhysicsList: public G4VUserPhysicsList,
+                    public G4VUPLData
 {
   public:
     /** Default constructor **/

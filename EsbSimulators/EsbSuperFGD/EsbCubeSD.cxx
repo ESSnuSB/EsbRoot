@@ -107,7 +107,7 @@ G4bool CubeSD::ProcessTotalHits(G4Step* aStep,G4TouchableHistory* ROHist)
         //     Check in which cube is the step position and accumulate it
         //================================================================
         data::superfgd::detector::FgdDetectorParameters& dp = detector->GetDetectorParams();
-        fwriter->SumStep(fhitBuffer, dp);
+        fwriter->SumStep(*fhitBuffer.get(), dp);
     }
     else if(fverbose)
     {

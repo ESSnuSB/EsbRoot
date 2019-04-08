@@ -70,7 +70,7 @@ G4VPhysicalVolume* SuperFGDDetectorConstruction::Construct()
   //-------------------------------------------------------------------------
   // Magnetic field
   //-------------------------------------------------------------------------
-  if (fdetector.existsParam(data::superfgd::detector::DP::magField)) 
+  if (fdetector.ExistsParam(data::superfgd::detector::DP::magField)) 
   {
         cout << "InMagneticField" << endl;
         G4double magField_X = fdetector.ParamAsDouble(data::superfgd::detector::DP::magField_X) * CLHEP::tesla;

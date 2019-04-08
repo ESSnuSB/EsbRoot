@@ -102,7 +102,7 @@ public:
     //====================================================================
     /** When constructing the detector geometry, the cube is copied for easier construction 
         , get the cube copy number **/
-    int SetCubeCopyNo(){return fCubeCopyNo;}
+    int GetCubeCopyNo(){return fCubeCopyNo;}
     /** Set the cube copy number
      *@param ccn - cube copy number
      **/

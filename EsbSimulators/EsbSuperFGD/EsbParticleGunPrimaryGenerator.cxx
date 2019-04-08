@@ -13,8 +13,8 @@ ParticleGunPrimaryGenerator::ParticleGunPrimaryGenerator(G4String detectorParams
         , fsigma(0.)
         , fmean(0.)
 {
-    fdetector.loadPartParams(detectorParamsFile);
-    fparamReader.loadParams(g4gunParamsFile);
+    fdetector.LoadPartParams(detectorParamsFile);
+    fparamReader.LoadParams(g4gunParamsFile);
 
     fparticleGun  = make_shared<G4ParticleGun>();
 }

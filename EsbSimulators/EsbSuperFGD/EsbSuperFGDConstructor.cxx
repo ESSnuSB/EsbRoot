@@ -85,7 +85,7 @@ G4LogicalVolume *ND280SuperFGDConstructor::GetPiece(void)
   SetHeight(TotHeight);
 
   // Build the plastic scintillator cube
-  NFND280CubeScintConstructor cube(GetNameCube());
+  ND280CubeScintConstructor cube(GetNameCube());
   cube.SetVisibility(true);
   cube.SetName(GetName() + "/cube");
   

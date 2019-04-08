@@ -18,7 +18,6 @@
 
 #define PI 3.14159265
 
-using namespace std;
 using namespace genie;
 
 namespace esbroot {
@@ -48,18 +47,18 @@ public:
     /** Add fiber hit to be process and written to file
      *@param hit - fiber hit
      **/
-    void AddFiberHit(data::superfgd::detector::FiberHit* hit);
+    void AddFiberHit(data::superfgd::detector::FiberHit& hit);
 
     /** Add CubeHit to be process and written to file
      *@param hit - cube hit
      **/
-    void AddCubeHit(data::superfgd::detector::CubeHit* hit);
+    void AddCubeHit(data::superfgd::detector::CubeHit& hit);
 
     /** Sum all the steps for the given cube in the event
      *@param hit - cube hit
      *@param dp - current detector parameters
      **/
-    void SumStep(shared_ptr<data::superfgd::detector::CubeHit> hit, data::superfgd::detector::FgdDetectorParameters& dp);
+    void SumStep(data::superfgd::detector::CubeHit& hit, data::superfgd::detector::FgdDetectorParameters& dp);
 
     /** Write hit to external file **/
     void WriteHit();
