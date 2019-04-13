@@ -60,6 +60,13 @@ public:
     /* Initialize the runmanager */
     void Init();
 
+    /**
+     * Run the simulation 
+     * @param batchFile - run simulation in batch mode (default = empty)
+     * @param sessionMode - run simulation in interactive mode (default = false)
+     * */
+    void Run(std::string batchFile = "", bool sessionMode = false);
+
 private:
 
     /* Validates if the constructor parameters are valid */

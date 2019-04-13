@@ -76,6 +76,60 @@ void SuperFGDSimulator::Init()
     fRunManager->Initialize();
 }
 
+void SuperFGDSimulator::Run(std::string batchFile, bool sessionMode)
+{
+    try
+    {
+        // Get the pointer to the User Interface manager
+        G4UImanager* UImanager = G4UImanager::GetUIpointer();
+        if (!batchFile.empty()) 
+        {
+            // get the pointer to the User Interface manager
+            G4UImanager* UI = G4UImanager::GetUIpointer();
+
+            #ifdef G4VIS_USE
+                std::unique_ptr<G4VisManager> visManager();
+                visManager->Initialize();
+            #endif
+
+            std::shared_ptr<G4UIsession> session;
+            if(sessionMode)
+            {
+            #ifdef G4UI_USE_TCSH
+                session = std::make_shared<G4UIterminal>(new G4UItcsh);
+            #else
+                session = std::make_shared<G4UIterminal>();
+            #endif
+            }
+        
+            #ifdef G4VIS_USE
+                char cmd[256];
+
+                sprintf(cmd, "/control/execute %s", batchFile.c_str());
+                UI->ApplyCommand(cmd);
+
+                sprintf(cmd, "/run/beamOn %d", fNumberOfEvents);
+                UI->ApplyCommand(cmd);
+            #endif
+
+            if(sessionMode)
+            {
+                session->SessionStart();
+            }
+        }
+        else
+        {
+            // automatic mode (no visualization)
+            fRunManager->BeamOn(fNumberOfEvents);
+        }
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << endl;
+    }
+    
+}
+
 void SuperFGDSimulator::Validate()
 {
     std::stringstream ss;
