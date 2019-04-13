@@ -39,7 +39,7 @@ void FileWriter::AddEvent(genie::EventRecord* event)
 // Add the angle of the particle from the initial vertex
 // this will be used to calculate the efficiency of detected
 //  particles based on initial angle.
-void FileWriter::AddGHepParticle(GHepParticle* p)
+void FileWriter::AddGHepParticle(genie::GHepParticle* p)
 {
     if(p!=nullptr)
     {

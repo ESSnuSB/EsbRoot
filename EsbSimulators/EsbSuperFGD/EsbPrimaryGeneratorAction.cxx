@@ -16,7 +16,6 @@
 #include "Randomize.hh"
 
 #include <Framework/EventGen/EventRecord.h>
-#include "Framework/GHEP/GHepParticle.h"
 #include <Framework/ParticleData/PDGUtils.h>
 
 #include <Framework/Conventions/Units.h>
@@ -37,8 +36,8 @@ namespace superfgd {
 PrimaryGeneratorAction::PrimaryGeneratorAction(std::string eventsFile)
 : G4VUserPrimaryGeneratorAction(),feventsFile(eventsFile), fverboseMode(false)
 {
-    foldbuffer = new NtpMCEventRecord();
-    fbuffer = new NtpMCEventRecord();
+    foldbuffer = new genie::NtpMCEventRecord();
+    fbuffer = new genie::NtpMCEventRecord();
     InitializeTChain();
 }
 
@@ -53,15 +52,15 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   if(!ReadEvent())
     cout << "No more events to process!" << endl;
 
-  const NtpMCEventRecord* ntpMCEvent = PopEvent();
+  const genie::NtpMCEventRecord* ntpMCEvent = PopEvent();
   if (ntpMCEvent == nullptr) 
   {
     std::string errMsg = "ERROR: PrimaryGeneratorAction::GeneratePrimaries(): PrimaryGeneratorAction::PopEvent() returned 0.";
     THROW(errMsg);
   }
   
-  //const EventRecord* event = ntpMCEvent->event;
-   EventRecord* event = ntpMCEvent->event;
+  //const genie::EventRecord* event = ntpMCEvent->event;
+  genie::EventRecord* event = ntpMCEvent->event;
 
   TLorentzVector* v = event->Vertex();
   //Double_t normalization = (genie::units::meter/CLHEP::meter);
@@ -77,9 +76,9 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   // find fspl (nu elastic scattering on electron has nu set as fspl => need to find e-)
   int fspl_index = event->FinalStatePrimaryLeptonPosition();
   if (event->Summary()->ProcInfo().IsNuElectronElastic()) {
-        fspl_index = event->ParticlePosition(11, kIStStableFinalState, 0);
+        fspl_index = event->ParticlePosition(11, genie::kIStStableFinalState, 0);
   }
-  GHepParticle* fspl = event->Particle(fspl_index);
+  genie::GHepParticle* fspl = event->Particle(fspl_index);
   AddParticleToVertex(vertex, fspl);
 
   shared_ptr<FileWriter> writer = ((FgdRunManager*)G4RunManager::GetRunManager())->GetFileWriter();
@@ -101,10 +100,10 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
       // skip fspl
       if (i == fspl_index) continue;
 
-      GHepParticle *p = event->Particle(i);
+      genie::GHepParticle *p = event->Particle(i);
       // kIStStableFinalState - Genie documentation: generator-level final state
       // particles to be tracked by the detector-level MC
-      if ((p->Status() == kIStStableFinalState) && (p->Pdg() < 2000000000) &&
+      if ((p->Status() == genie::kIStStableFinalState) && (p->Pdg() < 2000000000) &&
           (abs(p->Pdg()) != 12) && (abs(p->Pdg()) != 14) && (abs(p->Pdg()) != 16)) {
                 
             AddParticleToVertex(vertex, p);
@@ -120,7 +119,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   anEvent->AddPrimaryVertex(vertex);
 }
 
-void PrimaryGeneratorAction::AddParticleToVertex(G4PrimaryVertex* v, GHepParticle *p)
+void PrimaryGeneratorAction::AddParticleToVertex(G4PrimaryVertex* v, genie::GHepParticle *p)
 {
     G4PrimaryParticle* primaryParticle = nullptr;
 
@@ -191,7 +190,7 @@ bool PrimaryGeneratorAction::ReadEvent()
   return true;
 }
 
-const NtpMCEventRecord* PrimaryGeneratorAction::PopEvent()
+const genie::NtpMCEventRecord* PrimaryGeneratorAction::PopEvent()
 {
   if (fbuffer == nullptr)
         return nullptr;

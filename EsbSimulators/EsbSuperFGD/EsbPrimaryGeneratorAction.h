@@ -13,8 +13,6 @@
 #include <TFile.h>
 #include <TChain.h>
 
-using namespace genie;
-
 class G4Event;
 
 namespace esbroot {
@@ -55,19 +53,19 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
     void InitializeTChain();
 
     /** Adds a particle to the initial vertex of the interaction **/
-    void AddParticleToVertex(G4PrimaryVertex* v, GHepParticle *p);
+    void AddParticleToVertex(G4PrimaryVertex* v, genie::GHepParticle *p);
 
     /** Returns an event from the top of the stack **/
-    const NtpMCEventRecord* PopEvent();
+    const genie::NtpMCEventRecord* PopEvent();
 
     /** Read the next event from the eventsFile **/
     bool ReadEvent();
 
     /** Contains a pointer to the genie generated event **/
-    NtpMCEventRecord* fbuffer;
+    genie::NtpMCEventRecord* fbuffer;
 
     /** Copy of the fbuffer, to be return (if modified) from Pop **/
-    NtpMCEventRecord* foldbuffer;
+    genie::NtpMCEventRecord* foldbuffer;
 
     /** Chain of events in the file **/
     TChain* fchain;

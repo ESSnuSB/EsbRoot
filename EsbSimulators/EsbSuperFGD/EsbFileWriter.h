@@ -18,8 +18,6 @@
 
 #define PI 3.14159265
 
-using namespace genie;
-
 namespace esbroot {
 namespace simulators {
 namespace superfgd {
@@ -37,12 +35,12 @@ public:
     /** Add event to be written to the external file
      *@param event - step in the simulation
      **/
-    void AddEvent(EventRecord* event);
+    void AddEvent(genie::EventRecord* event);
 
     /** Add the particle to be process for angle and momentum
      *@param p - particle [used only for muons and protons]
      **/
-    void AddGHepParticle(GHepParticle* p);
+    void AddGHepParticle(genie::GHepParticle* p);
 
     /** Add fiber hit to be process and written to file
      *@param hit - fiber hit
