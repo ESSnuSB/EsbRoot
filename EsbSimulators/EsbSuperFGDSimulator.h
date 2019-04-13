@@ -52,13 +52,13 @@ public:
      *@param compLvl - geant4 compression level of the data
      **/
     SuperFGDSimulator(std::string detectorGeomFile, std::string outputFile,
-                        std::string genieFile, std::string geant4GunFile, int compLvl;
+                        std::string genieFile, std::string geant4GunFile, int compLvl);
 
     /** Destructor **/
     ~SuperFGDSimulator();
 
     /* Initialize the runmanager */
-    Init();
+    void Init();
 
 private:
 

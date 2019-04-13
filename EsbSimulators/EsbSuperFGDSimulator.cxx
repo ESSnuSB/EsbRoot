@@ -19,7 +19,7 @@ SuperFGDSimulator::~SuperFGDSimulator()
 
 }
 
-SuperFGDSimulator::Init()
+void SuperFGDSimulator::Init()
 {
     // ValidateSet parameters
     Validate();
@@ -32,7 +32,7 @@ SuperFGDSimulator::Init()
     // 1. Set the file writer - writes results to the output file
     std::shared_ptr<superfgd::FileWriter> file_writer 
                 = std::make_shared<superfgd::FileWriter>(fOutputFile.c_str(), fCompressionLevel);
-    fRunManager->setFileWriter(file_writer);
+    fRunManager->SetFileWriter(file_writer);
 
     // 2. Initialize detector construction
     superfgd::SuperFGDDetectorConstruction* detector 
@@ -50,17 +50,17 @@ SuperFGDSimulator::Init()
     //  if 'fGenieFile' is not empty uses genie events, else checks if 'fGunFile' is not empty
     if(!fGenieFile.empty())
     {
-        superfgd::PrimaryGeneratorAction* primaryAction =  new superfgd::PrimaryGeneratorAction(fGenieFile, physicsList);
+        superfgd::PrimaryGeneratorAction* primaryAction =  new superfgd::PrimaryGeneratorAction(fGenieFile);
         fRunManager->SetUserAction(primaryAction);
-        fNumberOfEvents = primaryAction->getNumberOfEvents();
+        fNumberOfEvents = primaryAction->GetNumberOfEvents();
     }
     else if(!fGunFile.empty())
     {
         superfgd::ParticleGunPrimaryGenerator* primaryAction 
             = new superfgd::ParticleGunPrimaryGenerator(fDetectorGeomFile, fGunFile);
-        primaryAction->setKinematics();
+        primaryAction->SetKinematics();
         fRunManager->SetUserAction(primaryAction);
-        fNumberOfEvents = primaryAction->getNumberOfEvents();
+        fNumberOfEvents = primaryAction->GetNumberOfEvents();
     }
 
     // 5. set Stepping action
@@ -111,7 +111,7 @@ void SuperFGDSimulator::Validate()
     }
 }
 
-bool EsbSuperFGDSimulator::FileExists(std::string file)
+bool SuperFGDSimulator::FileExists(std::string file)
 {
     std::ifstream fs(file.c_str());
     return fs.good();
