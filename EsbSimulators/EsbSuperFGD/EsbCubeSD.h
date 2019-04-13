@@ -48,8 +48,8 @@ private:
     bool fverbose;
     G4String fdetector_sd_type;
 
-    shared_ptr<data::superfgd::detector::CubeHit>  fhitBuffer;
-    shared_ptr<FileWriter> fwriter;
+    std::shared_ptr<data::superfgd::detector::CubeHit>  fhitBuffer;
+    std::shared_ptr<FileWriter> fwriter;
 };
 
 }   //superfgd

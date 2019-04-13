@@ -39,8 +39,8 @@ public:
     void SetVerbose(bool verbose) {fverbose = verbose;}
 
 private:
-    shared_ptr<data::superfgd::detector::FiberHit> fhitBuffer;
-    shared_ptr<FileWriter> fwriter;
+    std::shared_ptr<data::superfgd::detector::FiberHit> fhitBuffer;
+    std::shared_ptr<FileWriter> fwriter;
     bool fverbose;
 };
 

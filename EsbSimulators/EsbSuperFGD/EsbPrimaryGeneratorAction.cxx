@@ -81,7 +81,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   genie::GHepParticle* fspl = event->Particle(fspl_index);
   AddParticleToVertex(vertex, fspl);
 
-  shared_ptr<FileWriter> writer = ((FgdRunManager*)G4RunManager::GetRunManager())->GetFileWriter();
+  std::shared_ptr<FileWriter> writer = ((FgdRunManager*)G4RunManager::GetRunManager())->GetFileWriter();
   if(writer!=nullptr)
   {
     writer->AddEvent(event);

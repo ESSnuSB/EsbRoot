@@ -13,13 +13,13 @@ namespace superfgd {
 
 FileWriter::FileWriter(const char* filename, int compressionLevel):fverbose(false)
 {
-    fcubeHits = make_shared<data::superfgd::detector::G4EventRecord>();
+    fcubeHits = std::make_shared<data::superfgd::detector::G4EventRecord>();
 
     // open output file
-    ffile = make_shared<TFile>(filename, "RECREATE", "NF Geant4 Simulation Hits");
+    ffile = std::make_shared<TFile>(filename, "RECREATE", "NF Geant4 Simulation Hits");
     ffile->SetCompressionLevel(compressionLevel);
 
-    fhitsTree = make_shared<TTree>("hits", "G4 event hits");
+    fhitsTree = std::make_shared<TTree>("hits", "G4 event hits");
     fhitsTree->Branch(data::superfgd::detector::DP::NF_CUBE_HIT_BRANCH.c_str(), &fcubeHits);
 }
 

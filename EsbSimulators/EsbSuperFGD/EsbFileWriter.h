@@ -74,10 +74,10 @@ public:
     void SetVerbose(bool verbose){fverbose=verbose;}
 
 private:
-    shared_ptr<TFile> ffile;
-    shared_ptr<TTree> fhitsTree;
+    std::shared_ptr<TFile> ffile;
+    std::shared_ptr<TTree> fhitsTree;
 
-    shared_ptr<data::superfgd::detector::G4EventRecord>  fcubeHits;
+    std::shared_ptr<data::superfgd::detector::G4EventRecord>  fcubeHits;
     std::vector<data::superfgd::detector::G4StepsRecord> fsteps;
     std::map<int,std::vector<data::superfgd::detector::G4StepsRecord>> ftracks;
     data::superfgd::detector::G4StepsRecord fvertex;

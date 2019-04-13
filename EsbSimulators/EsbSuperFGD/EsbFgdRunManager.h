@@ -21,12 +21,12 @@ public:
     virtual ~FgdRunManager();
     
     /** Retrieve the current set file writer **/
-    shared_ptr<FileWriter> GetFileWriter(){return ffileWriter;}
+    std::shared_ptr<FileWriter> GetFileWriter(){return ffileWriter;}
 
     /** Set file writer to be used to write the events to an output file
      *@param fileWriter - file writer class
      **/
-    void SetFileWriter(shared_ptr<FileWriter> fileWriter) {ffileWriter=fileWriter;}
+    void SetFileWriter(std::shared_ptr<FileWriter> fileWriter) {ffileWriter=fileWriter;}
 
     /** Set the flag to ignore total deposited energy in the event
      *@param ignoreEdep - file writer class
@@ -37,7 +37,7 @@ public:
     bool GetIgnoreEdep(){return fignoreEdep;}
     
 private:
-    shared_ptr<FileWriter> ffileWriter;
+    std::shared_ptr<FileWriter> ffileWriter;
     bool fignoreEdep;
 };
 

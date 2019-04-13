@@ -31,7 +31,7 @@ set(SRCS
     ${fgdSourceFiles}
 )
 
-file(GLOB headerFiles ${CMAKE_SOURCE_DIR}/EsbSimulators/EsbSuperFGD/*.h)
+file(GLOB headerFiles ${CMAKE_SOURCE_DIR}/EsbSimulators/*.h)
 file(GLOB fgdHeaderFiles ${CMAKE_SOURCE_DIR}/EsbSimulators/EsbSuperFGD/*.h)
 
 Set(HEADERS 

@@ -33,7 +33,7 @@ void FgdEventAction::EndOfEventAction(const G4Event* event)
     PrimaryGeneratorAction* nfPrga = dynamic_cast<PrimaryGeneratorAction*>(prGA);
     ParticleGunPrimaryGenerator* nfPrGga = dynamic_cast<ParticleGunPrimaryGenerator*>(prGA);
 
-    shared_ptr<FileWriter> writer = ((FgdRunManager*)G4RunManager::GetRunManager())->GetFileWriter();
+    std::shared_ptr<FileWriter> writer = ((FgdRunManager*)G4RunManager::GetRunManager())->GetFileWriter();
     writer->WriteHit();
 
     if(nfPrga!=nullptr && !nfPrga->HasMoreEvents()

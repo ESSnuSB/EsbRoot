@@ -30,7 +30,7 @@ G4VPhysicalVolume* SuperFGDDetectorConstruction::Construct()
 {
     G4String cNameLogicSuperFGD1 = "Esb/SuperFGD";
     
-    shared_ptr<ND280SuperFGDConstructor> fSuperFGDConstructor1 = make_shared<ND280SuperFGDConstructor>(cNameLogicSuperFGD1);
+    std::shared_ptr<ND280SuperFGDConstructor> fSuperFGDConstructor1 = make_shared<ND280SuperFGDConstructor>(cNameLogicSuperFGD1);
     fSuperFGDConstructor1->SetVisibility(fdetector.ParamAsBool(data::superfgd::detector::DP::visdetail));
 
     G4String nameSuperFGD1 = fSuperFGDConstructor1->GetName();

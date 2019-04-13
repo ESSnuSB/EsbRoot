@@ -72,7 +72,7 @@ class ParticleGunPrimaryGenerator : public G4VUserPrimaryGeneratorAction
     tools::ParamReader fparamReader;
 
     /** Geant particle gun**/
-    shared_ptr<G4ParticleGun> fparticleGun;  
+    std::shared_ptr<G4ParticleGun> fparticleGun;  
 
     /** Total number of events **/
     int fevents;
