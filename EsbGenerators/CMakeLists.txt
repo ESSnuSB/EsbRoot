@@ -35,6 +35,7 @@ Set(HEADERS
 Set(LINKDEF ${CMAKE_SOURCE_DIR}/EsbGenerators/GenLinkDef.h)
 set(LIBRARY_NAME EsbGen)
 
-set(DEPENDENCIES  Base EsbData pythia8 Pythia6)
+#~ set(DEPENDENCIES  Base EsbData pythia8 Pythia6)
+set(DEPENDENCIES  Base EsbData Genie)
 
 GENERATE_LIBRARY()

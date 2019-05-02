@@ -13,10 +13,10 @@
 
 #include <memory>
 
-using namespace std;
-using namespace genie;
-using namespace genie::geometry;
-using namespace genie::flux;
+//~ using namespace std;
+//~ using namespace genie;
+//~ using namespace genie::geometry;
+//~ using namespace genie::flux;
 
 namespace esbroot {
 
@@ -29,57 +29,73 @@ class GenieGenerator : public FairGenerator
 
 public:
 
-    /** Geometry types **/
-    enum GenieGeometry{
-        GLOBAL = 0,
-        POINT = 1
-    };
+	static struct GlobalState_t {
+		std::string fGenieTune = "";
+		std::string fXsecSplineFileName = "";
+		long int fRandomSeed = -1;
+	} GlobalState;
+	static void InitGlobalState();
 
-    /** Constructor with pdgCode and max energy **/
-    GenieGenerator(int pdgCode, double Emax);
+	GenieGenerator() {};
+	
+	template <typename Vec>
+	GenieGenerator(int pdg_tgt, int const& pdg_nu, double const& e_nu, Vec const& p_nu, 
+			double const& time, Vec const& pos_nu) : fVtxTime(time), fVtxPos(pos_nu)
+	{
+		assert(GenieGenerator::fGlobalStateInit == true);
+		
+		auto mono_flux = std::make_shared<genie::flux::GMonoEnergeticFlux>(e_nu, pdg_nu);
+		mono_flux->SetDirectionCos(p_nu.x(), p_nu.y(), p_nu.z());
+		
+		fFluxI = std::move(mono_flux);
+		fGeomI = std::make_shared<genie::geometry::PointGeomAnalyzer>(pdg_tgt);
+	}
+	
+	GenieGenerator(genie::GFluxI *fluxI, genie::GeomAnalyzerI *geomI);
 
-    // /** Constructor with pdgCode, max energy and geometry type selection **/
-    GenieGenerator(int pdgCode, double Emax, GenieGenerator::GenieGeometry geoType);
+  /** Destructor  **/
+  virtual ~GenieGenerator();
 
-    /** Destructor  **/
-    virtual ~GenieGenerator();
+	//Setters
+	void SetFluxI(std::shared_ptr<genie::GFluxI> FluxI) {fFluxI = FluxI;};
+	void SetGeomI(std::shared_ptr<genie::GeomAnalyzerI> GeomI) {fGeomI = GeomI;};
 
-    /* method which initializes the Genie generator */
-    Bool_t Init(void);
+	//Getters
+	std::shared_ptr<genie::GFluxI> const& GetFluxI() {return(fFluxI);};
+	std::shared_ptr<genie::GeomAnalyzerI> const& GetGeomI() {return(fGeomI);};
 
-    Bool_t IsInit() {return fIsInit;}
+  /* method which initializes the Genie generator */
+  virtual Bool_t Init(void);
+	Bool_t IsInit() const {return fIsInit;}
 
-    /* implementation of the base method which generates the vertex particles */
-    virtual Bool_t ReadEvent(FairPrimaryGenerator* primGen);
+  /* implementation of the base method which generates the vertex particles */
+  virtual Bool_t ReadEvent(FairPrimaryGenerator* primGen);
 
-    /** Clone this object (used in MT mode only) */
-    virtual FairGenerator* CloneGenerator() const;
+  /** Clone this object (used in MT mode only) */
+  virtual FairGenerator* CloneGenerator() const;
 
 private:
 
-    /** Driver for generating neutrino events **/
-    std::shared_ptr<GMCJDriver> fmcj_driver;
+	//These static members are initialized in the .cxx file so that
+	//RootCint does not complain
+	static bool fGlobalStateInit;
+
+  /** Driver for generating neutrino events **/
+  std::shared_ptr<genie::GMCJDriver> fmcj_driver;
     
-     /** Initializes the Flux driver for GMCJDriver **/
-    void FluxInit(void);
-    std::shared_ptr<GMonoEnergeticFlux> fflux_driver;
+  /** Initializes the Flux driver for GMCJDriver **/
+  std::shared_ptr<genie::GFluxI> fFluxI;
    
-    /** Used in GMCJDriver initialization to select geometry **/
-    void GeometryInit(void);
-    GenieGeometry fgeom;
-    std::shared_ptr<PointGeomAnalyzer> fpointGeom;
-    std::shared_ptr<ROOTGeomAnalyzer> fglobalGeom;
+  /** Used in GMCJDriver initialization to select geometry **/
+  std::shared_ptr<genie::GeomAnalyzerI> fGeomI;
 
-    /** Max energy of the neutrinos in eV **/
-    double fmaxEv;
+	double fVtxTime;
+	TVector3 fVtxPos;
 
-    /** pdg code of the flux generator **/
-    int fpdgCode; 
+  /* checks if the Init method has been called */
+  Bool_t fIsInit;
 
-    /* checks if the Init method has been called */
-    Bool_t fIsInit;
-
-    ClassDef(GenieGenerator,4)
+  ClassDef(GenieGenerator,5)
 };
 
 } //namespace generators

@@ -23,5 +23,6 @@
 //#pragma link C++ class  Pythia6Generator+;
 //#pragma link C++ class  Pythia8Generator+;
 #pragma link C++ class  esbroot::generators::GenieGenerator+;
+#pragma link C++ class  esbroot::generators::GenieGenerator::GlobalState_t+;
 
 #endif
