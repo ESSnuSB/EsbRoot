@@ -23,15 +23,17 @@ namespace generators {
 /*static*/ GenieGenerator::GlobalState_t GenieGenerator::GlobalState;
 /*static*/ bool GenieGenerator::fGlobalStateInit = false;
 
+//! Constructor which takes user defined Genie flux and geometry drivers.
+//! The Genie backend is not configured until a call to Configure()
+//! @param fluxI user supplied Genie flux driver
+//! @param geomI user supplied Genie geometry driver
 GenieGenerator::GenieGenerator(genie::GFluxI *fluxI, genie::GeomAnalyzerI *geomI) {
 	SetFluxI(std::shared_ptr<genie::GFluxI>(fluxI));
 	SetGeomI(std::shared_ptr<genie::GeomAnalyzerI>(geomI));
 }
 
-GenieGenerator::~GenieGenerator()
-{
-}
-
+//! Initializes the state of Genie backend using GenieGenerator::GlobalState variable.
+//! Called automatically from Configure().
 /*static*/ void GenieGenerator::InitGlobalState()
 {
 	assert(fGlobalStateInit == false);
@@ -45,32 +47,25 @@ GenieGenerator::~GenieGenerator()
 	fGlobalStateInit = true;
 }
 
-
-/*! Initialize the GenieGenrator:
-*   1. Sets the fluxDriver
-*   2. Sets the Geometry of the sensitive parts
-*       where neutrinos should interact
-*   3. Sets the cross_sections.xml file for the interactions
-*/
-/*virtual*/ Bool_t GenieGenerator::Init()
+//!This function actually initializes the Genie generator backend using
+//!supplied geometry and flux drivers. Calls InitGlobalState().
+/*virtual*/ Bool_t GenieGenerator::Configure()
 {
-    fmcj_driver = std::make_shared<genie::GMCJDriver>();
-
+	assert(IsConfigured() == false);
+	
+	InitGlobalState();
+	
+	fmcj_driver = std::make_shared<genie::GMCJDriver>();
+	
 	fmcj_driver->UseFluxDriver(GetFluxI().get());
 	fmcj_driver->UseGeomAnalyzer(GetGeomI().get());
 	fmcj_driver->Configure();
 
-    //~ FluxInit();
-    //~ GeometryInit();
+	fIsConfigured = true;
 
-    //~ fmcj_driver->Configure();
-    //~ fmcj_driver->UseSplines();
-    //~ fmcj_driver->ForceSingleProbScale();
-
-    fIsInit = true;
-
-    return true; // No initialization checks done, return true
+	return true; // No initialization checks done, return true	
 }
+	
  
 /*! Override the FairGenerator::ReadEvent:
 *       Reads the events from the genie::GMCJDriver
@@ -78,34 +73,39 @@ GenieGenerator::~GenieGenerator()
 */
 /*virtual*/ Bool_t GenieGenerator::ReadEvent(FairPrimaryGenerator* primGen)
 {
+    //!Budimir: this function is not entirely correct. The vertex position is
+    //!always at (0,0,0). However, each track starts at the position
+    //!genie::EventRecord::Vertex() relative
+    //!to FairRoot's "vertex coordinate (0,0,0)", so in the end simulation works as required.
+    //!This is due to limitations of FairRoot. We can live with this for now,
+    //!but it definitely needs to be fixed in the future.
+    
     //flag indicates that an event has been generated
     Bool_t rc(false);
 
     genie::EventRecord* event = fmcj_driver->GenerateEvent();
+    if(event == nullptr) return false;
+
+    PostProcessEvent(event);
+    
     event->Print(std::cout);
-    if(event!=nullptr)
-    {
-        TLorentzVector* v = event->Vertex(); //TODO: each track has its own origin
-
-				v->SetVect(v->Vect() + fVtxPos);
-				v->SetT(v->T() + fVtxTime);
-
-        // Fire other final state particles
-        int nParticles = event->GetEntries();
-        for (int i = 0; i < nParticles; i++) 
-        {
-            genie::GHepParticle *p = event->Particle(i);
-            // kIStStableFinalState - Genie documentation: generator-level final state
-            // particles to be tracked by the detector-level MC
-            if ((p->Status() == genie::EGHepStatus::kIStStableFinalState)) 
-            {
-                primGen->AddTrack(p->Pdg(), p->Px(), p->Py(), p->Pz(), v->X(), v->Y(), v->Z());
-            }
-        }
-        
-        delete event;
-    }
-
+		TLorentzVector* v = event->Vertex();
+		
+		// Fire other final state particles
+		int nParticles = event->GetEntries();
+		for (int i = 0; i < nParticles; i++) 
+		{
+				genie::GHepParticle *p = event->Particle(i);
+				// kIStStableFinalState - Genie documentation: generator-level final state
+				// particles to be tracked by the detector-level MC
+				if ((p->Status() == genie::EGHepStatus::kIStStableFinalState)) 
+				{
+						primGen->AddTrack(p->Pdg(), p->Px(), p->Py(), p->Pz(), v->X(), v->Y(), v->Z());
+				}
+		}
+		
+		delete event;
+    
     return true;
 }
 
