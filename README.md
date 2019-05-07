@@ -127,8 +127,10 @@ source config.sh
 ```
 
 2. Try running macros
+
 Go to EsbMacro directory, try running:
 - ess_sim.C (```root -l -b ess_sim.C```) - this shoud produce evetest.root file which contains tracks and (Cherenkov) hits in a small cherenkov detector using muon as a primary track (for now).
 - evetest.C - read the evetest.root file and output some information.
 - diplay_event_ND.C - simple display of hits on walls of the detector
 - eventDisplay.C - full 3D event display, still not working properly
+- ess_sim_genie.C - example how to run with Genie generator. You will need to download the Genie cross-sections, see the code for comments.
