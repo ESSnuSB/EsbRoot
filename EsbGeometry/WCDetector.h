@@ -96,8 +96,8 @@ namespace geometry {
 		Double32_t     fLength;            //!  length
 		Double32_t     fELoss;             //!  energy loss
 
-		Double_t       fWCradius;          // radius of WC cylinder 
-		Double_t       fWChalflength;      // halflength of WC cylinder
+		Double_t       fWCradius;          //! radius of WC cylinder 
+		Double_t       fWChalflength;      //! halflength of WC cylinder
 		
 		/** container for data points */
 

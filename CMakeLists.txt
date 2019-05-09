@@ -12,6 +12,8 @@
 option (BUILD_DOC "Build documentation using Doxygen" OFF)
 option (BUILD_ONLY_DOC "Build only the documentation" OFF)
 
+option (WITH_GENIE "Build Genie generator interface" OFF)
+
 if(BUILD_DOC)
 	find_package(Doxygen)
 	if (DOXYGEN_FOUND)
@@ -194,8 +196,6 @@ SET(FAIRROOT_LIBRARY_PROPERTIES ${FAIRROOT_LIBRARY_PROPERTIES}
 SET(_LIBDIR ${CMAKE_BINARY_DIR}/lib)
 SET(LD_LIBRARY_PATH  ${_LIBDIR} ${LD_LIBRARY_PATH})
 
-
-
 # Check if the compiler support specific C++11 features
 # Up to now this is only a check since the code does not use
 # any of the features of the new standard
@@ -205,24 +205,48 @@ IF(HAS_CXX11_SHAREDPOINTER)
   Add_Definitions(-DHAS_SHAREDPOINTER)
 ENDIF(HAS_CXX11_SHAREDPOINTER)
 
+if(WITH_GENIE)
+	message("Searching for Genie")
+	
+	if(NOT DEFINED ENV{GENIE})
+		message(FATAL_ERROR "GENIE environment variable not found")
+	endif()
+	set(GENIE_DIR $ENV{GENIE})
+	
+	if(NOT EXISTS ${GENIE_DIR}/lib/libGenie.so)
+		message(FATAL_ERROR ${GENIE_DIR}/lib/libGenie.so" not found.")
+	endif()
+	set(GENIE_LIB_DIR ${GENIE_DIR}/lib/)
+	
+	if(NOT EXISTS ${GENIE_DIR}/src)
+		message(FATAL_ERROR ${GENIE_DIR}/src" not found.")
+	endif()
+	set(GENIE_INC_DIR ${GENIE_DIR}/src/)
+	
+	list(APPEND LD_LIBRARY_PATH ${GENIE_LIB_DIR})
+
+	#Definition for rootcling
+	list(APPEND DEFINITIONS -DWITH_GENIE)
+	
+	#Definition for gcc	
+	add_definitions(-DWITH_GENIE)
+endif(WITH_GENIE)
+
 # Recurse into the given subdirectories.  This does not actually
 # cause another cmake executable to run.  The same process will walk through
 # the project's entire directory structure.
 add_subdirectory (EsbData)
 add_subdirectory (EsbGeometry)
+add_subdirectory (EsbGenerators)
 add_subdirectory (EsbDigitizer)
 add_subdirectory (EsbTools)
-#add_subdirectory (EsbGenerators)
-#add_subdirectory (esb)
-#add_subdirectory (passive)
-#add_subdirectory (field)  
 
 SET(ROOT_INCLUDE_PATH "${ROOT_INCLUDE_PATH}:${CMAKE_SOURCE_DIR}")
 SET(GEOPATH "${CMAKE_SOURCE_DIR}/EsbGeometry")
 
-WRITE_CONFIG_FILE(config.sh)
+WRITE_CONFIG_FILE(fairroot_config.sh)
  
-configure_file(${CMAKE_SOURCE_DIR}/CTestCustom.cmake 
-               ${CMAKE_BINARY_DIR}/CTestCustom.cmake
+configure_file(${CMAKE_SOURCE_DIR}/config.sh.in
+               ${CMAKE_BINARY_DIR}/config.sh
               )
 
