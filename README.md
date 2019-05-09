@@ -114,7 +114,7 @@ make
 To compile with Genie support, do
 ```
 export GENIE=$INSTALL_PATH/GENIE
-cmake -DWITH_GENIE ..
+cmake -DWITH_GENIE=ON ..
 make
 ```
 The software should now be compiled!
