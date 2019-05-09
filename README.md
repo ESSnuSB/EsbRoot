@@ -84,7 +84,7 @@ cd GENIE
 
 Budild Genie
 ```
-export $GENIE="PWD"
+export GENIE="PWD"
 ./configure
 make megalib
 ```
