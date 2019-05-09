@@ -3,6 +3,8 @@
 
 #include "EsbGenerators/GenieGenerator.h"
 
+#include <cmath>
+
 class TVector3;
 class TLorentzVector;
 
@@ -35,7 +37,7 @@ class SimpleGenieGenerator : public GenieGenerator
 
 	private:
 	//! 4-position of neutrino interaction vertex
-	TLorentzVector fVertexX4;
+	TLorentzVector fVertexX4 = {std::nan("ni"), std::nan("ni"), std::nan("ni"), std::nan("ni")};
 	
 	ClassDef(SimpleGenieGenerator,2)
 };
