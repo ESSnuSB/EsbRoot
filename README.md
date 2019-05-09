@@ -1,6 +1,9 @@
 # EsbRoot
 Software for physics simulation of the ESSnuSB project
 
+Doxygen documentation can be found here: \
+https://essnusb.irb.hr/doxygen/
+
 # How to install
 This guide is heavily based on this talk: \
 http://essnusb.eu/docdbprivate/ShowDocument?docid=186 \
