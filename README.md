@@ -24,7 +24,7 @@ cd src
 ``` 
 git clone https://github.com/ESSnuSB/FairSoft.git FairSoft
 cd FairSoft
-./configure
+./configure.sh
 ```
 In the configrue script chose:
 ```
@@ -77,14 +77,18 @@ This checks out Genie version currently recommended to use with EsbRoot. You can
 ```
 $INSTALL_PATH/src/Genie/VERSION
 ```
-
+Go to FairRoot install dir, source the config script and set FAIRROOTPATH:
+```
+cd $INSTALL_PATH/fairroot
+source bin/FairRootConfig.sh
+export FAIRROOTPATH="$PWD"
+```
 Link and enter the Genie directory 
 ```
 cd $INSTALL_PATH
 ln -s $INSTALL_PATH/src/Genie GENIE
 cd GENIE
 ```
-
 Budild Genie
 ```
 export GENIE="$PWD"
@@ -94,7 +98,7 @@ make megalib
 Genie should now be built.
 
 ## 4. Install EsbRoot
-Go to FairRoot install dir, source the config script and set FAIRROOTPATH:
+Go to FairRoot install dir, source the config script and set FAIRROOTPATH (this is not necessary to repeat if you already done this when building Genie):
 ```
 cd $INSTALL_PATH/fairroot
 source bin/FairRootConfig.sh
