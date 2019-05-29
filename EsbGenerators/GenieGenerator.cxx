@@ -9,121 +9,112 @@
 #include "Framework/Utils/XSecSplineList.h" // for cross_section.xml genie initialization
 #include "Framework/GHEP/GHepParticle.h"
 #include "Framework/GHEP/GHepStatus.h"      // for kIStStableFinalState
+#include "Framework/Utils/RunOpt.h"      
+#include "Framework/Utils/AppInit.h" //For Random Seed
 
-using namespace esbroot::generators;
+#include <iostream>
+#include <cstdlib>
+#include <cassert>
 
-GenieGenerator::GenieGenerator(int pdgCode, double Emax)
-    : FairGenerator("GenieGenerator"),fpdgCode(pdgCode), fmaxEv(Emax), fgeom(GenieGeometry::POINT) , fIsInit(false)
-{
+//~ using namespace esbroot::generators;
+namespace esbroot {
+namespace generators {
+
+/*static*/ GenieGenerator::GlobalState_t GenieGenerator::GlobalState;
+/*static*/ bool GenieGenerator::fGlobalStateInit = false;
+
+//! Constructor which takes user defined Genie flux and geometry drivers.
+//! The Genie backend is not configured until a call to Configure()
+//! @param fluxI user supplied Genie flux driver
+//! @param geomI user supplied Genie geometry driver
+GenieGenerator::GenieGenerator(genie::GFluxI *fluxI, genie::GeomAnalyzerI *geomI) {
+	SetFluxI(std::shared_ptr<genie::GFluxI>(fluxI));
+	SetGeomI(std::shared_ptr<genie::GeomAnalyzerI>(geomI));
 }
 
-
-GenieGenerator::GenieGenerator(int pdgCode, double Emax, GenieGenerator::GenieGeometry geoType)
-    : FairGenerator("GenieGenerator"), fpdgCode(pdgCode), fmaxEv(Emax), fgeom(geoType) , fIsInit(false)
+//! Initializes the state of Genie backend using GenieGenerator::GlobalState variable.
+//! Called automatically from Configure().
+/*static*/ void GenieGenerator::InitGlobalState()
 {
+	assert(fGlobalStateInit == false);
+
+	auto xspl = genie::XSecSplineList::Instance();
+	xspl->LoadFromXml(GlobalState.fXsecSplineFileName, false);
+	
+	genie::RunOpt::Instance()->SetTuneName(GlobalState.fGenieTune);
+	genie::RunOpt::Instance()->BuildTune();
+	
+	fGlobalStateInit = true;
 }
 
-GenieGenerator::~GenieGenerator()
+//!This function actually initializes the Genie generator backend using
+//!supplied geometry and flux drivers. Calls InitGlobalState().
+/*virtual*/ Bool_t GenieGenerator::Configure()
 {
+	assert(IsConfigured() == false);
+	
+	InitGlobalState();
+	
+	fmcj_driver = std::make_shared<genie::GMCJDriver>();
+	
+	fmcj_driver->UseFluxDriver(GetFluxI().get());
+	fmcj_driver->UseGeomAnalyzer(GetGeomI().get());
+	fmcj_driver->Configure();
+
+	fIsConfigured = true;
+
+	return true; // No initialization checks done, return true	
 }
-
-/*! Initialize the GenieGenrator:
-*   1. Sets the fluxDriver
-*   2. Sets the Geometry of the sensitive parts
-*       where neutrinos should interact
-*   3. Sets the cross_sections.xml file for the interactions
-*/
-Bool_t GenieGenerator::Init()
-{
-    // Initialize cross section xml data
-    // file to cross section should be set 
-    XSecSplineList * xspl = XSecSplineList::Instance();
-    std::string xmlfile = std::string(std::getenv("CSFILE"));
-    xspl->LoadFromXml(xmlfile, false);
-    unsetenv("GSPLOAD"); // if it is not unset, the cross sections cannot be read
-
-    fmcj_driver = make_shared<GMCJDriver>();
-
-    FluxInit();
-    GeometryInit();
-
-    fmcj_driver->Configure();
-    fmcj_driver->UseSplines();
-    fmcj_driver->ForceSingleProbScale();
-
-    fIsInit = true;
-
-    return true; // No initialization checks done, return true
-}
+	
  
 /*! Override the FairGenerator::ReadEvent:
 *       Reads the events from the genie::GMCJDriver
 *      instead of a passed in file.
 */
-Bool_t GenieGenerator::ReadEvent(FairPrimaryGenerator* primGen)
+/*virtual*/ Bool_t GenieGenerator::ReadEvent(FairPrimaryGenerator* primGen)
 {
+    //!Budimir: this function is not entirely correct. The vertex position is
+    //!always at (0,0,0). However, each track starts at the position
+    //!genie::EventRecord::Vertex() relative
+    //!to FairRoot's "vertex coordinate (0,0,0)", so in the end simulation works as required.
+    //!This is due to limitations of FairRoot. We can live with this for now,
+    //!but it definitely needs to be fixed in the future.
+    
     //flag indicates that an event has been generated
     Bool_t rc(false);
 
-    //EventRecord* event = fmcj_driver->GenerateEvent();
-    shared_ptr<EventRecord> event(fmcj_driver->GenerateEvent());
-    if(event!=nullptr)
-    {
-        TLorentzVector* v = event->Vertex();
+    genie::EventRecord* event = fmcj_driver->GenerateEvent();
+    if(event == nullptr) return false;
 
-        // Fire other final state particles
-        int nParticles = event->GetEntries();
-        for (int i = 0; i < nParticles; i++) 
-        {
-            GHepParticle *p = event->Particle(i);
-            // kIStStableFinalState - Genie documentation: generator-level final state
-            // particles to be tracked by the detector-level MC
-            if ((p->Status() == EGHepStatus::kIStStableFinalState)) 
-            {
-                primGen->AddTrack(p->Pdg(), p->Px(), p->Py(), p->Pz(), v->X(), v->Y(), v->Z());
-            }
-        }
-        
-        //delete event;
-    }
-
-    return rc;
+    PostProcessEvent(event);
+    
+    event->Print(std::cout);
+		TLorentzVector* v = event->Vertex();
+		
+		// Fire other final state particles
+		int nParticles = event->GetEntries();
+		for (int i = 0; i < nParticles; i++) 
+		{
+				genie::GHepParticle *p = event->Particle(i);
+				// kIStStableFinalState - Genie documentation: generator-level final state
+				// particles to be tracked by the detector-level MC
+				if ((p->Status() == genie::EGHepStatus::kIStStableFinalState)) 
+				{
+						primGen->AddTrack(p->Pdg(), p->Px(), p->Py(), p->Pz(), v->X(), v->Y(), v->Z());
+				}
+		}
+		
+		delete event;
+    
+    return true;
 }
 
 FairGenerator* GenieGenerator::CloneGenerator() const
 {
   // Clone for worker (used in MT mode only)
+  // TODO: check that this actually works
   return new GenieGenerator(*this);
 }
 
-/*! Set the flux driver to be used by the 
-*   to be used in the Genie event generation.
-*/
-void GenieGenerator::FluxInit(void)
-{
-    fflux_driver = make_shared<GMonoEnergeticFlux>(
-            fmaxEv, // max energy of the particles in eV
-            fpdgCode // e.g. genie::kPdgNuMu = 14
-    );
-    fmcj_driver->UseFluxDriver(fflux_driver.get()); 
 }
-
-/*! Set the geometry to be used in the Genie
-*   event generation.
-*/
-void GenieGenerator::GeometryInit()
-{
-    // No need for null check of fmcj_driver. Used only internally during initialization
-    switch(fgeom)
-    {
-        case GenieGeometry::POINT:
-                                fpointGeom = make_shared<PointGeomAnalyzer>(CARBON_12);
-                                fmcj_driver->UseGeomAnalyzer(fpointGeom.get());
-                                break;
-        case GenieGeometry::GLOBAL:
-        default:
-                                fglobalGeom = make_shared<ROOTGeomAnalyzer>(gGeoManager);
-                                fmcj_driver->UseGeomAnalyzer(fglobalGeom.get());
-                                break;
-    }
 }

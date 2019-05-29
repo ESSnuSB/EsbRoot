@@ -1,85 +1,119 @@
 #ifndef ESBROOT_GENERATOR_GENIEGENERATOR_H
 #define ESBROOT_GENERATOR_GENIEGENERATOR_H 1
 
+//! @file EsbGenerators/GenieGenerator.h
+//! @copyright ESSnuSB consortium. Released under GPLv3 <https://www.gnu.org/licenses/gpl-3.0.en.html>.
+
 /* FairRoot headers */
 #include "FairGenerator.h" 
 #include "FairPrimaryGenerator.h"
 
 /* Genie framework classes and tools headers */
 #include "Framework/EventGen/GMCJDriver.h"
+#include "Framework/EventGen/EventRecord.h"
 #include "Tools/Flux/GMonoEnergeticFlux.h"
 #include "Tools/Geometry/PointGeomAnalyzer.h"
 #include "Tools/Geometry/ROOTGeomAnalyzer.h"
 
 #include <memory>
 
-using namespace std;
-using namespace genie;
-using namespace genie::geometry;
-using namespace genie::flux;
+//~ using namespace std;
+//~ using namespace genie;
+//~ using namespace genie::geometry;
+//~ using namespace genie::flux;
 
 namespace esbroot {
 
 namespace generators {
 
-/*! Implementar of the FairRoot generator using the 
-    Genie framework for neutrino event generations*/
+//! @brief Basic Genie generator class
+//!
+//! This class wraps Genie MC generator interface. It provides functionality to configure Genie global state
+//! and to configure Genie generator backend using user provided Genie flux and geometry interfaces.
+//!
+//! It implements the FairGenerator::ReadEvent(FairPrimaryGenerator* primGen) function
+//! which makes it usable within the FairRoot framework.
+//!
+//! @authors Budimir Kliček
+//! @authors Georgi Petkov
+//! @copyright ESSnuSB consortium. Released under GPLv3 (<https://www.gnu.org/licenses/gpl-3.0.en.html>).
 class GenieGenerator : public FairGenerator
 {
 
 public:
+	
+	static struct GlobalState_t {
+		std::string fGenieTune = ""; //!< Genie tune to be used
+		std::string fXsecSplineFileName = ""; //!< Path to XML file with GENIE cross sections
+		long int fRandomSeed = -1; //!< Random seed for GENIE (NOT IMPLEMENTED YET)
+	} GlobalState; //!< Global state of Genie generator
+	
+	static void InitGlobalState(); //!< Initialize the state of Genie backend
+	
+	//! Empty constructor
+	GenieGenerator() {};
+	
+	//! Basic constructor
+	GenieGenerator(genie::GFluxI *fluxI, genie::GeomAnalyzerI *geomI);
 
-    /** Geometry types **/
-    enum GenieGeometry{
-        GLOBAL = 0,
-        POINT = 1
-    };
+	//! Empty destructor
+  virtual ~GenieGenerator() {};
 
-    /** Constructor with pdgCode and max energy **/
-    GenieGenerator(int pdgCode, double Emax);
+	//Setters
+	//! Set Genie flux driver. Can't set if object already configured.
+	void SetFluxI(std::shared_ptr<genie::GFluxI> FluxI) {assert(IsConfigured() == false); fFluxI = FluxI;};
+	//! Set Genie geometry driver. Can't set if object already configured.
+	void SetGeomI(std::shared_ptr<genie::GeomAnalyzerI> GeomI) {assert(IsConfigured() == false); fGeomI = GeomI;};
 
-    // /** Constructor with pdgCode, max energy and geometry type selection **/
-    GenieGenerator(int pdgCode, double Emax, GenieGenerator::GenieGeometry geoType);
+	//Getters
+	//! Get Genie flux driver
+	std::shared_ptr<genie::GFluxI> const& GetFluxI() const {return(fFluxI);};
+	//! Get Genie geometry driver
+	std::shared_ptr<genie::GeomAnalyzerI> const& GetGeomI() const {return(fGeomI);};
 
-    /** Destructor  **/
-    virtual ~GenieGenerator();
+  //!Method which initializes the Genie generator
+  
+  //!FairRoot runs this from FairRunSim::Init().
+  //!Empty because we might want to init Genie after FairRunSim::Init()
+  //!e.g to pass the geometry
+  virtual Bool_t Init(void) {return true;};
 
-    /* method which initializes the Genie generator */
-    Bool_t Init(void);
+	//!Configure the Genie backend
+	virtual Bool_t Configure(); 
+	
+	//!Check if Genie backend is configured
+	Bool_t IsConfigured() const {return fIsConfigured;};
 
-    Bool_t IsInit() {return fIsInit;}
+  //!Implementation of the base method which generates the vertex particles
+  virtual Bool_t ReadEvent(FairPrimaryGenerator* primGen);
+	
+	//!Method to post process the genie event record
+	virtual void PostProcessEvent(/*IN OUT*/ genie::GHepRecord* event) {};
 
-    /* implementation of the base method which generates the vertex particles */
-    virtual Bool_t ReadEvent(FairPrimaryGenerator* primGen);
+  /** Clone this object (used in MT mode only) */
+  virtual FairGenerator* CloneGenerator() const;
 
-    /** Clone this object (used in MT mode only) */
-    virtual FairGenerator* CloneGenerator() const;
 
 private:
 
-    /** Driver for generating neutrino events **/
-    std::shared_ptr<GMCJDriver> fmcj_driver;
+	//These static members are initialized in the .cxx file so that
+	//RootCint does not complain
+	//! Tracks if global state has been initialized
+	static bool fGlobalStateInit;
+
+  //! Driver for generating neutrino events
+  std::shared_ptr<genie::GMCJDriver> fmcj_driver;
     
-     /** Initializes the Flux driver for GMCJDriver **/
-    void FluxInit(void);
-    std::shared_ptr<GMonoEnergeticFlux> fflux_driver;
+  //! Flux driver for GMCJDriver
+  std::shared_ptr<genie::GFluxI> fFluxI;
    
-    /** Used in GMCJDriver initialization to select geometry **/
-    void GeometryInit(void);
-    GenieGeometry fgeom;
-    std::shared_ptr<PointGeomAnalyzer> fpointGeom;
-    std::shared_ptr<ROOTGeomAnalyzer> fglobalGeom;
+  //! Geometry dirver for GMCJDriver
+  std::shared_ptr<genie::GeomAnalyzerI> fGeomI;
 
-    /** Max energy of the neutrinos in eV **/
-    double fmaxEv;
+  //! Tracks if object has been configured
+  Bool_t fIsConfigured = false;
 
-    /** pdg code of the flux generator **/
-    int fpdgCode; 
-
-    /* checks if the Init method has been called */
-    Bool_t fIsInit;
-
-    ClassDef(GenieGenerator,4)
+  ClassDef(GenieGenerator,6)
 };
 
 } //namespace generators

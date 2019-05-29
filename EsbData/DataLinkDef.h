@@ -21,13 +21,5 @@
 #pragma link C++ class esbroot::data::WCDetectorPoint+;
 #pragma link C++ class esbroot::data::PMTubeHit+;
 
-#pragma link C++ class esbroot::data::superfgd::detector::CubeHit+;
-#pragma link C++ class esbroot::data::superfgd::detector::DigitReadout+;
-#pragma link C++ class esbroot::data::superfgd::detector::FgdDetectorParameters+;
-#pragma link C++ class esbroot::data::superfgd::detector::FiberHit+;
-#pragma link C++ class esbroot::data::superfgd::detector::G4DigitRecord+;
-#pragma link C++ class esbroot::data::superfgd::detector::G4EventRecord+;
-#pragma link C++ class esbroot::data::superfgd::detector::G4StepsRecord+;
-
 #endif
 

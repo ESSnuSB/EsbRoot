@@ -213,6 +213,7 @@ void WCDetector::ConstructGeometry()
   AddSensitiveVolume(wall); //From FairModule
   AddSensitiveVolume(endwall); //From FairModule
 
+  //TODO: Top volume should be a parameter in the constructor
   TGeoVolume *top = gGeoManager->GetTopVolume();
   top->AddNode(wc, 1);
   top->AddNode(wall, 1); 

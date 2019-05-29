@@ -19,13 +19,10 @@ link_directories( ${LINK_DIRECTORIES})
 
 set(SRCS
     PMTubeGeoCreator.cxx
-    ParamReader.cxx
 )
 
 Set(HEADERS 
     ${CMAKE_SOURCE_DIR}/EsbTools/PMTubeGeoCreator.h
-    ${CMAKE_SOURCE_DIR}/EsbTools/EsbDefines.h
-    ${CMAKE_SOURCE_DIR}/EsbTools/ParamReader.h
 )
 
 Set(LINKDEF ${CMAKE_SOURCE_DIR}/EsbTools/ToolsLinkDef.h)
