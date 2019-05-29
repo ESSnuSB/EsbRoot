@@ -149,7 +149,7 @@ find_package(Geant4)
 find_package(GEANT4)
 find_package(GEANT4DATA)
 find_package(GEANT4VMC)
-#find_package(CLHEP)
+find_package(CLHEP)
 find_package(HEPMC)
 
 Set(Boost_NO_SYSTEM_PATHS TRUE)

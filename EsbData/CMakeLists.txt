@@ -1,18 +1,22 @@
  # Create a library called "libEsbData" 
 
 set(INCLUDE_DIRECTORIES
-${BASE_INCLUDE_DIRECTORIES}
-#${CMAKE_SOURCE_DIR}/EsbData
-${CMAKE_SOURCE_DIR}
+    ${BASE_INCLUDE_DIRECTORIES}
+    #${CMAKE_SOURCE_DIR}/EsbData
+    ${CMAKE_SOURCE_DIR}
+    ${CLHEP_INCLUDE_DIR}
+    $ENV{GENIE}/src
 )
 
 include_directories( ${INCLUDE_DIRECTORIES})
 include_directories(${SYSTEM_INCLUDE_DIRECTORIES})
 
 set(LINK_DIRECTORIES
-${ROOT_LIBRARY_DIR}
-${FAIRROOT_LIBRARY_DIR}
-#${CMAKE_SOURCE_DIR}/EsbData
+    ${ROOT_LIBRARY_DIR}
+    ${FAIRROOT_LIBRARY_DIR}
+    #${CMAKE_SOURCE_DIR}/EsbData
+    ${CLHEP_LIB_DIR}
+    $ENV{GENIE}/lib
 )
  
 link_directories( ${LINK_DIRECTORIES})
@@ -22,6 +26,8 @@ set(SRCS
     MCTrack.cxx
     WCDetectorPoint.cxx
     PMTubeHit.cxx
+    FgdDetectorPoint.cxx
+    EsbSuperFGD/EsbFgdDetectorParameters.cxx
 )
 
 Set(HEADERS 
@@ -29,6 +35,9 @@ Set(HEADERS
     ${CMAKE_SOURCE_DIR}/EsbData/MCTrack.h
     ${CMAKE_SOURCE_DIR}/EsbData/WCDetectorPoint.h
     ${CMAKE_SOURCE_DIR}/EsbData/PMTubeHit.h
+    ${CMAKE_SOURCE_DIR}/EsbData/FgdDetectorPoint.h
+    ${CMAKE_SOURCE_DIR}/EsbData/EsbSuperFGD/EsbFgdDetectorParameters.h
+    ${CMAKE_SOURCE_DIR}/EsbData/EsbSuperFGD/Materials.h
 )
 
 Set(LINKDEF ${CMAKE_SOURCE_DIR}/EsbData/DataLinkDef.h)

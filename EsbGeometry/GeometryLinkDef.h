@@ -20,5 +20,6 @@
 #pragma link C++ class esbroot::geometry::Cave+;
 #pragma link C++ class esbroot::geometry::GeoCave+;
 #pragma link C++ class esbroot::geometry::PMTube+;
+#pragma link C++ class esbroot::geometry::FgdDetector+;
 
 #endif
