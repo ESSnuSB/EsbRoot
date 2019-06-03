@@ -36,13 +36,13 @@ public:
     /** Destructor **/
     virtual ~SuperFGDDetectorConstruction();
 
-public:
+    /** Constructs the Geant4 physical volume of the detector**/
+    virtual G4VPhysicalVolume* Construct();
+
+private:
 
     /** Class to hold the Detector parameters read from external file **/
     FgdDetectorParameters fdetector;
-
-    /** Constructs the Geant4 physical volume of the detector**/
-    virtual G4VPhysicalVolume* Construct();
 
     /** Detector position **/
     double fposition_X;
