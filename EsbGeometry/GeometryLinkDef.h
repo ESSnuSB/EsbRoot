@@ -15,11 +15,14 @@
 
 #pragma link C++ namespace esbroot+;
 #pragma link C++ namespace esbroot::geometry+;
+#pragma link C++ namespace esbroot::geometry::superfgd+;
 
 #pragma link C++ class esbroot::geometry::WCDetector+;
 #pragma link C++ class esbroot::geometry::Cave+;
 #pragma link C++ class esbroot::geometry::GeoCave+;
 #pragma link C++ class esbroot::geometry::PMTube+;
 #pragma link C++ class esbroot::geometry::FgdDetector+;
+
+#pragma link C++ class esbroot::geometry::superfgd::SuperFGDDetectorConstruction+;
 
 #endif

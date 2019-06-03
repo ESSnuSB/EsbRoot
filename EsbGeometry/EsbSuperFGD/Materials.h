@@ -8,7 +8,7 @@ using namespace CLHEP;
 
 namespace esbroot {
 
-namespace data {
+namespace geometry {
 
 namespace superfgd {
 
@@ -38,7 +38,7 @@ namespace materials
 
 }   // materials
 }   // superfgd
-}   // data
+}   // geometry
 }   // esbroot
 
 #endif

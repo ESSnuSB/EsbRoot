@@ -6,7 +6,6 @@
 #include <globals.hh>
 #include <G4Material.hh>
 #include <G4LogicalVolume.hh>
-#include <G4VisAttributes.hh>
 #include <G4PVPlacement.hh>
 
 #include <G4RotationMatrix.hh>
@@ -15,6 +14,7 @@
 #include <G4Tubs.hh>
 #include <G4Trap.hh>
 #include <G4SubtractionSolid.hh>
+//#include <G4VisAttributes.hh> // causes dynamic link error in cern root
 
 #include "G4SDManager.hh"
 

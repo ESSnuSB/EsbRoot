@@ -1,7 +1,7 @@
 #include "EsbGeometry/EsbSuperFGD/EsbSuperFGDConstructor.h"
 #include "EsbGeometry/EsbSuperFGD/EsbCubeScintilatorConstructor.h"
 
-#include "EsbData/EsbSuperFGD/EsbFgdDetectorParameters.h"
+#include "EsbGeometry/EsbSuperFGD/EsbFgdDetectorParameters.h"
 
 #include "FairLogger.h"                 // for FairLogger, etc
 
@@ -11,7 +11,6 @@
 #include <G4LogicalVolume.hh>
 #include <G4VPhysicalVolume.hh>
 #include <G4PVPlacement.hh>
-#include <G4VisAttributes.hh>
 #include <G4PVReplica.hh>
 #include "G4NistManager.hh"
 
@@ -122,7 +121,6 @@ G4LogicalVolume *ND280SuperFGDConstructor::GetPiece(void)
     = new G4LogicalVolume(repZ_solid,
 			  ND280SuperFGDConstructor::FindMaterial("Air"),
 			  GetName()+"/"+GetNameRepZ());
-  //repZ_logical->SetVisAttributes(G4VisAttributes::Invisible); 
      
   // Build layer of cubes XZ (replica of single row of cubes along X)  
 
@@ -135,7 +133,6 @@ G4LogicalVolume *ND280SuperFGDConstructor::GetPiece(void)
     = new G4LogicalVolume(repXZ_solid,
 			  ND280SuperFGDConstructor::FindMaterial("Air"),
 			  GetName()+"/"+GetNameRepXZ());
-  //repXZ_logical->SetVisAttributes(G4VisAttributes::Invisible);  
 
   // Build box XYZ of cubes
 
@@ -147,8 +144,7 @@ G4LogicalVolume *ND280SuperFGDConstructor::GetPiece(void)
   G4LogicalVolume *repXYZ_logical 
     = new G4LogicalVolume(repXYZ_solid,
 			  ND280SuperFGDConstructor::FindMaterial("Air"),
-			  GetName()+"/"+GetNameRepXYZ());
-  //repXYZ_logical->SetVisAttributes(G4VisAttributes::Invisible);  
+			  GetName()+"/"+GetNameRepXYZ()); 
 
   //
   // Place the cubes:

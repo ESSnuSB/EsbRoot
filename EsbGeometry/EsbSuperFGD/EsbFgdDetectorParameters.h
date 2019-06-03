@@ -3,7 +3,6 @@
 
 #include "CLHEP/Units/SystemOfUnits.h"
 #include "CLHEP/Units/PhysicalConstants.h"
-#include "TObject.h"
 
 #include "TGeoManager.h"
 #include <TGeoBBox.h>
@@ -13,7 +12,7 @@ using namespace std;
         
 namespace esbroot {
 
-namespace data {
+namespace geometry {
 
 namespace superfgd {
 
@@ -67,7 +66,7 @@ namespace DP
     static const string  NF_DIGIT_TRACK_P_MOM_BRANCH ="nfDigitCubeProtonMomentum";
 }
 
-class FgdDetectorParameters : public TObject
+class FgdDetectorParameters
 {
 public:
     /** Default constructor **/
@@ -82,15 +81,7 @@ public:
     void LoadPartParams(string fullfilePathName);
 
     /** Return the dimentions used for the detector **/
-    static Double_t GetLenghtUnit() {return CLHEP::meter;}
-
-    /** Create the ROOT geometry **/
-    void CreateRootGeometry() const;
-
-    /** Set the ROOT geometry to be used **/
-    void SetRootGeometry(TGeoManager* geom) {frootGeometry = geom;}
-    /** Get the used ROOT geometry **/
-    TGeoManager* GetRootGeometry() const; 
+    static Double_t GetLenghtUnit() {return CLHEP::meter;} 
 
     /** Return the existing map parameter as std::string  **/
     string ParamAsString(const string& paramName) const;
@@ -112,16 +103,11 @@ public:
 
 private:
 
-    void    Validate(const string& paramName) const;
-
     mutable map<string, string> fparamsMap;
-    mutable TGeoManager* frootGeometry;
-
-    ClassDef(FgdDetectorParameters, 4);
 };
 
 }   // superfgd
-}   // data
+}   // geometry
 }   // esbroot
 
 #endif

@@ -40,9 +40,9 @@ namespace geometry {
 static const Int_t kFgdDetector = 2;
 
 //___________________________________________________________________
-FgdDetector::FgdDetector(std::string geoConfigFile)
+FgdDetector::FgdDetector(std::string geoConfigFile, double posX, double posY, double posZ)
   : FairDetector("FgdDetector", kTRUE, kFgdDetector),
-    fgdConstructor(geoConfigFile),
+    fgdConstructor(geoConfigFile,posX,posY,posZ),
     fTrackID(-1),
     fVolumeID(-1),
     fPos(),
@@ -55,9 +55,9 @@ FgdDetector::FgdDetector(std::string geoConfigFile)
 }
 
 //___________________________________________________________________
-  FgdDetector::FgdDetector(const char* name, std::string geoConfigFile, Bool_t active)
+  FgdDetector::FgdDetector(const char* name, std::string geoConfigFile, double posX, double posY, double posZ, Bool_t active)
   : FairDetector(name, active, kFgdDetector),
-    fgdConstructor(geoConfigFile),
+    fgdConstructor(geoConfigFile,posX,posY,posZ),
     fTrackID(-1),
     fVolumeID(-1),
     fPos(),
@@ -162,7 +162,7 @@ void FgdDetector::ConstructGeometry()
   // Export VGM geometry to Root
   RootGM::Factory rtFactory;
   g4Factory.Export(&rtFactory);
-  //gGeoManager->CloseGeometry();
+  gGeoManager->CloseGeometry();
 }
 
 //___________________________________________________________________

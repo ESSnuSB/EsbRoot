@@ -14,14 +14,11 @@ namespace esbroot {
 namespace geometry {
 namespace superfgd {
 
-SuperFGDDetectorConstruction::SuperFGDDetectorConstruction(double posX, double posY, double posZ)
-  :FgdDetectorConstruction(), fposition_X(posX), fposition_Y(posY), fposition_Z(posZ)
-{
-}
 
 SuperFGDDetectorConstruction::SuperFGDDetectorConstruction(std::string detectorFile, double posX, double posY, double posZ)
-  : FgdDetectorConstruction(detectorFile), fposition_X(posX), fposition_Y(posY), fposition_Z(posZ)
+  :fposition_X(posX), fposition_Y(posY), fposition_Z(posZ)
 {
+  fdetector.LoadPartParams(detectorFile);
 }
 
 SuperFGDDetectorConstruction::~SuperFGDDetectorConstruction()
@@ -33,25 +30,25 @@ G4VPhysicalVolume* SuperFGDDetectorConstruction::Construct()
     G4String cNameLogicSuperFGD1 = "Esb/SuperFGD";
     
     std::shared_ptr<ND280SuperFGDConstructor> fSuperFGDConstructor1 = make_shared<ND280SuperFGDConstructor>(cNameLogicSuperFGD1);
-    fSuperFGDConstructor1->SetVisibility(fdetector.ParamAsBool(data::superfgd::DP::visdetail));
+    fSuperFGDConstructor1->SetVisibility(fdetector.ParamAsBool(DP::visdetail));
 
     G4String nameSuperFGD1 = fSuperFGDConstructor1->GetName();
 
     Double_t lunit = fdetector.GetLenghtUnit();
-    Double_t cube_X = fdetector.ParamAsDouble(data::superfgd::DP::length_X) * lunit;
+    Double_t cube_X = fdetector.ParamAsDouble(DP::length_X) * lunit;
 
-    Double_t cube_X_N = fdetector.ParamAsDouble(data::superfgd::DP::number_cubes_X);
-    Double_t cube_Y_N = fdetector.ParamAsDouble(data::superfgd::DP::number_cubes_Y);
-    Double_t cube_Z_N = fdetector.ParamAsDouble(data::superfgd::DP::number_cubes_Z);
+    Double_t cube_X_N = fdetector.ParamAsDouble(DP::number_cubes_X);
+    Double_t cube_Y_N = fdetector.ParamAsDouble(DP::number_cubes_Y);
+    Double_t cube_Z_N = fdetector.ParamAsDouble(DP::number_cubes_Z);
 
     double edge = cube_X;
     int cubenumX = cube_X_N;
     int cubenumY = cube_Y_N;
     int cubenumZ = cube_Z_N;
 
-    G4double x = fdetector.ParamAsDouble(data::superfgd::DP::positon_X);
-    G4double y = fdetector.ParamAsDouble(data::superfgd::DP::positon_Y);
-    G4double z = fdetector.ParamAsDouble(data::superfgd::DP::positon_Z);
+    G4double x = fdetector.ParamAsDouble(DP::positon_X);
+    G4double y = fdetector.ParamAsDouble(DP::positon_Y);
+    G4double z = fdetector.ParamAsDouble(DP::positon_Z);
 
     fSuperFGDConstructor1->SetEdge(edge*CLHEP::mm);
     fSuperFGDConstructor1->SetCubeNumX(cubenumX);
@@ -72,11 +69,11 @@ G4VPhysicalVolume* SuperFGDDetectorConstruction::Construct()
   //-------------------------------------------------------------------------
   // Magnetic field
   //-------------------------------------------------------------------------
-  if (fdetector.ExistsParam(data::superfgd::DP::magField)) 
+  if (fdetector.ExistsParam(DP::magField)) 
   {
-        G4double magField_X = fdetector.ParamAsDouble(data::superfgd::DP::magField_X) * CLHEP::tesla;
-        G4double magField_Y = fdetector.ParamAsDouble(data::superfgd::DP::magField_Y) * CLHEP::tesla;
-        G4double magField_Z = fdetector.ParamAsDouble(data::superfgd::DP::magField_Z) * CLHEP::tesla;
+        G4double magField_X = fdetector.ParamAsDouble(DP::magField_X) * CLHEP::tesla;
+        G4double magField_Y = fdetector.ParamAsDouble(DP::magField_Y) * CLHEP::tesla;
+        G4double magField_Z = fdetector.ParamAsDouble(DP::magField_Z) * CLHEP::tesla;
 
         G4UniformMagField* magField = new G4UniformMagField(G4ThreeVector(magField_X,magField_Y,magField_Z));
         G4FieldManager* localFieldManager = G4TransportationManager::GetTransportationManager()->GetFieldManager();

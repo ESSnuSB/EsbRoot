@@ -39,12 +39,10 @@ set(SRCS
 	GeoCave.cxx
 	PMTube.cxx
 	FgdDetector.cxx
-	EsbSuperFGD/EsbCubeParametrisation.cxx
 	EsbSuperFGD/EsbCubeScintilatorConstructor.cxx
-	EsbSuperFGD/EsbDetectorConstruction.cxx
 	EsbSuperFGD/EsbSuperFGDConstructor.cxx
 	EsbSuperFGD/EsbSuperFGDDetectorConstruction.cxx
-	EsbSuperFGD/EsbSlabParametrization.cxx
+	EsbSuperFGD/EsbFgdDetectorParameters.cxx
 )
 
 Set(HEADERS 
@@ -53,12 +51,11 @@ Set(HEADERS
 	${CMAKE_SOURCE_DIR}/EsbGeometry/GeoCave.h
 	${CMAKE_SOURCE_DIR}/EsbGeometry/PMTube.h
 	${CMAKE_SOURCE_DIR}/EsbGeometry/FgdDetector.h
-	${CMAKE_SOURCE_DIR}/EsbGeometry/EsbSuperFGD/EsbCubeParametrisation.h
 	${CMAKE_SOURCE_DIR}/EsbGeometry/EsbSuperFGD/EsbCubeScintilatorConstructor.h
-	${CMAKE_SOURCE_DIR}/EsbGeometry/EsbSuperFGD/EsbDetectorConstruction.h
 	${CMAKE_SOURCE_DIR}/EsbGeometry/EsbSuperFGD/EsbSuperFGDConstructor.h
 	${CMAKE_SOURCE_DIR}/EsbGeometry/EsbSuperFGD/EsbSuperFGDDetectorConstruction.h
-	${CMAKE_SOURCE_DIR}/EsbGeometry/EsbSuperFGD/EsbSlabParametrization.h
+	${CMAKE_SOURCE_DIR}/EsbGeometry/EsbSuperFGD/EsbFgdDetectorParameters.h
+	${CMAKE_SOURCE_DIR}/EsbGeometry/EsbSuperFGD/Materials.h
 )
 
 Set(LINKDEF ${CMAKE_SOURCE_DIR}/EsbGeometry/GeometryLinkDef.h)

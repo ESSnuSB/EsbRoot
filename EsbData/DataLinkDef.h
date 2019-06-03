@@ -24,7 +24,5 @@
 #pragma link C++ class esbroot::data::PMTubeHit+;
 #pragma link C++ class esbroot::data::FgdDetectorPoint+;
 
-#pragma link C++ class esbroot::data::superfgd::FgdDetectorParameters+;
-
 #endif
 

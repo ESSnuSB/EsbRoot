@@ -4,7 +4,7 @@
 
 */
 
-void ess_sim(TString outFileName = "evetest.root",
+void ess_sim_genie(TString outFileName = "evetest.root",
              Int_t nStartEvent = 0, 
 	     Int_t nEvents = 1)
 {
@@ -17,44 +17,47 @@ void ess_sim(TString outFileName = "evetest.root",
   
   // Choose the Geant Navigation System
   fRun->SetName("TGeant4"); // TGeant3/4
-  //~ fRun->SetIsMT(true);
   
   // Set Material Definition file
   fRun->SetMaterials("media.geo");
   
   // Add Passive Modules
   FairModule *cave= new geometry::Cave("CAVE");
-  //~ FairModule *Cave= new FairCave("CAVE");
   cave->SetGeometryFileName("cave.geo");
   fRun->AddModule(cave);
   
   // Add Detectors
   FairDetector *nearWc = new geometry::WCDetector("NearWcDetector", 300, 500, kTRUE);
   fRun->AddModule(nearWc);
-
-  FgdDetector* fgd = new geometry::FgdDetector("/home/georgi/opt/Essnusb/ESSnuSB-soft/EsbGeometry/EsbSuperFGD/EsbConfig/geometry");
-  fRun->AddModule(fgd,0,0,0);
   
-  // Far Detector
-  // FairDetector *farWc = new EsbWCDetector("FarWcDetector", 1000, 2000, kTRUE);
-  // fRun->AddModule(farWc);
   
   // Create and Set Event Generator
   FairPrimaryGenerator* primGen = new FairPrimaryGenerator();
   fRun->SetGenerator(primGen);
   
-  //~ FairParticleGenerator* partGen = new FairParticleGenerator(2212, 1, 0, 0, 1, 0, 0, 0);
-  FairParticleGenerator* partGen = new FairParticleGenerator(13, 1, 0, 0, 0.4, 0, 0, 150);
-  primGen->AddGenerator(partGen);
+	// *** Set global genie parameters ***
+	//Genie tune, this is the recommended one
+  generators::GenieGenerator::GlobalState.fGenieTune = "G18_10a_00_000";
+  //File with cross-section splines (see: http://scisoft.fnal.gov/scisoft/packages/genie_xsec/)
+  generators::GenieGenerator::GlobalState.fXsecSplineFileName = "../../xsec/xsec_essnusb.xml"; 
+ 
+	//Create simple genie generator
+	auto partGen = new generators::SimpleGenieGenerator(
+		1000080160, //Target PDG (O16)
+		14, //Neutrino PDG (nu_mu)
+		0.6, //Neutrino energy (GeV)
+		TVector3(1.0,0.0,0.0), //Neutrino directon (normalization of this vector is not important)
+		TLorentzVector(0.0, 0.0, 0.0, 0.0) //4-position of the neutrino vertex (x, y, z, t) (cm, s)
+  );
 
+  //Add to list of generators
+  primGen->AddGenerator(partGen);
+  
+  
   fRun->SetOutputFile(outFileName.Data()); // set output file
   
-  // skip magnetic field
-  
   fRun->Init();
-  //~ cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! " << nearWc->svList->GetEntries() << endl;
-  
-  // Transport nEvents
+
   
   // Peter: for the event display to work one need to create a "parameter"
   // file. The code is taken from the example from Konstantin Gertsenberger.

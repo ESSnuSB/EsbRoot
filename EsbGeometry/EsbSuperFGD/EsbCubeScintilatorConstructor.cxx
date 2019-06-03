@@ -1,8 +1,7 @@
 #include "EsbGeometry/EsbSuperFGD/EsbCubeScintilatorConstructor.h"
-//#include "EsbGeometry/EsbSuperFGD/EsbCubeSD.h"
 #include "EsbGeometry/EsbSuperFGD/EsbSuperFGDConstructor.h"
 
-#include "EsbData/EsbSuperFGD/EsbFgdDetectorParameters.h"
+#include "EsbGeometry/EsbSuperFGD/EsbFgdDetectorParameters.h"
 
 namespace esbroot {
 namespace geometry {
@@ -64,6 +63,7 @@ G4LogicalVolume* ND280CubeScintConstructor::GetPiece(void)
   //G4cout << "SuperFGD Cube length = " << GetLength() << G4endl;
   //G4cout << "SuperFGD Hole radius = " << GetHoleRadius() << G4endl;
   
+  /* TODO G4VisAttributes causes dynamic link error in cern root
   G4VisAttributes *visAtt_Scint = new G4VisAttributes();
   visAtt_Scint->SetColor(0.5,0.5,0.5,0.); // gray
   visAtt_Scint->SetForceSolid(true);
@@ -71,6 +71,7 @@ G4LogicalVolume* ND280CubeScintConstructor::GetPiece(void)
   visAtt_Coat->SetColor(1.0,1.0,1.0); // white
   //visAtt_Coat->SetColor(0.5,0.5,0.5,0.); // gray
   visAtt_Coat->SetForceSolid(true);
+  */
 
   // Build G4VSolid the plastic cube with coating and holes for WLS fibers
 
@@ -210,6 +211,7 @@ G4LogicalVolume* ND280CubeScintConstructor::GetPiece(void)
 		    false,               // no boolean operations
 		    0);                  // copy number
 
+  /* TODO G4VisAttributes causes dynamic link error in cern root
   if( GetVisibility()){
     cubeVolume->SetVisAttributes(G4VisAttributes::Invisible);
     extrusionVolume->SetVisAttributes(G4VisAttributes::Invisible);
@@ -220,6 +222,7 @@ G4LogicalVolume* ND280CubeScintConstructor::GetPiece(void)
     extrusionVolume->SetVisAttributes(visAtt_Coat); 
     scintVolume    ->SetVisAttributes(visAtt_Scint);
   }
+  */
 
 
 
@@ -232,9 +235,11 @@ G4LogicalVolume* ND280CubeScintConstructor::GetPiece(void)
   // between each other and the same will happen among the WLS fiber segments.
   //
 
+  /* TODO G4VisAttributes causes dynamic link error in cern root
   G4VisAttributes *visAtt_Fiber = new G4VisAttributes();
   visAtt_Fiber->SetColor(0.0,1.0,0.0); // green
   visAtt_Fiber->SetForceSolid(true);
+  */
   
   if (GetFiberRadius()>GetHoleRadius()) { 
     G4Exception("ND280CubeScintConstructor::GetPiece",
@@ -315,6 +320,7 @@ G4LogicalVolume* ND280CubeScintConstructor::GetPiece(void)
 			    ND280SuperFGDConstructor::FindMaterial(GetFiberMaterial()),
 			    GetName()+"/Hole/FiberZ");
     
+    /* TODO G4VisAttributes causes dynamic link error in cern root
     if( GetVisibility()){
       holeAlongXVolume->SetVisAttributes(G4VisAttributes::Invisible);
       holeAlongYVolume->SetVisAttributes(G4VisAttributes::Invisible);
@@ -331,6 +337,7 @@ G4LogicalVolume* ND280CubeScintConstructor::GetPiece(void)
       fiberAlongYVolume->SetVisAttributes(visAtt_Fiber);
       fiberAlongZVolume->SetVisAttributes(visAtt_Fiber);
     }
+    */
 
     
     // Place the holes inside the cube in order to be sure it's filled with "Air"

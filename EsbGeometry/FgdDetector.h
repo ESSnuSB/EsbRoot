@@ -12,7 +12,7 @@
 
 #include "TVector3.h"
 #include "TLorentzVector.h"
-#include "EsbGeometry/EsbSuperFGD/EsbDetectorConstruction.h"
+#include "EsbGeometry/EsbSuperFGD/EsbSuperFGDDetectorConstruction.h"
 
 class FairVolume;
 class TClonesArray;
@@ -35,12 +35,12 @@ namespace geometry {
 		 *               kFALSE for inactive detectors
 		 * 		 geoConfigFile: Full path to the configuration file for the Superfgd geometry
 		*/
-	    FgdDetector(const char* Name, std::string geoConfigFile, Bool_t Active);
+	    FgdDetector(const char* Name, std::string geoConfigFile, double posX, double posY, double posZ, Bool_t Active);
 
 		/**     Constructor using default name
 		 * 		geoConfigFile: Full path to the configuration file for the Superfgd geometry
 		*/
-		FgdDetector(std::string geoConfigFile);
+		FgdDetector(std::string geoConfigFile, double posX, double posY, double posZ);
 
 		/**       destructor     */
 		virtual ~FgdDetector();
@@ -101,7 +101,7 @@ namespace geometry {
 		Double32_t     fLength;            //!  length
 		Double32_t     fELoss;             //!  energy loss
 
-		esbroot::geometry::superfgd::FgdDetectorConstruction    fgdConstructor;	   //! SuperFgd Detector Constructor
+		esbroot::geometry::superfgd::SuperFGDDetectorConstruction    fgdConstructor;	   //! SuperFgd Detector Constructor
 		/** container for data points */
 
 		TClonesArray*  fFgdDetectorPointCollection;  //! 
