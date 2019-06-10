@@ -43,6 +43,8 @@ void CubeScintConstructor::Construct()
   SetHeight(10.);
   SetLength(10.);
 
+
+  SetFiberRadius(0.3);
   SetHoleRadius(0.5);
 
   double shift = 1.5*CLHEP::mm;
@@ -62,18 +64,31 @@ void CubeScintConstructor::Construct()
   SetHoleRot_X(rotXX);
   SetHoleRot_Y(rotYY);
   SetHoleRot_Z(rotZZ);
-  //=============================
-  //=============================
-  //=============================
 
+  SetCoatingThickness(0.025);
+  //=============================
+  //=============================
+  //=============================
 
 
   // The Box shape from which the holes for the fiber will be subtracted
-  TGeoBBox* cube = new TGeoBBox("Cube",GetBase()/2, GetHeight()/2, GetLength()/2);
+  TGeoBBox* cubeWithCoating = new TGeoBBox("CubeCoating",GetBase()/2, GetHeight()/2, GetLength()/2);
 
+  // The Box shape from which the holes for the fiber will be subtracted
+  double coatingThickness = GetCoatingThickness(); // coating thickness in cm (root default length dimention)
+  TGeoBBox* cube = new TGeoBBox("Cube",
+                                GetBase()/2 - coatingThickness,
+                                GetHeight()/2 - coatingThickness,
+                                GetLength()/2 - coatingThickness);
+
+  TGeoCompositeShape* coating = new TGeoCompositeShape("coating","CubeCoating - Cube");
+
+  TGeoVolume* cubeWithCoatingVolume = new TGeoVolume("CubeCoatingVolume",coating, gGeoManager->GetMedium(materials::scintillatorCoating));
+
+  //=======================================================================================
   // Create the fiber hole along X
   //-----------------------------------
-  TGeoCone* fiberX = new TGeoCone("FX", GetBase()/2, 0, GetHoleRadius(),0 ,GetHoleRadius());
+  TGeoCone* fiberHoleX = new TGeoCone("FX", GetBase()/2, 0, GetHoleRadius(),0 ,GetHoleRadius());
 
   TGeoRotation* rotX = new TGeoRotation("rotX", 
                             fHoleRotX.rotateX,
@@ -87,11 +102,29 @@ void CubeScintConstructor::Construct()
                             fHolePositionX.Z,
                             rotX);
   locationX->RegisterYourself();
-  //-----------------------------------
 
+  // Create the fiber shape - the fiber shape is the contained within the fiber coating
+  TGeoCone* fiberShapeX = new TGeoCone("fiberShapeX", GetBase()/2, 0, GetFiberRadius(),0 ,GetFiberRadius());
+
+  // Create the fiber coating-> this is the hole minus the fiber itself
+  TGeoCompositeShape* fiberXShapeCoat = new TGeoCompositeShape("fiberXShapeCoat","FX - fiberShapeX");
+
+  // Create fiber coating
+  TGeoVolume* fiberXCoatVolume = new TGeoVolume("fiberXCoatVolume",fiberXShapeCoat, gGeoManager->GetMedium(materials::fiberCladding));
+
+  // Create fiber core volume
+  TGeoVolume* fiberXVolume = new TGeoVolume("fiberXVolume",fiberShapeX, gGeoManager->GetMedium(materials::fiberCore));
+
+  // Place the fiber core inside its coating
+  fiberXCoatVolume->AddNode(fiberXVolume, 1 /* One copy*/);
+
+  //-----------------------------------
+  //=======================================================================================
+
+  //=======================================================================================
 	// Create the fiber hole along Y
   //-----------------------------------
-  TGeoCone* fiberY = new TGeoCone("FY", GetHeight()/2, 0, GetHoleRadius(),0 ,GetHoleRadius());
+  TGeoCone* fiberHoleY = new TGeoCone("FY", GetHeight()/2, 0, GetHoleRadius(),0 ,GetHoleRadius());
 
   TGeoRotation* rotY = new TGeoRotation("rotY", 
                             fHoleRotY.rotateX,
@@ -106,11 +139,28 @@ void CubeScintConstructor::Construct()
                             rotY);
   locationY->RegisterYourself();
 
-  //-----------------------------------
+  // Create the fiber shape - the fiber shape is the contained within the fiber coating
+  TGeoCone* fiberShapeY = new TGeoCone("fiberShapeY", GetHeight()/2, 0, GetFiberRadius(),0 ,GetFiberRadius());
 
+  // Create the fiber coating-> this is the hole minus the fiber itself
+  TGeoCompositeShape* fiberYShapeCoat = new TGeoCompositeShape("fiberYShapeCoat","FY - fiberShapeY");
+
+  // Create fiber coating
+  TGeoVolume* fiberYCoatVolume = new TGeoVolume("fiberYCoatVolume",fiberYShapeCoat, gGeoManager->GetMedium(materials::fiberCladding));
+
+  // Create fiber core volume
+  TGeoVolume* fiberYVolume = new TGeoVolume("fiberYVolume",fiberShapeY, gGeoManager->GetMedium(materials::fiberCore));
+
+  // Place the fiber core inside its coating
+  fiberYCoatVolume->AddNode(fiberYVolume, 1 /* One copy*/);
+
+  //-----------------------------------
+  //=======================================================================================
+
+  //=======================================================================================
   // Create the fiber hole along Z
   //-----------------------------------
-  TGeoCone* fiberZ = new TGeoCone("FZ", GetLength()/2, 0, GetHoleRadius(),0 ,GetHoleRadius());
+  TGeoCone* fiberHoleZ = new TGeoCone("FZ", GetLength()/2, 0, GetHoleRadius(),0 ,GetHoleRadius());
 
   TGeoRotation* rotZ = new TGeoRotation("rotY", 
                             fHoleRotZ.rotateX,
@@ -125,13 +175,40 @@ void CubeScintConstructor::Construct()
                             rotZ);
   locationZ->RegisterYourself();
 
+
+  // Create the fiber shape - the fiber shape is the contained within the fiber coating
+  TGeoCone* fiberShapeZ = new TGeoCone("fiberShapeZ", GetLength()/2, 0, GetFiberRadius(),0 ,GetFiberRadius());
+
+  // Create the fiber coating-> this is the hole minus the fiber itself
+  TGeoCompositeShape* fiberZShapeCoat = new TGeoCompositeShape("fiberZShapeCoat","FZ - fiberShapeZ");
+
+  // Create fiber coating
+  TGeoVolume* fiberZCoatVolume = new TGeoVolume("fiberZCoatVolume",fiberZShapeCoat, gGeoManager->GetMedium(materials::fiberCladding));
+
+  // Create fiber core volume
+  TGeoVolume* fiberZVolume = new TGeoVolume("fiberZVolume",fiberShapeZ, gGeoManager->GetMedium(materials::fiberCore));
+
+  // Place the fiber core inside its coating
+  fiberZCoatVolume->AddNode(fiberZVolume, 1 /* One copy*/);
+
   //-----------------------------------
+  //=======================================================================================
 
   // Create scintilator cube shape
-  TGeoCompositeShape* comp = new TGeoCompositeShape("comp","Cube - FX:locationX - FY:locationY - FY:locationZ");
+  TGeoCompositeShape* cubeComp = new TGeoCompositeShape("cubeComp","Cube - FX:locationX - FY:locationY - FY:locationZ");
 
   // Create Volume scintilator cube
-  fCube = new TGeoVolume(GetName().c_str(),comp, gGeoManager->GetMedium(materials::scintillator));
+  TGeoVolume* cubeScntVol = new TGeoVolume(GetName().c_str(),cubeComp, gGeoManager->GetMedium(materials::scintillator));
+
+  // Place the scintilator cube into the cube coating
+  cubeWithCoatingVolume->AddNode(cubeScntVol, 1 /* One Element*/ /*, Identity matrix is by default used for location*/);
+
+  // Place the fiber coatings with fiber core
+  cubeWithCoatingVolume->AddNode(fiberXCoatVolume, 1 /* One Element*/, locationX);
+  cubeWithCoatingVolume->AddNode(fiberYCoatVolume, 1 /* One Element*/, locationY);
+  cubeWithCoatingVolume->AddNode(fiberZCoatVolume, 1 /* One Element*/, locationZ);
+  
+  fCube = cubeWithCoatingVolume;
 }
 
 
