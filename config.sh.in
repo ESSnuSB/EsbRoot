@@ -1,0 +1,9 @@
+source @CMAKE_BINARY_DIR@/fairroot_config.sh
+
+#If WITH_GENIE is was to ON during cmake
+if [ "@WITH_GENIE@" = "ON" ]; then
+	export GENIE=@GENIE_DIR@
+	export PATH=$GENIE/bin:$PATH
+	export LD_LIBRARY_PATH=@GENIE_LIB_DIR@:$LD_LIBRARY_PATH
+	export LHAPATH=$GENIE/data/evgen/pdfs
+fi 
