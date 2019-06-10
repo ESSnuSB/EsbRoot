@@ -15,8 +15,8 @@ namespace geometry {
 namespace superfgd {
 
 
-SuperFGDDetectorConstruction::SuperFGDDetectorConstruction(std::string detectorFile)
-  : fVolume(nullptr)
+SuperFGDDetectorConstruction::SuperFGDDetectorConstruction(std::string detectorFile, FairGeoLoader* geoLoad)
+  : fVolume(nullptr), fgeoLoad(geoLoad)
 {
   fParams.LoadPartParams(detectorFile);
 }
@@ -38,7 +38,7 @@ void SuperFGDDetectorConstruction::Construct()
 {
     std::string cNameLogicSuperFGD1 = "Esb/SuperFGD";
     
-    SuperFGDConstructor fSuperFGDConstructor1(cNameLogicSuperFGD1);
+    SuperFGDConstructor fSuperFGDConstructor1(cNameLogicSuperFGD1, fgeoLoad);
     fSuperFGDConstructor1.SetVisibility(fParams.ParamAsBool(DP::visdetail));
 
     std::string nameSuperFGD1 = fSuperFGDConstructor1.GetName();

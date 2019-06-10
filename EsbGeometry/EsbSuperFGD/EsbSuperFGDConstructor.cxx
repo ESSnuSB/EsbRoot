@@ -17,10 +17,11 @@ namespace esbroot {
 namespace geometry {
 namespace superfgd {
 
-SuperFGDConstructor::SuperFGDConstructor(std::string name):fVolume(nullptr)
+SuperFGDConstructor::SuperFGDConstructor(std::string name, FairGeoLoader* geoLoad)
+:fVolume(nullptr), fgeoLoad(geoLoad)
 {
     SetName(name);
-    //DefineMaterials();
+    DefineMaterials();
     Init();
 }
   
@@ -66,7 +67,7 @@ TGeoVolume* SuperFGDConstructor::GetPiece(void)
 
 void SuperFGDConstructor::DefineMaterials() 
 {
-  FairGeoLoader *geoLoad = FairGeoLoader::Instance();
+  FairGeoLoader *geoLoad = fgeoLoad;
 	FairGeoInterface *geoFace = geoLoad->getGeoInterface();
 	
 	FairGeoMedia *geoMedia = geoFace->getMedia();

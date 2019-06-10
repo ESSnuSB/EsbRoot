@@ -12,7 +12,8 @@ namespace esbroot {
 namespace geometry {
 namespace superfgd {
 
-CubeScintConstructor::CubeScintConstructor(std::string n) : fCube(nullptr)
+CubeScintConstructor::CubeScintConstructor(std::string n) 
+: fCube(nullptr)
 {
 }
   

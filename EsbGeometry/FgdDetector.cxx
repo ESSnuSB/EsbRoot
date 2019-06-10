@@ -42,7 +42,7 @@ static const Int_t kFgdDetector = 2;
 //___________________________________________________________________
 FgdDetector::FgdDetector(std::string geoConfigFile, double posX, double posY, double posZ)
   : FairDetector("FgdDetector", kTRUE, kFgdDetector),
-    fgdConstructor(geoConfigFile),
+    fgdConstructor(geoConfigFile, FairGeoLoader::Instance()),
     fTrackID(-1),
     fVolumeID(-1),
     fPos(),
@@ -60,7 +60,7 @@ FgdDetector::FgdDetector(std::string geoConfigFile, double posX, double posY, do
 //___________________________________________________________________
   FgdDetector::FgdDetector(const char* name, std::string geoConfigFile, double posX, double posY, double posZ, Bool_t active)
   : FairDetector(name, active, kFgdDetector),
-    fgdConstructor(geoConfigFile),
+    fgdConstructor(geoConfigFile, FairGeoLoader::Instance()),
     fTrackID(-1),
     fVolumeID(-1),
     fPos(),
@@ -164,10 +164,9 @@ void FgdDetector::ConstructGeometry()
   top->AddNode(superFgdG4Vol, 1);
   top->AddNode(superFgdG4Vol, 1, new TGeoTranslation(fposX, fposY, fposZ));
 
-  superFgdG4Vol->SetLineColor(kRed);
+  AddSensitiveVolume(superFgdG4Vol); //From FairModule
 
-  // Validate Geometry
-  gGeoManager->CloseGeometry();
+  superFgdG4Vol->SetLineColor(kRed);
 }
 
 //___________________________________________________________________

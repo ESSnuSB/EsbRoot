@@ -8,6 +8,9 @@
 #include "EsbGeometry/EsbSuperFGD/EsbFgdDetectorParameters.h"
 
 #include "TObject.h"
+#include "FairGeoMedia.h"
+#include "FairGeoLoader.h"
+#include "TGeoManager.h"
 
 class FgdDetectorParameters;
 
@@ -21,8 +24,9 @@ public:
 
     /** Constructor
      *@param detectorFile - name (fullpath) of file from which to read the detector parameters
+     *@param gGeoMan - TGeoManager to retrieve the detector materials
      **/
-    SuperFGDDetectorConstruction(std::string detectorFile);
+    SuperFGDDetectorConstruction(std::string detectorFile, FairGeoLoader* geoLoad);
 
     /** Destructor **/
     virtual ~SuperFGDDetectorConstruction();
@@ -37,6 +41,9 @@ private:
 
     /** Class to hold the Detector parameters read from external file **/
     FgdDetectorParameters fParams;
+
+    /** Class to hold the materials **/
+    FairGeoLoader* fgeoLoad;
 
     /**  The pointer to the root volume **/
     TGeoVolume* fVolume;
