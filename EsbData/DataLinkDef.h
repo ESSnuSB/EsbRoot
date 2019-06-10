@@ -16,7 +16,6 @@
 
 #pragma link C++ namespace esbroot;
 #pragma link C++ namespace esbroot::data+;
-#pragma link C++ namespace esbroot::data::superfgd+;
 
 #pragma link C++ class esbroot::data::Stack+;
 #pragma link C++ class esbroot::data::MCTrack+;

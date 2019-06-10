@@ -8,6 +8,8 @@
 #include <TGeoBBox.h>
 #include <TGeoVolume.h>
 
+#include "TObject.h"
+
 using namespace std;
         
 namespace esbroot {
@@ -47,26 +49,9 @@ namespace DP
     static const string  magField_Z = "magField_Z";
 
     static const char SEPERATOR='=';
-
-    static const string  NF_DETECTOR_CUBE_SD = "NF_DETECTOR_CUBE_SD";
-    static const string  SUPER_FGD_CUBE_SD = "SUPER_FGD_CUBE_SD";
-
-    static const string  NF_FIBER_HIT_BRANCH ="g4nFiberhit"; /*, "FiberHit"*/
-    static const string  NF_CUBE_HIT_BRANCH ="g4nCubehit"; /*, "CubeHit"*/
-
-    static const string  NF_DIGIT_CUBE_BRANCH ="nfDigitCubeEvents";
-    static const string  NF_DIGIT_TRACK_COS_BRANCH ="nfDigitCubeCosAnglesEvent";
-    static const string  NF_DIGIT_TRACK_MOM_BRANCH ="nfDigitCubeMomentumEvent";
-    static const string  NF_DIGIT_TRACK_EFF_BRANCH ="nfDigitCubeEfficiencyEvent";
-    static const string  NF_DIGIT_TRACK_MU_EVENT_BRANCH ="nfDigitCubeMuonEvent";
-    static const string  NF_DIGIT_TRACK_MU_ANGLE_BRANCH ="nfDigitCubeMuonAngle";
-    static const string  NF_DIGIT_TRACK_MU_MOM_BRANCH ="nfDigitCubeMuonMomentum";
-    static const string  NF_DIGIT_TRACK_P_EVENT_BRANCH ="nfDigitCubeProtonEvent";
-    static const string  NF_DIGIT_TRACK_P_ANGLE_BRANCH ="nfDigitCubeProtonAngle";
-    static const string  NF_DIGIT_TRACK_P_MOM_BRANCH ="nfDigitCubeProtonMomentum";
 }
 
-class FgdDetectorParameters
+class FgdDetectorParameters : public TObject
 {
 public:
     /** Default constructor **/
@@ -104,6 +89,8 @@ public:
 private:
 
     mutable map<string, string> fparamsMap;
+
+    ClassDef(FgdDetectorParameters,2)
 };
 
 }   // superfgd

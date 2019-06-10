@@ -1,37 +1,28 @@
 #ifndef ESBROOT_ESBGEOMETRY_SUPERFGD_FGD_CONSTRUCTION_H
 #define ESBROOT_ESBGEOMETRY_SUPERFGD_FGD_CONSTRUCTION_H 1
 
-#include <G4ThreeVector.hh>
-#include <G4Material.hh>
-class G4LogicalVolume;
+#include "TObject.h"
 
-
-/// Create a bounding box to contain the off axis detector.  The method get
-/// GetPiece() constructs a new unplaced magnet that is facing up along the Z
-/// axis.  The calling code should then rotate the object into position and
-/// and place the object into a large mother volume.
+/// Create a bounding box to contain the geometry of the detector 
 
 namespace esbroot {
 namespace geometry {
 namespace superfgd {
 
-class ND280SuperFGDConstructor  
+class SuperFGDConstructor  : public TObject
 {
 public:
 
     /** Constructor
      *@param name - name of the constructed fgd detector
      **/
-    ND280SuperFGDConstructor(G4String name);
+    SuperFGDConstructor(std::string name);
 
     /** Destructor **/
-    virtual ~ND280SuperFGDConstructor();
+    ~SuperFGDConstructor();
   
-    /** Construct and return a G4 volume for the object.  This is a pure
-    * virtual function, which means it must be implemented by the inheriting
-    * classes.  This returns an unplaced logical volume which faces along
-    * the Z axis.**/
-    virtual G4LogicalVolume* GetPiece(void);
+    /** Construct and return a Root volume **/
+    void GetPiece(void);
   
 
     /** Set size of cube edges  
@@ -127,42 +118,42 @@ public:
     /** Set the name of the repetition along XYZ
      *@param name - name along XYZ
      **/
-    virtual void SetNameRepXYZ(G4String name){fNameRepXYZ=name;};
+    virtual void SetNameRepXYZ(std::string name){fNameRepXYZ=name;};
 
     /** Set the name of the repetition along XZ
      *@param name - name along XZ
      **/
-    virtual void SetNameRepXZ (G4String name){fNameRepXZ =name;};
+    virtual void SetNameRepXZ (std::string name){fNameRepXZ =name;};
 
     /** Set the name of the repetition along Z
      *@param name - name along Z
      **/
-    virtual void SetNameRepZ  (G4String name){fNameRepZ  =name;};
+    virtual void SetNameRepZ  (std::string name){fNameRepZ  =name;};
 
     /** Set the name of the cube
      *@param name - cube name
      **/
-    virtual void SetNameCube  (G4String name){fNameCube  =name;};
+    virtual void SetNameCube  (std::string name){fNameCube  =name;};
 
     /** Get the name of the repetition along XYZ **/
-    virtual G4String GetNameRepXYZ(){return fNameRepXYZ;};
+    virtual std::string GetNameRepXYZ(){return fNameRepXYZ;};
 
     /** Get the name of the repetition along XZ **/
-    virtual G4String GetNameRepXZ (){return fNameRepXZ;};
+    virtual std::string GetNameRepXZ (){return fNameRepXZ;};
 
     /** Get the name of the repetition along Z **/
-    virtual G4String GetNameRepZ  (){return fNameRepZ;};
+    virtual std::string GetNameRepZ  (){return fNameRepZ;};
 
     /** Get the name of the cube **/
-    virtual G4String GetNameCube  (){return fNameCube;};
+    virtual std::string GetNameCube  (){return fNameCube;};
 
     /** Get the name of the constructor **/
-    G4String GetName() {return fname;};
+    std::string GetName() {return fname;};
 
     /** Set the name of the constructor
      *@param name - name
      **/
-    void  SetName(G4String name){fname = name;}
+    void  SetName(std::string name){fname = name;}
 
     /** Set Geant4 visibility
      *@param vis - visibility
@@ -174,9 +165,6 @@ public:
 
     /** Define the used material in the geometry **/ 
     void DefineMaterials();
-
-    /** Return the defined material for the requested name **/ 
-    static G4Material* FindMaterial(G4String material);
 
 private:
     // Size of the SuperFGD
@@ -206,15 +194,16 @@ private:
     std::string fFiberMaterial;
   
     // Detector names
-    G4String fNameRepXYZ; // Replica of layers along Y
-    G4String fNameRepXZ;  // Replica of rows along X
-    G4String fNameRepZ;   // Replica of cubes along Z
-    G4String fNameCube;   // Single cube
+    std::string fNameRepXYZ; // Replica of layers along Y
+    std::string fNameRepXZ;  // Replica of rows along X
+    std::string fNameRepZ;   // Replica of cubes along Z
+    std::string fNameCube;   // Single cube
 
-    G4String fname;   // this name
-    G4Material* fDefaultMaterial;
+    std::string fname;   // this name
 
     void Init(void);
+
+    ClassDef(SuperFGDConstructor,2)
 };
 
 }   //superfgd

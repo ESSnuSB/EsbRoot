@@ -24,5 +24,8 @@
 #pragma link C++ class esbroot::geometry::FgdDetector+;
 
 #pragma link C++ class esbroot::geometry::superfgd::SuperFGDDetectorConstruction+;
+#pragma link C++ class esbroot::geometry::superfgd::SuperFGDConstructor+;
+#pragma link C++ class esbroot::geometry::superfgd::FgdDetectorParameters+;
+#pragma link C++ class esbroot::geometry::superfgd::CubeScintConstructor+;
 
 #endif

@@ -7,17 +7,8 @@
 #include "EsbGeometry/EsbSuperFGD/Materials.h"
 #include "EsbGeometry/EsbSuperFGD/EsbFgdDetectorParameters.h"
 
-#include <G4SDManager.hh>
-#include <G4Tubs.hh>
-#include "G4VUserDetectorConstruction.hh"
-#include "G4ParticleGun.hh"
-#include "G4NistManager.hh"
-#include <G4Colour.hh>
-#include "globals.hh"
-
 #include "TObject.h"
 
-class G4VPhysicalVolume;
 class FgdDetectorParameters;
 
 namespace esbroot {
@@ -37,7 +28,7 @@ public:
     virtual ~SuperFGDDetectorConstruction();
 
     /** Constructs the Geant4 physical volume of the detector**/
-    virtual G4VPhysicalVolume* Construct();
+    virtual void Construct();
 
 private:
 

@@ -151,18 +151,18 @@ void FgdDetector::Reset()
 
 void FgdDetector::ConstructGeometry()
 {
-	//Create the real Fgd geometry
+	// //Create the real Fgd geometry
 	
-  G4VPhysicalVolume* superFgdG4Vol = fgdConstructor.Construct();
+  // G4VPhysicalVolume* superFgdG4Vol = fgdConstructor.Construct();
 
-  // Import Geant4 geometry to VGM
-  Geant4GM::Factory g4Factory;
-  g4Factory.Import(superFgdG4Vol);
+  // // Import Geant4 geometry to VGM
+  // Geant4GM::Factory g4Factory;
+  // g4Factory.Import(superFgdG4Vol);
 
-  // Export VGM geometry to Root
-  RootGM::Factory rtFactory;
-  g4Factory.Export(&rtFactory);
-  gGeoManager->CloseGeometry();
+  // // Export VGM geometry to Root
+  // RootGM::Factory rtFactory;
+  // g4Factory.Export(&rtFactory);
+  // //gGeoManager->CloseGeometry();
 }
 
 //___________________________________________________________________
