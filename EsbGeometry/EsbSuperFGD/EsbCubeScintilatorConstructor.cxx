@@ -31,45 +31,9 @@ TGeoVolume* CubeScintConstructor::GetPiece(void)
 
 void CubeScintConstructor::Construct() 
 {
-
   // Base is X direction
   // Height is Y direction
   // Lenght is Z direction
-
-  //=============================
-  //=============================
-  //=============================
-  SetBase(10.);
-  SetHeight(10.);
-  SetLength(10.);
-
-
-  SetFiberRadius(0.3);
-  SetHoleRadius(0.5);
-
-  double shift = 1.5*CLHEP::mm;
-
-  ThreeVector locX(-shift, shift, 0);
-  ThreeVector locY(shift, 0, -shift);
-  ThreeVector locZ(0, -shift, shift);
-
-  SetHolePosition_X(locX);
-  SetHolePosition_Y(locY);
-  SetHolePosition_Z(locZ);
-  
-  RotMatrix rotXX(0,0,0);
-  RotMatrix rotYY(0,90,0);
-  RotMatrix rotZZ(90,90,0);
-
-  SetHoleRot_X(rotXX);
-  SetHoleRot_Y(rotYY);
-  SetHoleRot_Z(rotZZ);
-
-  SetCoatingThickness(0.025);
-  //=============================
-  //=============================
-  //=============================
-
 
   // The Box shape from which the holes for the fiber will be subtracted
   TGeoBBox* cubeWithCoating = new TGeoBBox("CubeCoating",GetBase()/2, GetHeight()/2, GetLength()/2);
@@ -208,7 +172,10 @@ void CubeScintConstructor::Construct()
   cubeWithCoatingVolume->AddNode(fiberYCoatVolume, 1 /* One Element*/, locationY);
   cubeWithCoatingVolume->AddNode(fiberZCoatVolume, 1 /* One Element*/, locationZ);
   
-  fCube = cubeWithCoatingVolume;
+  // TODO2 : Add Sensitive volume
+  //AddSensitiveVolume(volume); //From FairModule
+
+  fCube = cubeWithCoatingVolume;;
 }
 
 

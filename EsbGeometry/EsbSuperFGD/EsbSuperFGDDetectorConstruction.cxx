@@ -15,18 +15,58 @@ namespace geometry {
 namespace superfgd {
 
 
-SuperFGDDetectorConstruction::SuperFGDDetectorConstruction(std::string detectorFile, double posX, double posY, double posZ)
-  :fposition_X(posX), fposition_Y(posY), fposition_Z(posZ)
+SuperFGDDetectorConstruction::SuperFGDDetectorConstruction(std::string detectorFile)
+  : fVolume(nullptr)
 {
-  fdetector.LoadPartParams(detectorFile);
+  fParams.LoadPartParams(detectorFile);
 }
 
 SuperFGDDetectorConstruction::~SuperFGDDetectorConstruction()
 {
 }
 
+TGeoVolume* SuperFGDDetectorConstruction::GetPiece(void) 
+{
+  if(!fVolume){
+      Construct();
+  }
+
+  return fVolume;
+}
+
 void SuperFGDDetectorConstruction::Construct()
 {
+    std::string cNameLogicSuperFGD1 = "Esb/SuperFGD";
+    
+    SuperFGDConstructor fSuperFGDConstructor1(cNameLogicSuperFGD1);
+    fSuperFGDConstructor1.SetVisibility(fParams.ParamAsBool(DP::visdetail));
+
+    std::string nameSuperFGD1 = fSuperFGDConstructor1.GetName();
+
+    Double_t lunit = fParams.GetLenghtUnit();
+    Double_t cube_X = fParams.ParamAsDouble(DP::length_X) * lunit;
+
+    Double_t cube_X_N = fParams.ParamAsDouble(DP::number_cubes_X);
+    Double_t cube_Y_N = fParams.ParamAsDouble(DP::number_cubes_Y);
+    Double_t cube_Z_N = fParams.ParamAsDouble(DP::number_cubes_Z);
+
+    double edge = cube_X;
+    int cubenumX = cube_X_N;
+    int cubenumY = cube_Y_N;
+    int cubenumZ = cube_Z_N;
+
+    G4double x = fParams.ParamAsDouble(DP::positon_X);
+    G4double y = fParams.ParamAsDouble(DP::positon_Y);
+    G4double z = fParams.ParamAsDouble(DP::positon_Z);
+
+    fSuperFGDConstructor1.SetEdge(edge*CLHEP::mm);
+    fSuperFGDConstructor1.SetCubeNumX(cubenumX);
+    fSuperFGDConstructor1.SetCubeNumY(cubenumY);
+    fSuperFGDConstructor1.SetCubeNumZ(cubenumZ);
+
+    fVolume = fSuperFGDConstructor1.GetPiece(); 
+
+
   //   G4String cNameLogicSuperFGD1 = "Esb/SuperFGD";
     
   //   std::shared_ptr<ND280SuperFGDConstructor> fSuperFGDConstructor1 = make_shared<ND280SuperFGDConstructor>(cNameLogicSuperFGD1);

@@ -22,23 +22,24 @@ public:
     /** Constructor
      *@param detectorFile - name (fullpath) of file from which to read the detector parameters
      **/
-    SuperFGDDetectorConstruction(std::string detectorFile, double posX, double posY, double posZ);
+    SuperFGDDetectorConstruction(std::string detectorFile);
 
     /** Destructor **/
     virtual ~SuperFGDDetectorConstruction();
 
-    /** Constructs the Geant4 physical volume of the detector**/
-    virtual void Construct();
+    /** Return a Root volume **/
+    TGeoVolume* GetPiece(void);
 
 private:
 
-    /** Class to hold the Detector parameters read from external file **/
-    FgdDetectorParameters fdetector;
+    /** Constructs the TgeoVolume of the detector**/
+    void Construct();
 
-    /** Detector position **/
-    double fposition_X;
-    double fposition_Y;
-    double fposition_Z;
+    /** Class to hold the Detector parameters read from external file **/
+    FgdDetectorParameters fParams;
+
+    /**  The pointer to the root volume **/
+    TGeoVolume* fVolume;
 
     ClassDef(SuperFGDDetectorConstruction,2)
 };

@@ -2,6 +2,10 @@
 #define ESBROOT_ESBGEOMETRY_SUPERFGD_FGD_CONSTRUCTION_H 1
 
 #include "TObject.h"
+#include "TGeoVolume.h"
+#include "TGeoManager.h"
+#include "TGeoMaterial.h"
+#include "TGeoMedium.h"
 
 /// Create a bounding box to contain the geometry of the detector 
 
@@ -21,9 +25,8 @@ public:
     /** Destructor **/
     ~SuperFGDConstructor();
   
-    /** Construct and return a Root volume **/
-    void GetPiece(void);
-  
+    /** Return a Root volume **/
+    TGeoVolume* GetPiece(void);
 
     /** Set size of cube edges  
      *@param w - width
@@ -115,34 +118,10 @@ public:
     const char* GetFiberMaterial() const { return fFiberMaterial.c_str();}
 
 
-    /** Set the name of the repetition along XYZ
-     *@param name - name along XYZ
-     **/
-    virtual void SetNameRepXYZ(std::string name){fNameRepXYZ=name;};
-
-    /** Set the name of the repetition along XZ
-     *@param name - name along XZ
-     **/
-    virtual void SetNameRepXZ (std::string name){fNameRepXZ =name;};
-
-    /** Set the name of the repetition along Z
-     *@param name - name along Z
-     **/
-    virtual void SetNameRepZ  (std::string name){fNameRepZ  =name;};
-
     /** Set the name of the cube
      *@param name - cube name
      **/
     virtual void SetNameCube  (std::string name){fNameCube  =name;};
-
-    /** Get the name of the repetition along XYZ **/
-    virtual std::string GetNameRepXYZ(){return fNameRepXYZ;};
-
-    /** Get the name of the repetition along XZ **/
-    virtual std::string GetNameRepXZ (){return fNameRepXZ;};
-
-    /** Get the name of the repetition along Z **/
-    virtual std::string GetNameRepZ  (){return fNameRepZ;};
 
     /** Get the name of the cube **/
     virtual std::string GetNameCube  (){return fNameCube;};
@@ -167,6 +146,10 @@ public:
     void DefineMaterials();
 
 private:
+
+    /** Constructs the TgeoVolume of the detector**/
+    void Construct();
+
     // Size of the SuperFGD
     double fWidth;
     double fHeight;
@@ -194,12 +177,11 @@ private:
     std::string fFiberMaterial;
   
     // Detector names
-    std::string fNameRepXYZ; // Replica of layers along Y
-    std::string fNameRepXZ;  // Replica of rows along X
-    std::string fNameRepZ;   // Replica of cubes along Z
     std::string fNameCube;   // Single cube
 
     std::string fname;   // this name
+
+    TGeoVolume* fVolume;
 
     void Init(void);
 

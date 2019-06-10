@@ -101,6 +101,11 @@ namespace geometry {
 		Double32_t     fLength;            //!  length
 		Double32_t     fELoss;             //!  energy loss
 
+		// Detector position
+		double fposX;
+		double fposY;
+		double fposZ;
+
 		esbroot::geometry::superfgd::SuperFGDDetectorConstruction    fgdConstructor;	   //! SuperFgd Detector Constructor
 		/** container for data points */
 

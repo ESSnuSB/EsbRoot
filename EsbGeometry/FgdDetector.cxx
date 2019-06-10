@@ -42,7 +42,7 @@ static const Int_t kFgdDetector = 2;
 //___________________________________________________________________
 FgdDetector::FgdDetector(std::string geoConfigFile, double posX, double posY, double posZ)
   : FairDetector("FgdDetector", kTRUE, kFgdDetector),
-    fgdConstructor(geoConfigFile,posX,posY,posZ),
+    fgdConstructor(geoConfigFile),
     fTrackID(-1),
     fVolumeID(-1),
     fPos(),
@@ -50,6 +50,9 @@ FgdDetector::FgdDetector(std::string geoConfigFile, double posX, double posY, do
     fTime(-1.),
     fLength(-1.),
     fELoss(-1),
+    fposX(posX),
+    fposY(posY),
+    fposZ(posZ),
     fFgdDetectorPointCollection(new TClonesArray(data::FgdDetectorPoint::Class()))
 {
 }
@@ -57,7 +60,7 @@ FgdDetector::FgdDetector(std::string geoConfigFile, double posX, double posY, do
 //___________________________________________________________________
   FgdDetector::FgdDetector(const char* name, std::string geoConfigFile, double posX, double posY, double posZ, Bool_t active)
   : FairDetector(name, active, kFgdDetector),
-    fgdConstructor(geoConfigFile,posX,posY,posZ),
+    fgdConstructor(geoConfigFile),
     fTrackID(-1),
     fVolumeID(-1),
     fPos(),
@@ -65,6 +68,9 @@ FgdDetector::FgdDetector(std::string geoConfigFile, double posX, double posY, do
     fTime(-1.),
     fLength(-1.),
     fELoss(-1),
+    fposX(posX),
+    fposY(posY),
+    fposZ(posZ),
     fFgdDetectorPointCollection(new TClonesArray(data::FgdDetectorPoint::Class())) 
 {
 }
@@ -152,17 +158,16 @@ void FgdDetector::Reset()
 void FgdDetector::ConstructGeometry()
 {
 	// //Create the real Fgd geometry
-	
-  // G4VPhysicalVolume* superFgdG4Vol = fgdConstructor.Construct();
+	TGeoVolume* superFgdG4Vol = fgdConstructor.GetPiece();
 
-  // // Import Geant4 geometry to VGM
-  // Geant4GM::Factory g4Factory;
-  // g4Factory.Import(superFgdG4Vol);
+  TGeoVolume *top = gGeoManager->GetTopVolume();
+  top->AddNode(superFgdG4Vol, 1);
+  top->AddNode(superFgdG4Vol, 1, new TGeoTranslation(fposX, fposY, fposZ));
 
-  // // Export VGM geometry to Root
-  // RootGM::Factory rtFactory;
-  // g4Factory.Export(&rtFactory);
-  // //gGeoManager->CloseGeometry();
+  superFgdG4Vol->SetLineColor(kRed);
+
+  // Validate Geometry
+  gGeoManager->CloseGeometry();
 }
 
 //___________________________________________________________________
