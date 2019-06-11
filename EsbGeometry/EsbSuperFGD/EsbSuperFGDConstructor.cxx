@@ -98,10 +98,11 @@ void SuperFGDConstructor::Construct()
   cube.SetHoleRot_Y(rotYY);
   cube.SetHoleRot_Z(rotZZ);
 
+  TGeoMedium *air = gGeoManager->GetMedium(esbroot::geometry::superfgd::materials::air);
   //========================================
   // Repeat the volume in X
   TGeoBBox* rowX = new TGeoBBox("rowX", TotWidth, fEdge, fEdge);
-  TGeoVolume* rowXVol = new TGeoVolume("rowXVol",rowX);
+  TGeoVolume* rowXVol = new TGeoVolume("rowXVol",rowX,air);
 
   TGeoVolume* cube_vol = cube.GetPiece();
   double startPosX = -TotWidth/2 + fEdge/2;
@@ -116,7 +117,7 @@ void SuperFGDConstructor::Construct()
   //========================================
   // Repeat the volume in XY
   TGeoBBox* rowXY = new TGeoBBox("rowXY", TotWidth, TotLength, fEdge);
-  TGeoVolume* rowXYVol = new TGeoVolume("rowXYVol",rowXY);
+  TGeoVolume* rowXYVol = new TGeoVolume("rowXYVol",rowXY, air);
 
   double startPosXY = -TotLength/2 + fEdge/2;
 
@@ -130,7 +131,7 @@ void SuperFGDConstructor::Construct()
   //========================================
   // Repeat the volume in XYZ
   TGeoBBox* rowXYZ = new TGeoBBox("rowXYZ", TotWidth, TotLength, TotHeight);
-  TGeoVolume* rowXYZVol = new TGeoVolume("rowXYZVol",rowXYZ);
+  TGeoVolume* rowXYZVol = new TGeoVolume("rowXYZVol",rowXYZ, air);
 
   double startPosXYZ = -TotHeight/2 + fEdge/2;
 

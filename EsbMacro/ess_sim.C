@@ -32,7 +32,7 @@ void ess_sim(TString outFileName = "evetest.root",
   FairDetector *nearWc = new geometry::WCDetector("NearWcDetector", 300, 500, kTRUE);
   fRun->AddModule(nearWc);
 
-  FairDetector* fgd = new geometry::FgdDetector("Granular Detector","/home/georgi/opt/Essnusb/ESSnuSB-soft/EsbGeometry/EsbSuperFGD/EsbConfig/geometry",0,0,10000);
+  FairDetector* fgd = new geometry::FgdDetector("Granular Detector","/home/georgi/opt/Essnusb/ESSnuSB-soft/EsbGeometry/EsbSuperFGD/EsbConfig/geometry",0,0,2000, kTRUE);
   fRun->AddModule(fgd);
   
   // Far Detector

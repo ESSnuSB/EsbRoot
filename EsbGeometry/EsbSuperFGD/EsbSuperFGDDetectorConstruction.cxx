@@ -36,7 +36,7 @@ void SuperFGDDetectorConstruction::Construct()
 
     std::string nameSuperFGD1 = fSuperFGDConstructor1.GetName();
 
-    Double_t lunit = fParams.GetLenghtUnit();
+    Double_t lunit = 1; // fParams.GetLenghtUnit(); // TODO: fix lenght units
     Double_t cube_X = fParams.ParamAsDouble(DP::length_X) * lunit;
 
     Double_t cube_X_N = fParams.ParamAsDouble(DP::number_cubes_X);

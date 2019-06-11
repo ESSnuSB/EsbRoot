@@ -14,6 +14,7 @@ namespace superfgd {
 
 namespace materials 
 {
+    static const char* air = "air";
     static const char* brass = "brass";
     static const char* bronze = "bronze";
     static const char* stainlessSteel = "stainlessSteel";

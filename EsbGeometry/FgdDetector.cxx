@@ -91,7 +91,6 @@ FgdDetector::~FgdDetector()
 void FgdDetector::Initialize()
 {
   FairDetector::Initialize();
-  DefineMaterials();
 }
 
 //___________________________________________________________________
@@ -161,16 +160,17 @@ void FgdDetector::Reset()
 
 void FgdDetector::ConstructGeometry()
 {
+  DefineMaterials();
 	// //Create the real Fgd geometry
-	TGeoVolume* superFgdG4Vol = fgdConstructor.GetPiece();
+	TGeoVolume* superFgdVol = fgdConstructor.GetPiece();
 
   TGeoVolume *top = gGeoManager->GetTopVolume();
-  top->AddNode(superFgdG4Vol, 1);
-  top->AddNode(superFgdG4Vol, 1, new TGeoTranslation(fposX, fposY, fposZ));
+  top->AddNode(superFgdVol, 1);
+  top->AddNode(superFgdVol, 1, new TGeoTranslation(fposX, fposY, fposZ));
 
-  AddSensitiveVolume(superFgdG4Vol); //From FairModule
+  AddSensitiveVolume(superFgdVol); //From FairModule
 
-  superFgdG4Vol->SetLineColor(kRed);
+  superFgdVol->SetLineColor(kRed);
 }
 
 //___________________________________________________________________
@@ -197,47 +197,47 @@ void FgdDetector::DefineMaterials()
 	FairGeoMedia *geoMedia = geoFace->getMedia();
 	FairGeoBuilder* geoBuild = geoLoad->getGeoBuilder();
 
-  FairGeoMedium* brass = geoMedia->getMedium(esbroot::geometry::superfgd::materials::brass);
-	geoBuild->createMedium(brass);
+  // FairGeoMedium* brass = geoMedia->getMedium(esbroot::geometry::superfgd::materials::brass);
+	// geoBuild->createMedium(brass);
 
-  FairGeoMedium* bronze = geoMedia->getMedium(esbroot::geometry::superfgd::materials::bronze);
-	geoBuild->createMedium(bronze);
+  // FairGeoMedium* bronze = geoMedia->getMedium(esbroot::geometry::superfgd::materials::bronze);
+	// geoBuild->createMedium(bronze);
 
-  FairGeoMedium* stainlessSteel = geoMedia->getMedium(esbroot::geometry::superfgd::materials::stainlessSteel);
-	geoBuild->createMedium(stainlessSteel);
+  // FairGeoMedium* stainlessSteel = geoMedia->getMedium(esbroot::geometry::superfgd::materials::stainlessSteel);
+	// geoBuild->createMedium(stainlessSteel);
 
-  FairGeoMedium* methane = geoMedia->getMedium(esbroot::geometry::superfgd::materials::methane);
-	geoBuild->createMedium(methane);
+  // FairGeoMedium* methane = geoMedia->getMedium(esbroot::geometry::superfgd::materials::methane);
+	// geoBuild->createMedium(methane);
 
-  FairGeoMedium* carbonDioxide = geoMedia->getMedium(esbroot::geometry::superfgd::materials::carbonDioxide);
-	geoBuild->createMedium(carbonDioxide);
+  // FairGeoMedium* carbonDioxide = geoMedia->getMedium(esbroot::geometry::superfgd::materials::carbonDioxide);
+	// geoBuild->createMedium(carbonDioxide);
 
-  FairGeoMedium* carbontetraFloride = geoMedia->getMedium(esbroot::geometry::superfgd::materials::carbontetraFloride);
-	geoBuild->createMedium(carbontetraFloride);
+  // FairGeoMedium* carbontetraFloride = geoMedia->getMedium(esbroot::geometry::superfgd::materials::carbontetraFloride);
+	// geoBuild->createMedium(carbontetraFloride);
 
-  FairGeoMedium* titaniumDioxide = geoMedia->getMedium(esbroot::geometry::superfgd::materials::titaniumDioxide);
-	geoBuild->createMedium(titaniumDioxide);
+  // FairGeoMedium* titaniumDioxide = geoMedia->getMedium(esbroot::geometry::superfgd::materials::titaniumDioxide);
+	// geoBuild->createMedium(titaniumDioxide);
 
-  FairGeoMedium* polystyrene = geoMedia->getMedium(esbroot::geometry::superfgd::materials::polystyrene);
-	geoBuild->createMedium(polystyrene);
+  // FairGeoMedium* polystyrene = geoMedia->getMedium(esbroot::geometry::superfgd::materials::polystyrene);
+	// geoBuild->createMedium(polystyrene);
 
   FairGeoMedium* scintillator = geoMedia->getMedium(esbroot::geometry::superfgd::materials::scintillator);
 	geoBuild->createMedium(scintillator);
 
-  FairGeoMedium* podscintillator = geoMedia->getMedium(esbroot::geometry::superfgd::materials::podscintillator);
-	geoBuild->createMedium(podscintillator);
+  // FairGeoMedium* podscintillator = geoMedia->getMedium(esbroot::geometry::superfgd::materials::podscintillator);
+	// geoBuild->createMedium(podscintillator);
 
-  FairGeoMedium* polyethylene = geoMedia->getMedium(esbroot::geometry::superfgd::materials::polyethylene);
-	geoBuild->createMedium(polyethylene);
+  // FairGeoMedium* polyethylene = geoMedia->getMedium(esbroot::geometry::superfgd::materials::polyethylene);
+	// geoBuild->createMedium(polyethylene);
 
-  FairGeoMedium* poduleEpoxy = geoMedia->getMedium(esbroot::geometry::superfgd::materials::poduleEpoxy);
-	geoBuild->createMedium(poduleEpoxy);
+  // FairGeoMedium* poduleEpoxy = geoMedia->getMedium(esbroot::geometry::superfgd::materials::poduleEpoxy);
+	// geoBuild->createMedium(poduleEpoxy);
 
-  FairGeoMedium* polycarbonate = geoMedia->getMedium(esbroot::geometry::superfgd::materials::polycarbonate);
-	geoBuild->createMedium(polycarbonate);
+  // FairGeoMedium* polycarbonate = geoMedia->getMedium(esbroot::geometry::superfgd::materials::polycarbonate);
+	// geoBuild->createMedium(polycarbonate);
 
-  FairGeoMedium* carbonFiber = geoMedia->getMedium(esbroot::geometry::superfgd::materials::carbonFiber);
-	geoBuild->createMedium(carbonFiber);
+  // FairGeoMedium* carbonFiber = geoMedia->getMedium(esbroot::geometry::superfgd::materials::carbonFiber);
+	// geoBuild->createMedium(carbonFiber);
 
   FairGeoMedium* fiberCore = geoMedia->getMedium(esbroot::geometry::superfgd::materials::fiberCore);
 	geoBuild->createMedium(fiberCore);
@@ -245,12 +245,14 @@ void FgdDetector::DefineMaterials()
   FairGeoMedium* fiberCladding = geoMedia->getMedium(esbroot::geometry::superfgd::materials::fiberCladding);
 	geoBuild->createMedium(fiberCladding);
 
-  TGeoMedium *tiO2 = gGeoManager->GetMedium(esbroot::geometry::superfgd::materials::titaniumDioxide);
-  TGeoMedium *c8H8 = gGeoManager->GetMedium(esbroot::geometry::superfgd::materials::polystyrene);
+  FairGeoMedium* fairTiO2 = geoMedia->getMedium(esbroot::geometry::superfgd::materials::titaniumDioxide);
+  geoBuild->createMedium(fairTiO2);
 
-  TGeoMixture *scintillatorCoating = new TGeoMixture(esbroot::geometry::superfgd::materials::scintillatorCoating,2, 1.164);
-  scintillatorCoating->AddElement(tiO2->GetMaterial(), 0.15);
-  scintillatorCoating->AddElement(c8H8->GetMaterial(), 0.85);
+  FairGeoMedium* fairPolystyrene = geoMedia->getMedium(esbroot::geometry::superfgd::materials::polystyrene);
+  geoBuild->createMedium(fairPolystyrene);
+
+  FairGeoMedium* fairAir = geoMedia->getMedium(esbroot::geometry::superfgd::materials::air);
+  geoBuild->createMedium(fairAir);
 
 }
 

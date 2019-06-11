@@ -48,7 +48,14 @@ void CubeScintConstructor::Construct()
 
   TGeoCompositeShape* coating = new TGeoCompositeShape("coating","CubeCoating - Cube");
 
-  TGeoVolume* cubeWithCoatingVolume = new TGeoVolume("CubeCoatingVolume",coating, gGeoManager->GetMedium(materials::scintillatorCoating));
+  TGeoMedium *tiO2 = gGeoManager->GetMedium(esbroot::geometry::superfgd::materials::titaniumDioxide);
+  TGeoMedium *c8H8 = gGeoManager->GetMedium(esbroot::geometry::superfgd::materials::polystyrene);
+
+  TGeoMixture *scintillatorCoating = new TGeoMixture(esbroot::geometry::superfgd::materials::scintillatorCoating,2, 1.164);
+  scintillatorCoating->AddElement(tiO2->GetMaterial(), 0.15);
+  scintillatorCoating->AddElement(c8H8->GetMaterial(), 0.85);
+  TGeoMedium* coatingMedium = new TGeoMedium("coatingMedium", 1, scintillatorCoating);
+  TGeoVolume* cubeWithCoatingVolume = new TGeoVolume("CubeCoatingVolume",coating, coatingMedium);
 
   //=======================================================================================
   // Create the fiber hole along X

@@ -2358,19 +2358,6 @@ STTelectronics     -2  28.0855  15.9994  14.  8.  2.20  1  2
 
 // ----------------- end STT
 
-// ----- Caution with putting materials below that line -----
-// The next materials must specify additional parameters!
-
-AUTONULL
-
-vacuum2 1 1.e-16 1.e-16 1.e-16
-		0 1 30. .001
-		0.1 0.05 0.0001 0.00001
-		0
-
-// ---- end of Panda media ----
-//----------------------------------------------------------
-
 //-------- Super Fgd material Start
 hydrogen           1  1.008  1.  0.08988
                    0  1  20.  .001
@@ -2400,7 +2387,7 @@ CF4           		2  12.0107  18.9984  6.  9.  3.66e-3  1  4
                    	0  0  20.  .001
                     0           		
 
-TiO2	           		2  47.867  15.9994  22.  8.  4.26  1  2
+TiO2	           	-2  47.867  15.9994  22.  8.  4.26  1  2
                    	0  0  20.  .001
                     0 
 
@@ -2433,12 +2420,27 @@ carbonFiber        	2  12.0107  15.9994  6.  8.  1.75  6  1
                    	0  0  20.  .001
                     0 
 
-fiberCore        	2  12.0107  1.008  6.  1.  1.05  9  10
+fiberCore        	-2  12.0107  1.008  6.  1.  1.05  9  10
                    	0  0  20.  .001
                     0 
 
-fiberCladding       3  12.0107  1.008 15.9994  6.  1.  8.	1.19  5	 8	2
+fiberCladding       -3  12.0107  1.008 15.9994  6.  1.  8.	1.19  5	 8	2
                    	0  0  20.  .001
                     0 
  					
 //-------- Super Fgd material End
+
+// ----- Caution with putting materials below that line -----
+// The next materials must specify additional parameters!
+
+AUTONULL
+
+vacuum2 1 1.e-16 1.e-16 1.e-16
+		0 1 30. .001
+		0.1 0.05 0.0001 0.00001
+		0
+
+// ---- end of Panda media ----
+//----------------------------------------------------------
+
+
