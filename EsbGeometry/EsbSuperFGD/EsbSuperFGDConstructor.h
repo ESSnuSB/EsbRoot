@@ -7,8 +7,6 @@
 #include "TGeoMaterial.h"
 #include "TGeoMedium.h"
 
-#include "FairGeoLoader.h"
-
 /// Create a bounding box to contain the geometry of the detector 
 
 namespace esbroot {
@@ -21,9 +19,8 @@ public:
 
     /** Constructor
      *@param name - name of the constructed fgd detector
-     *@param gGeoMan - class containing detector materials
      **/
-    SuperFGDConstructor(std::string name, FairGeoLoader *geoLoad);
+    SuperFGDConstructor(std::string name);
 
     /** Destructor **/
     ~SuperFGDConstructor();
@@ -145,9 +142,6 @@ public:
     /** Get current visibility **/ 
     virtual bool GetVisibility(void) {return fIsVisible;}
 
-    /** Define the used material in the geometry **/ 
-    void DefineMaterials();
-
 private:
 
     /** Constructs the TgeoVolume of the detector**/
@@ -175,9 +169,6 @@ private:
 
     /// The radius of the WLS fiber.
     double fFiberRadius;
-
-    /** Class to hold the materials **/
-    FairGeoLoader* fgeoLoad;
   
     /// The name of the material to use for the fiber.
     std::string fFiberMaterial;

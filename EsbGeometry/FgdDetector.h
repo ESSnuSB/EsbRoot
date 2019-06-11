@@ -35,12 +35,12 @@ namespace geometry {
 		 *               kFALSE for inactive detectors
 		 * 		 geoConfigFile: Full path to the configuration file for the Superfgd geometry
 		*/
-	    FgdDetector(const char* Name, std::string geoConfigFile, double posX, double posY, double posZ, Bool_t Active);
+	    FgdDetector(const char* Name, const char* geoConfigFile, double posX, double posY, double posZ, Bool_t Active = true);
 
 		/**     Constructor using default name
 		 * 		geoConfigFile: Full path to the configuration file for the Superfgd geometry
 		*/
-		FgdDetector(std::string geoConfigFile, double posX, double posY, double posZ);
+		FgdDetector(const char* geoConfigFile, double posX, double posY, double posZ, Bool_t Active = true);
 
 		/**       destructor     */
 		virtual ~FgdDetector();
@@ -89,6 +89,12 @@ namespace geometry {
 
 
 	  private:
+
+		/** Initialize amterials used in the detector construction **/
+		void DefineMaterials();
+
+		//** indicate that the materials have already been defined
+		bool isDefinedMaterials;
 
 		/** Track information to be stored until the track leaves the
 		active volume.

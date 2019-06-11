@@ -1,13 +1,6 @@
 #include "EsbGeometry/EsbSuperFGD/EsbSuperFGDDetectorConstruction.h"
 #include "EsbGeometry/EsbSuperFGD/EsbSuperFGDConstructor.h"
 
-#include "G4Box.hh"
-#include "G4PVPlacement.hh"
-
-#include "G4FieldManager.hh"
-#include "G4UniformMagField.hh"
-#include "G4TransportationManager.hh"
-
 #include "FairLogger.h"
 
 namespace esbroot {
@@ -15,8 +8,8 @@ namespace geometry {
 namespace superfgd {
 
 
-SuperFGDDetectorConstruction::SuperFGDDetectorConstruction(std::string detectorFile, FairGeoLoader* geoLoad)
-  : fVolume(nullptr), fgeoLoad(geoLoad)
+SuperFGDDetectorConstruction::SuperFGDDetectorConstruction(std::string detectorFile)
+  : fVolume(nullptr)
 {
   fParams.LoadPartParams(detectorFile);
 }
@@ -38,7 +31,7 @@ void SuperFGDDetectorConstruction::Construct()
 {
     std::string cNameLogicSuperFGD1 = "Esb/SuperFGD";
     
-    SuperFGDConstructor fSuperFGDConstructor1(cNameLogicSuperFGD1, fgeoLoad);
+    SuperFGDConstructor fSuperFGDConstructor1(cNameLogicSuperFGD1);
     fSuperFGDConstructor1.SetVisibility(fParams.ParamAsBool(DP::visdetail));
 
     std::string nameSuperFGD1 = fSuperFGDConstructor1.GetName();
@@ -55,9 +48,9 @@ void SuperFGDDetectorConstruction::Construct()
     int cubenumY = cube_Y_N;
     int cubenumZ = cube_Z_N;
 
-    G4double x = fParams.ParamAsDouble(DP::positon_X);
-    G4double y = fParams.ParamAsDouble(DP::positon_Y);
-    G4double z = fParams.ParamAsDouble(DP::positon_Z);
+    double x = fParams.ParamAsDouble(DP::positon_X);
+    double y = fParams.ParamAsDouble(DP::positon_Y);
+    double z = fParams.ParamAsDouble(DP::positon_Z);
 
     fSuperFGDConstructor1.SetEdge(edge*CLHEP::mm);
     fSuperFGDConstructor1.SetCubeNumX(cubenumX);

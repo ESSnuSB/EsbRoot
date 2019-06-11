@@ -5,23 +5,16 @@
 
 #include "FairLogger.h"                 // for FairLogger, etc
 
-// For  Medium creation
-#include "FairGeoBuilder.h"             
-#include "FairGeoInterface.h"
-#include "FairGeoLoader.h"
-#include "FairGeoMedia.h"
-
 #include "TGeoMaterial.h"
 
 namespace esbroot {
 namespace geometry {
 namespace superfgd {
 
-SuperFGDConstructor::SuperFGDConstructor(std::string name, FairGeoLoader* geoLoad)
-:fVolume(nullptr), fgeoLoad(geoLoad)
+SuperFGDConstructor::SuperFGDConstructor(std::string name)
+:fVolume(nullptr)
 {
     SetName(name);
-    DefineMaterials();
     Init();
 }
   
@@ -62,72 +55,6 @@ TGeoVolume* SuperFGDConstructor::GetPiece(void)
   }
 
   return fVolume;
-}
-
-
-void SuperFGDConstructor::DefineMaterials() 
-{
-  FairGeoLoader *geoLoad = fgeoLoad;
-	FairGeoInterface *geoFace = geoLoad->getGeoInterface();
-	
-	FairGeoMedia *geoMedia = geoFace->getMedia();
-	FairGeoBuilder* geoBuild = geoLoad->getGeoBuilder();
-
-  FairGeoMedium* brass = geoMedia->getMedium(materials::brass);
-	geoBuild->createMedium(brass);
-
-  FairGeoMedium* bronze = geoMedia->getMedium(materials::bronze);
-	geoBuild->createMedium(bronze);
-
-  FairGeoMedium* stainlessSteel = geoMedia->getMedium(materials::stainlessSteel);
-	geoBuild->createMedium(stainlessSteel);
-
-  FairGeoMedium* methane = geoMedia->getMedium(materials::methane);
-	geoBuild->createMedium(methane);
-
-  FairGeoMedium* carbonDioxide = geoMedia->getMedium(materials::carbonDioxide);
-	geoBuild->createMedium(carbonDioxide);
-
-  FairGeoMedium* carbontetraFloride = geoMedia->getMedium(materials::carbontetraFloride);
-	geoBuild->createMedium(carbontetraFloride);
-
-  FairGeoMedium* titaniumDioxide = geoMedia->getMedium(materials::titaniumDioxide);
-	geoBuild->createMedium(titaniumDioxide);
-
-  FairGeoMedium* polystyrene = geoMedia->getMedium(materials::polystyrene);
-	geoBuild->createMedium(polystyrene);
-
-  FairGeoMedium* scintillator = geoMedia->getMedium(materials::scintillator);
-	geoBuild->createMedium(scintillator);
-
-  FairGeoMedium* podscintillator = geoMedia->getMedium(materials::podscintillator);
-	geoBuild->createMedium(podscintillator);
-
-  FairGeoMedium* polyethylene = geoMedia->getMedium(materials::polyethylene);
-	geoBuild->createMedium(polyethylene);
-
-  FairGeoMedium* poduleEpoxy = geoMedia->getMedium(materials::poduleEpoxy);
-	geoBuild->createMedium(poduleEpoxy);
-
-  FairGeoMedium* polycarbonate = geoMedia->getMedium(materials::polycarbonate);
-	geoBuild->createMedium(polycarbonate);
-
-  FairGeoMedium* carbonFiber = geoMedia->getMedium(materials::carbonFiber);
-	geoBuild->createMedium(carbonFiber);
-
-  FairGeoMedium* fiberCore = geoMedia->getMedium(materials::fiberCore);
-	geoBuild->createMedium(fiberCore);
-
-  FairGeoMedium* fiberCladding = geoMedia->getMedium(materials::fiberCladding);
-	geoBuild->createMedium(fiberCladding);
-
-  TGeoMedium *tiO2 = gGeoManager->GetMedium(materials::titaniumDioxide);
-  TGeoMedium *c8H8 = gGeoManager->GetMedium(materials::polystyrene);
-
-  TGeoMixture *scintillatorCoating = new TGeoMixture(materials::scintillatorCoating,2, 1.164);
-  scintillatorCoating->AddElement(tiO2->GetMaterial(), 0.15);
-  scintillatorCoating->AddElement(c8H8->GetMaterial(), 0.85);
-
 }
 
 void SuperFGDConstructor::Construct()

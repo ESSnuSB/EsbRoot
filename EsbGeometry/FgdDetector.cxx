@@ -6,6 +6,7 @@
  *                  copied verbatim in the file "LICENSE"                       *
  ********************************************************************************/
 #include "EsbGeometry/FgdDetector.h"
+#include "EsbGeometry/EsbSuperFGD/Materials.h"
 #include "EsbData/FgdDetectorPoint.h" 
 
 
@@ -40,9 +41,9 @@ namespace geometry {
 static const Int_t kFgdDetector = 2;
 
 //___________________________________________________________________
-FgdDetector::FgdDetector(std::string geoConfigFile, double posX, double posY, double posZ)
+FgdDetector::FgdDetector(const char* geoConfigFile, double posX, double posY, double posZ, Bool_t Active)
   : FairDetector("FgdDetector", kTRUE, kFgdDetector),
-    fgdConstructor(geoConfigFile, FairGeoLoader::Instance()),
+    fgdConstructor(geoConfigFile),
     fTrackID(-1),
     fVolumeID(-1),
     fPos(),
@@ -53,14 +54,15 @@ FgdDetector::FgdDetector(std::string geoConfigFile, double posX, double posY, do
     fposX(posX),
     fposY(posY),
     fposZ(posZ),
+    isDefinedMaterials(false),
     fFgdDetectorPointCollection(new TClonesArray(data::FgdDetectorPoint::Class()))
 {
 }
 
 //___________________________________________________________________
-  FgdDetector::FgdDetector(const char* name, std::string geoConfigFile, double posX, double posY, double posZ, Bool_t active)
+  FgdDetector::FgdDetector(const char* name, const char* geoConfigFile, double posX, double posY, double posZ, Bool_t active)
   : FairDetector(name, active, kFgdDetector),
-    fgdConstructor(geoConfigFile, FairGeoLoader::Instance()),
+    fgdConstructor(geoConfigFile),
     fTrackID(-1),
     fVolumeID(-1),
     fPos(),
@@ -71,6 +73,7 @@ FgdDetector::FgdDetector(std::string geoConfigFile, double posX, double posY, do
     fposX(posX),
     fposY(posY),
     fposZ(posZ),
+    isDefinedMaterials(false),
     fFgdDetectorPointCollection(new TClonesArray(data::FgdDetectorPoint::Class())) 
 {
 }
@@ -88,6 +91,7 @@ FgdDetector::~FgdDetector()
 void FgdDetector::Initialize()
 {
   FairDetector::Initialize();
+  DefineMaterials();
 }
 
 //___________________________________________________________________
@@ -179,6 +183,75 @@ data::FgdDetectorPoint* FgdDetector::AddHit(Int_t trackID, Int_t detID,
 
   return new(clref[size]) data::FgdDetectorPoint(trackID, detID, pos, mom, 
 					     time);
+}
+
+void FgdDetector::DefineMaterials() 
+{
+  if(isDefinedMaterials) return; // Define materials only once
+
+  isDefinedMaterials = true;
+
+  FairGeoLoader *geoLoad = FairGeoLoader::Instance();
+	FairGeoInterface *geoFace = geoLoad->getGeoInterface();
+	
+	FairGeoMedia *geoMedia = geoFace->getMedia();
+	FairGeoBuilder* geoBuild = geoLoad->getGeoBuilder();
+
+  FairGeoMedium* brass = geoMedia->getMedium(esbroot::geometry::superfgd::materials::brass);
+	geoBuild->createMedium(brass);
+
+  FairGeoMedium* bronze = geoMedia->getMedium(esbroot::geometry::superfgd::materials::bronze);
+	geoBuild->createMedium(bronze);
+
+  FairGeoMedium* stainlessSteel = geoMedia->getMedium(esbroot::geometry::superfgd::materials::stainlessSteel);
+	geoBuild->createMedium(stainlessSteel);
+
+  FairGeoMedium* methane = geoMedia->getMedium(esbroot::geometry::superfgd::materials::methane);
+	geoBuild->createMedium(methane);
+
+  FairGeoMedium* carbonDioxide = geoMedia->getMedium(esbroot::geometry::superfgd::materials::carbonDioxide);
+	geoBuild->createMedium(carbonDioxide);
+
+  FairGeoMedium* carbontetraFloride = geoMedia->getMedium(esbroot::geometry::superfgd::materials::carbontetraFloride);
+	geoBuild->createMedium(carbontetraFloride);
+
+  FairGeoMedium* titaniumDioxide = geoMedia->getMedium(esbroot::geometry::superfgd::materials::titaniumDioxide);
+	geoBuild->createMedium(titaniumDioxide);
+
+  FairGeoMedium* polystyrene = geoMedia->getMedium(esbroot::geometry::superfgd::materials::polystyrene);
+	geoBuild->createMedium(polystyrene);
+
+  FairGeoMedium* scintillator = geoMedia->getMedium(esbroot::geometry::superfgd::materials::scintillator);
+	geoBuild->createMedium(scintillator);
+
+  FairGeoMedium* podscintillator = geoMedia->getMedium(esbroot::geometry::superfgd::materials::podscintillator);
+	geoBuild->createMedium(podscintillator);
+
+  FairGeoMedium* polyethylene = geoMedia->getMedium(esbroot::geometry::superfgd::materials::polyethylene);
+	geoBuild->createMedium(polyethylene);
+
+  FairGeoMedium* poduleEpoxy = geoMedia->getMedium(esbroot::geometry::superfgd::materials::poduleEpoxy);
+	geoBuild->createMedium(poduleEpoxy);
+
+  FairGeoMedium* polycarbonate = geoMedia->getMedium(esbroot::geometry::superfgd::materials::polycarbonate);
+	geoBuild->createMedium(polycarbonate);
+
+  FairGeoMedium* carbonFiber = geoMedia->getMedium(esbroot::geometry::superfgd::materials::carbonFiber);
+	geoBuild->createMedium(carbonFiber);
+
+  FairGeoMedium* fiberCore = geoMedia->getMedium(esbroot::geometry::superfgd::materials::fiberCore);
+	geoBuild->createMedium(fiberCore);
+
+  FairGeoMedium* fiberCladding = geoMedia->getMedium(esbroot::geometry::superfgd::materials::fiberCladding);
+	geoBuild->createMedium(fiberCladding);
+
+  TGeoMedium *tiO2 = gGeoManager->GetMedium(esbroot::geometry::superfgd::materials::titaniumDioxide);
+  TGeoMedium *c8H8 = gGeoManager->GetMedium(esbroot::geometry::superfgd::materials::polystyrene);
+
+  TGeoMixture *scintillatorCoating = new TGeoMixture(esbroot::geometry::superfgd::materials::scintillatorCoating,2, 1.164);
+  scintillatorCoating->AddElement(tiO2->GetMaterial(), 0.15);
+  scintillatorCoating->AddElement(c8H8->GetMaterial(), 0.85);
+
 }
 
 }
