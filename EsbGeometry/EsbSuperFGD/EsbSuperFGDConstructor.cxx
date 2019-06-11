@@ -61,10 +61,6 @@ void SuperFGDConstructor::Construct()
 {
   // All dimentions are in cm (root default dimention length)
 
-  fCubeNumX = 3;
-  fCubeNumY = 4;
-  fCubeNumZ = 5;
-
   double TotWidth  = fCubeNumX * fEdge; 
   double TotLength = fCubeNumY * fEdge;  
   double TotHeight = fCubeNumZ * fEdge;
