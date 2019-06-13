@@ -224,6 +224,9 @@ void FgdDetector::DefineMaterials()
   FairGeoMedium* scintillator = geoMedia->getMedium(esbroot::geometry::superfgd::materials::scintillator);
 	geoBuild->createMedium(scintillator);
 
+  FairGeoMedium* paraterphnyl = geoMedia->getMedium(esbroot::geometry::superfgd::materials::paraterphnyl);
+	geoBuild->createMedium(paraterphnyl);
+
   // FairGeoMedium* podscintillator = geoMedia->getMedium(esbroot::geometry::superfgd::materials::podscintillator);
 	// geoBuild->createMedium(podscintillator);
 

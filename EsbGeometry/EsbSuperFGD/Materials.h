@@ -24,6 +24,8 @@ namespace materials
     static const char* titaniumDioxide = "TiO2";
     static const char* polystyrene = "polystyrene";
     static const char* scintillator = "scintillator";
+    static const char* paraterphnyl = "paraterphnyl";
+    static const char* scintilatorMix = "scintilatorMix";
     static const char* podscintillator = "podscintillator";
     static const char* polyethylene = "polyethylene";
     static const char* poduleEpoxy = "poduleEpoxy";

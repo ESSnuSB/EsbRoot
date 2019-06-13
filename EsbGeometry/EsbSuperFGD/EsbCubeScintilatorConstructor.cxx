@@ -169,8 +169,19 @@ void CubeScintConstructor::Construct()
   // Create scintilator cube shape
   TGeoCompositeShape* cubeComp = new TGeoCompositeShape("cubeComp","Cube - FX:locationX - FY:locationY - FY:locationZ");
 
+
+  // Define Scintilator mix
+  TGeoMedium *scnt = gGeoManager->GetMedium(esbroot::geometry::superfgd::materials::scintillator);
+  TGeoMedium *prt = gGeoManager->GetMedium(esbroot::geometry::superfgd::materials::paraterphnyl);
+
+  TGeoMixture *scintillatorMixMat = new TGeoMixture(esbroot::geometry::superfgd::materials::scintilatorMix,2, 1.050);
+  scintillatorMixMat->AddElement(scnt->GetMaterial(), 0.985);
+  scintillatorMixMat->AddElement(prt->GetMaterial(), 0.015);
+
+  TGeoMedium* scintillatorMixMedium = new TGeoMedium("scintillatorMixMat", 1, scintillatorMixMat);
+
   // Create Volume scintilator cube
-  TGeoVolume* cubeScntVol = new TGeoVolume(GetName().c_str(),cubeComp, gGeoManager->GetMedium(materials::scintillator));
+  TGeoVolume* cubeScntVol = new TGeoVolume(GetName().c_str(),cubeComp, scintillatorMixMedium);
 
   // Place the scintilator cube into the cube coating
   cubeWithCoatingVolume->AddNode(cubeScntVol, 1 /* One Element*/ /*, Identity matrix is by default used for location*/);
