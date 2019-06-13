@@ -165,7 +165,6 @@ void FgdDetector::ConstructGeometry()
 	TGeoVolume* superFgdVol = fgdConstructor.GetPiece();
 
   TGeoVolume *top = gGeoManager->GetTopVolume();
-  top->AddNode(superFgdVol, 1);
   top->AddNode(superFgdVol, 1, new TGeoTranslation(fposX, fposY, fposZ));
 
   AddSensitiveVolume(superFgdVol); //From FairModule

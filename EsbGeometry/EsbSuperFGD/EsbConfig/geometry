@@ -5,9 +5,9 @@ length_Y=10
 length_Z=10
 
 #number of cubes
-number_cubes_X=1
-number_cubes_Y=1
-number_cubes_Z=1
+number_cubes_X=20
+number_cubes_Y=20
+number_cubes_Z=10
 
 #position is given in coordinate system of its mother Part [m]
 positon_X=0
