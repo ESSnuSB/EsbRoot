@@ -1,5 +1,5 @@
-#ifndef ESBROOT_DATA_SUPERFGD_DETECTOR_H
-#define ESBROOT_DATA_SUPERFGD_DETECTOR_H 1
+#ifndef ESBROOT_DATA_SUPERFGD_DETECTOR_MATERIALS_H
+#define ESBROOT_DATA_SUPERFGD_DETECTOR_MATERIALS_H 1
 
 #include "CLHEP/Units/SystemOfUnits.h"
 #include "CLHEP/Units/PhysicalConstants.h"
@@ -14,6 +14,7 @@ namespace superfgd {
 
 namespace materials 
 {
+    static const char* vacuum = "vacuum";
     static const char* air = "air";
     static const char* brass = "brass";
     static const char* bronze = "bronze";

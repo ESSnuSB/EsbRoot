@@ -25,21 +25,9 @@ namespace DP
     static const string  length_Y = "length_Y";
     static const string  length_Z = "length_Z";
 
-    static const string  positon_X = "positon_X";
-    static const string  positon_Y = "positon_Y";
-    static const string  positon_Z = "positon_Z";
-
     static const string  number_cubes_X = "number_cubes_X";
     static const string  number_cubes_Y = "number_cubes_Y";
     static const string  number_cubes_Z = "number_cubes_Z";
-
-    static const string  fiber_radius = "fiber_radius";
-    static const string  fiber_length = "fiber_length";
-    static const string  fiber_g4material = "fiber_g4material";
-
-    static const string  g4material = "g4material";
-    static const string  scintillator = "scintillator";
-    static const string  optPhotonOn = "optPhotonOn";
 
     static const string  visdetail = "visdetail";
 

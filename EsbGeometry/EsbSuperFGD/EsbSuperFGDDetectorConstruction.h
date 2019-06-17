@@ -5,6 +5,7 @@
 #include "CLHEP/Units/PhysicalConstants.h"
 
 #include "EsbGeometry/EsbSuperFGD/Materials.h"
+#include "EsbGeometry/EsbSuperFGD/Names.h"
 #include "EsbGeometry/EsbSuperFGD/EsbFgdDetectorParameters.h"
 
 #include "TObject.h"
@@ -28,19 +29,12 @@ public:
     /** Destructor **/
     virtual ~SuperFGDDetectorConstruction();
 
-    /** Return a Root volume **/
-    TGeoVolume* GetPiece(void);
-
-private:
-
     /** Constructs the TgeoVolume of the detector**/
     void Construct();
 
+private:
     /** Class to hold the Detector parameters read from external file **/
     FgdDetectorParameters fParams;
-
-    /**  The pointer to the root volume **/
-    TGeoVolume* fVolume;
 
     ClassDef(SuperFGDDetectorConstruction,2)
 };

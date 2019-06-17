@@ -7,17 +7,18 @@
  ********************************************************************************/
 #include "EsbGeometry/FgdDetector.h"
 #include "EsbGeometry/EsbSuperFGD/Materials.h"
+#include "EsbGeometry/EsbSuperFGD/Names.h"
 #include "EsbData/FgdDetectorPoint.h" 
 
-
-#include "FairVolume.h"
-#include "FairRootManager.h"
+#include "FairLogger.h"
 #include "FairGenericStack.h"
-#include "FairStack.h"
 #include "FairGeoLoader.h"
 #include "FairGeoInterface.h"
 #include "FairGeoBuilder.h"
 #include "FairGeoMedia.h"
+#include "FairRootManager.h"
+#include "FairStack.h"
+#include "FairVolume.h"
 
 #include "TClonesArray.h"
 #include "TVirtualMC.h"
@@ -34,11 +35,14 @@
 using std::cout;
 using std::endl;
 
+
+#include "TGeoTube.h"
+
 namespace esbroot {
 
 namespace geometry {
 // PC: work around
-static const Int_t kFgdDetector = 2;
+static const Int_t kFgdDetector = 1;
 
 //___________________________________________________________________
 FgdDetector::FgdDetector(const char* geoConfigFile, double posX, double posY, double posZ, Bool_t Active)
@@ -99,28 +103,18 @@ Bool_t  FgdDetector::ProcessHits(FairVolume* vol)
 	cout << __PRETTY_FUNCTION__ << endl;
   /** This method is called from the MC stepping */
 
-  if ( TVirtualMC::GetMC()->IsTrackEntering() ) {
-    fELoss  = 0.;
-    fTime   = TVirtualMC::GetMC()->TrackTime() * 1.0e09;
-    fLength = TVirtualMC::GetMC()->TrackLength();
-    TVirtualMC::GetMC()->TrackPosition(fPos);
-    TVirtualMC::GetMC()->TrackMomentum(fMom);
-  }
+  cout << "vol->getCopyNo() " << vol->getCopyNo() << endl;
+  cout << "vol->getVolumeId() " << vol->getVolumeId() << endl;
+  TVirtualMC::GetMC()->TrackPosition(fPos);
+  cout <<  "fPos.X() " << fPos.X() << endl;
+  cout <<  "fPos.Y() " << fPos.Y() << endl;
+  cout <<  "fPos.Z() " << fPos.Z() << endl;
 
-  // Sum energy loss for all steps in the active volume
-  fELoss += TVirtualMC::GetMC()->Edep();
+  cout <<  "Name " << vol->GetName() << endl;
 
-  // Create FairTutorialDet1Point at exit of active volume
-  if ( TVirtualMC::GetMC()->IsTrackExiting()    ||
-       TVirtualMC::GetMC()->IsTrackStop()       ||
-       TVirtualMC::GetMC()->IsTrackDisappeared()   ) {
+  cout <<  "TrackLength " << TVirtualMC::GetMC()->TrackLength() << endl;
 
-    fTrackID  = TVirtualMC::GetMC()->GetStack()->GetCurrentTrackNumber();
-    fVolumeID = vol->getMCid();
-    //~ if (fELoss == 0. ) { return kFALSE; }
-    AddHit(fTrackID, fVolumeID, TVector3(fPos.X(),  fPos.Y(),  fPos.Z()),
-           TVector3(fMom.Px(), fMom.Py(), fMom.Pz()), fTime);
-  }
+  cout <<  "GetCurrentTrackNumber " << TVirtualMC::GetMC()->GetStack()->GetCurrentTrackNumber() << endl;
 
   return kTRUE;
 }
@@ -141,7 +135,7 @@ void FgdDetector::Register()
       only during the simulation.
   */
 
-  FairRootManager::Instance()->Register("EsbFgdDetectorPoint", "FgdDetector", 
+  FairRootManager::Instance()->Register("EsbFgdDetectorPoint", "EsbFgdDetector", 
                                         fFgdDetectorPointCollection, kTRUE);
 
 }
@@ -160,16 +154,18 @@ void FgdDetector::Reset()
 
 void FgdDetector::ConstructGeometry()
 {
+  using namespace geometry::superfgd;
+
   DefineMaterials();
-	// //Create the real Fgd geometry
-	TGeoVolume* superFgdVol = fgdConstructor.GetPiece();
+  fgdConstructor.Construct();
+	// Create the real Fgd geometry
+	TGeoVolume* superFgdVol = gGeoManager->GetVolume(fgdnames::superFGDName);
 
   TGeoVolume *top = gGeoManager->GetTopVolume();
   top->AddNode(superFgdVol, 1, new TGeoTranslation(fposX, fposY, fposZ));
-
-  AddSensitiveVolume(superFgdVol); //From FairModule
-
-  superFgdVol->SetLineColor(kRed);
+  
+  // Extract the cube scintilator volume only and add it as the sensitive part
+  AddToSensitiveVolumes(superFgdVol); 
 }
 
 //___________________________________________________________________
@@ -256,6 +252,32 @@ void FgdDetector::DefineMaterials()
   FairGeoMedium* fairAir = geoMedia->getMedium(esbroot::geometry::superfgd::materials::air);
   geoBuild->createMedium(fairAir);
 
+  FairGeoMedium* vacuum = geoMedia->getMedium(esbroot::geometry::superfgd::materials::vacuum);
+  geoBuild->createMedium(vacuum);
+}
+
+void FgdDetector::AddToSensitiveVolumes(TGeoVolume *vol)
+{
+  using namespace geometry::superfgd;
+  TObjArray* arr = vol->GetNodes();
+
+  for(Int_t i =0; i < arr->GetEntries(); i++)
+  {
+    TGeoNode* node = (TGeoNode*)arr->At(i);
+    TGeoVolume* nodeVol = node->GetVolume();
+
+    // Compare if the volume name is the sensitive volume
+    // 1. If it is, add it as a sensitive volume
+    // 2. Else continue looping through the daughter volumes
+    if(node->GetVolume() &&  std::strcmp(nodeVol->GetName(),
+                                     fgdnames::coatingVolume))
+    {
+        AddSensitiveVolume(node->GetVolume());
+        LOG(debug) <<  "Adding TGeoVolume to sensitive geometry ";
+    }else if(node->GetVolume()){
+      AddToSensitiveVolumes(node->GetVolume());
+    }
+  }
 }
 
 }

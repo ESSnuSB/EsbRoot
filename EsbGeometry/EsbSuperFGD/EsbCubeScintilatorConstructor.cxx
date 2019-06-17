@@ -3,6 +3,7 @@
 
 #include "EsbGeometry/EsbSuperFGD/EsbFgdDetectorParameters.h"
 #include "EsbGeometry/EsbSuperFGD/Materials.h"
+#include "EsbGeometry/EsbSuperFGD/Names.h"
 
 #include "TGeoBBox.h"
 #include "TGeoCone.h"
@@ -12,8 +13,7 @@ namespace esbroot {
 namespace geometry {
 namespace superfgd {
 
-CubeScintConstructor::CubeScintConstructor(std::string n) 
-: fCube(nullptr)
+CubeScintConstructor::CubeScintConstructor() 
 {
 }
   
@@ -21,14 +21,6 @@ CubeScintConstructor::~CubeScintConstructor()
 {
 }
 
-TGeoVolume* CubeScintConstructor::GetPiece(void) 
-{ 
-  if(!fCube){
-      Construct();
-  }
-
-  return fCube;
-}
 
 void CubeScintConstructor::Construct() 
 {
@@ -46,7 +38,7 @@ void CubeScintConstructor::Construct()
                                 GetHeight()/2 - coatingThickness,
                                 GetLength()/2 - coatingThickness);
 
-  TGeoCompositeShape* coating = new TGeoCompositeShape("coating","CubeCoating - Cube");
+  
 
   TGeoMedium *tiO2 = gGeoManager->GetMedium(esbroot::geometry::superfgd::materials::titaniumDioxide);
   TGeoMedium *c8H8 = gGeoManager->GetMedium(esbroot::geometry::superfgd::materials::polystyrene);
@@ -55,7 +47,6 @@ void CubeScintConstructor::Construct()
   scintillatorCoating->AddElement(tiO2->GetMaterial(), 0.15);
   scintillatorCoating->AddElement(c8H8->GetMaterial(), 0.85);
   TGeoMedium* coatingMedium = new TGeoMedium("coatingMedium", 1, scintillatorCoating);
-  TGeoVolume* cubeWithCoatingVolume = new TGeoVolume("CubeCoatingVolume",coating, coatingMedium);
 
   //=======================================================================================
   // Create the fiber hole along X
@@ -180,23 +171,28 @@ void CubeScintConstructor::Construct()
 
   TGeoMedium* scintillatorMixMedium = new TGeoMedium("scintillatorMixMat", 1, scintillatorMixMat);
 
-  // Create Volume scintilator cube
-  TGeoVolume* cubeScntVol = new TGeoVolume(GetName().c_str(),cubeComp, scintillatorMixMedium);
+  
+  // Create the mother cube volume 
+  TGeoMedium *vacuum = gGeoManager->GetMedium(esbroot::geometry::superfgd::materials::vacuum);
+  TGeoVolume* cubeWithCoatingVolume = new TGeoVolume(fgdnames::cubeName,cubeWithCoating, vacuum);
+
+  // Place the coating
+  TGeoCompositeShape* coating = new TGeoCompositeShape("coating","CubeCoating - Cube - FX:locationX - FY:locationY - FY:locationZ");
+  TGeoVolume* coatingVolume = new TGeoVolume(fgdnames::coatingVolume,coating, coatingMedium);
+  cubeWithCoatingVolume->AddNodeOverlap(coatingVolume, 1 /* One Element*/ /*, Identity matrix is by default used for location*/);
 
   // Place the scintilator cube into the cube coating
-  cubeWithCoatingVolume->AddNode(cubeScntVol, 1 /* One Element*/ /*, Identity matrix is by default used for location*/);
+  TGeoVolume* cubeScntVol = new TGeoVolume(fgdnames::scintilatorVolume, cubeComp, scintillatorMixMedium);
+  cubeWithCoatingVolume->AddNodeOverlap(cubeScntVol, 1 /* One Element*/ /*, Identity matrix is by default used for location*/);
 
   // Place the fiber coatings with fiber core
-  cubeWithCoatingVolume->AddNode(fiberXCoatVolume, 1 /* One Element*/, locationX);
-  cubeWithCoatingVolume->AddNode(fiberYCoatVolume, 1 /* One Element*/, locationY);
-  cubeWithCoatingVolume->AddNode(fiberZCoatVolume, 1 /* One Element*/, locationZ);
+  cubeWithCoatingVolume->AddNodeOverlap(fiberXCoatVolume, 1 /* One Element*/, locationX);
+  cubeWithCoatingVolume->AddNodeOverlap(fiberYCoatVolume, 1 /* One Element*/, locationY);
+  cubeWithCoatingVolume->AddNodeOverlap(fiberZCoatVolume, 1 /* One Element*/, locationZ);
   
-  // TODO2 : Add Sensitive volume
-  //AddSensitiveVolume(volume); //From FairModule
-
-  fCube = cubeWithCoatingVolume;;
+  // Add the cube volume with coating to the list of the geoManager
+  gGeoManager->AddVolume(cubeWithCoatingVolume);
 }
-
 
 }   //superfgd
 }   //geometry

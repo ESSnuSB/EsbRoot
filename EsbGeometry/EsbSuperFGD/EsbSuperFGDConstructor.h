@@ -17,16 +17,11 @@ class SuperFGDConstructor  : public TObject
 {
 public:
 
-    /** Constructor
-     *@param name - name of the constructed fgd detector
-     **/
-    SuperFGDConstructor(std::string name);
+    /** Constructor **/
+    SuperFGDConstructor();
 
     /** Destructor **/
     ~SuperFGDConstructor();
-  
-    /** Return a Root volume **/
-    TGeoVolume* GetPiece(void);
 
     /** Set size of cube edges  
      *@param w - width
@@ -117,23 +112,6 @@ public:
     /** Get the fiber material **/
     const char* GetFiberMaterial() const { return fFiberMaterial.c_str();}
 
-
-    /** Set the name of the cube
-     *@param name - cube name
-     **/
-    virtual void SetNameCube  (std::string name){fNameCube  =name;};
-
-    /** Get the name of the cube **/
-    virtual std::string GetNameCube  (){return fNameCube;};
-
-    /** Get the name of the constructor **/
-    std::string GetName() {return fname;};
-
-    /** Set the name of the constructor
-     *@param name - name
-     **/
-    void  SetName(std::string name){fname = name;}
-
     /** Set Geant4 visibility
      *@param vis - visibility
      **/
@@ -142,10 +120,13 @@ public:
     /** Get current visibility **/ 
     virtual bool GetVisibility(void) {return fIsVisible;}
 
-private:
+    /** Name of the TGeoVolume of the Fgd whole detector **/ 
+    static const char* SuperFgdName;
 
     /** Constructs the TgeoVolume of the detector**/
     void Construct();
+
+private:
 
     // Size of the SuperFGD
     double fWidth;
@@ -172,15 +153,6 @@ private:
   
     /// The name of the material to use for the fiber.
     std::string fFiberMaterial;
-  
-    // Detector names
-    std::string fNameCube;   // Single cube
-
-    std::string fname;   // this name
-
-    TGeoVolume* fVolume;
-
-    void Init(void);
 
     ClassDef(SuperFGDConstructor,2)
 };

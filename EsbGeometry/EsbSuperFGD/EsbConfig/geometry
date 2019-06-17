@@ -1,34 +1,19 @@
 #Lenght is given in dimetion of meters [cm] 
 #for cube all should have the same value
-length_X=10
-length_Y=10
-length_Z=10
+length_X=1
+length_Y=1
+length_Z=1
 
 #number of cubes
-number_cubes_X=20
-number_cubes_Y=20
+number_cubes_X=10
+number_cubes_Y=10
 number_cubes_Z=10
-
-#position is given in coordinate system of its mother Part [m]
-positon_X=0
-positon_Y=0
-positon_Z=0
-
-#material for the Geant4 is specified 
-g4material=G4_POLYSTYRENE
-scintillator=G4_POLYSTYRENE
-optPhotonOn=0 #include optical photons in simulation (TAKES A LOT OF DISK SPACE!)
 
 #magnetic field
 magField=1 #in [Tesla] 
 magField_X=0
 magField_Y=0
 magField_Z=0
-
-#fiber 
-fiber_radius=0.05 
-fiber_length=0 # not required calculated as length_Y * number_cubes_Y
-fiber_g4material=G4_POLYSTYRENE
 
 #visualization
 visdetail=0 #1 is for true

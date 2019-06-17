@@ -2,6 +2,7 @@
 #include "EsbGeometry/EsbSuperFGD/EsbCubeScintilatorConstructor.h"
 #include "EsbGeometry/EsbSuperFGD/EsbFgdDetectorParameters.h"
 #include "EsbGeometry/EsbSuperFGD/Materials.h"
+#include "EsbGeometry/EsbSuperFGD/Names.h"
 
 #include "FairLogger.h"                 // for FairLogger, etc
 
@@ -11,51 +12,17 @@ namespace esbroot {
 namespace geometry {
 namespace superfgd {
 
-SuperFGDConstructor::SuperFGDConstructor(std::string name)
-:fVolume(nullptr)
+
+const char* SuperFGDConstructor::SuperFgdName = fgdnames::superFGDName;
+
+SuperFGDConstructor::SuperFGDConstructor()
 {
-    SetName(name);
-    Init();
 }
   
 SuperFGDConstructor::~SuperFGDConstructor()
 {
 }
 
-void SuperFGDConstructor::Init(void) 
-{
-  /// The edge of a cube of the SuperFGD detector 
-  //fEdge = 1*CLHEP::cm;
-
-  // Number of cubes along each axis (in cm)
-  fCubeNumX = 1;
-  fCubeNumY = 1;
-  fCubeNumZ = 1;
-
-  fEdge = 1.0; // in cm
-
-  SetWidth(fCubeNumX * fEdge);
-  SetHeight(fCubeNumY * fEdge);
-  SetLength(fCubeNumZ * fEdge);
-
-  // Position of the center of the SuperFGD detector
-  fPosX = 0.;
-  fPosY = 0.;
-  fPosZ = 0.;
-
-  std::string nameCube   = "CubeScint";
-  SetNameCube(nameCube);
-}
-
-
-TGeoVolume* SuperFGDConstructor::GetPiece(void) 
-{
-  if(!fVolume){
-      Construct();
-  }
-
-  return fVolume;
-}
 
 void SuperFGDConstructor::Construct()
 {
@@ -70,9 +37,8 @@ void SuperFGDConstructor::Construct()
   SetHeight(TotHeight);
 
   // Build the plastic scintillator cube
-  CubeScintConstructor cube(GetNameCube());
+  CubeScintConstructor cube;
   cube.SetVisibility(true);
-  cube.SetName(GetName() + "/cube");
   
   cube.SetBase(fEdge);
   cube.SetLength(fEdge);
@@ -98,13 +64,15 @@ void SuperFGDConstructor::Construct()
   cube.SetHoleRot_Y(rotYY);
   cube.SetHoleRot_Z(rotZZ);
 
+  cube.Construct();
+
   TGeoMedium *air = gGeoManager->GetMedium(esbroot::geometry::superfgd::materials::air);
   //========================================
   // Repeat the volume in X
   TGeoBBox* rowX = new TGeoBBox("rowX", TotWidth, fEdge, fEdge);
   TGeoVolume* rowXVol = new TGeoVolume("rowXVol",rowX,air);
 
-  TGeoVolume* cube_vol = cube.GetPiece();
+  TGeoVolume* cube_vol = gGeoManager->GetVolume(fgdnames::cubeName);
   double startPosX = -TotWidth/2 + fEdge/2;
 
   for(int i=0; i < fCubeNumX; i++)
@@ -131,18 +99,18 @@ void SuperFGDConstructor::Construct()
   //========================================
   // Repeat the volume in XYZ
   TGeoBBox* rowXYZ = new TGeoBBox("rowXYZ", TotWidth, TotLength, TotHeight);
-  TGeoVolume* rowXYZVol = new TGeoVolume("rowXYZVol",rowXYZ, air);
+  TGeoVolume* nameSuperFGD = new TGeoVolume(SuperFgdName,rowXYZ, air); // nameSuperFGD == "rowXYZVol"
 
   double startPosXYZ = -TotHeight/2 + fEdge/2;
 
   for(int i=0; i < fCubeNumZ; i++)
   {
     int copyNo = i+1;
-    rowXYZVol->AddNode(rowXYVol,copyNo,new TGeoTranslation(0,0,(startPosXYZ + i*fEdge)));
+    nameSuperFGD->AddNode(rowXYVol,copyNo,new TGeoTranslation(0,0,(startPosXYZ + i*fEdge)));
   }
   //========================================
 
-  fVolume = rowXYZVol;
+  gGeoManager->AddVolume(nameSuperFGD);
 }
 
 

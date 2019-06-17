@@ -18,7 +18,7 @@ class FairVolume;
 class TClonesArray;
 class G4VPhysicalVolume;
 
-//Inheritance: EsbWCDetector <- FairDetector <- FairModule <- TNamed
+//Inheritance: EsbFgdDetector <- FairDetector <- FairModule <- TNamed
 
 namespace esbroot {
 
@@ -93,6 +93,9 @@ namespace geometry {
 		/** Initialize amterials used in the detector construction **/
 		void DefineMaterials();
 
+		/** Adds just the cube scintilator volumes as the sensitive detector */
+		void AddToSensitiveVolumes(TGeoVolume *vol);
+
 		//** indicate that the materials have already been defined
 		bool isDefinedMaterials;
 
@@ -118,7 +121,7 @@ namespace geometry {
 		TClonesArray*  fFgdDetectorPointCollection;  //! 
 
 		FgdDetector(const FgdDetector&);
-		FgdDetector& operator=(const FgdDetector&);
+		FgdDetector& operator=(const FgdDetector&);		
 
 		ClassDef(FgdDetector,2)
 	};

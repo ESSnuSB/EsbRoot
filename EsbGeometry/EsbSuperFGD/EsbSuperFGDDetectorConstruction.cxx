@@ -1,5 +1,6 @@
 #include "EsbGeometry/EsbSuperFGD/EsbSuperFGDDetectorConstruction.h"
 #include "EsbGeometry/EsbSuperFGD/EsbSuperFGDConstructor.h"
+#include "EsbGeometry/EsbSuperFGD/Names.h"
 
 #include "FairLogger.h"
 
@@ -9,7 +10,6 @@ namespace superfgd {
 
 
 SuperFGDDetectorConstruction::SuperFGDDetectorConstruction(std::string detectorFile)
-  : fVolume(nullptr)
 {
   fParams.LoadPartParams(detectorFile);
 }
@@ -18,46 +18,24 @@ SuperFGDDetectorConstruction::~SuperFGDDetectorConstruction()
 {
 }
 
-TGeoVolume* SuperFGDDetectorConstruction::GetPiece(void) 
-{
-  if(!fVolume){
-      Construct();
-  }
-
-  return fVolume;
-}
-
 void SuperFGDDetectorConstruction::Construct()
 {
-    std::string cNameLogicSuperFGD1 = "Esb/SuperFGD";
-    
-    SuperFGDConstructor fSuperFGDConstructor1(cNameLogicSuperFGD1);
+    SuperFGDConstructor fSuperFGDConstructor1;
     fSuperFGDConstructor1.SetVisibility(fParams.ParamAsBool(DP::visdetail));
 
-    std::string nameSuperFGD1 = fSuperFGDConstructor1.GetName();
-
     Double_t lunit = 1; // fParams.GetLenghtUnit(); // TODO: fix lenght units
-    Double_t cube_X = fParams.ParamAsDouble(DP::length_X) * lunit;
+    Double_t edge = fParams.ParamAsDouble(DP::length_X) * lunit;
 
-    Double_t cube_X_N = fParams.ParamAsDouble(DP::number_cubes_X);
-    Double_t cube_Y_N = fParams.ParamAsDouble(DP::number_cubes_Y);
-    Double_t cube_Z_N = fParams.ParamAsDouble(DP::number_cubes_Z);
+    Int_t cube_X_N = fParams.ParamAsInt(DP::number_cubes_X);
+    Int_t cube_Y_N = fParams.ParamAsInt(DP::number_cubes_Y);
+    Int_t cube_Z_N = fParams.ParamAsInt(DP::number_cubes_Z);
 
-    double edge = cube_X;
-    int cubenumX = cube_X_N;
-    int cubenumY = cube_Y_N;
-    int cubenumZ = cube_Z_N;
+    fSuperFGDConstructor1.SetEdge(edge);
+    fSuperFGDConstructor1.SetCubeNumX(cube_X_N);
+    fSuperFGDConstructor1.SetCubeNumY(cube_Y_N);
+    fSuperFGDConstructor1.SetCubeNumZ(cube_Z_N);
 
-    double x = fParams.ParamAsDouble(DP::positon_X);
-    double y = fParams.ParamAsDouble(DP::positon_Y);
-    double z = fParams.ParamAsDouble(DP::positon_Z);
-
-    fSuperFGDConstructor1.SetEdge(edge*CLHEP::mm);
-    fSuperFGDConstructor1.SetCubeNumX(cubenumX);
-    fSuperFGDConstructor1.SetCubeNumY(cubenumY);
-    fSuperFGDConstructor1.SetCubeNumZ(cubenumZ);
-
-    fVolume = fSuperFGDConstructor1.GetPiece(); 
+    fSuperFGDConstructor1.Construct(); 
 
 
   //   G4String cNameLogicSuperFGD1 = "Esb/SuperFGD";
