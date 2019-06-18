@@ -24,7 +24,7 @@ cd src
 ``` 
 git clone https://github.com/ESSnuSB/FairSoft.git FairSoft
 cd FairSoft
-./configure
+./configure.sh
 ```
 In the configrue script chose:
 ```
