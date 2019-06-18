@@ -100,20 +100,23 @@ void FgdDetector::Initialize()
 //___________________________________________________________________
 Bool_t  FgdDetector::ProcessHits(FairVolume* vol)
 {
+  if(TVirtualMC::GetMC()->TrackPid() == 22 )
+    return kTRUE;
+
 	cout << __PRETTY_FUNCTION__ << endl;
   /** This method is called from the MC stepping */
 
+  cout << "  TrackPid " << TVirtualMC::GetMC()->TrackPid() << endl;
+  cout << "  TrackCharge " << TVirtualMC::GetMC()->TrackCharge() << endl;
+  cout << "  Is track entering " << TVirtualMC::GetMC()->IsTrackEntering() << endl;
+  cout << "  Is track exiting " << TVirtualMC::GetMC()->IsTrackExiting() << endl;
   cout << "vol->getCopyNo() " << vol->getCopyNo() << endl;
   cout << "vol->getVolumeId() " << vol->getVolumeId() << endl;
   TVirtualMC::GetMC()->TrackPosition(fPos);
   cout <<  "fPos.X() " << fPos.X() << endl;
   cout <<  "fPos.Y() " << fPos.Y() << endl;
   cout <<  "fPos.Z() " << fPos.Z() << endl;
-
-  cout <<  "Name " << vol->GetName() << endl;
-
   cout <<  "TrackLength " << TVirtualMC::GetMC()->TrackLength() << endl;
-
   cout <<  "GetCurrentTrackNumber " << TVirtualMC::GetMC()->GetStack()->GetCurrentTrackNumber() << endl;
 
   return kTRUE;
@@ -261,7 +264,7 @@ void FgdDetector::AddToSensitiveVolumes(TGeoVolume *vol)
   using namespace geometry::superfgd;
   TObjArray* arr = vol->GetNodes();
 
-  for(Int_t i =0; i < arr->GetEntries(); i++)
+  for(Int_t i =0; arr && i < arr->GetEntries(); i++)
   {
     TGeoNode* node = (TGeoNode*)arr->At(i);
     TGeoVolume* nodeVol = node->GetVolume();
@@ -269,13 +272,15 @@ void FgdDetector::AddToSensitiveVolumes(TGeoVolume *vol)
     // Compare if the volume name is the sensitive volume
     // 1. If it is, add it as a sensitive volume
     // 2. Else continue looping through the daughter volumes
-    if(node->GetVolume() &&  std::strcmp(nodeVol->GetName(),
-                                     fgdnames::coatingVolume))
+    bool equalNames = nodeVol && (std::strcmp(nodeVol->GetName(),
+                                     fgdnames::scintilatorVolume) == 0);
+
+    if(nodeVol &&  equalNames)
     {
-        AddSensitiveVolume(node->GetVolume());
-        LOG(debug) <<  "Adding TGeoVolume to sensitive geometry ";
-    }else if(node->GetVolume()){
-      AddToSensitiveVolumes(node->GetVolume());
+        AddSensitiveVolume(nodeVol);
+        LOG(debug) << "Adding TGeoVolume " << nodeVol->GetName();
+    }else if(nodeVol){
+      AddToSensitiveVolumes(nodeVol);
     }
   }
 }
