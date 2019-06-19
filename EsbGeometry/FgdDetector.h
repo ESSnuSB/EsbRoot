@@ -93,9 +93,6 @@ namespace geometry {
 		/** Initialize amterials used in the detector construction **/
 		void DefineMaterials();
 
-		/** Adds just the cube scintilator volumes as the sensitive detector */
-		void AddToSensitiveVolumes(TGeoVolume *vol);
-
 		//** indicate that the materials have already been defined
 		bool isDefinedMaterials;
 

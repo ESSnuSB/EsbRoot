@@ -69,7 +69,7 @@ void SuperFGDConstructor::Construct()
   TGeoMedium *air = gGeoManager->GetMedium(esbroot::geometry::superfgd::materials::air);
   //========================================
   // Repeat the volume in X
-  TGeoBBox* rowX = new TGeoBBox("rowX", TotWidth, fEdge, fEdge);
+  TGeoBBox* rowX = new TGeoBBox("rowX", TotWidth/2, fEdge/2, fEdge/2);
   TGeoVolume* rowXVol = new TGeoVolume("rowXVol",rowX,air);
 
   TGeoVolume* cube_vol = gGeoManager->GetVolume(fgdnames::cubeName);
@@ -84,7 +84,7 @@ void SuperFGDConstructor::Construct()
 
   //========================================
   // Repeat the volume in XY
-  TGeoBBox* rowXY = new TGeoBBox("rowXY", TotWidth, TotLength, fEdge);
+  TGeoBBox* rowXY = new TGeoBBox("rowXY", TotWidth/2, TotLength/2, fEdge/2);
   TGeoVolume* rowXYVol = new TGeoVolume("rowXYVol",rowXY, air);
 
   double startPosXY = -TotLength/2 + fEdge/2;
@@ -98,7 +98,7 @@ void SuperFGDConstructor::Construct()
 
   //========================================
   // Repeat the volume in XYZ
-  TGeoBBox* rowXYZ = new TGeoBBox("rowXYZ", TotWidth, TotLength, TotHeight);
+  TGeoBBox* rowXYZ = new TGeoBBox("rowXYZ", TotWidth/2, TotLength/2, TotHeight/2);
   TGeoVolume* nameSuperFGD = new TGeoVolume(SuperFgdName,rowXYZ, air); // nameSuperFGD == "rowXYZVol"
 
   double startPosXYZ = -TotHeight/2 + fEdge/2;

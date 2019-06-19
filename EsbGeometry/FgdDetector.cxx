@@ -167,8 +167,8 @@ void FgdDetector::ConstructGeometry()
   TGeoVolume *top = gGeoManager->GetTopVolume();
   top->AddNode(superFgdVol, 1, new TGeoTranslation(fposX, fposY, fposZ));
   
-  // Extract the cube scintilator volume only and add it as the sensitive part
-  AddToSensitiveVolumes(superFgdVol); 
+  TGeoVolume* cubeScnintilatorVol = gGeoManager->GetVolume(fgdnames::scintilatorVolume);
+  AddSensitiveVolume(cubeScnintilatorVol);
 }
 
 //___________________________________________________________________
@@ -257,32 +257,6 @@ void FgdDetector::DefineMaterials()
 
   FairGeoMedium* vacuum = geoMedia->getMedium(esbroot::geometry::superfgd::materials::vacuum);
   geoBuild->createMedium(vacuum);
-}
-
-void FgdDetector::AddToSensitiveVolumes(TGeoVolume *vol)
-{
-  using namespace geometry::superfgd;
-  TObjArray* arr = vol->GetNodes();
-
-  for(Int_t i =0; arr && i < arr->GetEntries(); i++)
-  {
-    TGeoNode* node = (TGeoNode*)arr->At(i);
-    TGeoVolume* nodeVol = node->GetVolume();
-
-    // Compare if the volume name is the sensitive volume
-    // 1. If it is, add it as a sensitive volume
-    // 2. Else continue looping through the daughter volumes
-    bool equalNames = nodeVol && (std::strcmp(nodeVol->GetName(),
-                                     fgdnames::scintilatorVolume) == 0);
-
-    if(nodeVol &&  equalNames)
-    {
-        AddSensitiveVolume(nodeVol);
-        LOG(debug) << "Adding TGeoVolume " << nodeVol->GetName();
-    }else if(nodeVol){
-      AddToSensitiveVolumes(nodeVol);
-    }
-  }
 }
 
 }
