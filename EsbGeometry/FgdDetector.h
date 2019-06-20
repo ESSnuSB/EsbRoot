@@ -65,6 +65,11 @@ namespace geometry {
 		/**      Create the detector geometry        */
 		void ConstructGeometry();
 
+		/**      Initializes a magnetic field for the volume and detector position     */
+		void GetMagneticField(Double_t& Bx,Double_t& By, Double_t& Bz);
+		void GetMagneticFieldRegion(Double_t& xMin, Double_t& xMax,
+                                         Double_t& yMin, Double_t& yMax,
+                                         Double_t& zMin, Double_t& zMax);
 
 
 		/**      This method is an example of how to add your own point

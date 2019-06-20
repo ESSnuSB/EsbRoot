@@ -259,6 +259,35 @@ void FgdDetector::DefineMaterials()
   geoBuild->createMedium(vacuum);
 }
 
+
+void FgdDetector::GetMagneticField(Double_t& Bx,Double_t& By, Double_t& Bz)
+{
+  TVector3 magField = fgdConstructor.GetMagneticField();
+  Bx = magField.X();
+  By = magField.Y();
+  Bz = magField.Z();
+}
+
+
+void FgdDetector::GetMagneticFieldRegion(Double_t& xMin, Double_t& xMax,
+                                         Double_t& yMin, Double_t& yMax,
+                                         Double_t& zMin, Double_t& zMax)
+{
+  Double_t edge = fgdConstructor.GetEdge() * fgdConstructor.GetLengthUnit();
+  Double_t totalX = fgdConstructor.GetCubeNX() * edge;
+  Double_t totalY = fgdConstructor.GetCubeNY() * edge;
+  Double_t totalZ = fgdConstructor.GetCubeNZ() * edge;
+
+  xMin = fposX - totalX/2;
+  xMax = fposX + totalX/2;
+
+  yMin = fposY - totalY/2;
+  yMax = fposY + totalY/2;
+
+  zMin = fposZ - totalZ/2;
+  zMax = fposZ + totalZ/2;
+}
+
 }
 }
 

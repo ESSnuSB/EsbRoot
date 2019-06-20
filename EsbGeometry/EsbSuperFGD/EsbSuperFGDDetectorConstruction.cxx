@@ -23,7 +23,7 @@ void SuperFGDDetectorConstruction::Construct()
     SuperFGDConstructor fSuperFGDConstructor1;
     fSuperFGDConstructor1.SetVisibility(fParams.ParamAsBool(DP::visdetail));
 
-    Double_t lunit = 1; // fParams.GetLenghtUnit(); // TODO: fix lenght units
+    Double_t lunit = fParams.GetLenghtUnit(); 
     Double_t edge = fParams.ParamAsDouble(DP::length_X) * lunit;
 
     Int_t cube_X_N = fParams.ParamAsInt(DP::number_cubes_X);
@@ -115,6 +115,20 @@ void SuperFGDDetectorConstruction::Construct()
   //   LOG(info) << "logicTarget1 Mass -> " << logicTarget1->GetMass()/CLHEP::gram;
 
   //   return world;
+}
+
+TVector3 SuperFGDDetectorConstruction::GetMagneticField()
+{
+  Double_t Bx = fParams.ParamAsInt(DP::magField_X);
+  Double_t By = fParams.ParamAsInt(DP::magField_Y);
+  Double_t Bz = fParams.ParamAsInt(DP::magField_Z);
+
+  TVector3 magField;
+  magField.SetX(Bx);
+  magField.SetY(By);
+  magField.SetZ(Bz);
+
+  return magField;
 }
 
 }   //superfgd

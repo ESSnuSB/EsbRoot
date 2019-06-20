@@ -31,7 +31,6 @@ namespace DP
 
     static const string  visdetail = "visdetail";
 
-    static const string  magField = "magField";
     static const string  magField_X = "magField_X";
     static const string  magField_Y = "magField_Y";
     static const string  magField_Z = "magField_Z";
@@ -54,7 +53,7 @@ public:
     void LoadPartParams(string fullfilePathName);
 
     /** Return the dimentions used for the detector **/
-    static Double_t GetLenghtUnit() {return CLHEP::meter;} 
+    static Double_t GetLenghtUnit() {return 1.0; /* Default length unit in Root is in 'cm' */}  
 
     /** Return the existing map parameter as std::string  **/
     string ParamAsString(const string& paramName) const;
