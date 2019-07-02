@@ -16,6 +16,8 @@
 #pragma link C++ namespace esbroot+;
 #pragma link C++ namespace esbroot::geometry+;
 
+#pragma link C++ class esbroot::geometry::cstransforms+;
+#pragma link C++ class esbroot::geometry::CoordinateSystem+;
 #pragma link C++ class esbroot::geometry::WCDetector+;
 #pragma link C++ class esbroot::geometry::Cave+;
 #pragma link C++ class esbroot::geometry::GeoCave+;
