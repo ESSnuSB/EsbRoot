@@ -34,9 +34,13 @@ WCDetector.cxx
 Cave.cxx
 GeoCave.cxx
 PMTube.cxx
+CoordinateSystem.cxx
+OnAxisCS.cxx
 )
 
 Set(HEADERS 
+	${CMAKE_SOURCE_DIR}/EsbGeometry/OnAxisCS.h
+	${CMAKE_SOURCE_DIR}/EsbGeometry/CoordinateSystem.h
 	${CMAKE_SOURCE_DIR}/EsbGeometry/WCDetector.h
 	${CMAKE_SOURCE_DIR}/EsbGeometry/Cave.h
 	${CMAKE_SOURCE_DIR}/EsbGeometry/GeoCave.h
