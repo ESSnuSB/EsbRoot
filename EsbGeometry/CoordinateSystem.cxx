@@ -8,7 +8,7 @@
 namespace esbroot {
 namespace geometry {
 
-//Budimir: is this function somewhere standard in ROOT?
+//Budimir: is this function standard somewhere in ROOT?
 inline static bool EqErr(double lhs, double rhs, double err)
 {
 	return( std::abs(lhs-rhs) < err );
@@ -24,19 +24,12 @@ inline static bool EqErr(double lhs, double rhs, double err)
 	double det;
 	int det_status = rot.Det2(det);
 
-	//~ std::cout << det_status << std::endl;
-	//~ std::cout << det << std::endl;
-
 	//Is determinant == 1?
 	if(!(det_status == 1 && EqErr(det, 1.0, delta) )) return(false);
 
 	//Is transpose*rot == 1?
 	SMatrix33 zero_cand = (rot*ROOT::Math::Transpose(rot)) - SMatrix33(ROOT::Math::SMatrixIdentity());
-
-	//~ rot.Print(std::cout); std::cout << std::endl;
-	//~ SMatrix33(zero_cand).Print(std::cout); std::cout << std::endl;	
-
-	for(auto elem : zero_cand) {
+  for(auto elem : zero_cand) {
 		if( !EqErr(elem, 0.0, delta) ) {
 			return(false);
 		}
@@ -46,7 +39,7 @@ inline static bool EqErr(double lhs, double rhs, double err)
 }
 
 void CoordinateSystem::IsProperOrDie() const {
-		if( !IsProperRotation(GetRotation(), 1e-6) ) {
+		if( !IsProperRotation(GetRotation(), fFloatDelta) ) {
 			std::cerr << "FATAL: (" << __PRETTY_FUNCTION__
 					<< ") Attempting to create CoordinateSystem object with a matrix which is not a proper rotation. Aborting."
 					<< std::endl;
