@@ -38,6 +38,8 @@ set(SRCS
 	Cave.cxx
 	GeoCave.cxx
 	PMTube.cxx
+	CoordinateSystem.cxx
+	OnAxisCS.cxx
 	FgdDetector.cxx
 	EsbSuperFGD/EsbCubeScintilatorConstructor.cxx
 	EsbSuperFGD/EsbSuperFGDConstructor.cxx
@@ -46,6 +48,8 @@ set(SRCS
 )
 
 Set(HEADERS 
+	${CMAKE_SOURCE_DIR}/EsbGeometry/OnAxisCS.h
+	${CMAKE_SOURCE_DIR}/EsbGeometry/CoordinateSystem.h
 	${CMAKE_SOURCE_DIR}/EsbGeometry/WCDetector.h
 	${CMAKE_SOURCE_DIR}/EsbGeometry/Cave.h
 	${CMAKE_SOURCE_DIR}/EsbGeometry/GeoCave.h
