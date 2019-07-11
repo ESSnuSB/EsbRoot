@@ -33,9 +33,10 @@ class FgdDetectorPoint : public FairMCPoint
      *@param pos      Ccoordinates at entrance to active volume [cm]
      *@param mom      Momentum of track at entrance [GeV]
      *@param tof      Time since event start [ns]
+     *@param edep     total energy loss [GeV]
      **/
     FgdDetectorPoint(Int_t trackID, Int_t detID, TVector3 pos, TVector3 mom,
-		       Double_t tof);
+		       Double_t tof,  Double_t edep);
     
     /** Destructor **/
     virtual ~FgdDetectorPoint();

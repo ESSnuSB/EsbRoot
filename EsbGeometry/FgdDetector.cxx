@@ -100,24 +100,28 @@ void FgdDetector::Initialize()
 //___________________________________________________________________
 Bool_t  FgdDetector::ProcessHits(FairVolume* vol)
 {
-  if(TVirtualMC::GetMC()->TrackPid() == 22 )
-    return kTRUE;
+  if ( TVirtualMC::GetMC()->IsTrackEntering() ) {
+    fELoss  = 0.;
+    fTime   = TVirtualMC::GetMC()->TrackTime() * 1.0e09;
+    fLength = TVirtualMC::GetMC()->TrackLength();
+    TVirtualMC::GetMC()->TrackPosition(fPos);
+    TVirtualMC::GetMC()->TrackMomentum(fMom);
+  }
 
-	cout << __PRETTY_FUNCTION__ << endl;
-  /** This method is called from the MC stepping */
+  // Sum energy loss for all steps in the active volume
+  fELoss += TVirtualMC::GetMC()->Edep();
 
-  cout << "  TrackPid " << TVirtualMC::GetMC()->TrackPid() << endl;
-  cout << "  TrackCharge " << TVirtualMC::GetMC()->TrackCharge() << endl;
-  cout << "  Is track entering " << TVirtualMC::GetMC()->IsTrackEntering() << endl;
-  cout << "  Is track exiting " << TVirtualMC::GetMC()->IsTrackExiting() << endl;
-  cout << "vol->getCopyNo() " << vol->getCopyNo() << endl;
-  cout << "vol->getVolumeId() " << vol->getVolumeId() << endl;
-  TVirtualMC::GetMC()->TrackPosition(fPos);
-  cout <<  "fPos.X() " << fPos.X() << endl;
-  cout <<  "fPos.Y() " << fPos.Y() << endl;
-  cout <<  "fPos.Z() " << fPos.Z() << endl;
-  cout <<  "TrackLength " << TVirtualMC::GetMC()->TrackLength() << endl;
-  cout <<  "GetCurrentTrackNumber " << TVirtualMC::GetMC()->GetStack()->GetCurrentTrackNumber() << endl;
+  // Create FairTutorialDet1Point at exit of active volume
+  if ( TVirtualMC::GetMC()->IsTrackExiting()    ||
+       TVirtualMC::GetMC()->IsTrackStop()       ||
+       TVirtualMC::GetMC()->IsTrackDisappeared()   ) {
+
+    fTrackID  = TVirtualMC::GetMC()->GetStack()->GetCurrentTrackNumber();
+    fVolumeID = vol->getMCid();
+    //~ if (fELoss == 0. ) { return kFALSE; }
+    AddHit(fTrackID, fVolumeID, TVector3(fPos.X(),  fPos.Y(),  fPos.Z()),
+           TVector3(fMom.Px(), fMom.Py(), fMom.Pz()), fTime, fELoss); 
+  }    
 
   return kTRUE;
 }
@@ -174,13 +178,21 @@ void FgdDetector::ConstructGeometry()
 //___________________________________________________________________
 data::FgdDetectorPoint* FgdDetector::AddHit(Int_t trackID, Int_t detID, 
 					  TVector3 pos, TVector3 mom,
-					  Double_t time)
+					  Double32_t time, Double32_t edep)
 {
+    LOG(debug) << "FgdDetector::AddHit";
+    LOG(debug) << "trackID " << trackID;
+    LOG(debug) << "detID " << detID;
+    LOG(debug) << "pos.X() " << pos.X() << "; pos.Y() " << pos.Y()<< "; pos.Z() " << pos.Z();
+    LOG(debug) << "mom.Px() " << mom.Px() << "; mom.Py() " << mom.Py() << "; mom.Pz() " << mom.Pz();
+    LOG(debug) << "time " << time;
+    LOG(debug) << "edep " << edep;
+
   TClonesArray& clref = *fFgdDetectorPointCollection;
   Int_t size = clref.GetEntriesFast();
 
   return new(clref[size]) data::FgdDetectorPoint(trackID, detID, pos, mom, 
-					     time);
+					     time, edep);
 }
 
 void FgdDetector::DefineMaterials() 
