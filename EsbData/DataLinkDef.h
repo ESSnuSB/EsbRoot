@@ -15,11 +15,13 @@
 #pragma link C++ nestedtypedef;
 
 #pragma link C++ namespace esbroot;
+#pragma link C++ namespace esbroot::data+;
 
 #pragma link C++ class esbroot::data::Stack+;
 #pragma link C++ class esbroot::data::MCTrack+;
 #pragma link C++ class esbroot::data::WCDetectorPoint+;
 #pragma link C++ class esbroot::data::PMTubeHit+;
+#pragma link C++ class esbroot::data::FgdDetectorPoint+;
 
 #endif
 

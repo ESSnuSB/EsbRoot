@@ -15,6 +15,7 @@
 
 #pragma link C++ namespace esbroot+;
 #pragma link C++ namespace esbroot::geometry+;
+#pragma link C++ namespace esbroot::geometry::superfgd+;
 
 #pragma link C++ class esbroot::geometry::OnAxisCS+;
 #pragma link C++ class esbroot::geometry::cstransforms+;
@@ -23,5 +24,11 @@
 #pragma link C++ class esbroot::geometry::Cave+;
 #pragma link C++ class esbroot::geometry::GeoCave+;
 #pragma link C++ class esbroot::geometry::PMTube+;
+#pragma link C++ class esbroot::geometry::FgdDetector+;
+
+#pragma link C++ class esbroot::geometry::superfgd::SuperFGDDetectorConstruction+;
+#pragma link C++ class esbroot::geometry::superfgd::SuperFGDConstructor+;
+#pragma link C++ class esbroot::geometry::superfgd::FgdDetectorParameters+;
+#pragma link C++ class esbroot::geometry::superfgd::CubeScintConstructor+;
 
 #endif
