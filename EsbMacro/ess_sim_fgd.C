@@ -29,8 +29,21 @@ void ess_sim(TString outFileName = "evetest.root",
   fRun->AddModule(cave);
   
   // Add Detectors
-  FairDetector *nearWc = new geometry::WCDetector("NearWcDetector", 300, 500, kTRUE);
-  fRun->AddModule(nearWc);
+  //FairDetector *nearWc = new geometry::WCDetector("NearWcDetector", 300, 500, kTRUE);
+  //fRun->AddModule(nearWc);
+
+  FairDetector* fgd = new geometry::FgdDetector("Granular Detector","/home/georgi/opt/Essnusb/ESSnuSB-soft/EsbGeometry/EsbSuperFGD/EsbConfig/geometry",0,0,0, kTRUE);
+  fRun->AddModule(fgd);
+
+  double Bx(0), By(0), Bz(0);
+  ((geometry::FgdDetector*)fgd)->GetMagneticField(Bx, By, Bz);
+  double xMin(0), xMax(0), yMin(0), yMax(0), zMin(0), zMax(0);
+  ((geometry::FgdDetector*)fgd)->GetMagneticFieldRegion(xMin, xMax, yMin, yMax, zMin, zMax);
+  FairConstField* fgdField = new FairConstField();
+  fgdField->SetField(Bx, By, Bz);
+  fgdField->SetFieldRegion(xMin, xMax, yMin, yMax, zMin, zMax);
+  fRun->SetField(fgdField);
+  
   
   // Far Detector
   // FairDetector *farWc = new EsbWCDetector("FarWcDetector", 1000, 2000, kTRUE);
@@ -41,7 +54,8 @@ void ess_sim(TString outFileName = "evetest.root",
   fRun->SetGenerator(primGen);
   
   //~ FairParticleGenerator* partGen = new FairParticleGenerator(2212, 1, 0, 0, 1, 0, 0, 0);
-  FairParticleGenerator* partGen = new FairParticleGenerator(13, 1, 0, 0, 0.4, 0, 0, 150);
+  //FairParticleGenerator* partGen = new FairParticleGenerator(13, 1, 0, 0, 0.4, 0, 0, 150);
+  FairParticleGenerator* partGen = new FairParticleGenerator(-13, 1, 0, 0, 0.5, 0, 0, -75);
   primGen->AddGenerator(partGen);
 
   fRun->SetOutputFile(outFileName.Data()); // set output file
