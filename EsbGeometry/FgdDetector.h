@@ -76,7 +76,7 @@ namespace geometry {
 		 *       of type EsbFgdDetectorPoint to the clones array
 		*/
 		data::FgdDetectorPoint* AddHit(Int_t trackID, Int_t detID,
-								 TVector3 pos, TVector3 mom,
+								 TVector3 pos, TVector3 posExit, TVector3 mom,
 								 Double32_t edep, Double32_t time);
 
 		/** The following methods can be implemented if you need to make
@@ -107,6 +107,7 @@ namespace geometry {
 		Int_t          fTrackID;           //!  track index
 		Int_t          fVolumeID;          //!  volume id
 		TLorentzVector fPos;               //!  position at entrance
+		TLorentzVector fPosExit;           //!  position at exit
 		TLorentzVector fMom;               //!  momentum at entrance
 		Double32_t     fTime;              //!  time
 		Double32_t     fLength;            //!  length
