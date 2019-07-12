@@ -120,14 +120,15 @@ Bool_t  FgdDetector::ProcessHits(FairVolume* vol)
 {
   if ( TVirtualMC::GetMC()->IsTrackEntering() ) {
     fELoss  = 0.;
+    fLength = 0.;
     fTime   = TVirtualMC::GetMC()->TrackTime() * 1.0e09;
-    fLength = TVirtualMC::GetMC()->TrackLength();
     TVirtualMC::GetMC()->TrackPosition(fPos);
     TVirtualMC::GetMC()->TrackMomentum(fMom);
   }
 
   // Sum energy loss for all steps in the active volume
   fELoss += TVirtualMC::GetMC()->Edep();
+  fLength += TVirtualMC::GetMC()->TrackStep();
 
   // Create FairTutorialDet1Point at exit of active volume
   if ( TVirtualMC::GetMC()->IsTrackExiting()    ||

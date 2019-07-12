@@ -79,6 +79,12 @@ InitStatus FgdDigitizer::Init()
       return kFATAL;
   }
 
+  // Create and register output array
+  fHitArray = new TClonesArray(data::superfgd::FgdHit::Class(), 1000);
+  manager->Register(geometry::superfgd::DP::FGD_HIT.c_str()
+                    , geometry::superfgd::DP::FGD_DETECTOR_NAME.c_str()
+                    , fHitArray, kTRUE);
+
   return kSUCCESS;
 }
 
@@ -94,7 +100,73 @@ void FgdDigitizer::Exec(Option_t* opt)
   for(Int_t i =0; i < points; i++)
   {
     data::superfgd::FgdDetectorPoint* point = (data::superfgd::FgdDetectorPoint*)fdPoints->At(i);
-    point->Print(nullptr);
+
+
+    //=============================================
+    //====          Position        ===============
+    //=============================================
+    double pos_x = point->GetPx();
+    double pos_y = point->GetPy();
+    double pos_z = point->GetPz();
+    // calculate the bin position 
+    int bin_pos_x = (pos_x/f_step_X) + 1;
+    int bin_pos_y = (pos_y/f_step_Y) + 1;
+    int bin_pos_z = (pos_z/f_step_Z) + 1;
+
+    //=============================================
+    //====              MPPC        ===============
+    //=============================================
+    // Calculate the distance from the center of the cube to the MPPC
+    double mppcX = bin_pos_x*f_step_X + f_step_X/2;
+    double mppcX_2ndSide = f_total_X - mppcX; // along the opposite direction
+
+    double mppcY = bin_pos_y*f_step_Y + f_step_Y/2;
+    double mppcY_2ndSide = f_total_Y - mppcY; // along the opposite direction
+
+    double mppcZ = bin_pos_z*f_step_Z + f_step_Z/2;
+    double mppcZ_2ndSide = f_total_Z - mppcZ; // along the opposite direction
+
+    TVector3 mppcLocalPosition(mppcX,mppcY,mppcZ); 
+    
+    //=============================================
+    //====    Scintilation Response        ========
+    //=============================================
+    double pe = ApplyScintiResponse(point->GetEnergyLoss()
+                                    ,point->GetLength() // TrackLength
+                                    ,1.0                // Charge, for the moment it is not used
+                                    );
+
+    double time = point->GetTime();
+
+    // Calculate the # of p.e. that reach the MPPC (X,Y,Z). For the moment it is just considered that 
+    // the part of the photons that go to x,y,z are taken into
+    // account in the coefficients when applying the scintillation response.
+    // -> light collection + attenuation
+    double peX1=pe/2; 
+    double peX2=pe/2;
+    double timepeX=time;// pe along fiber X
+    ApplyFiberResponse(peX1,timepeX,mppcX); // along X fiber
+    ApplyFiberResponse(peX2,timepeX,mppcX_2ndSide); // along -X fiber
+    double peX = peX1 + peX2;
+
+    double peY1=pe/2; 
+    double peY2=pe/2; 
+    double timepeY=time;// pe along fiber Y
+    ApplyFiberResponse(peY1,timepeY,mppcY); // along Y fiber
+    ApplyFiberResponse(peY2,timepeY,mppcY_2ndSide); // along -Y fiber
+    double peY = peY1 + peY2;
+
+    double peZ1=pe/2; 
+    double peZ2=pe/2; 
+    double timepeZ=time;// pe along fiber Z
+    ApplyFiberResponse(peZ1,timepeZ,mppcZ); // along Z fiber
+    ApplyFiberResponse(peZ2,timepeZ,mppcZ_2ndSide); // along Z fiber
+    double peZ = peZ1 + peZ2;
+
+    ApplyMPPCResponse(peX);
+    ApplyMPPCResponse(peY);
+    ApplyMPPCResponse(peZ);
+    TVector3 photoElectrons(peX,peY,peZ);
   }
   
 }

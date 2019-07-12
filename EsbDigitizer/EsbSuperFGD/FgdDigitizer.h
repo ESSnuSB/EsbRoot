@@ -6,6 +6,7 @@
 #include "TRandom3.h"
 
 #include "EsbGeometry/EsbSuperFGD/EsbFgdDetectorParameters.h"
+#include "EsbData/EsbSuperFGD/FgdHit.h"
 
 namespace esbroot {
 namespace digitizer {
@@ -92,6 +93,9 @@ private:
 
   /** Input array of FgdDetectorPoint(s)**/
   TClonesArray* fdPoints;     //! 
+
+  /** Output array with Fgdhit(s) **/
+  TClonesArray* fHitArray;        //!
   	   
   ClassDef(FgdDigitizer, 2);
 
