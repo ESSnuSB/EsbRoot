@@ -167,8 +167,9 @@ void FgdDigitizer::Exec(Option_t* opt)
     ApplyMPPCResponse(peY);
     ApplyMPPCResponse(peZ);
     TVector3 photoElectrons(peX,peY,peZ);
+
+    new((*fHitArray)[i]) data::superfgd::FgdHit(pos_x, pos_y, pos_z, mppcLocalPosition, photoElectrons);
   }
-  
 }
 // -------------------------------------------------------------------------
   
