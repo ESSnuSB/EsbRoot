@@ -76,6 +76,7 @@ namespace geometry {
 		 *       of type EsbFgdDetectorPoint to the clones array
 		*/
 		data::superfgd::FgdDetectorPoint* AddHit(Int_t trackID, Int_t detID,
+								 TVector3 detectorPos,
 								 TVector3 pos, TVector3 posExit, TVector3 mom,
 								 Double32_t edep, Double32_t time);
 

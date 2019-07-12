@@ -32,12 +32,13 @@ class FgdDetectorPoint : public FairMCPoint
     /** Constructor with arguments
      *@param trackID  Index of MCTrack
      *@param detID    Detector ID
+     *@param detectorPos      Coordinates of the detector [cm]
      *@param pos      Ccoordinates at entrance to active volume [cm]
      *@param mom      Momentum of track at entrance [GeV]
      *@param tof      Time since event start [ns]
      *@param edep     total energy loss [GeV]
      **/
-    FgdDetectorPoint(Int_t trackID, Int_t detID, TVector3 pos, TVector3 posExit, TVector3 mom,
+    FgdDetectorPoint(Int_t trackID, Int_t detID, TVector3 detectorPos, TVector3 pos, TVector3 posExit, TVector3 mom,
 		       Double_t tof,  Double_t edep);
     
     /** Destructor **/
@@ -55,6 +56,9 @@ class FgdDetectorPoint : public FairMCPoint
     // Get a copy of the exit position
     TVector3 GetposExit(){return fposExit;};
 
+    // Get the detector position
+    TVector3 GetDetectorpos(){return fdetectorPos;};
+
     /** Output to screen **/
     virtual void Print(const Option_t* opt) const;
 
@@ -64,6 +68,7 @@ class FgdDetectorPoint : public FairMCPoint
     FgdDetectorPoint operator=(const FgdDetectorPoint& point);
 
     TVector3 fposExit;  // Member to hold the position of the particle when it exits the sensitive volume
+    TVector3 fdetectorPos;
 
     ClassDef(FgdDetectorPoint,2)
 };

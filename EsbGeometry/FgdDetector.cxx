@@ -141,6 +141,7 @@ Bool_t  FgdDetector::ProcessHits(FairVolume* vol)
     TVirtualMC::GetMC()->TrackPosition(fPosExit);
 
     AddHit(fTrackID, fVolumeID
+          ,TVector3(fposX,       fposY,       fposZ)
           ,TVector3(fPos.X(),       fPos.Y(),       fPos.Z())
           ,TVector3(fPosExit.X(),   fPosExit.Y(),   fPosExit.Z())
           ,TVector3(fMom.Px(),      fMom.Py(),      fMom.Pz())
@@ -202,7 +203,7 @@ void FgdDetector::ConstructGeometry()
 
 //___________________________________________________________________
 data::superfgd::FgdDetectorPoint* FgdDetector::AddHit(Int_t trackID, Int_t detID, 
-					  TVector3 pos, TVector3 posExit, TVector3 mom,
+					  TVector3 pos, TVector3 detectorPos, TVector3 posExit, TVector3 mom,
 					  Double32_t time, Double32_t edep)
 {
     LOG(debug2) << "FgdDetector::AddHit";
@@ -216,7 +217,7 @@ data::superfgd::FgdDetectorPoint* FgdDetector::AddHit(Int_t trackID, Int_t detID
   TClonesArray& clref = *fFgdDetectorPointCollection;
   Int_t size = clref.GetEntriesFast();
 
-  return new(clref[size]) data::superfgd::FgdDetectorPoint(trackID, detID, pos, posExit, mom, 
+  return new(clref[size]) data::superfgd::FgdDetectorPoint(trackID, detID, detectorPos, pos, posExit, mom, 
 					     time, edep);
 }
 

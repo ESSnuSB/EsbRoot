@@ -26,10 +26,11 @@ FgdDetectorPoint::FgdDetectorPoint()
 
 // -----   Standard constructor   ------------------------------------------
 FgdDetectorPoint::FgdDetectorPoint(Int_t trackID, Int_t detID,
-                                   TVector3 pos, TVector3 posExit, TVector3 mom,
-                                   Double_t tof, Double_t edep)
+                                  TVector3 detectorPos,
+                                  TVector3 pos, TVector3 posExit, TVector3 mom,
+                                  Double_t tof, Double_t edep)
   : FairMCPoint(trackID, detID, pos, mom, tof, 0 , edep /* eLoss*/)
-    ,fposExit(posExit)
+    ,fposExit(posExit), fdetectorPos(detectorPos)
 {
 }
 // -------------------------------------------------------------------------

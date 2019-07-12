@@ -101,13 +101,13 @@ void FgdDigitizer::Exec(Option_t* opt)
   {
     data::superfgd::FgdDetectorPoint* point = (data::superfgd::FgdDetectorPoint*)fdPoints->At(i);
 
-
+    TVector3 dpos = point->GetDetectorpos(); // Get the detector position
     //=============================================
     //====          Position        ===============
     //=============================================
-    double pos_x = point->GetPx();
-    double pos_y = point->GetPy();
-    double pos_z = point->GetPz();
+    double pos_x = point->GetPx() - dpos.X();
+    double pos_y = point->GetPy() - dpos.Y();
+    double pos_z = point->GetPz() - dpos.Z();
     // calculate the bin position 
     int bin_pos_x = (pos_x/f_step_X) + 1;
     int bin_pos_y = (pos_y/f_step_Y) + 1;
