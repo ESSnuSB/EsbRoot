@@ -27,6 +27,7 @@ void CubeScintConstructor::Construct()
   // Base is X direction
   // Height is Y direction
   // Lenght is Z direction
+  using namespace esbroot::geometry::superfgd;
 
   // The Box shape from which the holes for the fiber will be subtracted
   TGeoBBox* cubeWithCoating = new TGeoBBox("CubeCoating",GetBase()/2, GetHeight()/2, GetLength()/2);
@@ -40,13 +41,13 @@ void CubeScintConstructor::Construct()
 
   
 
-  TGeoMedium *tiO2 = gGeoManager->GetMedium(esbroot::geometry::superfgd::materials::titaniumDioxide);
-  TGeoMedium *c8H8 = gGeoManager->GetMedium(esbroot::geometry::superfgd::materials::polystyrene);
+  TGeoMedium *tiO2 = gGeoManager->GetMedium(materials::titaniumDioxide);
+  TGeoMedium *c8H8 = gGeoManager->GetMedium(materials::polystyrene);
 
-  TGeoMixture *scintillatorCoating = new TGeoMixture(esbroot::geometry::superfgd::materials::scintillatorCoating,2, 1.164);
+  TGeoMixture *scintillatorCoating = new TGeoMixture(materials::scintillatorCoating,2, 1.164);
   scintillatorCoating->AddElement(tiO2->GetMaterial(), 0.15);
   scintillatorCoating->AddElement(c8H8->GetMaterial(), 0.85);
-  TGeoMedium* coatingMedium = new TGeoMedium("coatingMedium", 1, scintillatorCoating);
+  TGeoMedium* coatingMedium = new TGeoMedium("coatingMedium", materials::GetNextIndex(), scintillatorCoating);
 
   //=======================================================================================
   // Create the fiber hole along X
@@ -162,18 +163,18 @@ void CubeScintConstructor::Construct()
 
 
   // Define Scintilator mix
-  TGeoMedium *scnt = gGeoManager->GetMedium(esbroot::geometry::superfgd::materials::scintillator);
-  TGeoMedium *prt = gGeoManager->GetMedium(esbroot::geometry::superfgd::materials::paraterphnyl);
+  TGeoMedium *scnt = gGeoManager->GetMedium(materials::scintillator);
+  TGeoMedium *prt = gGeoManager->GetMedium(materials::paraterphnyl);
 
-  TGeoMixture *scintillatorMixMat = new TGeoMixture(esbroot::geometry::superfgd::materials::scintilatorMix,2, 1.050);
+  TGeoMixture *scintillatorMixMat = new TGeoMixture(materials::scintilatorMix,2, 1.050);
   scintillatorMixMat->AddElement(scnt->GetMaterial(), 0.985);
   scintillatorMixMat->AddElement(prt->GetMaterial(), 0.015);
 
-  TGeoMedium* scintillatorMixMedium = new TGeoMedium("scintillatorMixMat", 1, scintillatorMixMat);
+  TGeoMedium* scintillatorMixMedium = new TGeoMedium("scintillatorMixMat", materials::GetNextIndex(), scintillatorMixMat);
 
   
   // Create the mother cube volume 
-  TGeoMedium *vacuum = gGeoManager->GetMedium(esbroot::geometry::superfgd::materials::vacuum);
+  TGeoMedium *vacuum = gGeoManager->GetMedium(materials::vacuum);
   TGeoVolume* cubeWithCoatingVolume = new TGeoVolume(fgdnames::cubeName,cubeWithCoating, vacuum);
 
   // Place the coating

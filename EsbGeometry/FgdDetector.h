@@ -30,6 +30,9 @@ namespace geometry {
 
 	  public:
 
+		/** Default constructor **/
+		FgdDetector();
+
 		/**      Name :  Detector Name
 		 *       Active: kTRUE for active detectors (ProcessHits() will be called)
 		 *               kFALSE for inactive detectors
@@ -83,7 +86,7 @@ namespace geometry {
 		 *  any optional action in your detector during the transport.
 		*/
 
-		virtual void   SetSpecialPhysicsCuts() {;}
+		virtual void   SetSpecialPhysicsCuts() override;
 		virtual void   EndOfEvent();
 		virtual void   FinishPrimary() {;}
 		virtual void   FinishRun() {;}

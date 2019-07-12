@@ -36,6 +36,13 @@ namespace materials
     static const char* fiberCladding = "fiberCladding";
     static const char* scintillatorCoating = "scintillatorCoating";
 
+    static int GetNextIndex()
+    {
+        static int index=10000;
+        index++;
+        return index;
+    }
+
 }   // materials
 }   // superfgd
 }   // geometry
