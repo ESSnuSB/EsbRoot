@@ -8,6 +8,7 @@
 #include "EsbGeometry/FgdDetector.h"
 #include "EsbGeometry/EsbSuperFGD/Materials.h"
 #include "EsbGeometry/EsbSuperFGD/Names.h"
+#include "EsbGeometry/EsbSuperFGD/EsbFgdDetectorParameters.h"
 #include "EsbData/FgdDetectorPoint.h" 
 
 #include "FairLogger.h"
@@ -164,9 +165,10 @@ void FgdDetector::Register()
       this collection will not be written to the file, it will exist
       only during the simulation.
   */
-
-  FairRootManager::Instance()->Register("EsbFgdDetectorPoint", "EsbFgdDetector", 
-                                        fFgdDetectorPointCollection, kTRUE);
+  
+  FairRootManager::Instance()->Register(superfgd::DP::FGD_BRANCH.c_str()
+                                        ,superfgd::DP::FGD_DETECTOR_NAME.c_str()
+                                        ,fFgdDetectorPointCollection, kTRUE);
 
 }
 

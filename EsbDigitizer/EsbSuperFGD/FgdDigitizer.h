@@ -23,7 +23,6 @@ class FgdDigitizer : public FairTask
   /** Constructor with argument
    *@param name       Name of task
    *@param geoConfigFile  Configuration file detector
-   *@param inputRootFile  File containing the simulation results
    *@param x - X coordinate of the detector
    *@param y - Y coordinate of the detector
    *@param z - Z coordinate of the detector
@@ -31,7 +30,6 @@ class FgdDigitizer : public FairTask
   **/  
   FgdDigitizer(const char* name
               ,const char* geoConfigFile
-              ,const char* inputRootFile
               ,double x, double y, double z
               ,Int_t verbose = 1);
 
@@ -69,11 +67,6 @@ private:
   double fX;
   double fY;
   double fZ;
-
-  /** Root file handlers **/
-  TFile* f_tfile;
-  TTree* f_tree;
-  std::string fInputRootFile;
 
   /** Detector dimentions **/
   Double_t flunit;

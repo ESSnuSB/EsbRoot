@@ -1,4 +1,5 @@
 #include "EsbDigitizer/EsbSuperFGD/FgdDigitizer.h"
+#include "EsbData/FgdDetectorPoint.h"
 
 #include <TClonesArray.h>
 #include <TSpline.h>
@@ -21,7 +22,7 @@ namespace superfgd {
 
 // -----   Default constructor   -------------------------------------------
 FgdDigitizer::FgdDigitizer() :
-  FairTask(), fX(0), fY(0), fZ(0), f_tfile(nullptr),f_tree(nullptr),fInputRootFile("")
+  FairTask(), fX(0), fY(0), fZ(0)
 { 
 }
 // -------------------------------------------------------------------------
@@ -29,11 +30,9 @@ FgdDigitizer::FgdDigitizer() :
 // -----   Constructor   -------------------------------------------
 FgdDigitizer::FgdDigitizer(const char* name
                           ,const char* geoConfigFile
-                          ,const char* inputRootFile
                           ,double x, double y, double z
                           , Int_t verbose) :
-  FairTask(name, verbose), fX(x), fY(y), fZ(z), f_tfile(nullptr),f_tree(nullptr),
-  fInputRootFile(inputRootFile)
+  FairTask(name, verbose), fX(x), fY(y), fZ(z)
 { 
   fParams.LoadPartParams(geoConfigFile);
 }
@@ -44,8 +43,6 @@ FgdDigitizer::FgdDigitizer(const char* name
 // -----   Destructor   ----------------------------------------------------
 FgdDigitizer::~FgdDigitizer() 
 {
-  if(f_tfile!=nullptr)
-        delete f_tfile;
 }
 // -------------------------------------------------------------------------
 
@@ -68,12 +65,18 @@ InitStatus FgdDigitizer::Init()
   f_total_Y = f_step_Y * f_bin_Y;
   f_total_Z = f_step_Z * f_bin_Z;
 
-  f_tfile = new TFile(fInputRootFile.c_str());
-  if(f_tfile==nullptr || f_tfile->IsZombie())
+  // Get RootManager
+  FairRootManager* manager = FairRootManager::Instance();
+  if ( !manager ) {
+    LOG(error) << "-E- FgdDigitizer::Init: " << "FairRootManager not instantised!";
+    return kFATAL;
+  }
+
+  fdPoints = (TClonesArray*) manager->GetObject(geometry::superfgd::DP::FGD_BRANCH.c_str());
+  if (!fdPoints) 
   {
-    std::string errMsg = "ERROR: File is invalid";
-    LOG(error) << errMsg;
-    throw errMsg;
+      LOG(fatal) << "Exec", "No fgd points array";
+      return kFATAL;
   }
 
   return kSUCCESS;
@@ -87,8 +90,12 @@ InitStatus FgdDigitizer::Init()
 // -----   Public method Exec   --------------------------------------------
 void FgdDigitizer::Exec(Option_t* opt) 
 {
-  
-  
+  const Int_t points = fdPoints->GetEntries();
+  for(Int_t i =0; i < points; i++)
+  {
+    data::FgdDetectorPoint* point = (data::FgdDetectorPoint*)fdPoints->At(i);
+    point->Print(nullptr);
+  }
   
 }
 // -------------------------------------------------------------------------
@@ -96,6 +103,10 @@ void FgdDigitizer::Exec(Option_t* opt)
 
 
 // -----   Private methods   --------------------------------------------
+const double FgdDigitizer::CBIRKS = 0.0208 * CLHEP::cm/CLHEP::MeV; // used in SciBooNE MC
+const double FgdDigitizer::EdepToPhotConv_FGD = 70.8 / CLHEP::MeV; // contains both collection in fiber and edep->gamma conversion 
+const double FgdDigitizer::EdepToPhotConv_SuperFGD = EdepToPhotConv_FGD * 1.3;
+
 double FgdDigitizer::ApplyScintiResponse(double edep, double trackLength, double charge)
 {
     // Calculated as in 

@@ -36,6 +36,9 @@ namespace DP
     static const string  magField_Z = "magField_Z";
 
     static const char SEPERATOR='=';
+
+    static const string FGD_BRANCH = "EsbFgdDetectorPoint";
+    static const string FGD_DETECTOR_NAME = "EsbFgdDetector";
 }
 
 class FgdDetectorParameters : public TObject
