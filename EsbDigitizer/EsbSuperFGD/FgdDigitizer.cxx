@@ -1,5 +1,5 @@
 #include "EsbDigitizer/EsbSuperFGD/FgdDigitizer.h"
-#include "EsbData/FgdDetectorPoint.h"
+#include "EsbData/EsbSuperFGD/FgdDetectorPoint.h"
 
 #include <TClonesArray.h>
 #include <TSpline.h>
@@ -93,7 +93,7 @@ void FgdDigitizer::Exec(Option_t* opt)
   const Int_t points = fdPoints->GetEntries();
   for(Int_t i =0; i < points; i++)
   {
-    data::FgdDetectorPoint* point = (data::FgdDetectorPoint*)fdPoints->At(i);
+    data::superfgd::FgdDetectorPoint* point = (data::superfgd::FgdDetectorPoint*)fdPoints->At(i);
     point->Print(nullptr);
   }
   

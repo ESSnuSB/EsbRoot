@@ -8,8 +8,7 @@
 #include "EsbGeometry/FgdDetector.h"
 #include "EsbGeometry/EsbSuperFGD/Materials.h"
 #include "EsbGeometry/EsbSuperFGD/Names.h"
-#include "EsbGeometry/EsbSuperFGD/EsbFgdDetectorParameters.h"
-#include "EsbData/FgdDetectorPoint.h" 
+#include "EsbGeometry/EsbSuperFGD/EsbFgdDetectorParameters.h" 
 
 #include "FairLogger.h"
 #include "FairGenericStack.h"
@@ -60,7 +59,7 @@ FgdDetector::FgdDetector()
     fposY(0),
     fposZ(0),
     isDefinedMaterials(false),
-    fFgdDetectorPointCollection(new TClonesArray(data::FgdDetectorPoint::Class()))
+    fFgdDetectorPointCollection(new TClonesArray(data::superfgd::FgdDetectorPoint::Class()))
 {
 }
 
@@ -78,7 +77,7 @@ FgdDetector::FgdDetector(const char* geoConfigFile, double posX, double posY, do
     fposY(posY),
     fposZ(posZ),
     isDefinedMaterials(false),
-    fFgdDetectorPointCollection(new TClonesArray(data::FgdDetectorPoint::Class()))
+    fFgdDetectorPointCollection(new TClonesArray(data::superfgd::FgdDetectorPoint::Class()))
 {
 }
 
@@ -97,7 +96,7 @@ FgdDetector::FgdDetector(const char* geoConfigFile, double posX, double posY, do
     fposY(posY),
     fposZ(posZ),
     isDefinedMaterials(false),
-    fFgdDetectorPointCollection(new TClonesArray(data::FgdDetectorPoint::Class())) 
+    fFgdDetectorPointCollection(new TClonesArray(data::superfgd::FgdDetectorPoint::Class())) 
 {
 }
 
@@ -201,7 +200,7 @@ void FgdDetector::ConstructGeometry()
 }
 
 //___________________________________________________________________
-data::FgdDetectorPoint* FgdDetector::AddHit(Int_t trackID, Int_t detID, 
+data::superfgd::FgdDetectorPoint* FgdDetector::AddHit(Int_t trackID, Int_t detID, 
 					  TVector3 pos, TVector3 posExit, TVector3 mom,
 					  Double32_t time, Double32_t edep)
 {
@@ -216,7 +215,7 @@ data::FgdDetectorPoint* FgdDetector::AddHit(Int_t trackID, Int_t detID,
   TClonesArray& clref = *fFgdDetectorPointCollection;
   Int_t size = clref.GetEntriesFast();
 
-  return new(clref[size]) data::FgdDetectorPoint(trackID, detID, pos, posExit, mom, 
+  return new(clref[size]) data::superfgd::FgdDetectorPoint(trackID, detID, pos, posExit, mom, 
 					     time, edep);
 }
 

@@ -5,7 +5,7 @@
  *              GNU Lesser General Public Licence (LGPL) version 3,             *  
  *                  copied verbatim in the file "LICENSE"                       *
  ********************************************************************************/
-#include "EsbData/FgdDetectorPoint.h"
+#include "EsbData/EsbSuperFGD/FgdDetectorPoint.h"
 
 #include <iostream>
 using std::cout;
@@ -14,6 +14,8 @@ using std::endl;
 namespace esbroot {
 
 namespace data {
+
+namespace superfgd {
 
 // -----   Default constructor   -------------------------------------------
 FgdDetectorPoint::FgdDetectorPoint()
@@ -62,6 +64,8 @@ void FgdDetectorPoint::Print(const Option_t* /*opt*/) const
   cout << "    Time " << fTime << " ns" << endl;
 }
 // -------------------------------------------------------------------------
+
+}//namespace superfgd
 
 }//namespace data
 

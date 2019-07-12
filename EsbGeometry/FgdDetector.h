@@ -12,17 +12,14 @@
 
 #include "TVector3.h"
 #include "TLorentzVector.h"
+
 #include "EsbGeometry/EsbSuperFGD/EsbSuperFGDDetectorConstruction.h"
+#include "EsbData/EsbSuperFGD/FgdDetectorPoint.h"
 
 class FairVolume;
 class TClonesArray;
-class G4VPhysicalVolume;
-
-//Inheritance: EsbFgdDetector <- FairDetector <- FairModule <- TNamed
 
 namespace esbroot {
-
-namespace data {class FgdDetectorPoint;}; 
 
 namespace geometry {
 	class FgdDetector: public FairDetector
@@ -78,7 +75,7 @@ namespace geometry {
 		/**      This method is an example of how to add your own point
 		 *       of type EsbFgdDetectorPoint to the clones array
 		*/
-		data::FgdDetectorPoint* AddHit(Int_t trackID, Int_t detID,
+		data::superfgd::FgdDetectorPoint* AddHit(Int_t trackID, Int_t detID,
 								 TVector3 pos, TVector3 posExit, TVector3 mom,
 								 Double32_t edep, Double32_t time);
 
@@ -132,7 +129,7 @@ namespace geometry {
 		ClassDef(FgdDetector,2)
 	};
 
-}
-}
+} // namespace geometry
+} // esbroot
 
 #endif //ESBROOT_ESBGEOMETRY_WCDETECTOR_H

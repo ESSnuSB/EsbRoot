@@ -18,6 +18,8 @@ namespace esbroot {
 
 namespace data {
 
+namespace superfgd {
+
 class FgdDetectorPoint : public FairMCPoint
 {
 
@@ -66,7 +68,9 @@ class FgdDetectorPoint : public FairMCPoint
     ClassDef(FgdDetectorPoint,2)
 };
 
-}//namespace data
+} //namespace superfgd
+
+} //namespace data
 
 } //namespace esbroot
 
