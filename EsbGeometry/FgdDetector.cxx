@@ -139,45 +139,6 @@ Bool_t  FgdDetector::ProcessHits(FairVolume* vol)
     //~ if (fELoss == 0. ) { return kFALSE; }
     TVirtualMC::GetMC()->TrackPosition(fPosExit);
 
-    //=======================
-    TGeoNode* node = gGeoManager->FindNode(fPos.X(),fPos.Y(),fPos.Z());
-    if(node)
-    {
-      cout << "==========================" << endl;
-      cout << "node->GetNumber()" << node->GetNumber() << endl;
-      
-      cout << "  TrackPid " << TVirtualMC::GetMC()->TrackPid() << endl;
-      cout << "  TrackCharge " << TVirtualMC::GetMC()->TrackCharge() << endl;
-      cout << "  Is track entering " << TVirtualMC::GetMC()->IsTrackEntering() << endl;
-      cout << "  Is track exiting " << TVirtualMC::GetMC()->IsTrackExiting() << endl;
-      cout << "vol->getCopyNo() " << vol->getCopyNo() << endl;
-      cout << "vol->getVolumeId() " << vol->getVolumeId() << endl;
-      FairGeoNode* ptr = vol->getGeoNode();
-      if(ptr)
-        cout << "vol->getGeoNode() " << ptr->getCopyNo() << endl;
-      else
-      {
-        cout << "pointer is null" << endl;
-      }
-  
-      cout <<  "fPos.X() " << fPos.X() << endl;
-      cout <<  "fPos.Y() " << fPos.Y() << endl;
-      cout <<  "fPos.Z() " << fPos.Z() << endl;
-      cout <<  "TrackLength " << TVirtualMC::GetMC()->TrackLength() << endl;
-      int isec = TVirtualMC::GetMC()->GetStack()->GetCurrentTrackNumber();
-      int nsec = TVirtualMC::GetMC()->NSecondaries();
-      cout <<  "GetCurrentTrackNumber " << TVirtualMC::GetMC()->GetStack()->GetCurrentTrackNumber() << endl;
-
-      for(int i=0; i<=nsec; i++){
-        TMCProcess process = TVirtualMC::GetMC()->ProdProcess(i);
-        cout <<  "TMCProcess " << process << endl;
-      }
-
-      //cout <<  "TMCProcess " << process << endl;
-    }
-
-    //=======================
-
     AddHit(fTrackID, fVolumeID
           ,TVector3(fPos.X(),       fPos.Y(),       fPos.Z())
           ,TVector3(fPosExit.X(),   fPosExit.Y(),   fPosExit.Z())

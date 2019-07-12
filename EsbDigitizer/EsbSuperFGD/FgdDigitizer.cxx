@@ -5,6 +5,7 @@
 #include <TRandom.h>
 
 #include <FairRootManager.h>
+#include "FairLogger.h"
 
 #include "EsbData/WCDetectorPoint.h"
 #include "EsbGeometry/PMTube.h"
@@ -20,7 +21,7 @@ namespace superfgd {
 
 // -----   Default constructor   -------------------------------------------
 FgdDigitizer::FgdDigitizer() :
-  FairTask()
+  FairTask(), fX(0), fY(0), fZ(0), f_tfile(nullptr),f_tree(nullptr),fInputRootFile("")
 { 
 }
 // -------------------------------------------------------------------------
@@ -31,7 +32,8 @@ FgdDigitizer::FgdDigitizer(const char* name
                           ,const char* inputRootFile
                           ,double x, double y, double z
                           , Int_t verbose) :
-  FairTask(name, verbose), fX(x), fY(y), fZ(z)
+  FairTask(name, verbose), fX(x), fY(y), fZ(z), f_tfile(nullptr),f_tree(nullptr),
+  fInputRootFile(inputRootFile)
 { 
   fParams.LoadPartParams(geoConfigFile);
 }
@@ -42,6 +44,8 @@ FgdDigitizer::FgdDigitizer(const char* name
 // -----   Destructor   ----------------------------------------------------
 FgdDigitizer::~FgdDigitizer() 
 {
+  if(f_tfile!=nullptr)
+        delete f_tfile;
 }
 // -------------------------------------------------------------------------
 
@@ -64,6 +68,14 @@ InitStatus FgdDigitizer::Init()
   f_total_Y = f_step_Y * f_bin_Y;
   f_total_Z = f_step_Z * f_bin_Z;
 
+  f_tfile = new TFile(fInputRootFile.c_str());
+  if(f_tfile==nullptr || f_tfile->IsZombie())
+  {
+    std::string errMsg = "ERROR: File is invalid";
+    LOG(error) << errMsg;
+    throw errMsg;
+  }
+
   return kSUCCESS;
 }
 
@@ -83,7 +95,7 @@ void FgdDigitizer::Exec(Option_t* opt)
   
 
 
-// -----   Private method Exec   --------------------------------------------
+// -----   Private methods   --------------------------------------------
 double FgdDigitizer::ApplyScintiResponse(double edep, double trackLength, double charge)
 {
     // Calculated as in 

@@ -70,6 +70,11 @@ private:
   double fY;
   double fZ;
 
+  /** Root file handlers **/
+  TFile* f_tfile;
+  TTree* f_tree;
+  std::string fInputRootFile;
+
   /** Detector dimentions **/
   Double_t flunit;
   double f_step_X;
