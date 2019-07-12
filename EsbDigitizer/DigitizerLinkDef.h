@@ -17,6 +17,7 @@
 #pragma link C++ namespace esbroot;
 
 #pragma link C++ class esbroot::digitizer::WCDigitizer+;
+#pragma link C++ class esbroot::digitizer::superfgd::FgdDigitizer+;
 
 #endif
 

@@ -24,7 +24,9 @@ void SuperFGDDetectorConstruction::Construct()
     fSuperFGDConstructor1.SetVisibility(fParams.ParamAsBool(DP::visdetail));
 
     Double_t lunit = fParams.GetLenghtUnit(); 
-    Double_t edge = fParams.ParamAsDouble(DP::length_X) * lunit;
+    // Detector is made of cubes 
+    // length_X == length_Y ==length_Z
+    Double_t edge = fParams.ParamAsDouble(DP::length_X) * lunit; 
 
     Int_t cube_X_N = fParams.ParamAsInt(DP::number_cubes_X);
     Int_t cube_Y_N = fParams.ParamAsInt(DP::number_cubes_Y);
