@@ -10,7 +10,7 @@ number_cubes_Y=100
 number_cubes_Z=100
 
 #magnetic field
-magField_X=0    #in [kG] 
+magField_X=5    #in [kG] 
 magField_Y=0    #in [kG] 
 magField_Z=0    #in [kG] 
 

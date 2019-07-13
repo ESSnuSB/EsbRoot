@@ -4,6 +4,7 @@
 #include <FairTask.h>
 #include <TClonesArray.h>
 #include "TRandom3.h"
+#include <TCanvas.h>
 
 #include "EsbGeometry/EsbSuperFGD/EsbFgdDetectorParameters.h"
 #include "EsbData/EsbSuperFGD/FgdHit.h"
@@ -40,6 +41,7 @@ class FgdMppcDisplay : public FairTask
 
   /** Virtual method Init **/
   virtual InitStatus Init();
+  virtual void FinishEvent() override;
 
 
   /** Virtual method Exec **/
@@ -68,8 +70,19 @@ private:
   double f_total_Y;
   double f_total_Z;
 
+  std::shared_ptr<double*> xyz;// array pointer to total energy deposited in cubes
+
+  TH2F* f_xy_hist;
+  TH2F* f_yz_hist;
+  TH2F* f_xz_hist;
+
   /** Input array of FgdDetectorPoint(s)**/
   TClonesArray* fHitArray;        //!
+
+  // Export hist to gif
+  TCanvas* fcanvas;
+  int fevNum;
+  void WriteCanvas(string hist);
   	   
   ClassDef(FgdMppcDisplay, 2);
 
