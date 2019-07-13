@@ -4,7 +4,7 @@
 
 */
 
-void ess_sim_fgd(TString outFileName = "evetest.root",
+void ess_simulate_1(TString outFileName = "evetest.root",
              Int_t nStartEvent = 0, 
 	     Int_t nEvents = 1)
 {

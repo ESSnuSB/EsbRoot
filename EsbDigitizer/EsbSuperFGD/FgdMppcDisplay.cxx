@@ -122,10 +122,12 @@ void FgdMppcDisplay::FinishEvent()
   {
     fcanvas->ResetDrawn();
   }
-
-  fevNum = 0;
 }
 
+void FgdMppcDisplay::FinishTask()
+{
+  fevNum = 0;
+}
 
 
 void FgdMppcDisplay::Exec(Option_t* opt) 

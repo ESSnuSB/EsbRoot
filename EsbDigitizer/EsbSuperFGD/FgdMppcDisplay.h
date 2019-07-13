@@ -42,6 +42,7 @@ class FgdMppcDisplay : public FairTask
   /** Virtual method Init **/
   virtual InitStatus Init();
   virtual void FinishEvent() override;
+  virtual void FinishTask() override;
 
 
   /** Virtual method Exec **/
