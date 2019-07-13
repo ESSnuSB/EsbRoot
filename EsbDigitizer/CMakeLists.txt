@@ -22,11 +22,13 @@ link_directories( ${LINK_DIRECTORIES})
 set(SRCS
     WCDigitizer.cxx
     EsbSuperFGD/FgdDigitizer.cxx
+    EsbSuperFGD/FgdMppcDisplay.cxx
 )
 
 Set(HEADERS 
     ${CMAKE_SOURCE_DIR}/EsbDigitizer/WCDigitizer.h
     ${CMAKE_SOURCE_DIR}/EsbDigitizer/EsbSuperFGD/FgdDigitizer.h
+    ${CMAKE_SOURCE_DIR}/EsbDigitizer/EsbSuperFGD/FgdMppcDisplay.h
 )
 
 Set(LINKDEF ${CMAKE_SOURCE_DIR}/EsbDigitizer/DigitizerLinkDef.h)

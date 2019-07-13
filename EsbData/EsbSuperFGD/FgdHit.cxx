@@ -41,7 +41,7 @@ FgdHit::~FgdHit() { }
 // -----   Public method Print   -------------------------------------------
 void FgdHit::Print(const Option_t* /*opt*/) const
 {
-  cout << "-I- PMTubeHit: "  << " [cm] Position (" << fX << ", " << fY << ", " << fZ
+  cout << "-I- FgdHit: "  << " [cm] Position (" << fX << ", " << fY << ", " << fZ
        << ") cm" << endl;
   cout << "Mppc: " << "x: " << fmppcLoc.X() << " y: " << fmppcLoc.Y() << " z: " << fmppcLoc.Z() << endl;
   cout << "Total photons in each direction: " << " x: " << fphotoE.X() << " y: " << fphotoE.Y() 

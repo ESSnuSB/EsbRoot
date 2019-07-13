@@ -13,7 +13,7 @@
 
 void ess_dig_fgd(TString inFile = "evetest.root", 
 	      TString parFile = "params.root",
-	      TString outFile = "dst.root",
+	      TString outFile = "fgd_dig.root",
               Int_t nStartEvent = 0, Int_t nEvents = 1)
 {
   using namespace esbroot;

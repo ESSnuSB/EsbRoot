@@ -20,6 +20,7 @@
 
 #pragma link C++ class esbroot::digitizer::WCDigitizer+;
 #pragma link C++ class esbroot::digitizer::superfgd::FgdDigitizer+;
+#pragma link C++ class esbroot::digitizer::superfgd::FgdMppcDisplay+;
 
 #endif
 

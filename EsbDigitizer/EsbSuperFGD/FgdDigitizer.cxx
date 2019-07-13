@@ -105,13 +105,16 @@ void FgdDigitizer::Exec(Option_t* opt)
     //=============================================
     //====          Position        ===============
     //=============================================
-    double pos_x = point->GetPx() - dpos.X();
-    double pos_y = point->GetPy() - dpos.Y();
-    double pos_z = point->GetPz() - dpos.Z();
+    double pos_x = point->GetX() - dpos.X();
+    double pos_y = point->GetY() - dpos.Y();
+    double pos_z = point->GetZ() - dpos.Z();
+
     // calculate the bin position 
-    int bin_pos_x = (pos_x/f_step_X) + 1;
-    int bin_pos_y = (pos_y/f_step_Y) + 1;
-    int bin_pos_z = (pos_z/f_step_Z) + 1;
+    // pos_x,y,z -> relative from the center of the solid (half l,h,w)
+    // to normalize add half l,h,w and divide by the step in each direction
+    int bin_pos_x = (pos_x + f_total_X/2)/f_step_X;  
+    int bin_pos_y = (pos_y + f_total_Y/2)/f_step_Y;  
+    int bin_pos_z = (pos_z + f_total_Z/2)/f_step_Z;  
 
     //=============================================
     //====              MPPC        ===============
@@ -126,48 +129,47 @@ void FgdDigitizer::Exec(Option_t* opt)
     double mppcZ = bin_pos_z*f_step_Z + f_step_Z/2;
     double mppcZ_2ndSide = f_total_Z - mppcZ; // along the opposite direction
 
-    TVector3 mppcLocalPosition(mppcX,mppcY,mppcZ); 
-    
     //=============================================
     //====    Scintilation Response        ========
     //=============================================
-    double pe = ApplyScintiResponse(point->GetEnergyLoss()
-                                    ,point->GetLength() // TrackLength
+    double pe = ApplyScintiResponse(point->GetEnergyLoss()*1e3 // EnergyLoss is returned in [GeV], we use [eV]
+                                    ,point->GetTrackLenght() // TrackLength
                                     ,1.0                // Charge, for the moment it is not used
                                     );
-
     double time = point->GetTime();
 
     // Calculate the # of p.e. that reach the MPPC (X,Y,Z). For the moment it is just considered that 
     // the part of the photons that go to x,y,z are taken into
     // account in the coefficients when applying the scintillation response.
     // -> light collection + attenuation
-    double peX1=pe/2; 
-    double peX2=pe/2;
-    double timepeX=time;// pe along fiber X
+    double peX1=pe/2.; 
+    double peX2=pe/2.;
+    double timepeX=time;
     ApplyFiberResponse(peX1,timepeX,mppcX); // along X fiber
     ApplyFiberResponse(peX2,timepeX,mppcX_2ndSide); // along -X fiber
-    double peX = peX1 + peX2;
+    double peX = peX1 + peX2;       // pe along fiber X
 
-    double peY1=pe/2; 
-    double peY2=pe/2; 
-    double timepeY=time;// pe along fiber Y
+    double peY1=pe/2.; 
+    double peY2=pe/2.; 
+    double timepeY=time;
     ApplyFiberResponse(peY1,timepeY,mppcY); // along Y fiber
     ApplyFiberResponse(peY2,timepeY,mppcY_2ndSide); // along -Y fiber
-    double peY = peY1 + peY2;
+    double peY = peY1 + peY2;       // pe along fiber Y
 
-    double peZ1=pe/2; 
-    double peZ2=pe/2; 
-    double timepeZ=time;// pe along fiber Z
+    double peZ1=pe/2.; 
+    double peZ2=pe/2.; 
+    double timepeZ=time;
     ApplyFiberResponse(peZ1,timepeZ,mppcZ); // along Z fiber
-    ApplyFiberResponse(peZ2,timepeZ,mppcZ_2ndSide); // along Z fiber
-    double peZ = peZ1 + peZ2;
+    ApplyFiberResponse(peZ2,timepeZ,mppcZ_2ndSide); // along -Z fiber
+    double peZ = peZ1 + peZ2;       // pe along fiber Z
 
     ApplyMPPCResponse(peX);
     ApplyMPPCResponse(peY);
     ApplyMPPCResponse(peZ);
     TVector3 photoElectrons(peX,peY,peZ);
 
+    // Write the mppc location in terms of cube number position in x,y,z
+    TVector3 mppcLocalPosition(bin_pos_x,bin_pos_y,bin_pos_z);
     new((*fHitArray)[i]) data::superfgd::FgdHit(pos_x, pos_y, pos_z, mppcLocalPosition, photoElectrons);
   }
 }

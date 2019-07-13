@@ -129,7 +129,7 @@ Bool_t  FgdDetector::ProcessHits(FairVolume* vol)
   // Sum energy loss for all steps in the active volume
   fELoss += TVirtualMC::GetMC()->Edep();
   fLength += TVirtualMC::GetMC()->TrackStep();
-
+  
   // Create FairTutorialDet1Point at exit of active volume
   if ( TVirtualMC::GetMC()->IsTrackExiting()    ||
        TVirtualMC::GetMC()->IsTrackStop()       ||
@@ -137,6 +137,7 @@ Bool_t  FgdDetector::ProcessHits(FairVolume* vol)
 
     fTrackID  = TVirtualMC::GetMC()->GetStack()->GetCurrentTrackNumber();
     fVolumeID = vol->getMCid();
+
     //~ if (fELoss == 0. ) { return kFALSE; }
     TVirtualMC::GetMC()->TrackPosition(fPosExit);
 
@@ -145,7 +146,7 @@ Bool_t  FgdDetector::ProcessHits(FairVolume* vol)
           ,TVector3(fPos.X(),       fPos.Y(),       fPos.Z())
           ,TVector3(fPosExit.X(),   fPosExit.Y(),   fPosExit.Z())
           ,TVector3(fMom.Px(),      fMom.Py(),      fMom.Pz())
-          ,fTime, fELoss); 
+          ,fTime, fELoss, fLength); 
   }    
 
   return kTRUE;
@@ -203,8 +204,8 @@ void FgdDetector::ConstructGeometry()
 
 //___________________________________________________________________
 data::superfgd::FgdDetectorPoint* FgdDetector::AddHit(Int_t trackID, Int_t detID, 
-					  TVector3 pos, TVector3 detectorPos, TVector3 posExit, TVector3 mom,
-					  Double32_t time, Double32_t edep)
+					  TVector3 detectorPos, TVector3 pos , TVector3 posExit, TVector3 mom,
+					  Double32_t time, Double32_t edep, Double32_t trackLength)
 {
     LOG(debug2) << "FgdDetector::AddHit";
     LOG(debug2) << "trackID " << trackID;
@@ -218,7 +219,7 @@ data::superfgd::FgdDetectorPoint* FgdDetector::AddHit(Int_t trackID, Int_t detID
   Int_t size = clref.GetEntriesFast();
 
   return new(clref[size]) data::superfgd::FgdDetectorPoint(trackID, detID, detectorPos, pos, posExit, mom, 
-					     time, edep);
+					     time, edep, trackLength);
 }
 
 void  FgdDetector::SetSpecialPhysicsCuts()

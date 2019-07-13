@@ -28,10 +28,11 @@ FgdDetectorPoint::FgdDetectorPoint()
 FgdDetectorPoint::FgdDetectorPoint(Int_t trackID, Int_t detID,
                                   TVector3 detectorPos,
                                   TVector3 pos, TVector3 posExit, TVector3 mom,
-                                  Double_t tof, Double_t edep)
+                                  Double_t tof, Double_t edep, Double_t trackLenght)
   : FairMCPoint(trackID, detID, pos, mom, tof, 0 , edep /* eLoss*/)
-    ,fposExit(posExit), fdetectorPos(detectorPos)
+    ,fposExit(posExit), fdetectorPos(detectorPos), ftrackLenght(trackLenght)
 {
+  SetPosition(pos);
 }
 // -------------------------------------------------------------------------
 

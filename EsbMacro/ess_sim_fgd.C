@@ -10,6 +10,7 @@ void ess_sim_fgd(TString outFileName = "evetest.root",
 {
   using namespace esbroot;
   
+
   FairRunSim* fRun = new FairRunSim(); // create the FairRun Class
   // Peter: SetStoreTraj seems to be needed for the official Eve
   // visualization. It creates the branch GeoTracks in the output tree.
@@ -55,7 +56,7 @@ void ess_sim_fgd(TString outFileName = "evetest.root",
   
   //~ FairParticleGenerator* partGen = new FairParticleGenerator(2212, 1, 0, 0, 1, 0, 0, 0);
   //FairParticleGenerator* partGen = new FairParticleGenerator(13, 1, 0, 0, 0.4, 0, 0, 150);
-  FairParticleGenerator* partGen = new FairParticleGenerator(-13, 1, 0, 0, 0.5, 0, 0, -75);
+  FairParticleGenerator* partGen = new FairParticleGenerator(-13, 1, 0, 0, 0.5, 0.5, 0.5, -50);
   primGen->AddGenerator(partGen);
 
   fRun->SetOutputFile(outFileName.Data()); // set output file

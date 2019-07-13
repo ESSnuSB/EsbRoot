@@ -78,7 +78,7 @@ namespace geometry {
 		data::superfgd::FgdDetectorPoint* AddHit(Int_t trackID, Int_t detID,
 								 TVector3 detectorPos,
 								 TVector3 pos, TVector3 posExit, TVector3 mom,
-								 Double32_t edep, Double32_t time);
+								 Double32_t time, Double32_t edep, Double32_t trackLength);
 
 		/** The following methods can be implemented if you need to make
 		 *  any optional action in your detector during the transport.
