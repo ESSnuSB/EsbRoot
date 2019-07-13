@@ -18,6 +18,8 @@ namespace esbroot {
 
 namespace data {
 
+namespace superfgd {
+
 class FgdDetectorPoint : public FairMCPoint
 {
 
@@ -30,12 +32,14 @@ class FgdDetectorPoint : public FairMCPoint
     /** Constructor with arguments
      *@param trackID  Index of MCTrack
      *@param detID    Detector ID
+     *@param detectorPos      Coordinates of the detector [cm]
      *@param pos      Ccoordinates at entrance to active volume [cm]
      *@param mom      Momentum of track at entrance [GeV]
      *@param tof      Time since event start [ns]
+     *@param edep     total energy loss [GeV]
      **/
-    FgdDetectorPoint(Int_t trackID, Int_t detID, TVector3 pos, TVector3 mom,
-		       Double_t tof);
+    FgdDetectorPoint(Int_t trackID, Int_t detID, TVector3 detectorPos, TVector3 pos, TVector3 posExit, TVector3 mom,
+		       Double_t tof,  Double_t edep, Double_t trackLenght);
     
     /** Destructor **/
     virtual ~FgdDetectorPoint();
@@ -49,6 +53,15 @@ class FgdDetectorPoint : public FairMCPoint
     /// Get the total momentum to easily calculate the wavelength
     Double_t GetP() const { return TMath::Sqrt(fPx*fPx + fPy*fPy + fPz*fPz);}
 
+    // Get a copy of the exit position
+    TVector3 GetposExit(){return fposExit;};
+
+    // Get the detector position
+    TVector3 GetDetectorpos(){return fdetectorPos;};
+
+    // Get the track lenght 
+    Double_t GetTrackLenght(){return ftrackLenght;}
+
     /** Output to screen **/
     virtual void Print(const Option_t* opt) const;
 
@@ -57,10 +70,16 @@ class FgdDetectorPoint : public FairMCPoint
     FgdDetectorPoint(const FgdDetectorPoint& point);
     FgdDetectorPoint operator=(const FgdDetectorPoint& point);
 
+    TVector3 fposExit;  // Member to hold the position of the particle when it exits the sensitive volume
+    TVector3 fdetectorPos;
+    Double_t ftrackLenght;
+
     ClassDef(FgdDetectorPoint,2)
 };
 
-}//namespace data
+} //namespace superfgd
+
+} //namespace data
 
 } //namespace esbroot
 

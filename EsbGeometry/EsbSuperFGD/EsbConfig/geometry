@@ -1,16 +1,16 @@
 #Lenght is given in dimetion of meters [cm] 
-#for cube all should have the same value
+#for cube all should have the same value!!!
 length_X=1
 length_Y=1
 length_Z=1
 
 #number of cubes
-number_cubes_X=10
+number_cubes_X=100
 number_cubes_Y=100
-number_cubes_Z=150
+number_cubes_Z=100
 
 #magnetic field
-magField_X=150    #in [kG] 
+magField_X=5    #in [kG] 
 magField_Y=0    #in [kG] 
 magField_Z=0    #in [kG] 
 

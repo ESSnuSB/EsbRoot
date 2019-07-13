@@ -12,23 +12,23 @@
 
 #include "TVector3.h"
 #include "TLorentzVector.h"
+
 #include "EsbGeometry/EsbSuperFGD/EsbSuperFGDDetectorConstruction.h"
+#include "EsbData/EsbSuperFGD/FgdDetectorPoint.h"
 
 class FairVolume;
 class TClonesArray;
-class G4VPhysicalVolume;
-
-//Inheritance: EsbFgdDetector <- FairDetector <- FairModule <- TNamed
 
 namespace esbroot {
-
-namespace data {class FgdDetectorPoint;}; 
 
 namespace geometry {
 	class FgdDetector: public FairDetector
 	{
 
 	  public:
+
+		/** Default constructor **/
+		FgdDetector();
 
 		/**      Name :  Detector Name
 		 *       Active: kTRUE for active detectors (ProcessHits() will be called)
@@ -75,15 +75,16 @@ namespace geometry {
 		/**      This method is an example of how to add your own point
 		 *       of type EsbFgdDetectorPoint to the clones array
 		*/
-		data::FgdDetectorPoint* AddHit(Int_t trackID, Int_t detID,
-								 TVector3 pos, TVector3 mom,
-								 Double_t time);
+		data::superfgd::FgdDetectorPoint* AddHit(Int_t trackID, Int_t detID,
+								 TVector3 detectorPos,
+								 TVector3 pos, TVector3 posExit, TVector3 mom,
+								 Double32_t time, Double32_t edep, Double32_t trackLength);
 
 		/** The following methods can be implemented if you need to make
 		 *  any optional action in your detector during the transport.
 		*/
 
-		virtual void   SetSpecialPhysicsCuts() {;}
+		virtual void   SetSpecialPhysicsCuts() override;
 		virtual void   EndOfEvent();
 		virtual void   FinishPrimary() {;}
 		virtual void   FinishRun() {;}
@@ -107,6 +108,7 @@ namespace geometry {
 		Int_t          fTrackID;           //!  track index
 		Int_t          fVolumeID;          //!  volume id
 		TLorentzVector fPos;               //!  position at entrance
+		TLorentzVector fPosExit;           //!  position at exit
 		TLorentzVector fMom;               //!  momentum at entrance
 		Double32_t     fTime;              //!  time
 		Double32_t     fLength;            //!  length
@@ -128,7 +130,7 @@ namespace geometry {
 		ClassDef(FgdDetector,2)
 	};
 
-}
-}
+} // namespace geometry
+} // esbroot
 
 #endif //ESBROOT_ESBGEOMETRY_WCDETECTOR_H

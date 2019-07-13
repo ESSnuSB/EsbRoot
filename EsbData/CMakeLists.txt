@@ -26,7 +26,8 @@ set(SRCS
     MCTrack.cxx
     WCDetectorPoint.cxx
     PMTubeHit.cxx
-    FgdDetectorPoint.cxx
+    EsbSuperFGD/FgdDetectorPoint.cxx
+    EsbSuperFGD/FgdHit.cxx
 )
 
 Set(HEADERS 
@@ -34,7 +35,8 @@ Set(HEADERS
     ${CMAKE_SOURCE_DIR}/EsbData/MCTrack.h
     ${CMAKE_SOURCE_DIR}/EsbData/WCDetectorPoint.h
     ${CMAKE_SOURCE_DIR}/EsbData/PMTubeHit.h
-    ${CMAKE_SOURCE_DIR}/EsbData/FgdDetectorPoint.h
+    ${CMAKE_SOURCE_DIR}/EsbData/EsbSuperFGD/FgdDetectorPoint.h
+    ${CMAKE_SOURCE_DIR}/EsbData/EsbSuperFGD/FgdHit.h
 )
 
 Set(LINKDEF ${CMAKE_SOURCE_DIR}/EsbData/DataLinkDef.h)

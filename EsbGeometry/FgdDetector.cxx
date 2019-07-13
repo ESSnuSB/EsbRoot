@@ -8,7 +8,7 @@
 #include "EsbGeometry/FgdDetector.h"
 #include "EsbGeometry/EsbSuperFGD/Materials.h"
 #include "EsbGeometry/EsbSuperFGD/Names.h"
-#include "EsbData/FgdDetectorPoint.h" 
+#include "EsbGeometry/EsbSuperFGD/EsbFgdDetectorParameters.h" 
 
 #include "FairLogger.h"
 #include "FairGenericStack.h"
@@ -45,6 +45,24 @@ namespace geometry {
 static const Int_t kFgdDetector = 1;
 
 //___________________________________________________________________
+FgdDetector::FgdDetector()
+  : FairDetector("FgdDetector", kTRUE, kFgdDetector),
+    fgdConstructor(""),
+    fTrackID(-1),
+    fVolumeID(-1),
+    fPos(),
+    fMom(),
+    fTime(-1.),
+    fLength(-1.),
+    fELoss(-1),
+    fposX(0),
+    fposY(0),
+    fposZ(0),
+    isDefinedMaterials(false),
+    fFgdDetectorPointCollection(new TClonesArray(data::superfgd::FgdDetectorPoint::Class()))
+{
+}
+
 FgdDetector::FgdDetector(const char* geoConfigFile, double posX, double posY, double posZ, Bool_t Active)
   : FairDetector("FgdDetector", kTRUE, kFgdDetector),
     fgdConstructor(geoConfigFile),
@@ -59,7 +77,7 @@ FgdDetector::FgdDetector(const char* geoConfigFile, double posX, double posY, do
     fposY(posY),
     fposZ(posZ),
     isDefinedMaterials(false),
-    fFgdDetectorPointCollection(new TClonesArray(data::FgdDetectorPoint::Class()))
+    fFgdDetectorPointCollection(new TClonesArray(data::superfgd::FgdDetectorPoint::Class()))
 {
 }
 
@@ -78,7 +96,7 @@ FgdDetector::FgdDetector(const char* geoConfigFile, double posX, double posY, do
     fposY(posY),
     fposZ(posZ),
     isDefinedMaterials(false),
-    fFgdDetectorPointCollection(new TClonesArray(data::FgdDetectorPoint::Class())) 
+    fFgdDetectorPointCollection(new TClonesArray(data::superfgd::FgdDetectorPoint::Class())) 
 {
 }
 
@@ -100,24 +118,36 @@ void FgdDetector::Initialize()
 //___________________________________________________________________
 Bool_t  FgdDetector::ProcessHits(FairVolume* vol)
 {
-  if(TVirtualMC::GetMC()->TrackPid() == 22 )
-    return kTRUE;
+  if ( TVirtualMC::GetMC()->IsTrackEntering() ) {
+    fELoss  = 0.;
+    fLength = 0.;
+    fTime   = TVirtualMC::GetMC()->TrackTime() * 1.0e09;
+    TVirtualMC::GetMC()->TrackPosition(fPos);
+    TVirtualMC::GetMC()->TrackMomentum(fMom);
+  }
 
-	cout << __PRETTY_FUNCTION__ << endl;
-  /** This method is called from the MC stepping */
+  // Sum energy loss for all steps in the active volume
+  fELoss += TVirtualMC::GetMC()->Edep();
+  fLength += TVirtualMC::GetMC()->TrackStep();
+  
+  // Create FairTutorialDet1Point at exit of active volume
+  if ( TVirtualMC::GetMC()->IsTrackExiting()    ||
+       TVirtualMC::GetMC()->IsTrackStop()       ||
+       TVirtualMC::GetMC()->IsTrackDisappeared()   ) {
 
-  cout << "  TrackPid " << TVirtualMC::GetMC()->TrackPid() << endl;
-  cout << "  TrackCharge " << TVirtualMC::GetMC()->TrackCharge() << endl;
-  cout << "  Is track entering " << TVirtualMC::GetMC()->IsTrackEntering() << endl;
-  cout << "  Is track exiting " << TVirtualMC::GetMC()->IsTrackExiting() << endl;
-  cout << "vol->getCopyNo() " << vol->getCopyNo() << endl;
-  cout << "vol->getVolumeId() " << vol->getVolumeId() << endl;
-  TVirtualMC::GetMC()->TrackPosition(fPos);
-  cout <<  "fPos.X() " << fPos.X() << endl;
-  cout <<  "fPos.Y() " << fPos.Y() << endl;
-  cout <<  "fPos.Z() " << fPos.Z() << endl;
-  cout <<  "TrackLength " << TVirtualMC::GetMC()->TrackLength() << endl;
-  cout <<  "GetCurrentTrackNumber " << TVirtualMC::GetMC()->GetStack()->GetCurrentTrackNumber() << endl;
+    fTrackID  = TVirtualMC::GetMC()->GetStack()->GetCurrentTrackNumber();
+    fVolumeID = vol->getMCid();
+
+    //~ if (fELoss == 0. ) { return kFALSE; }
+    TVirtualMC::GetMC()->TrackPosition(fPosExit);
+
+    AddHit(fTrackID, fVolumeID
+          ,TVector3(fposX,       fposY,       fposZ)
+          ,TVector3(fPos.X(),       fPos.Y(),       fPos.Z())
+          ,TVector3(fPosExit.X(),   fPosExit.Y(),   fPosExit.Z())
+          ,TVector3(fMom.Px(),      fMom.Py(),      fMom.Pz())
+          ,fTime, fELoss, fLength); 
+  }    
 
   return kTRUE;
 }
@@ -137,9 +167,10 @@ void FgdDetector::Register()
       this collection will not be written to the file, it will exist
       only during the simulation.
   */
-
-  FairRootManager::Instance()->Register("EsbFgdDetectorPoint", "EsbFgdDetector", 
-                                        fFgdDetectorPointCollection, kTRUE);
+  
+  FairRootManager::Instance()->Register(superfgd::DP::FGD_BRANCH.c_str()
+                                        ,superfgd::DP::FGD_DETECTOR_NAME.c_str()
+                                        ,fFgdDetectorPointCollection, kTRUE);
 
 }
 
@@ -172,15 +203,40 @@ void FgdDetector::ConstructGeometry()
 }
 
 //___________________________________________________________________
-data::FgdDetectorPoint* FgdDetector::AddHit(Int_t trackID, Int_t detID, 
-					  TVector3 pos, TVector3 mom,
-					  Double_t time)
+data::superfgd::FgdDetectorPoint* FgdDetector::AddHit(Int_t trackID, Int_t detID, 
+					  TVector3 detectorPos, TVector3 pos , TVector3 posExit, TVector3 mom,
+					  Double32_t time, Double32_t edep, Double32_t trackLength)
 {
+    LOG(debug2) << "FgdDetector::AddHit";
+    LOG(debug2) << "trackID " << trackID;
+    LOG(debug2) << "detID " << detID;
+    LOG(debug2) << "pos.X() " << pos.X() << "; pos.Y() " << pos.Y()<< "; pos.Z() " << pos.Z();
+    LOG(debug2) << "mom.Px() " << mom.Px() << "; mom.Py() " << mom.Py() << "; mom.Pz() " << mom.Pz();
+    LOG(debug2) << "time " << time;
+    LOG(debug2) << "edep " << edep;
+
   TClonesArray& clref = *fFgdDetectorPointCollection;
   Int_t size = clref.GetEntriesFast();
 
-  return new(clref[size]) data::FgdDetectorPoint(trackID, detID, pos, mom, 
-					     time);
+  return new(clref[size]) data::superfgd::FgdDetectorPoint(trackID, detID, detectorPos, pos, posExit, mom, 
+					     time, edep, trackLength);
+}
+
+void  FgdDetector::SetSpecialPhysicsCuts()
+{
+  FairGeoLoader *geoLoad = FairGeoLoader::Instance();
+	FairGeoInterface *geoFace = geoLoad->getGeoInterface();
+	
+	FairGeoMedia *geoMedia = geoFace->getMedia();
+	FairGeoBuilder* geoBuild = geoLoad->getGeoBuilder();
+
+  FairGeoMedium* scintillator = geoMedia->getMedium(esbroot::geometry::superfgd::materials::scintillator);
+  Int_t ind = scintillator->getMediumIndex();
+  
+  // TODO - set a cut for the delta electrons
+  //TVirtualMC::GetMC()->Gstpar(ind,"DRAY",0);
+  //TVirtualMC::GetMC()->Gstpar(ind,"DCUTE",0);
+  //TVirtualMC::GetMC()->Gstpar(ind,"BREM",0);
 }
 
 void FgdDetector::DefineMaterials() 
@@ -220,7 +276,9 @@ void FgdDetector::DefineMaterials()
 	// geoBuild->createMedium(polystyrene);
 
   FairGeoMedium* scintillator = geoMedia->getMedium(esbroot::geometry::superfgd::materials::scintillator);
+  scintillator->setMediumIndex(esbroot::geometry::superfgd::materials::GetNextIndex());
 	geoBuild->createMedium(scintillator);
+  scintillator->Print();
 
   FairGeoMedium* paraterphnyl = geoMedia->getMedium(esbroot::geometry::superfgd::materials::paraterphnyl);
 	geoBuild->createMedium(paraterphnyl);

@@ -15,8 +15,12 @@
 #pragma link C++ nestedtypedef;
 
 #pragma link C++ namespace esbroot;
+#pragma link C++ namespace esbroot::digitizer;
+#pragma link C++ namespace esbroot::digitizer::superfgd;
 
 #pragma link C++ class esbroot::digitizer::WCDigitizer+;
+#pragma link C++ class esbroot::digitizer::superfgd::FgdDigitizer+;
+#pragma link C++ class esbroot::digitizer::superfgd::FgdMppcDisplay+;
 
 #endif
 

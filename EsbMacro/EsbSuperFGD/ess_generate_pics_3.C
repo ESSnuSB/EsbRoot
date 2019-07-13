@@ -1,0 +1,43 @@
+/*
+
+  Macro that shows how to run the WC digitization on an existing simulation
+  (e.g., produced with ess_sim.C).
+
+  Based on the example in the presentation from
+  Konstantin Gertsenberger
+  
+  .L ess_dig_gen_pics.C
+  ess_dig_gen_pics()
+  
+*/
+
+void ess_generate_pics_3(TString inFile = "fgd_dig.root", 
+	      TString parFile = "params.root",
+	      TString outFile = "fgd_dig_gen_pics.root",
+              Int_t nStartEvent = 0, Int_t nEvents = 1)
+{
+  using namespace esbroot;
+
+  FairRunAna *fRun= new FairRunAna();
+  // Set Input Source and Output file
+  FairFileSource *fFileSource = new FairFileSource(inFile);
+  fRun->SetSource(fFileSource);
+ 
+  fRun->SetSink(new FairRootFileSink(outFile));
+
+  // -----  Parameter database   --------------------------------------------
+  FairRuntimeDb* rtdb = fRun->GetRuntimeDb();
+
+  FairParRootFileIo* parIo1 = new FairParRootFileIo();
+  parIo1->open(parFile);
+  rtdb->setFirstInput(parIo1);
+  
+  rtdb->setOutput(parIo1); 
+  rtdb->saveOutput();
+
+  // Set Tasks for Reconstruction
+  FairTask* digitizer = new digitizer::superfgd::FgdMppcDisplay("Granular Task","../EsbGeometry/EsbSuperFGD/EsbConfig/geometry",0,0,0);
+  fRun->AddTask(digitizer);   
+  fRun->Init(); // initializing
+  fRun->Run(nStartEvent, nStartEvent + nEvents);
+}
