@@ -24,7 +24,8 @@ namespace superfgd {
 
 // -----   Default constructor   -------------------------------------------
 FgdMppcDisplay::FgdMppcDisplay() :
-  FairTask(), fX(0), fY(0), fZ(0),fevNum(0)
+  FairTask(), fX(0), fY(0), fZ(0),fevNum(0),
+  f_xy_hist(nullptr), f_yz_hist(nullptr), f_xz_hist(nullptr), fHitArray(nullptr)
 { 
 }
 // -------------------------------------------------------------------------
@@ -34,7 +35,8 @@ FgdMppcDisplay::FgdMppcDisplay(const char* name
                           ,const char* geoConfigFile
                           ,double x, double y, double z
                           , Int_t verbose) :
-  FairTask(name, verbose), fX(x), fY(y), fZ(z),fevNum(0)
+  FairTask(name, verbose), fX(x), fY(y), fZ(z),fevNum(0),
+  f_xy_hist(nullptr), f_yz_hist(nullptr), f_xz_hist(nullptr), fHitArray(nullptr)
 { 
   fParams.LoadPartParams(geoConfigFile);
 }
@@ -45,6 +47,10 @@ FgdMppcDisplay::FgdMppcDisplay(const char* name
 // -----   Destructor   ----------------------------------------------------
 FgdMppcDisplay::~FgdMppcDisplay() 
 {
+  if(fHitArray) {
+    fHitArray->Delete();
+    delete fHitArray;
+  }
 }
 // -------------------------------------------------------------------------
 
@@ -122,6 +128,7 @@ void FgdMppcDisplay::FinishEvent()
   {
     fcanvas->ResetDrawn();
   }
+  fevNum++;
 }
 
 void FgdMppcDisplay::FinishTask()
@@ -156,7 +163,6 @@ void FgdMppcDisplay::WriteCanvas(string hist)
     strb<< "hist_" << hist << fevNum << ".gif";
     fcanvas->SaveAs((strb.str()).c_str());
     fcanvas->ResetDrawn();
-    fevNum++;
 }
 
 }// namespace superfgd

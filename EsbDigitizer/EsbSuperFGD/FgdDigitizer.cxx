@@ -22,7 +22,7 @@ namespace superfgd {
 
 // -----   Default constructor   -------------------------------------------
 FgdDigitizer::FgdDigitizer() :
-  FairTask(), fX(0), fY(0), fZ(0)
+  FairTask(), fX(0), fY(0), fZ(0), fdPoints(nullptr), fHitArray(nullptr)
 { 
 }
 // -------------------------------------------------------------------------
@@ -32,7 +32,8 @@ FgdDigitizer::FgdDigitizer(const char* name
                           ,const char* geoConfigFile
                           ,double x, double y, double z
                           , Int_t verbose) :
-  FairTask(name, verbose), fX(x), fY(y), fZ(z)
+  FairTask(name, verbose), fX(x), fY(y), fZ(z),
+  fdPoints(nullptr), fHitArray(nullptr)
 { 
   fParams.LoadPartParams(geoConfigFile);
 }
@@ -43,6 +44,10 @@ FgdDigitizer::FgdDigitizer(const char* name
 // -----   Destructor   ----------------------------------------------------
 FgdDigitizer::~FgdDigitizer() 
 {
+  if(fHitArray) {
+    fHitArray->Delete();
+    delete fHitArray;
+  }
 }
 // -------------------------------------------------------------------------
 
@@ -96,6 +101,9 @@ InitStatus FgdDigitizer::Init()
 // -----   Public method Exec   --------------------------------------------
 void FgdDigitizer::Exec(Option_t* opt) 
 {
+  // Reset output array
+  fHitArray->Delete();
+  
   const Int_t points = fdPoints->GetEntries();
   for(Int_t i =0; i < points; i++)
   {
