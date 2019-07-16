@@ -89,22 +89,22 @@ GenieGenerator::GenieGenerator(genie::GFluxI *fluxI, genie::GeomAnalyzerI *geomI
     PostProcessEvent(event);
     
     event->Print(std::cout);
-		TLorentzVector* v = event->Vertex();
+	TLorentzVector* v = event->Vertex();
 		
-		// Fire other final state particles
-		int nParticles = event->GetEntries();
-		for (int i = 0; i < nParticles; i++) 
+	// Fire other final state particles
+	int nParticles = event->GetEntries();
+	for (int i = 0; i < nParticles; i++) 
+	{
+		genie::GHepParticle *p = event->Particle(i);
+		// kIStStableFinalState - Genie documentation: generator-level final state
+		// particles to be tracked by the detector-level MC
+		if ((p->Status() == genie::EGHepStatus::kIStStableFinalState)) 
 		{
-				genie::GHepParticle *p = event->Particle(i);
-				// kIStStableFinalState - Genie documentation: generator-level final state
-				// particles to be tracked by the detector-level MC
-				if ((p->Status() == genie::EGHepStatus::kIStStableFinalState)) 
-				{
-						primGen->AddTrack(p->Pdg(), p->Px(), p->Py(), p->Pz(), v->X(), v->Y(), v->Z());
-				}
+			primGen->AddTrack(p->Pdg(), p->Px(), p->Py(), p->Pz(), v->X(), v->Y(), v->Z());
 		}
+	}
 		
-		delete event;
+	delete event;
     
     return true;
 }
