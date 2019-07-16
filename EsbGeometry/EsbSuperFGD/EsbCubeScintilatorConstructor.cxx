@@ -1,4 +1,4 @@
-#include "EsbGeometry/EsbSuperFGD/EsbCubeScintilatorConstructor.h"
+  #include "EsbGeometry/EsbSuperFGD/EsbCubeScintilatorConstructor.h"
 #include "EsbGeometry/EsbSuperFGD/EsbSuperFGDConstructor.h"
 
 #include "EsbGeometry/EsbSuperFGD/EsbFgdDetectorParameters.h"
@@ -13,7 +13,12 @@ namespace esbroot {
 namespace geometry {
 namespace superfgd {
 
-CubeScintConstructor::CubeScintConstructor() 
+CubeScintConstructor::CubeScintConstructor() : fLength(0.), fBase(0.), fHeight(0.), fHoleRadius(0.)
+      , fHolePositionX(0.,0.,0.), fHolePositionY(0.,0.,0.), fHolePositionZ(0.,0.,0.)
+      , fHoleRotX(0.,0.,0.), fHoleRotY(0.,0.,0.), fHoleRotZ(0.,0.,0.)
+      , fCoatingThickness(0.), fGap(0.), fIsVisible(false), fCoatingMaterial("")
+      , fScintillatorMaterial(""), fUseFGDScint(false), fFiberMaterial(""), fFiberRadius(0.)
+      , fcubeTVol(nullptr), fcubeScntVol(nullptr)
 {
 }
   
@@ -22,7 +27,7 @@ CubeScintConstructor::~CubeScintConstructor()
 }
 
 
-void CubeScintConstructor::Construct() 
+TGeoVolume* CubeScintConstructor::Construct() 
 {
   // Base is X direction
   // Height is Y direction
@@ -184,15 +189,22 @@ void CubeScintConstructor::Construct()
 
   // Place the scintilator cube into the cube coating
   TGeoVolume* cubeScntVol = new TGeoVolume(fgdnames::scintilatorVolume, cubeComp, scintillatorMixMedium);
+  fcubeScntVol = cubeScntVol;
   cubeWithCoatingVolume->AddNodeOverlap(cubeScntVol, 1 /* One Element*/ /*, Identity matrix is by default used for location*/);
 
   // Place the fiber coatings with fiber core
   cubeWithCoatingVolume->AddNodeOverlap(fiberXCoatVolume, 1 /* One Element*/, locationX);
   cubeWithCoatingVolume->AddNodeOverlap(fiberYCoatVolume, 1 /* One Element*/, locationY);
   cubeWithCoatingVolume->AddNodeOverlap(fiberZCoatVolume, 1 /* One Element*/, locationZ);
-  
+
+  fcubeTVol = cubeWithCoatingVolume;
+  return fcubeTVol;
+
+  // NOTE: adding the volume with gGeoManager->AddVolume
+  // Causes segmentation fault later on in fairroot
+  // not a showstopper, but can lead to unexpected results
   // Add the cube volume with coating to the list of the geoManager
-  gGeoManager->AddVolume(cubeWithCoatingVolume);
+  //gGeoManager->AddVolume(cubeWithCoatingVolume);
 }
 
 }   //superfgd

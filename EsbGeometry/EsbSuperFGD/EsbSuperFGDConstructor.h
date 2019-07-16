@@ -124,7 +124,13 @@ public:
     static const char* SuperFgdName;
 
     /** Constructs the TgeoVolume of the detector**/
-    void Construct();
+    TGeoVolume* Construct();
+
+    /** Return the pointer to the SuperFGD volume **/
+    TGeoVolume* GetSuperFGDVolume(){return fSuperGVol;}
+
+    /** Return the pointer to sensitive volume of the detector **/
+    TGeoVolume* GetSensitiveVolume(){return fSensVol;}
 
 private:
 
@@ -153,6 +159,12 @@ private:
   
     /// The name of the material to use for the fiber.
     std::string fFiberMaterial;
+
+    //! Pointer to the constructed SuperFgd volume
+    TGeoVolume* fSuperGVol;
+
+    //! Pointer to the sensitive volume in the cube
+    TGeoVolume* fSensVol;
 
     ClassDef(SuperFGDConstructor,2)
 };

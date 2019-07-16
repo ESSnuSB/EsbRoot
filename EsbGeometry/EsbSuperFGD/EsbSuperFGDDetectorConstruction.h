@@ -31,7 +31,13 @@ public:
     virtual ~SuperFGDDetectorConstruction();
 
     /** Constructs the TgeoVolume of the detector**/
-    void Construct();
+    TGeoVolume* Construct();
+
+    /** Returns the last construcetd volume **/
+    TGeoVolume* GetConstuctedVolume(){return fSuperVol;}
+
+    /** Returns the sensitive volume of the last constructed detector **/
+    TGeoVolume* GetSensitiveVolume(){return fSensVolume;}
 
     /** Returns the magnetic field read from the file **/ 
     TVector3 GetMagneticField();
@@ -46,6 +52,12 @@ public:
 private:
     /** Class to hold the Detector parameters read from external file **/
     FgdDetectorParameters fParams;
+
+    /** Pointer to the last constructed volume **/
+    TGeoVolume* fSuperVol;
+
+    /** Pointer to the sensitive volume of the detector **/
+    TGeoVolume* fSensVolume;
 
     ClassDef(SuperFGDDetectorConstruction,2)
 };

@@ -191,15 +191,19 @@ void FgdDetector::ConstructGeometry()
   using namespace geometry::superfgd;
 
   DefineMaterials();
-  fgdConstructor.Construct();
-	// Create the real Fgd geometry
-	TGeoVolume* superFgdVol = gGeoManager->GetVolume(fgdnames::superFGDName);
+  TGeoVolume* superFgdVol = fgdConstructor.Construct();
+  TGeoVolume* cubeScnintilatorVol = fgdConstructor.GetSensitiveVolume();
+
+  if(!superFgdVol || !cubeScnintilatorVol)
+  {
+    throw "SuperFGD was not constructed successfully!";
+  }
+
+  // Create the real Fgd geometry
+  AddSensitiveVolume(cubeScnintilatorVol);
 
   TGeoVolume *top = gGeoManager->GetTopVolume();
   top->AddNode(superFgdVol, 1, new TGeoTranslation(fposX, fposY, fposZ));
-  
-  TGeoVolume* cubeScnintilatorVol = gGeoManager->GetVolume(fgdnames::scintilatorVolume);
-  AddSensitiveVolume(cubeScnintilatorVol);
 }
 
 //___________________________________________________________________
