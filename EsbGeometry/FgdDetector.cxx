@@ -126,8 +126,6 @@ Bool_t  FgdDetector::ProcessHits(FairVolume* vol)
     TVirtualMC::GetMC()->TrackMomentum(fMom);
   }
 
-  cout << "vol->GetCopyNo() " << vol->getCopyNo() << endl;
-
   // Sum energy loss for all steps in the active volume
   fELoss += TVirtualMC::GetMC()->Edep();
   fLength += TVirtualMC::GetMC()->TrackStep();
