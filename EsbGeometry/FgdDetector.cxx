@@ -126,6 +126,8 @@ Bool_t  FgdDetector::ProcessHits(FairVolume* vol)
     TVirtualMC::GetMC()->TrackMomentum(fMom);
   }
 
+  cout << "vol->GetCopyNo() " << vol->getCopyNo() << endl;
+
   // Sum energy loss for all steps in the active volume
   fELoss += TVirtualMC::GetMC()->Edep();
   fLength += TVirtualMC::GetMC()->TrackStep();
@@ -191,7 +193,9 @@ void FgdDetector::ConstructGeometry()
   using namespace geometry::superfgd;
 
   DefineMaterials();
+  // Create the real Fgd geometry
   TGeoVolume* superFgdVol = fgdConstructor.Construct();
+  // Retrieve the sensitive volume
   TGeoVolume* cubeScnintilatorVol = fgdConstructor.GetSensitiveVolume();
 
   if(!superFgdVol || !cubeScnintilatorVol)
@@ -199,7 +203,7 @@ void FgdDetector::ConstructGeometry()
     throw "SuperFGD was not constructed successfully!";
   }
 
-  // Create the real Fgd geometry
+  // Register sensitive volume
   AddSensitiveVolume(cubeScnintilatorVol);
 
   TGeoVolume *top = gGeoManager->GetTopVolume();
