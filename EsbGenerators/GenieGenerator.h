@@ -57,7 +57,7 @@ public:
 	GenieGenerator(genie::GFluxI *fluxI, genie::GeomAnalyzerI *geomI);
 
 	//! Empty destructor
-  virtual ~GenieGenerator() {};
+  	virtual ~GenieGenerator() {};
 
 	//Setters
 	//! Set Genie flux driver. Can't set if object already configured.
@@ -71,12 +71,12 @@ public:
 	//! Get Genie geometry driver
 	std::shared_ptr<genie::GeomAnalyzerI> const& GetGeomI() const {return(fGeomI);};
 
-  //!Method which initializes the Genie generator
+  	//!Method which initializes the Genie generator
   
-  //!FairRoot runs this from FairRunSim::Init().
-  //!Empty because we might want to init Genie after FairRunSim::Init()
-  //!e.g to pass the geometry
-  virtual Bool_t Init(void) {return true;};
+  	//!FairRoot runs this from FairRunSim::Init().
+  	//!Empty because we might want to init Genie after FairRunSim::Init()
+  	//!e.g to pass the geometry
+  	virtual Bool_t Init(void) {return true;};
 
 	//!Configure the Genie backend
 	virtual Bool_t Configure(); 
@@ -84,14 +84,14 @@ public:
 	//!Check if Genie backend is configured
 	Bool_t IsConfigured() const {return fIsConfigured;};
 
-  //!Implementation of the base method which generates the vertex particles
-  virtual Bool_t ReadEvent(FairPrimaryGenerator* primGen);
+ 	 //!Implementation of the base method which generates the vertex particles
+  	virtual Bool_t ReadEvent(FairPrimaryGenerator* primGen);
 	
 	//!Method to post process the genie event record
 	virtual void PostProcessEvent(/*IN OUT*/ genie::GHepRecord* event) {};
 
-  /** Clone this object (used in MT mode only) */
-  virtual FairGenerator* CloneGenerator() const;
+  	/** Clone this object (used in MT mode only) */
+  	virtual FairGenerator* CloneGenerator() const;
 
 
 private:
@@ -101,19 +101,28 @@ private:
 	//! Tracks if global state has been initialized
 	static bool fGlobalStateInit;
 
-  //! Driver for generating neutrino events
-  std::shared_ptr<genie::GMCJDriver> fmcj_driver;
+  	//! Driver for generating neutrino events
+	//! NOTE: DO NOT remove the //!<! comment! This is flag
+	//! to indicate to ROOT that this member is transient and should not be
+	//! written to a root file!
+  	std::shared_ptr<genie::GMCJDriver> fmcj_driver;//!<!
     
-  //! Flux driver for GMCJDriver
-  std::shared_ptr<genie::GFluxI> fFluxI;
+  	//! Flux driver for GMCJDriver
+	//! NOTE: DO NOT remove the //!<! comment! This is flag
+	//! to indicate to ROOT that this member is transient and should not be
+	//! written to a root file!
+  	std::shared_ptr<genie::GFluxI> fFluxI;//!<!
    
-  //! Geometry dirver for GMCJDriver
-  std::shared_ptr<genie::GeomAnalyzerI> fGeomI;
+  	//! Geometry dirver for GMCJDriver
+	//! NOTE: DO NOT remove the //!<! comment! This is flag
+	//! to indicate to ROOT that this member is transient and should not be
+	//! written to a root file!
+  	std::shared_ptr<genie::GeomAnalyzerI> fGeomI;//!<!
 
-  //! Tracks if object has been configured
-  Bool_t fIsConfigured = false;
+  	//! Tracks if object has been configured
+  	Bool_t fIsConfigured = false;
 
-  ClassDef(GenieGenerator,6)
+  	ClassDef(GenieGenerator,6)
 };
 
 } //namespace generators
