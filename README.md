@@ -8,6 +8,12 @@ https://essnusb.irb.hr/doxygen/
 This guide is heavily based on this talk: \
 http://essnusb.eu/docdbprivate/ShowDocument?docid=186 \
 
+## FairRoot prerequisites
+
+If you have a clean OS check
+https://github.com/FairRootGroup/FairSoft/blob/master/DEPENDENCIES
+what you need to install first.
+
 ## 0. Prepare the directory
 For example, we will install everything in ~/ESSnuSB/soft/ . Change the INSTALL_PATH variable if you want to put it somewhere else.
 ```
