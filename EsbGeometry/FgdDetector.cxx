@@ -141,6 +141,18 @@ Bool_t  FgdDetector::ProcessHits(FairVolume* vol)
     //~ if (fELoss == 0. ) { return kFALSE; }
     TVirtualMC::GetMC()->TrackPosition(fPosExit);
 
+    LOG(debug2) << "  TrackPid " << TVirtualMC::GetMC()->TrackPid();
+    LOG(debug2) << "  TrackCharge " << TVirtualMC::GetMC()->TrackCharge();
+    LOG(debug2) << "  Is track entering " << TVirtualMC::GetMC()->IsTrackEntering();
+    LOG(debug2) << "  Is track exiting " << TVirtualMC::GetMC()->IsTrackExiting();
+    LOG(debug2) << "  vol->getCopyNo() " << vol->getCopyNo();
+    LOG(debug2) << "  vol->getVolumeId() " << vol->getVolumeId();
+    LOG(debug2) << "  fPos.X() " << fPos.X();
+    LOG(debug2) << "  fPos.Y() " << fPos.Y();
+    LOG(debug2) << "  fPos.Z() " << fPos.Z();
+    LOG(debug2) << "  TrackLength " << TVirtualMC::GetMC()->TrackLength();
+    LOG(debug2) << "  GetCurrentTrackNumber " << TVirtualMC::GetMC()->GetStack()->GetCurrentTrackNumber();
+
     AddHit(fTrackID, fVolumeID
           ,TVector3(fposX,       fposY,       fposZ)
           ,TVector3(fPos.X(),       fPos.Y(),       fPos.Z())
@@ -230,19 +242,22 @@ data::superfgd::FgdDetectorPoint* FgdDetector::AddHit(Int_t trackID, Int_t detID
 
 void  FgdDetector::SetSpecialPhysicsCuts()
 {
-  FairGeoLoader *geoLoad = FairGeoLoader::Instance();
-	FairGeoInterface *geoFace = geoLoad->getGeoInterface();
-	
-	FairGeoMedia *geoMedia = geoFace->getMedia();
-	FairGeoBuilder* geoBuild = geoLoad->getGeoBuilder();
+  // DRAY - delta ray production. The variable DRAY controls this process.
+  // 0 - No delta rays production.
+  // 1 - delta rays production with generation of . Default setting.
+  // 2 - delta rays production without generation of .
+  // LOSS - Continuous energy loss. The variable LOSS controls this process. 
+  // 0 - No continuous energy loss, DRAY is set to 0.
+  // 1 - Continuous energy loss with generation of delta rays above DCUTE and restricted Landau fluctuations below DCUTE. 
+  // 2 - Continuous energy loss without generation of delta rays and full Landau-Vavilov-Gauss fluctuations. In this case the variable DRAY is forced to 0 to avoid double counting of fluctuations. Default setting. 
+  // 3 - Same as 1, kept for backward compatibility. 
+  // 4 - Energy loss without fluctuation. The value obtained from the tables is used directly. 
+  TVirtualMC::GetMC()->SetProcess("LOSS",2);  /**energy loss*/
+  TVirtualMC::GetMC()->SetProcess("DRAY",0); /**delta-ray*/
 
-  FairGeoMedium* scintillator = geoMedia->getMedium(esbroot::geometry::superfgd::materials::scintillator);
-  Int_t ind = scintillator->getMediumIndex();
-  
-  // TODO - set a cut for the delta electrons
-  //TVirtualMC::GetMC()->Gstpar(ind,"DRAY",0);
-  //TVirtualMC::GetMC()->Gstpar(ind,"DCUTE",0);
-  //TVirtualMC::GetMC()->Gstpar(ind,"BREM",0);
+  Double_t cut_delta = 1.0E4; // GeV --> 10 TeV
+  TVirtualMC::GetMC()->SetCut("DCUTE", cut_delta); /** delta-rays by electrons */
+  TVirtualMC::GetMC()->SetCut("DCUTM", cut_delta); /** delta-rays by muons */ 
 }
 
 void FgdDetector::DefineMaterials() 
