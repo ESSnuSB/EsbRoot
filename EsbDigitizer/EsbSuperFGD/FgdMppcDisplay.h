@@ -77,7 +77,7 @@ private:
   TH2F* f_yz_hist;
   TH2F* f_xz_hist;
 
-  /** Input array of FgdDetectorPoint(s)**/
+  /** Input array of FgdHit(s)**/
   TClonesArray* fHitArray;        //!
 
   // Export hist to gif

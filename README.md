@@ -99,7 +99,25 @@ make megalib
 ```
 Genie should now be built.
 
-## 4. Install EsbRoot
+## 4 Install GenFit (optional for now)
+
+Install the prerequisites for GenFit:
+
+sudo apt-get install libeigen3-dev
+```
+Download the getfit git repository from 
+https://github.com/GenFit/GenFit
+```
+Follow the build instructions from 
+https://github.com/GenFit/GenFit/blob/master/README.build
+```
+
+NOTE: the following environmental variables have to be exported
+export ROOTSYS=/** PATH TO FAIRSOFT **/fairsoft
+export GENFIT_INCLUDE=/** PATH TO Downloaded GenFit directory **/
+export GENFIT_LIBRARY=/** PATH TO the bin directory in the used build folder**/
+
+## 5. Install EsbRoot
 Go to FairRoot install dir, source the config script and set FAIRROOTPATH:
 ```
 cd $INSTALL_PATH/fairroot
@@ -126,6 +144,14 @@ export GENIE=$INSTALL_PATH/GENIE
 cmake -DWITH_GENIE=ON ..
 make
 ```
+To compile with Genie and GenFit support, do
+```
+export GENFIT_INCLUDE=/** PATH TO Downloaded GenFit directory **/
+export GENFIT_LIBRARY=/** PATH TO the bin directory in the used build folder**/
+cmake -DWITH_GENIE=ON -DWITH_GENFIT=ON ..
+make
+```
+
 The software should now be compiled!
 
 # How to use

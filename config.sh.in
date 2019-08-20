@@ -7,3 +7,9 @@ if [ "@WITH_GENIE@" = "ON" ]; then
 	export LD_LIBRARY_PATH=@GENIE_LIB_DIR@:$LD_LIBRARY_PATH
 	export LHAPATH=$GENIE/data/evgen/pdfs
 fi 
+
+#If WITH_GENFIT was set ON during cmake
+if [ "@WITH_GENFIT@" = "ON" ]; then
+	export LD_LIBRARY_PATH=@GENFIT_LIBRARY_DIR@:$LD_LIBRARY_PATH
+	export LD_LIBRARY_PATH=@GENFIT_LIBRARY_DIR@/lib:$LD_LIBRARY_PATH
+fi
