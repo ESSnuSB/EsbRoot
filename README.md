@@ -110,12 +110,13 @@ https://github.com/GenFit/GenFit
 ```
 Follow the build instructions from 
 https://github.com/GenFit/GenFit/blob/master/README.build
-```
 
+```
 NOTE: the following environmental variables have to be exported
 export ROOTSYS=/** PATH TO FAIRSOFT **/fairsoft
 export GENFIT_INCLUDE=/** PATH TO Downloaded GenFit directory **/
 export GENFIT_LIBRARY=/** PATH TO the bin directory in the used build folder**/
+```
 
 ## 5. Install EsbRoot
 Go to FairRoot install dir, source the config script and set FAIRROOTPATH:
