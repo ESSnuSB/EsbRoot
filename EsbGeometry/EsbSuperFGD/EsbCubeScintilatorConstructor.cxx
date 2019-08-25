@@ -171,7 +171,7 @@ TGeoVolume* CubeScintConstructor::Construct()
   TGeoMedium *scnt = gGeoManager->GetMedium(materials::scintillator);
   TGeoMedium *prt = gGeoManager->GetMedium(materials::paraterphnyl);
 
-  TGeoMixture *scintillatorMixMat = new TGeoMixture(materials::scintilatorMix,2, 1.050);
+  TGeoMixture *scintillatorMixMat = new TGeoMixture(materials::scintilatorMix,2, 1.050); 
   scintillatorMixMat->AddElement(scnt->GetMaterial(), 0.985);
   scintillatorMixMat->AddElement(prt->GetMaterial(), 0.015);
 
@@ -185,17 +185,21 @@ TGeoVolume* CubeScintConstructor::Construct()
   // Place the coating
   TGeoCompositeShape* coating = new TGeoCompositeShape("coating","CubeCoating - Cube - FX:locationX - FY:locationY - FY:locationZ");
   TGeoVolume* coatingVolume = new TGeoVolume(fgdnames::coatingVolume,coating, coatingMedium);
-  cubeWithCoatingVolume->AddNodeOverlap(coatingVolume, 1 /* One Element*/ /*, Identity matrix is by default used for location*/);
+  cubeWithCoatingVolume->AddNode(coatingVolume, 1 /* One Element*/ /*, Identity matrix is by default used for location*/);
 
   // Place the scintilator cube into the cube coating
   TGeoVolume* cubeScntVol = new TGeoVolume(fgdnames::scintilatorVolume, cubeComp, scintillatorMixMedium);
   fcubeScntVol = cubeScntVol;
-  cubeWithCoatingVolume->AddNodeOverlap(cubeScntVol, 1 /* One Element*/ /*, Identity matrix is by default used for location*/);
+  // NOTE: using AddNodeOverlap may lead to exception when using materialInterface_->findNextBoundary
+  // in genfit::MaterialEffects::stepper
+  cubeWithCoatingVolume->AddNode(cubeScntVol, 1 /* One Element*/ /*, Identity matrix is by default used for location*/); 
 
   // Place the fiber coatings with fiber core
-  cubeWithCoatingVolume->AddNodeOverlap(fiberXCoatVolume, 1 /* One Element*/, locationX);
-  cubeWithCoatingVolume->AddNodeOverlap(fiberYCoatVolume, 1 /* One Element*/, locationY);
-  cubeWithCoatingVolume->AddNodeOverlap(fiberZCoatVolume, 1 /* One Element*/, locationZ);
+  // NOTE: using AddNodeOverlap may lead to exception when using materialInterface_->findNextBoundary
+  // in genfit::MaterialEffects::stepper
+  cubeWithCoatingVolume->AddNode(fiberXCoatVolume, 1 /* One Element*/, locationX);
+  cubeWithCoatingVolume->AddNode(fiberYCoatVolume, 1 /* One Element*/, locationY);
+  cubeWithCoatingVolume->AddNode(fiberZCoatVolume, 1 /* One Element*/, locationZ);
 
   fcubeTVol = cubeWithCoatingVolume;
   return fcubeTVol;
