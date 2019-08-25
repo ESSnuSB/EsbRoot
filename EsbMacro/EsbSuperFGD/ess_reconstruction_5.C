@@ -22,7 +22,7 @@ void ess_reconstruction_5(TString inFile = "fgd_dig.root",
   // Set Input Source and Output file
   FairFileSource *fFileSource = new FairFileSource(inFile);
   fRun->SetSource(fFileSource);
- 
+
   fRun->SetSink(new FairRootFileSink(outFile));
 
   // -----  Parameter database   --------------------------------------------
@@ -36,10 +36,14 @@ void ess_reconstruction_5(TString inFile = "fgd_dig.root",
   rtdb->saveOutput();
 
   // Set Tasks for Reconstruction
-  TVector3 mom(0,0,0.5);
+  TVector3 mom(0.5,0.7,0.45);
   TVector3 pos(0.5,0.5,-50);
 
-  FairTask* recon = new reconstruction::superfgd::FgdGenFitRecon("Reconstruction Task","../../EsbGeometry/EsbSuperFGD/EsbConfig/geometry",0,0,0, pos, mom);
+  FairTask* recon = new reconstruction::superfgd::FgdGenFitRecon(
+    "Reconstruction Task","../../EsbGeometry/EsbSuperFGD/EsbConfig/geometry"
+    ,"../../geometry/media.geo"
+    , pos, mom, 1, 0.0);
+
   fRun->AddTask(recon);   
   fRun->Init(); // initializing
   fRun->Run(nStartEvent, nStartEvent + nEvents);
