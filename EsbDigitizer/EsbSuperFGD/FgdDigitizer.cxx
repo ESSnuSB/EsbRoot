@@ -105,6 +105,7 @@ void FgdDigitizer::Exec(Option_t* opt)
   fHitArray->Delete();
   
   const Int_t points = fdPoints->GetEntries();
+  int nextPoint(0);
   for(Int_t i =0; i < points; i++)
   {
     data::superfgd::FgdDetectorPoint* point = (data::superfgd::FgdDetectorPoint*)fdPoints->At(i);
@@ -177,8 +178,11 @@ void FgdDigitizer::Exec(Option_t* opt)
     TVector3 photoElectrons(peX,peY,peZ);
 
     // Write the mppc location in terms of cube number position in x,y,z
-    TVector3 mppcLocalPosition(bin_pos_x,bin_pos_y,bin_pos_z);
-    new((*fHitArray)[i]) data::superfgd::FgdHit(pos_x, pos_y, pos_z, mppcLocalPosition, photoElectrons);
+    if(peX!=0 || peY!=0 || peZ!=0)
+    {
+      TVector3 mppcLocalPosition(bin_pos_x,bin_pos_y,bin_pos_z);
+      new((*fHitArray)[nextPoint++]) data::superfgd::FgdHit(pos_x, pos_y, pos_z, mppcLocalPosition, photoElectrons);
+    }
   }
 }
 // -------------------------------------------------------------------------
