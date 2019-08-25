@@ -9,10 +9,10 @@ number_cubes_X=100
 number_cubes_Y=100
 number_cubes_Z=100
 
-#magnetic field
-magField_X=5    #in [kG] 
+#magnetic field [1 kGauss = 0.1 T]
+magField_X=0    #in [kG] 
 magField_Y=0    #in [kG] 
-magField_Z=0    #in [kG] 
+magField_Z=150    #in [kG] 
 
 #visualization
 visdetail=0 #1 is for true
