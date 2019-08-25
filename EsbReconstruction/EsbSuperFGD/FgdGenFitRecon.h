@@ -21,16 +21,17 @@ class FgdGenFitRecon : public FairTask
 
   /** Constructor with argument
    *@param name       Name of task
-   *@param geoConfigFile  Configuration file detector
-   *@param posX - X coordinate of the detector
-   *@param posY - Y coordinate of the detector
-   *@param posZ - Z coordinate of the detector
-   *@param verbose   Verbosity level
+   *@param geoConfigFile  - Configuration file detector
+   *@param mediaFile  - Configuration file for the used mediums
+   *@param startPos - start position
+   *@param startMOm - start momentum
+   *@param verbose  - Verbosity level
+   *@param debugLlv - debug level for genfit
   **/  
   FgdGenFitRecon(const char* name
-              ,const char* geoConfigFile, double posX, double posY, double posZ
+              ,const char* geoConfigFile, const char* mediaFile
               ,TVector3 startPos, TVector3 startMOm
-              ,Int_t verbose = 1);
+              ,Int_t verbose = 1, double debugLlv = 0);
 
   /** Destructor **/
   ~FgdGenFitRecon();
@@ -47,6 +48,9 @@ class FgdGenFitRecon : public FairTask
 
 private:
 
+  /** Define materials used in the reconstruction phase **/
+  void DefineMaterials();
+
   /** Class to hold the Detector parameters read from external file **/
   esbroot::geometry::superfgd::FgdDetectorParameters fParams;
 
@@ -58,11 +62,6 @@ private:
 
   /** Input array of FgdDetectorPoint(s)**/
   TClonesArray* fHitArray;     //! 
-
-  // Detector position
-	double fposX;
-	double fposY;
-	double fposZ;
 
    /** Detector dimentions **/
   Double_t flunit;
@@ -77,8 +76,20 @@ private:
   double f_total_Z;
 
   /** Start position and momentum **/
+  //  0 - no additional info
+  //  1 - debug info
+  //  2- detail info
+  double fDebuglvl_genfit;
+
+  /** Path to the used media.geo file - containing definitions of materials **/
+  std::string fmediaFile;
+
+  /** Start position and momentum **/
   TVector3 fstartPos;
   TVector3 fstartMom;
+
+  /** Are materials already defined **/
+  bool isDefinedMaterials;
   	   
   ClassDef(FgdGenFitRecon, 2);
 
