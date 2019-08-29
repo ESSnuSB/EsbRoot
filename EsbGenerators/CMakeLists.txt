@@ -25,13 +25,17 @@ set(DEPENDENCIES Base EsbData)
 
 if(WITH_GENIE)
 	list(APPEND SRCS
-	  GenieGenerator.cxx
+	  	GenieGenerator.cxx
+		GenieOnlyMuonGenerator.cxx
 		SimpleGenieGenerator.cxx
+		SimpleGenieOnlyMuonGenerator.cxx
 	)	
 
 	list(APPEND HEADERS
-    ${CMAKE_SOURCE_DIR}/EsbGenerators/GenieGenerator.h
-    ${CMAKE_SOURCE_DIR}/EsbGenerators/SimpleGenieGenerator.h	
+    	${CMAKE_SOURCE_DIR}/EsbGenerators/GenieGenerator.h
+		${CMAKE_SOURCE_DIR}/EsbGenerators/GenieOnlyMuonGenerator.h
+    	${CMAKE_SOURCE_DIR}/EsbGenerators/SimpleGenieGenerator.h	
+		${CMAKE_SOURCE_DIR}/EsbGenerators/SimpleGenieOnlyMuonGenerator.h
 	)
 	
 	#~ message(FATAL_ERROR "Genie include directory "${GENIE_INC_DIR})
