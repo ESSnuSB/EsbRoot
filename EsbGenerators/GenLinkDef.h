@@ -22,8 +22,10 @@
 
 #ifdef WITH_GENIE
 	#pragma link C++ class  esbroot::generators::GenieGenerator+;
+	#pragma link C++ class  esbroot::generators::GenieOnlyMuonGenerator+;
 	#pragma link C++ class  esbroot::generators::GenieGenerator::GlobalState_t+;
 	#pragma link C++ class  esbroot::generators::SimpleGenieGenerator+;
+	#pragma link C++ class  esbroot::generators::SimpleGenieOnlyMuonGenerator+;
 #endif
 
 #endif
