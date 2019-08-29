@@ -22,8 +22,8 @@
 #include "AbsBField.h"
 #include "AbsMeasurement.h"
 #include "ConstField.h"
-#include <EventDisplay.h>
 #include <Exception.h>
+#include <EventDisplay.h>
 #include <FieldManager.h>
 #include "FitStatus.h"
 #include <KalmanFitterRefTrack.h>
@@ -43,6 +43,7 @@
 #include <TRandom.h>
 #include <TVector3.h>
 #include <vector>
+#include <fstream>
 
 
 namespace esbroot {
@@ -51,23 +52,48 @@ namespace superfgd {
 
 // -----   Default constructor   -------------------------------------------
 FgdGenFitRecon::FgdGenFitRecon() :
-  FairTask(), fsuperFgdVol(nullptr), fgdConstructor("")
-  , fstartPos(TVector3(0,0,0)), fstartMom(TVector3(0,0,0))
-  , fHitArray(nullptr), isDefinedMaterials(false), fDebuglvl_genfit(0)
+  FairTask(), fsuperFgdVol(nullptr)
+  , fgdConstructor("")
+  , fstartPos(TVector3(0,0,0))
+  , fstartMom(TVector3(0,0,0))
+  , fHitArray(nullptr)
+  , isDefinedMaterials(false)
+  , fDebuglvl_genfit(0)
   , fmediaFile("")
+  , fTracksArray(nullptr)
+  , fOutputDisplayFile("")
+  , fdisplay(nullptr)
+  , isGenFitVisualization(false)
+  , fGenFitVisOption("")
 { 
 }
 // -------------------------------------------------------------------------
 
 // -----   Constructor   -------------------------------------------
 FgdGenFitRecon::FgdGenFitRecon(const char* name
-                          ,const char* geoConfigFile, const char* mediaFile
-                          ,TVector3 startPos, TVector3 startMom
-                          ,Int_t verbose, double debugLlv) :
-  FairTask(name, verbose), fsuperFgdVol(nullptr), fgdConstructor(geoConfigFile)
-  , fstartPos(startPos), fstartMom(startMom)
-  , fHitArray(nullptr), isDefinedMaterials(false), fDebuglvl_genfit(debugLlv)
+                          , const char* geoConfigFile
+                          , const char* mediaFile
+                          , TVector3 startPos
+                          , TVector3 startMom
+                          , Int_t verbose
+                          , double debugLlv
+                          , const char* outFile
+                          , bool visualize
+                          , std::string visOption) :
+  FairTask(name, verbose)
+  , fsuperFgdVol(nullptr)
+  , fgdConstructor(geoConfigFile)
+  , fstartPos(startPos)
+  , fstartMom(startMom)
+  , fHitArray(nullptr)
+  , isDefinedMaterials(false)
+  , fDebuglvl_genfit(debugLlv)
   , fmediaFile(mediaFile)
+  , fTracksArray(nullptr)
+  , fOutputDisplayFile(outFile)
+  , fdisplay(nullptr)
+  , isGenFitVisualization(visualize)
+  , fGenFitVisOption(visOption)
 { 
   fParams.LoadPartParams(geoConfigFile);
 }
@@ -81,6 +107,11 @@ FgdGenFitRecon::~FgdGenFitRecon()
   if(fHitArray) {
     fHitArray->Delete();
     delete fHitArray;
+  }
+
+  if(fTracksArray) {
+    fTracksArray->Delete();
+    delete fTracksArray;
   }
 }
 // -------------------------------------------------------------------------
@@ -124,6 +155,23 @@ InitStatus FgdGenFitRecon::Init()
       return kFATAL;
   }
 
+  // Create and register output array
+  fTracksArray = new TClonesArray(genfit::Track::Class(), 1000);
+  manager->Register(geometry::superfgd::DP::FGD_FIT_TRACK.c_str()
+                    , geometry::superfgd::DP::FGD_BRANCH_FIT.c_str()
+                    , fTracksArray, kTRUE);
+
+  if(isGenFitVisualization)
+  {
+    fdisplay = genfit::EventDisplay::getInstance();
+  }
+  
+  if(fdisplay!=nullptr && !fGenFitVisOption.empty())
+  {
+    fdisplay->setOptions(fGenFitVisOption);
+  }
+  
+
   return kSUCCESS;
 }
 
@@ -135,7 +183,10 @@ InitStatus FgdGenFitRecon::Init()
 // -----   Public methods   --------------------------------------------
 void FgdGenFitRecon::FinishEvent()
 {
-  
+  if(isGenFitVisualization)
+  {
+    fdisplay->open();
+  }
 }
 
 void FgdGenFitRecon::FinishTask()
@@ -149,22 +200,49 @@ void FgdGenFitRecon::FinishTask()
 // 2. The materials have to be created beforehand e.g. in FgdDetector
 void FgdGenFitRecon::Exec(Option_t* opt) 
 {  
+  //std::ofstream outFile;
+
   try
   {
+    // if(!fOutputDisplayFile.empty())
+    // {
+    //   outFile.open(fOutputDisplayFile, std::ios::app);
+    // }
+
+    fTracksArray->Delete();
     const Int_t hits = fHitArray->GetEntries();
     unsigned int nMeasurements = hits;
-    const int pdg = -13;               // particle pdg code
+    const int pdg = 13;               // particle pdg code
+    int nextTrack(0);
+
+    // if(outFile.is_open())
+    //     outFile << pdg << " " << 0 << " " << 0 << std::endl;
+
     // init geometry and mag. field
     TVector3 magField = fgdConstructor.GetMagneticField(); // values are in kGauss
     genfit::FieldManager::getInstance()->init(new genfit::ConstField(magField.X(),magField.Y(), magField.Z())); 
     genfit::MaterialEffects::getInstance()->init(new genfit::TGeoMaterialInterface());
     genfit::MaterialEffects::getInstance()->setDebugLvl(fDebuglvl_genfit);
 
+    // if(outFile.is_open())
+    // {
+    //   outFile<< magField.X() << " " << magField.Y() << " " << magField.Z() <<  std::endl;
+    // }
+
     // init fitter
     std::shared_ptr<genfit::AbsKalmanFitter> fitter = make_shared<genfit::KalmanFitterRefTrack>();
+    // fitter->setMinIterations(2);
+    // fitter->setMaxIterations(5);
 
     TVector3 posM(fstartPos);
     TVector3 momM(fstartMom);
+
+    // if(outFile.is_open())
+    // {
+    //   outFile<< fstartPos.X() << " " << fstartPos.Y() << " "<< fstartPos.Z() <<  std::endl;
+    //   outFile<< fstartMom.X() << " " << fstartMom.Y() << " "<< fstartMom.Z() <<  std::endl;
+    // }
+    
 
     // approximate covariance
     TMatrixDSym covM(6);
@@ -195,6 +273,16 @@ void FgdGenFitRecon::Exec(Option_t* opt)
 
     int detId(1); // Detector id, it is the same, we only have one detector
 
+    // TODO2 
+    //  1. Sort in Z diretion the mppc
+    //  2. Fix to have only one mppc with given coordinates
+    double max_z = -10000;
+    bool visited[f_bin_X][f_bin_Y][f_bin_Z];
+    for(int i=0; i< f_bin_X; i++)
+      for(int j=0; j< f_bin_Y; j++)
+        for(int k=0; k< f_bin_Z; k++)
+          visited[i][j][k]=false;
+
     // TODO2 - extract initial pos, mom and tracks
     //  fit every track seperately
     int count(0);
@@ -204,23 +292,44 @@ void FgdGenFitRecon::Exec(Option_t* opt)
       TVector3  photoE = std::move(hit->GetPhotoE());    
       TVector3  mppcLoc = std::move(hit->GetMppcLoc());  
 
+      if(visited[(int)mppcLoc.X()][(int)mppcLoc.Y()][(int)mppcLoc.Z()])
+      {
+          continue;
+      }
+      visited[(int)mppcLoc.X()][(int)mppcLoc.Y()][(int)mppcLoc.Z()] = true;
+
+      if(max_z<mppcLoc.Z())
+      {
+        max_z=mppcLoc.Z();
+      }
+      else
+      {
+        continue;
+      }
+
       if(photoE.X() !=0 || photoE.Y()!=0 || photoE.Z()!=0)
       {
         // TODO2 - use mppc location
         TVectorD hitPos(3);
-        hitPos(0) = hit->GetX();
-        hitPos(1) = hit->GetY();
-        hitPos(2) = hit->GetZ();
+        // hitPos(0) = hit->GetX();
+        // hitPos(1) = hit->GetY();
+        // hitPos(2) = hit->GetZ();
 
-        // hitPos(0) = -f_total_X/2 + f_step_X*mppcLoc.X()  +f_step_X/2;
-        // hitPos(1) = -f_total_Y/2 + f_step_Y*mppcLoc.Y()  +f_step_Y/2;
-        // hitPos(2) = -f_total_Z/2 + f_step_Z*mppcLoc.Z()  +f_step_Z/2;
+        hitPos(0) = -f_total_X/2 + f_step_X*mppcLoc.X()  +f_step_X/2;
+        hitPos(1) = -f_total_Y/2 + f_step_Y*mppcLoc.Y()  +f_step_Y/2;
+        hitPos(2) = -f_total_Z/2 + f_step_Z*mppcLoc.Z()  +f_step_Z/2;
+
+        // if(outFile.is_open())
+        // {
+        //   outFile<< hitPos(0) << " " << hitPos(1) << " " << hitPos(2) <<  std::endl;
+        // }
 
         genfit::AbsMeasurement* measurement = new genfit::SpacepointMeasurement(hitPos, hitCov, detId, 0, nullptr);
         std::vector<genfit::AbsMeasurement*> measurements{measurement};
 
         fitTrack.insertPoint(new genfit::TrackPoint(measurements, &fitTrack));
         count++;
+        //std::cout << "X " << hitPos(0)<< " Y " << hitPos(1)<< " Z " << hitPos(2) << std::endl;
       }
     }
   
@@ -233,6 +342,15 @@ void FgdGenFitRecon::Exec(Option_t* opt)
 
     // //check
     fitTrack.checkConsistency();
+
+    if(isGenFitVisualization)
+    {
+      fdisplay->addEvent(&fitTrack);
+    }
+
+    // write result to output file
+    new((*fTracksArray)[nextTrack++]) genfit::Track(fitTrack);
+    
 
     const genfit::MeasuredStateOnPlane& me = fitTrack.getFittedState();
     LOG(debug)<< "Momentum  " << (me.getMom()).Mag();
@@ -255,13 +373,19 @@ void FgdGenFitRecon::Exec(Option_t* opt)
     std::cout << "fiStatuStatus->isFitConvergedFully()  " << fiStatuStatus->isFitConvergedFully() << std::endl;
     std::cout << "fiStatuStatus->isFitConvergedPartially()  " << fiStatuStatus->isFitConvergedPartially() << std::endl;
     std::cout << "Total measurement points  " << count << std::endl;
-    
+    std::cout << "getCharge  " << fiStatuStatus->getCharge() << std::endl;
   }
   catch(genfit::Exception& e)
   {
       std::cerr<<"Exception, when tryng to fit track"<<std::endl;
       std::cerr << e.what();
   }
+
+  // if(outFile.is_open())
+  // {
+  //   outFile << "====" << std::endl;
+  //   outFile.close();
+  // }
 }
 // -------------------------------------------------------------------------
 

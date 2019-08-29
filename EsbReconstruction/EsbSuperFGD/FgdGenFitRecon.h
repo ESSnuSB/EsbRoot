@@ -6,10 +6,12 @@
 #include "EsbGeometry/EsbSuperFGD/EsbSuperFGDDetectorConstruction.h"
 #include "EsbData/EsbSuperFGD/FgdHit.h"
 
+#include <include/EventDisplay.h>
 
 namespace esbroot {
 namespace reconstruction {
 namespace superfgd {
+
 
 class FgdGenFitRecon : public FairTask
 {
@@ -27,11 +29,20 @@ class FgdGenFitRecon : public FairTask
    *@param startMOm - start momentum
    *@param verbose  - Verbosity level
    *@param debugLlv - debug level for genfit
+   *@param outFile -  output file for visualization
+   *@param visualize -  to visualize the event using genfit::EventDisplay
+   *@param visOption -  option to be passed to genfit::EventDisplay
   **/  
   FgdGenFitRecon(const char* name
-              ,const char* geoConfigFile, const char* mediaFile
-              ,TVector3 startPos, TVector3 startMOm
-              ,Int_t verbose = 1, double debugLlv = 0);
+              , const char* geoConfigFile
+              , const char* mediaFile
+              , TVector3 startPos
+              , TVector3 startMOm
+              , Int_t verbose = 1
+              , double debugLlv = 0
+              , const char* outFile = ""
+              , bool visualize = false
+              , std::string visOption ="D");
 
   /** Destructor **/
   ~FgdGenFitRecon();
@@ -63,6 +74,9 @@ private:
   /** Input array of FgdDetectorPoint(s)**/
   TClonesArray* fHitArray;     //! 
 
+  /** Output array with genfit::Track(s) **/
+  TClonesArray* fTracksArray;        //!
+
    /** Detector dimentions **/
   Double_t flunit;
   double f_step_X;
@@ -84,12 +98,20 @@ private:
   /** Path to the used media.geo file - containing definitions of materials **/
   std::string fmediaFile;
 
+  /** Path to write the points to visualization later **/
+  std::string fOutputDisplayFile;
+
   /** Start position and momentum **/
   TVector3 fstartPos;
   TVector3 fstartMom;
 
   /** Are materials already defined **/
   bool isDefinedMaterials;
+
+  /** local Members for genfit visualization  **/
+  genfit::EventDisplay* fdisplay;//!<!
+  bool isGenFitVisualization;//!<!
+  std::string fGenFitVisOption;//!<!
   	   
   ClassDef(FgdGenFitRecon, 2);
 
