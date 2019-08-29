@@ -36,15 +36,19 @@ void ess_reconstruction_5(TString inFile = "fgd_dig.root",
   rtdb->saveOutput();
 
   // Set Tasks for Reconstruction
-  TVector3 mom(0.5,0.7,0.45);
+  TVector3 mom(0.3,0.3,0.6);
   TVector3 pos(0.5,0.5,-50);
 
   FairTask* recon = new reconstruction::superfgd::FgdGenFitRecon(
     "Reconstruction Task","../../EsbGeometry/EsbSuperFGD/EsbConfig/geometry"
     ,"../../geometry/media.geo"
-    , pos, mom, 1, 0.0);
-
+    , pos, mom, 1, 0.0
+    , "../../EsbMacro/tests/trackPoints.dat"
+    , true
+    , "G");
+  
   fRun->AddTask(recon);   
   fRun->Init(); // initializing
   fRun->Run(nStartEvent, nStartEvent + nEvents);
+  fRun->CreateGeometryFile("geo_recon.root");  // for additional full geometry file
 }
