@@ -40,6 +40,8 @@ namespace DP
     static const string FGD_BRANCH = "EsbFgdDetectorPoint";
     static const string FGD_DETECTOR_NAME = "EsbFgdDetector";
     static const string FGD_HIT = "FgdHit";
+    static const string FGD_BRANCH_FIT = "FgdGenFitBranch";
+    static const string FGD_FIT_TRACK = "FgdGenFitTrack";
 }
 
 class FgdDetectorParameters : public TObject
