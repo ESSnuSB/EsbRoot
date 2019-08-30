@@ -17,6 +17,7 @@
 #pragma link C++ namespace esbroot::reconstruction+;
 #pragma link C++ namespace esbroot::reconstruction::superfgd+;
 
-#pragma link C++ class esbroot::reconstruction::superfgd::FgdGenFitRecon+;;
+#pragma link C++ class esbroot::reconstruction::superfgd::FgdGenFitRecon+;
+#pragma link C++ class esbroot::reconstruction::superfgd::FgdMuonOnlyGenFitRecon+;
 
 #endif
