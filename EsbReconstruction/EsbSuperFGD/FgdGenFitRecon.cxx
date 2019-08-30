@@ -61,7 +61,6 @@ FgdGenFitRecon::FgdGenFitRecon() :
   , fDebuglvl_genfit(0)
   , fmediaFile("")
   , fTracksArray(nullptr)
-  , fOutputDisplayFile("")
   , fdisplay(nullptr)
   , isGenFitVisualization(false)
   , fGenFitVisOption("")
@@ -77,7 +76,6 @@ FgdGenFitRecon::FgdGenFitRecon(const char* name
                           , TVector3 startMom
                           , Int_t verbose
                           , double debugLlv
-                          , const char* outFile
                           , bool visualize
                           , std::string visOption) :
   FairTask(name, verbose)
@@ -90,7 +88,6 @@ FgdGenFitRecon::FgdGenFitRecon(const char* name
   , fDebuglvl_genfit(debugLlv)
   , fmediaFile(mediaFile)
   , fTracksArray(nullptr)
-  , fOutputDisplayFile(outFile)
   , fdisplay(nullptr)
   , isGenFitVisualization(visualize)
   , fGenFitVisOption(visOption)
@@ -200,15 +197,8 @@ void FgdGenFitRecon::FinishTask()
 // 2. The materials have to be created beforehand e.g. in FgdDetector
 void FgdGenFitRecon::Exec(Option_t* opt) 
 {  
-  //std::ofstream outFile;
-
   try
   {
-    // if(!fOutputDisplayFile.empty())
-    // {
-    //   outFile.open(fOutputDisplayFile, std::ios::app);
-    // }
-
     fTracksArray->Delete();
     const Int_t hits = fHitArray->GetEntries();
     unsigned int nMeasurements = hits;

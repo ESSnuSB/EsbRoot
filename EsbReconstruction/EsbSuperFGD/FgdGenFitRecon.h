@@ -29,7 +29,6 @@ class FgdGenFitRecon : public FairTask
    *@param startMOm - start momentum
    *@param verbose  - Verbosity level
    *@param debugLlv - debug level for genfit
-   *@param outFile -  output file for visualization
    *@param visualize -  to visualize the event using genfit::EventDisplay
    *@param visOption -  option to be passed to genfit::EventDisplay
   **/  
@@ -40,7 +39,6 @@ class FgdGenFitRecon : public FairTask
               , TVector3 startMOm
               , Int_t verbose = 1
               , double debugLlv = 0
-              , const char* outFile = ""
               , bool visualize = false
               , std::string visOption ="D");
 
@@ -49,7 +47,7 @@ class FgdGenFitRecon : public FairTask
 
 
   /** Virtual method Init **/
-  virtual InitStatus Init();
+  virtual InitStatus Init() override;
   virtual void FinishEvent() override;
   virtual void FinishTask() override;
 
@@ -97,9 +95,6 @@ private:
 
   /** Path to the used media.geo file - containing definitions of materials **/
   std::string fmediaFile;
-
-  /** Path to write the points to visualization later **/
-  std::string fOutputDisplayFile;
 
   /** Start position and momentum **/
   TVector3 fstartPos;
