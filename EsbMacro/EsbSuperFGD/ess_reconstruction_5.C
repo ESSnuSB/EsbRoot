@@ -39,13 +39,18 @@ void ess_reconstruction_5(TString inFile = "fgd_dig.root",
   TVector3 mom(0.3,0.3,0.6);
   TVector3 pos(0.5,0.5,-50);
 
+  double debugLvl = 0.0; 
+
   FairTask* recon = new reconstruction::superfgd::FgdGenFitRecon(
-    "Reconstruction Task","../../EsbGeometry/EsbSuperFGD/EsbConfig/geometry"
-    ,"../../geometry/media.geo"
-    , pos, mom, 1, 0.0
-    , "../../EsbMacro/tests/trackPoints.dat"
-    , true
-    , "G");
+    "Reconstruction Task"             // name of the task
+    ,"../../EsbGeometry/EsbSuperFGD/EsbConfig/geometry"  //FIle with detector configuration
+    ,"../../geometry/media.geo"       // Media file with defined materials
+    , pos                             // initial position estimation (will be removed later on)
+    , mom                             // initial momentum estimation (will be removed later on)
+    , 1                               // Verbose level
+    , debugLvl                        // debug level of genfit (0 - little, 1 - debug info, 2 - detailed)
+    , false                           // To visualize the tracks using genfit::Eventdisplay
+    , "G");                           // Option to be passed for genfit::Eventdisplay if used
   
   fRun->AddTask(recon);   
   fRun->Init(); // initializing
