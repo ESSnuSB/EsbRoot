@@ -50,6 +50,16 @@ GenieOnlyMuonGenerator::~GenieOnlyMuonGenerator()
 	
 	genie::RunOpt::Instance()->SetTuneName(GlobalState.fGenieTune);
 	genie::RunOpt::Instance()->BuildTune();
+
+	// Clear content of previous file
+	if(!GlobalState.fOutputMuonFileName.empty())
+	{
+		std::ofstream outmuonFile;
+  		outmuonFile.open(GlobalState.fOutputMuonFileName, std::ios::trunc);
+  		outmuonFile.close();
+	}
+
+	;
 	
 	fGlobalStateInit = true;
 }
@@ -121,7 +131,7 @@ GenieOnlyMuonGenerator::~GenieOnlyMuonGenerator()
 					std::ofstream fMuonfile(GlobalState.fOutputMuonFileName, std::ios::app);
 					if(fMuonfile.is_open())
 					{
-						fMuonfile << p->Px() << " " << p->Py() << " " << p->Pz() << " " << v->X() << " " << v->Y()<< " " << v->Z() << std::endl;
+						fMuonfile << p->Px() << " " << p->Py() << " " << p->Pz() << " " << (v->X())/2 << " " << (v->Y())/2 << " " << (v->Z())/2 << std::endl;
 					}
 					fMuonfile.close();
 				}
