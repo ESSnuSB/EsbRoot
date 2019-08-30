@@ -284,7 +284,7 @@ void FgdMuonOnlyGenFitRecon::Exec(Option_t* opt)
     // TODO2 - extract initial pos, mom and tracks
     //  fit every track seperately
     int points(0);
-    for(Int_t i =0; i <  hits /* hits */; i++)
+    for(Int_t i =0; i <  hits ; i++)
     {
       data::superfgd::FgdHit* hit = (data::superfgd::FgdHit*)fHitArray->At(i);
       TVector3  photoE = std::move(hit->GetPhotoE());    
@@ -330,7 +330,7 @@ void FgdMuonOnlyGenFitRecon::Exec(Option_t* opt)
 
     fitter->setDebugLvl(fDebuglvl_genfit);
     // // do the fit
-    fitter->processTrack(&fitTrack, true);
+    fitter->processTrack(&fitTrack);
 
     // //check
     fitTrack.checkConsistency();
