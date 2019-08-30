@@ -276,7 +276,7 @@ void FgdGenFitRecon::Exec(Option_t* opt)
     // TODO2 - extract initial pos, mom and tracks
     //  fit every track seperately
     int count(0);
-    for(Int_t i =0; i <  hits /* hits */; i++)
+    for(Int_t i =0; i <  hits ; i++)
     {
       data::superfgd::FgdHit* hit = (data::superfgd::FgdHit*)fHitArray->At(i);
       TVector3  photoE = std::move(hit->GetPhotoE());    
