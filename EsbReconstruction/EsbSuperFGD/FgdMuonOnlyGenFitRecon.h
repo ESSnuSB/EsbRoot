@@ -25,6 +25,9 @@ class FgdMuonOnlyGenFitRecon : public FairTask
    *@param name       Name of task
    *@param geoConfigFile - Configuration file detector
    *@param mediaFile - Configuration file for the used mediums
+   *@param posX - X position of the detector
+   *@param posY - X position of the detector
+   *@param posZ - X position of the detector
    *@param verbose - Verbosity level
    *@param debugLlv - debug level for genfit
    *@param outFile - output comparison
@@ -35,6 +38,9 @@ class FgdMuonOnlyGenFitRecon : public FairTask
   FgdMuonOnlyGenFitRecon(const char* name
               , const char* geoConfigFile
               , const char* mediaFile
+              , double posX
+              , double posY
+              , double posZ
               , Int_t verbose = 1
               , double debugLlv = 0
               , const char* outFile = ""
@@ -77,6 +83,11 @@ private:
 
   /** Output array with genfit::Track(s) **/
   TClonesArray* fTracksArray;        //!
+
+  /** Detector position **/
+  double fposX;
+  double fposY;
+  double fposZ;
 
    /** Detector dimentions **/
   Double_t flunit;

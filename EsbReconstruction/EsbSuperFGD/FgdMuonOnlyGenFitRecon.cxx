@@ -65,6 +65,9 @@ FgdMuonOnlyGenFitRecon::FgdMuonOnlyGenFitRecon() :
   , isGenFitVisualization(false)
   , fGenFitVisOption("")
   , fMuonInd(0)
+  , fposX(0.)
+  , fposY(0.)
+  , fposZ(0.)
 { 
   fInitialMomentum.clear();
   fInitialPosition.clear();
@@ -75,6 +78,9 @@ FgdMuonOnlyGenFitRecon::FgdMuonOnlyGenFitRecon() :
 FgdMuonOnlyGenFitRecon::FgdMuonOnlyGenFitRecon(const char* name
                           , const char* geoConfigFile
                           , const char* mediaFile
+                          , double posX
+                          , double posY
+                          , double posZ
                           , Int_t verbose
                           , double debugLlv
                           , const char* outFile
@@ -95,6 +101,9 @@ FgdMuonOnlyGenFitRecon::FgdMuonOnlyGenFitRecon(const char* name
   , isGenFitVisualization(visualize)
   , fGenFitVisOption(visOption)
   , fMuonInd(0)
+  , fposX(posX)
+  , fposY(posY)
+  , fposZ(posZ)
 { 
   fParams.LoadPartParams(geoConfigFile);
   fInitialMomentum.clear();
@@ -228,8 +237,8 @@ void FgdMuonOnlyGenFitRecon::Exec(Option_t* opt)
 
     // init fitter
     std::shared_ptr<genfit::AbsKalmanFitter> fitter = make_shared<genfit::KalmanFitterRefTrack>();
-    fitter->setMinIterations(4);
-    fitter->setMaxIterations(7);
+    fitter->setMinIterations(2);
+    fitter->setMaxIterations(5);
 
     if(fMuonInd>=fInitialMomentum.size())
     {
@@ -360,36 +369,44 @@ void FgdMuonOnlyGenFitRecon::Exec(Option_t* opt)
     LOG(debug)<< "fiStatuStatus->isFitConvergedPartially()  " << fiStatuStatus->isFitConvergedPartially();
     LOG(debug)<< "Total measurement points  " << points;
 
-    std::cout << "fiStatuStatus->isFitted()  " << fiStatuStatus->isFitted() << std::endl;
-    std::cout << "fiStatuStatus->isFitConverged()  " << fiStatuStatus->isFitConverged() << std::endl;
-    std::cout << "fiStatuStatus->isFitConvergedFully()  " << fiStatuStatus->isFitConvergedFully() << std::endl;
-    std::cout << "fiStatuStatus->isFitConvergedPartially()  " << fiStatuStatus->isFitConvergedPartially() << std::endl;
-    std::cout << "Total measurement points  " << points << std::endl;
-    std::cout << "getCharge  " << fiStatuStatus->getCharge() << std::endl;
-
-    std::ofstream outmuonFile;
-    outmuonFile.open(fOutputFile, std::ios::app);
-
-    if(outmuonFile.is_open())
+    if(fiStatuStatus->isFitted() && fiStatuStatus->isFitConverged())
     {
-      outmuonFile << "Event  " << fMuonInd << std::endl;
-      outmuonFile << "MOnte Carlo Momentum " << momM.Mag() << std::endl;
-      outmuonFile << " X  " << momM.X()  << " Y " << momM.Y() << " Z  " << momM.Z() << std::endl;
-      outmuonFile << "Genfit Momentum  " << (me.getMom()).Mag() << std::endl;
-      outmuonFile << " X  " << (me.getMom()).X() << " Y " << (me.getMom()).Y()<< " Z  " << (me.getMom()).Z() << std::endl;
-      outmuonFile << "Difference (MC - Genfit)  " << (momM.Mag() - (me.getMom()).Mag()) << std::endl;
-      outmuonFile << "Difference % (MC - Genfit)  " << 100.*((momM.Mag() - (me.getMom()).Mag())/momM.Mag()) << std::endl;
-      outmuonFile << " X  " << (momM.X() - (me.getMom()).X()) << " Y " << (momM.Y() - (me.getMom()).Y()) << " Z  " << (momM.Z() - (me.getMom()).Z()) << std::endl;
-      outmuonFile << " X% " << 100.*((momM.X() - (me.getMom()).X())/momM.X()) 
-                  << " Y% " << 100.*((momM.Y() - (me.getMom()).Y())/momM.Y())
-                  << " Z% " << 100.*((momM.Z() - (me.getMom()).Z())/momM.Z()) << std::endl;
-      outmuonFile << "fiStatuStatus->isFitted()  " << fiStatuStatus->isFitted()<< std::endl;
-      outmuonFile << "fiStatuStatus->isFitConverged()  " << fiStatuStatus->isFitConverged() << std::endl;
-      outmuonFile << "fiStatuStatus->isFitConvergedFully()  " << fiStatuStatus->isFitConvergedFully() << std::endl;
-      outmuonFile << "fiStatuStatus->isFitConvergedPartially()  " << fiStatuStatus->isFitConvergedPartially() << std::endl;
-      outmuonFile << "=================================" << std::endl;
+      std::cout << "fiStatuStatus->isFitted()  " << fiStatuStatus->isFitted() << std::endl;
+      std::cout << "fiStatuStatus->isFitConverged()  " << fiStatuStatus->isFitConverged() << std::endl;
+      std::cout << "fiStatuStatus->isFitConvergedFully()  " << fiStatuStatus->isFitConvergedFully() << std::endl;
+      std::cout << "fiStatuStatus->isFitConvergedPartially()  " << fiStatuStatus->isFitConvergedPartially() << std::endl;
+      std::cout << "Total measurement points  " << points << std::endl;
+      std::cout << "getCharge  " << fiStatuStatus->getCharge() << std::endl;
+
+      std::ofstream outmuonFile;
+      outmuonFile.open(fOutputFile, std::ios::app);
+
+      if(outmuonFile.is_open())
+      {
+        outmuonFile << "Event  " << fMuonInd << std::endl;
+        outmuonFile << "MOnte Carlo Momentum " << momM.Mag() << std::endl;
+        outmuonFile << " X  " << momM.X()  << " Y " << momM.Y() << " Z  " << momM.Z() << std::endl;
+        outmuonFile << "Genfit Momentum  " << (me.getMom()).Mag() << std::endl;
+        outmuonFile << " X  " << (me.getMom()).X() << " Y " << (me.getMom()).Y()<< " Z  " << (me.getMom()).Z() << std::endl;
+        outmuonFile << "Difference (MC - Genfit)  " << (momM.Mag() - (me.getMom()).Mag()) << std::endl;
+        outmuonFile << "Difference % (MC - Genfit)  " << 100.*((momM.Mag() - (me.getMom()).Mag())/momM.Mag()) << std::endl;
+        outmuonFile << " X  " << (momM.X() - (me.getMom()).X()) << " Y " << (momM.Y() - (me.getMom()).Y()) << " Z  " << (momM.Z() - (me.getMom()).Z()) << std::endl;
+        outmuonFile << " X% " << 100.*((momM.X() - (me.getMom()).X())/momM.X()) 
+                    << " Y% " << 100.*((momM.Y() - (me.getMom()).Y())/momM.Y())
+                    << " Z% " << 100.*((momM.Z() - (me.getMom()).Z())/momM.Z()) << std::endl;
+        outmuonFile << "fiStatuStatus->isFitted()  " << fiStatuStatus->isFitted()<< std::endl;
+        outmuonFile << "fiStatuStatus->isFitConverged()  " << fiStatuStatus->isFitConverged() << std::endl;
+        outmuonFile << "fiStatuStatus->isFitConvergedFully()  " << fiStatuStatus->isFitConvergedFully() << std::endl;
+        outmuonFile << "fiStatuStatus->isFitConvergedPartially()  " << fiStatuStatus->isFitConvergedPartially() << std::endl;
+        outmuonFile << "Total measurement points  " << points << std::endl;
+
+        outmuonFile << "#x " << std::fabs(momM.X()) << " " << std::fabs(100.*((momM.X() - (me.getMom()).X())/momM.X())) << std::endl;
+        outmuonFile << "#y " << std::fabs(momM.Y()) << " " << std::fabs(100.*((momM.Y() - (me.getMom()).Y())/momM.Y())) << std::endl;
+        outmuonFile << "#z " << std::fabs(momM.Z()) << " " << std::fabs(100.*((momM.Z() - (me.getMom()).Z())/momM.Z())) << std::endl;
+        outmuonFile << "=================================" << std::endl;
+      }
+      outmuonFile.close();
     }
-    outmuonFile.close();
   }
   catch(genfit::Exception& e)
   {
@@ -518,7 +535,7 @@ void FgdMuonOnlyGenFitRecon::GetInitialMomPos()
           }
 
           fInitialMomentum.emplace_back(TVector3(arr[0],arr[1],arr[2]));
-          fInitialPosition.emplace_back(TVector3(arr[3],arr[4],arr[5]));
+          fInitialPosition.emplace_back(TVector3( (arr[3] - fposX) , (arr[4] - fposY) , (arr[5] - fposZ) ));
       }
     }
   }
