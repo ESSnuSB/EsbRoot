@@ -14,7 +14,7 @@
 void ess_only_muon_reconstruction_5(TString inFile = "fgd_dig.root", 
 	      TString parFile = "params.root",
 	      TString outFile = "fgd_recon.root",
-              Int_t nStartEvent = 0, Int_t nEvents = 10)
+              Int_t nStartEvent = 0, Int_t nEvents = 500)
 {
   using namespace esbroot;
 
@@ -41,6 +41,7 @@ void ess_only_muon_reconstruction_5(TString inFile = "fgd_dig.root",
     "Reconstruction Task"             // name of the task
     ,"../../EsbGeometry/EsbSuperFGD/EsbConfig/geometry"  //FIle with detector configuration
     ,"../../geometry/media.geo"       // Media file with defined materials
+    , 0.,0.,0.                        // x,y,z detector position
     , 1                               // Verbose level
     , debugLvl                        // debug level of genfit (0 - little, 1 - debug info, 2 - detailed)
     , "../../EsbMacro/tests/muon_mom.dat"  // output file with Monte Carlo and genfit momentum
