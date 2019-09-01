@@ -131,7 +131,7 @@ GenieOnlyMuonGenerator::~GenieOnlyMuonGenerator()
 					std::ofstream fMuonfile(GlobalState.fOutputMuonFileName, std::ios::app);
 					if(fMuonfile.is_open())
 					{
-						fMuonfile << p->Px() << " " << p->Py() << " " << p->Pz() << " " << (v->X())/2 << " " << (v->Y())/2 << " " << (v->Z())/2 << std::endl;
+						fMuonfile << p->Px() << " " << p->Py() << " " << p->Pz() << " " << v->X() << " " << v->Y() << " " << v->Z() << std::endl;
 					}
 					fMuonfile.close();
 				}
