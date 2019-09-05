@@ -36,8 +36,8 @@ void ess_reconstruction_5(TString inFile = "fgd_dig.root",
   rtdb->saveOutput();
 
   // Set Tasks for Reconstruction
-  TVector3 mom(0.3,0.3,0.6);
-  TVector3 pos(0.5,0.5,-50);
+  TVector3 mom(0.1,0.1,0.4);
+  TVector3 pos(0.,0.,-50);
 
   double debugLvl = 0.0; 
 
@@ -50,7 +50,9 @@ void ess_reconstruction_5(TString inFile = "fgd_dig.root",
     , 1                               // Verbose level
     , debugLvl                        // debug level of genfit (0 - little, 1 - debug info, 2 - detailed)
     , false                           // To visualize the tracks using genfit::Eventdisplay
-    , "G");                           // Option to be passed for genfit::Eventdisplay if used
+    , "D");                           // Option to be passed for genfit::Eventdisplay if used
+
+  ((reconstruction::superfgd::FgdGenFitRecon*)recon)->SetMinHits(8);
   
   fRun->AddTask(recon);   
   fRun->Init(); // initializing

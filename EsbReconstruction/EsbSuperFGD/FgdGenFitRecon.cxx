@@ -1,24 +1,25 @@
 #include "EsbReconstruction/EsbSuperFGD/FgdGenFitRecon.h"
 #include "EsbData/EsbSuperFGD/FgdDetectorPoint.h"
 
-#include <FairRootManager.h>
-#include "FairLogger.h"
-
-#include "FairGeoLoader.h"
-#include "FairGeoInterface.h"
+// FairRoot headers
 #include "FairGeoBuilder.h"
+#include "FairGeoInterface.h"
+#include "FairGeoLoader.h"
 #include "FairGeoMedia.h"
+#include "FairLogger.h"
+#include <FairRootManager.h>
 #include "FairVolume.h"
 
+
+// Root headers
 #include <TClonesArray.h>
+#include <TEveManager.h>
 #include <TGeoElement.h>
+#include <TGeoManager.h>
 #include <TFile.h>
 
-#include <iostream>
-#include <sstream>
-#include <memory>
-#include <math.h>
 
+// Genfit headers
 #include "AbsBField.h"
 #include "AbsMeasurement.h"
 #include "ConstField.h"
@@ -34,16 +35,28 @@
 #include "SpacepointMeasurement.h"
 #include <StateOnPlane.h>
 #include "TDatabasePDG.h"
-#include <TEveManager.h>
 #include <TGeoMaterialInterface.h>
-#include <TGeoManager.h>
 #include <Track.h>
 #include <TrackCand.h>
 #include <TrackPoint.h>
 #include <TRandom.h>
 #include <TVector3.h>
+
+
+// PathFinder headers
+#include "FinderParameter.h"
+#include "HoughTrafoTrackFinder.h"
+#include "TrackParameterFull.h"
+
+
+// STL headers
 #include <vector>
 #include <fstream>
+#include <iostream>
+#include <sstream>
+#include <memory>
+#include <math.h>
+#include <bits/stdc++.h>
 
 
 namespace esbroot {
@@ -64,6 +77,9 @@ FgdGenFitRecon::FgdGenFitRecon() :
   , fdisplay(nullptr)
   , isGenFitVisualization(false)
   , fGenFitVisOption("")
+  , fminGenFitInterations(2)
+  , fmaxGenFitIterations(4)
+  , fminHits(25)
 { 
 }
 // -------------------------------------------------------------------------
@@ -91,6 +107,9 @@ FgdGenFitRecon::FgdGenFitRecon(const char* name
   , fdisplay(nullptr)
   , isGenFitVisualization(visualize)
   , fGenFitVisOption(visOption)
+  , fminGenFitInterations(2)
+  , fmaxGenFitIterations(4)
+  , fminHits(25)
 { 
   fParams.LoadPartParams(geoConfigFile);
 }
@@ -199,84 +218,16 @@ void FgdGenFitRecon::Exec(Option_t* opt)
 {  
   try
   {
-    fTracksArray->Delete();
-    const Int_t hits = fHitArray->GetEntries();
-    unsigned int nMeasurements = hits;
-    const int pdg = 13;               // particle pdg code
-    int nextTrack(0);
-
-    // if(outFile.is_open())
-    //     outFile << pdg << " " << 0 << " " << 0 << std::endl;
-
-    // init geometry and mag. field
-    TVector3 magField = fgdConstructor.GetMagneticField(); // values are in kGauss
-    genfit::FieldManager::getInstance()->init(new genfit::ConstField(magField.X(),magField.Y(), magField.Z())); 
-    genfit::MaterialEffects::getInstance()->init(new genfit::TGeoMaterialInterface());
-    genfit::MaterialEffects::getInstance()->setDebugLvl(fDebuglvl_genfit);
-
-    // if(outFile.is_open())
-    // {
-    //   outFile<< magField.X() << " " << magField.Y() << " " << magField.Z() <<  std::endl;
-    // }
-
-    // init fitter
-    std::shared_ptr<genfit::AbsKalmanFitter> fitter = make_shared<genfit::KalmanFitterRefTrack>();
-    // fitter->setMinIterations(2);
-    // fitter->setMaxIterations(5);
-
-    TVector3 posM(fstartPos);
-    TVector3 momM(fstartMom);
-
-    // if(outFile.is_open())
-    // {
-    //   outFile<< fstartPos.X() << " " << fstartPos.Y() << " "<< fstartPos.Z() <<  std::endl;
-    //   outFile<< fstartMom.X() << " " << fstartMom.Y() << " "<< fstartMom.Z() <<  std::endl;
-    // }
-    
-
-    // approximate covariance
-    TMatrixDSym covM(6);
-    double resolution = 0.1;
-    for (int i = 0; i < 3; ++i)
-        covM(i,i) = resolution*resolution;
-    for (int i = 3; i < 6; ++i)
-        covM(i,i) = covM(i,i) = pow(  ((resolution / nMeasurements) / sqrt(3)), 2); 
-
-    TMatrixDSym hitCov(3);
-    hitCov(0,0) = resolution*resolution;
-    hitCov(1,1) = resolution*resolution;
-    hitCov(2,2) = resolution*resolution;
-
-    // trackrep
-    genfit::AbsTrackRep* rep = new genfit::RKTrackRep(pdg);
-
-    // smeared start state
-    genfit::MeasuredStateOnPlane stateSmeared(rep);
-    stateSmeared.setPosMomCov(posM, momM, covM);
-
-    // create track
-    TVectorD seedState(6);
-    TMatrixDSym seedCov(6);
-    stateSmeared.get6DStateCov(seedState, seedCov);
-    
-    genfit::Track fitTrack(rep, seedState, seedCov);
-
-    int detId(1); // Detector id, it is the same, we only have one detector
-
-    // TODO2 
-    //  1. Sort in Z diretion the mppc
-    //  2. Fix to have only one mppc with given coordinates
-    double max_z = -10000;
     bool visited[f_bin_X][f_bin_Y][f_bin_Z];
     for(int i=0; i< f_bin_X; i++)
       for(int j=0; j< f_bin_Y; j++)
         for(int k=0; k< f_bin_Z; k++)
           visited[i][j][k]=false;
 
-    // TODO2 - extract initial pos, mom and tracks
-    //  fit every track seperately
+    // double max_z = -10000;
     int count(0);
-    for(Int_t i =0; i <  hits ; i++)
+    std::vector<pathfinder::basicHit> digHits;
+    for(Int_t i =0; i <  fHitArray->GetEntries() ; i++)
     {
       data::superfgd::FgdHit* hit = (data::superfgd::FgdHit*)fHitArray->At(i);
       TVector3  photoE = std::move(hit->GetPhotoE());    
@@ -287,100 +238,267 @@ void FgdGenFitRecon::Exec(Option_t* opt)
           continue;
       }
       visited[(int)mppcLoc.X()][(int)mppcLoc.Y()][(int)mppcLoc.Z()] = true;
-
-      if(max_z<mppcLoc.Z())
-      {
-        max_z=mppcLoc.Z();
-      }
-      else
-      {
-        continue;
-      }
+      // if(max_z<=mppcLoc.Z())
+      // {
+      //   max_z=mppcLoc.Z();
+      // }
+      // else
+      // {
+      //   continue;
+      // }
 
       if(photoE.X() !=0 || photoE.Y()!=0 || photoE.Z()!=0)
       {
-        // TODO2 - use mppc location
         TVectorD hitPos(3);
-        // hitPos(0) = hit->GetX();
-        // hitPos(1) = hit->GetY();
-        // hitPos(2) = hit->GetZ();
-
         hitPos(0) = -f_total_X/2 + f_step_X*mppcLoc.X()  +f_step_X/2;
         hitPos(1) = -f_total_Y/2 + f_step_Y*mppcLoc.Y()  +f_step_Y/2;
         hitPos(2) = -f_total_Z/2 + f_step_Z*mppcLoc.Z()  +f_step_Z/2;
 
-        // if(outFile.is_open())
-        // {
-        //   outFile<< hitPos(0) << " " << hitPos(1) << " " << hitPos(2) <<  std::endl;
-        // }
-
-        genfit::AbsMeasurement* measurement = new genfit::SpacepointMeasurement(hitPos, hitCov, detId, 0, nullptr);
-        std::vector<genfit::AbsMeasurement*> measurements{measurement};
-
-        fitTrack.insertPoint(new genfit::TrackPoint(measurements, &fitTrack));
+        digHits.emplace_back(pathfinder::basicHit(hitPos(0),hitPos(1),hitPos(2)));
         count++;
-        //std::cout << "X " << hitPos(0)<< " Y " << hitPos(1)<< " Z " << hitPos(2) << std::endl;
+
+        // std::cout<<"X "<< hitPos(0) <<"Y "<< hitPos(1) <<"Z "<< hitPos(2)  <<std::endl;
       }
     }
-  
-    // //check
-    fitTrack.checkConsistency();
+    std::cout<<"count "<< count <<std::endl;
 
-    fitter->setDebugLvl(fDebuglvl_genfit);
-    // // do the fit
-    fitter->processTrack(&fitTrack, true);
-
-    // //check
-    fitTrack.checkConsistency();
-
-    if(isGenFitVisualization)
+    std::sort(digHits.begin(), digHits.end(), [](pathfinder::basicHit bh1, pathfinder::basicHit bh2){return bh1.getZ()<bh2.getZ();});
+    std::vector<pathfinder::TrackFinderTrack> foundTracks;
+    FindTrackType trackType = FindTrackType::CURL;
+    if(FindTracks(digHits, foundTracks, trackType))
     {
-      fdisplay->addEvent(&fitTrack);
+      std::cout<<"foundTracks.size() "<< foundTracks.size() <<std::endl;
+      FitTracks(foundTracks);
     }
-
-    // write result to output file
-    new((*fTracksArray)[nextTrack++]) genfit::Track(fitTrack);
-    
-
-    const genfit::MeasuredStateOnPlane& me = fitTrack.getFittedState();
-    LOG(debug)<< "Momentum  " << (me.getMom()).Mag();
-    LOG(debug)<< " X  " << (me.getMom()).X()<< " Y " << (me.getMom()).Y()<< " Z  " << (me.getMom()).Z();
-
-    std::cout << "Momentum  " << (me.getMom()).Mag() << std::endl;
-    std::cout << " X  " << (me.getMom()).X()<< " Y " << (me.getMom()).Y()<< " Z  " << (me.getMom()).Z() << std::endl;
-
-    genfit::FitStatus* fiStatuStatus = fitTrack.getFitStatus();
-    fiStatuStatus->Print();
-
-    LOG(debug)<< "fiStatuStatus->isFitted()  " << fiStatuStatus->isFitted();
-    LOG(debug)<< "fiStatuStatus->isFitConverged()  " << fiStatuStatus->isFitConverged();
-    LOG(debug)<< "fiStatuStatus->isFitConvergedFully()  " << fiStatuStatus->isFitConvergedFully();
-    LOG(debug)<< "fiStatuStatus->isFitConvergedPartially()  " << fiStatuStatus->isFitConvergedPartially();
-    LOG(debug)<< "Total measurement points  " << count;
-
-    std::cout << "fiStatuStatus->isFitted()  " << fiStatuStatus->isFitted() << std::endl;
-    std::cout << "fiStatuStatus->isFitConverged()  " << fiStatuStatus->isFitConverged() << std::endl;
-    std::cout << "fiStatuStatus->isFitConvergedFully()  " << fiStatuStatus->isFitConvergedFully() << std::endl;
-    std::cout << "fiStatuStatus->isFitConvergedPartially()  " << fiStatuStatus->isFitConvergedPartially() << std::endl;
-    std::cout << "Total measurement points  " << count << std::endl;
-    std::cout << "getCharge  " << fiStatuStatus->getCharge() << std::endl;
   }
   catch(genfit::Exception& e)
   {
       std::cerr<<"Exception, when tryng to fit track"<<std::endl;
       std::cerr << e.what();
   }
-
-  // if(outFile.is_open())
-  // {
-  //   outFile << "====" << std::endl;
-  //   outFile.close();
-  // }
 }
 // -------------------------------------------------------------------------
 
 
 // -----   Private methods   --------------------------------------------
+bool FgdGenFitRecon::FindTracks(std::vector<pathfinder::basicHit>& digHits
+                                , std::vector<pathfinder::TrackFinderTrack>& foundTracks
+                                , FindTrackType trackType)
+{
+  LOG(debug2) << "digHits " << digHits.size();
+
+  unsigned int use_vertex = 0;
+  double vertexX = 0.;
+  double vertexY = 0.;
+  double maxdistxy = 5.;
+  double maxdistsz = 5.;
+  double maxdistxyfit = 3.;
+  double maxdistszfit = 3.;
+  unsigned int minhitnumber = 5;
+  unsigned int xythetabins = 1000;
+  unsigned int xyd0bins = 1000;
+  unsigned int xyomegabins = 300;
+  unsigned int szthetabins = 1000;
+  unsigned int szd0bins = 1000;
+  double maxdxy = f_total_X + f_total_Y;
+  double maxdsz = f_total_Z;
+  unsigned int searchneighborhood = 1;
+
+  pathfinder::FinderParameter* newFinderParameter = nullptr;
+  switch(trackType)
+  {
+    case FindTrackType::HELIX:
+        newFinderParameter= new pathfinder::FinderParameter(false, true); 
+        newFinderParameter -> setFindCurler(false);
+        break;
+    case FindTrackType::CURL:
+        newFinderParameter= new pathfinder::FinderParameter(false, true); 
+        newFinderParameter -> setFindCurler(true);
+        break;
+    case FindTrackType::STRAIGHT_LINE:
+    default:
+        newFinderParameter= new pathfinder::FinderParameter(true, false); 
+        newFinderParameter -> setFindCurler(false);
+        break;
+  }
+
+
+  //  if(use_vertex == 0) newFinderParameter -> setUseVertex(false);
+  //  if(use_vertex == 1) newFinderParameter -> setUseVertex(true);
+
+  if(use_vertex == 1) 
+  {  
+    std::pair<double, double> vertex(vertexX, vertexY);
+    newFinderParameter -> setVertex(vertex);
+  }
+
+  newFinderParameter -> setMaxXYDistance(maxdistxy);
+  newFinderParameter -> setMaxSZDistance(maxdistsz);
+  newFinderParameter -> setMaxXYDistanceFit(maxdistxyfit);
+  newFinderParameter -> setMaxSZDistanceFit(maxdistszfit);
+  newFinderParameter -> setMinimumHitNumber(minhitnumber);
+  newFinderParameter -> setNumberXYThetaBins(xythetabins);
+  newFinderParameter -> setNumberXYDzeroBins(xyd0bins);
+  newFinderParameter -> setNumberXYOmegaBins(xyomegabins);
+  newFinderParameter -> setNumberSZThetaBins(szthetabins);
+  newFinderParameter -> setNumberSZDzeroBins(szd0bins);
+  newFinderParameter -> setMaxDxy(maxdxy);
+  newFinderParameter -> setMaxDsz(maxdsz);
+  
+  if(searchneighborhood == 0)
+  {
+    newFinderParameter -> setSearchNeighborhood(false);
+  }
+  else
+  {
+    newFinderParameter -> setSearchNeighborhood(true);
+  }
+  newFinderParameter -> setSaveRootFile(false);
+
+  pathfinder::HoughTrafoTrackFinder newTrackFinder;
+
+  //setting steering parameter
+  newTrackFinder.setFinderParameter(*newFinderParameter);
+
+  //set the vector of basic hits in which tracks should be found
+  //here: use all hits deliverd by the track generator
+  newTrackFinder.setInitialHits(digHits);
+
+  //do the actual track finding
+  bool found = newTrackFinder.find();
+  if(found)
+  {
+    foundTracks = newTrackFinder.getTracks();
+  }
+  return found;
+}
+
+void FgdGenFitRecon::FitTracks(std::vector<pathfinder::TrackFinderTrack>& foundTracks)
+{
+    fTracksArray->Delete();
+    
+    // init geometry and mag. field
+    TVector3 magField = fgdConstructor.GetMagneticField(); // values are in kGauss
+    genfit::FieldManager::getInstance()->init(new genfit::ConstField(magField.X(),magField.Y(), magField.Z())); 
+    genfit::MaterialEffects::getInstance()->init(new genfit::TGeoMaterialInterface());
+    genfit::MaterialEffects::getInstance()->setDebugLvl(fDebuglvl_genfit);
+
+    // init fitter
+    std::shared_ptr<genfit::AbsKalmanFitter> fitter = make_shared<genfit::KalmanFitterRefTrack>();
+    fitter->setMinIterations(fminGenFitInterations);
+    fitter->setMaxIterations(fmaxGenFitIterations);
+    fitter->setDebugLvl(fDebuglvl_genfit);
+
+    std::vector<genfit::Track*> genTracks;
+    int detId(1); // Detector id, it is the same, we only have one detector
+    for(Int_t i =0; i <  foundTracks.size() ; i++)
+    {
+      std::vector<pathfinder::basicHit>& hitsOnTrack = const_cast<std::vector<pathfinder::basicHit>&>(foundTracks[i].getHitsOnTrack());
+      //std::sort(hitsOnTrack.begin(), hitsOnTrack.end(), [](pathfinder::basicHit bh1, pathfinder::basicHit bh2){return bh1.getZ()<bh2.getZ();});
+      std::vector<pathfinder::basicHit> uniqueZHits;
+      std::set<double> zLoc;
+      for(Int_t bh = 0; bh < hitsOnTrack.size(); ++bh)
+      {
+        if(zLoc.find(hitsOnTrack[bh].getZ())==zLoc.end())
+        {
+          zLoc.insert(hitsOnTrack[bh].getZ());
+          uniqueZHits.push_back(hitsOnTrack[bh]);
+        }
+        //uniqueZHits.push_back(hitsOnTrack[bh]);
+      }
+
+      // Set lower limit on track size
+      if(uniqueZHits.size()<fminHits)
+      {
+        std::cout << "Track " << i << " below limit, continue with next track (" << uniqueZHits.size() << " < " << fminHits << ")" << std::endl;
+        continue;
+      }
+      
+       // TODO2 extrack from finderTrack how to get initial guess for these values
+      // =================================
+      const int pdg = 13; 
+      TVector3 posM(fstartPos);
+      TVector3 momM(fstartMom);
+      // =================================
+
+      // approximate covariance
+      double resolution = 0.1;
+      TMatrixDSym hitCov(3);
+      hitCov(0,0) = resolution*resolution;
+      hitCov(1,1) = resolution*resolution;
+      hitCov(2,2) = resolution*resolution;
+
+      TMatrixDSym covM(6);
+      for (int i = 0; i < 3; ++i)
+          covM(i,i) = resolution*resolution;
+      for (int i = 3; i < 6; ++i)
+          covM(i,i) = covM(i,i) = pow(  ((resolution / hitsOnTrack.size()) / sqrt(3)), 2); 
+
+      // trackrep
+      genfit::AbsTrackRep* rep = new genfit::RKTrackRep(pdg);
+
+      // smeared start state
+      genfit::MeasuredStateOnPlane stateSmeared(rep);
+      stateSmeared.setPosMomCov(posM, momM, covM);
+
+      // create track
+      TVectorD seedState(6);
+      TMatrixDSym seedCov(6);
+      stateSmeared.get6DStateCov(seedState, seedCov);
+  
+      genfit::Track* toFitTrack = new genfit::Track(rep, seedState, seedCov);
+
+      std::cout<<"track "<< i <<std::endl;
+      std::cout<<"uniqueZHits.size(); "<< uniqueZHits.size() <<std::endl;
+      
+      for(Int_t bh = 0; bh < uniqueZHits.size(); ++bh)
+      {
+        TVectorD hitPos(3);
+        hitPos(0) = uniqueZHits[bh].getX();
+        hitPos(1) = uniqueZHits[bh].getY();
+        hitPos(2) = uniqueZHits[bh].getZ();
+
+        genfit::AbsMeasurement* measurement = new genfit::SpacepointMeasurement(hitPos, hitCov, detId, 0, nullptr);
+        std::vector<genfit::AbsMeasurement*> measurements{measurement};
+
+        toFitTrack->insertPoint(new genfit::TrackPoint(measurements, toFitTrack));
+
+        // std::cout<<"X "<< hitPos(0) <<"Y "<< hitPos(1) <<"Z "<< hitPos(2)  <<std::endl;
+      }
+
+      try
+      {
+        //check
+        toFitTrack->checkConsistency();
+
+        // do the fit
+        fitter->processTrack(toFitTrack, true);
+
+        //check
+        toFitTrack->checkConsistency();
+
+        PrintFitTrack(*toFitTrack);
+        genfit::FitStatus* fiStatuStatus = toFitTrack->getFitStatus();
+
+        if(fiStatuStatus->isFitted())
+        {
+          genTracks.push_back(toFitTrack);
+        }
+
+      }
+      catch(genfit::Exception& e)
+      {
+          std::cerr<<"Exception, when tryng to fit track"<<std::endl;
+          std::cerr << e.what();
+      }
+    }
+  
+    if(isGenFitVisualization)
+    {
+      fdisplay->addEvent(genTracks);
+    }
+}
+
 void FgdGenFitRecon::DefineMaterials() 
 {
   if(isDefinedMaterials) return; // Define materials only once
@@ -468,6 +586,32 @@ void FgdGenFitRecon::DefineMaterials()
 
   FairGeoMedium* vacuum = geoMedia->getMedium(esbroot::geometry::superfgd::materials::vacuum);
   geoBuild->createMedium(vacuum);
+}
+
+void FgdGenFitRecon::PrintFitTrack(genfit::Track& fitTrack)
+{
+  const genfit::MeasuredStateOnPlane& me = fitTrack.getFittedState();
+  LOG(debug)<< "Momentum  " << (me.getMom()).Mag();
+  LOG(debug)<< " X  " << (me.getMom()).X()<< " Y " << (me.getMom()).Y()<< " Z  " << (me.getMom()).Z();
+
+  std::cout << "Momentum  " << (me.getMom()).Mag() << std::endl;
+  std::cout << " X  " << (me.getMom()).X()<< " Y " << (me.getMom()).Y()<< " Z  " << (me.getMom()).Z() << std::endl;
+
+  genfit::FitStatus* fiStatuStatus = fitTrack.getFitStatus();
+  fiStatuStatus->Print();
+
+  LOG(debug)<< "fiStatuStatus->isFitted()  " << fiStatuStatus->isFitted();
+  LOG(debug)<< "fiStatuStatus->isFitConverged()  " << fiStatuStatus->isFitConverged();
+  LOG(debug)<< "fiStatuStatus->isFitConvergedFully()  " << fiStatuStatus->isFitConvergedFully();
+  LOG(debug)<< "fiStatuStatus->isFitConvergedPartially()  " << fiStatuStatus->isFitConvergedPartially();
+  LOG(debug)<< "fitTrack.getNumPoints() " << fitTrack.getNumPoints();
+
+  std::cout << "fiStatuStatus->isFitted()  " << fiStatuStatus->isFitted() << std::endl;
+  std::cout << "fiStatuStatus->isFitConverged()  " << fiStatuStatus->isFitConverged() << std::endl;
+  std::cout << "fiStatuStatus->isFitConvergedFully()  " << fiStatuStatus->isFitConvergedFully() << std::endl;
+  std::cout << "fiStatuStatus->isFitConvergedPartially()  " << fiStatuStatus->isFitConvergedPartially() << std::endl;
+  std::cout << "getCharge  " << fiStatuStatus->getCharge() << std::endl;
+  std::cout << "fitTrack.getNumPoints() " << fitTrack.getNumPoints() << std::endl;
 }
 
 // -------------------------------------------------------------------------

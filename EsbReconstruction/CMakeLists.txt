@@ -18,6 +18,7 @@ set(INCLUDE_DIRECTORIES
 	${CLHEP_INCLUDE_DIR}
     $ENV{GENIE}/src
 	$ENV{GENFIT_INCLUDE}
+	$ENV{PATHFINDER_INC}
 	SYSTEM ${EIGEN3_INCLUDE_DIR}
 )
 
@@ -40,6 +41,7 @@ set(LINK_DIRECTORIES
     $ENV{GENIE}/lib
 	$ENV{GENFIT_LIBRARY}
 	$ENV{GENFIT_LIBRARY}/lib
+	$ENV{PATHFINDER_LIB}
 ) 
 
 link_directories( ${LINK_DIRECTORIES})
@@ -67,6 +69,16 @@ FOREACH(glib ${genfit_libs})
 	message("Adding genfit libs as dependency: ${glib}")
 	list(APPEND DEPENDENCIES
     	${glib}
+	)
+ENDFOREACH()
+
+file(GLOB pathfind_libs $ENV{PATHFINDER_LIB}/*)
+
+#Add shared library to be run in root interpreter (macro files)
+FOREACH(pflib ${pathfind_libs})
+	message("Adding pathfinder libs as dependency: ${pflib}")
+	list(APPEND DEPENDENCIES
+    	${pflib}
 	)
 ENDFOREACH()
 

@@ -1,17 +1,24 @@
 #ifndef ESBROOT_ESBDRECONSTRUCTION_FGD_GENFIT_H
 #define ESBROOT_ESBDRECONSTRUCTION_FGD_GENFIT_H
 
-#include <FairTask.h>
+// EsbRoot headers
+#include "EsbData/EsbSuperFGD/FgdHit.h"
 #include "EsbGeometry/EsbSuperFGD/EsbFgdDetectorParameters.h"
 #include "EsbGeometry/EsbSuperFGD/EsbSuperFGDDetectorConstruction.h"
-#include "EsbData/EsbSuperFGD/FgdHit.h"
 
+// FairRoot headers
+#include <FairTask.h>
+
+// ROOT headers
 #include <include/EventDisplay.h>
+
+// Pathfinder headers
+#include "basicHit.h"
+#include "TrackFinderTrack.h"
 
 namespace esbroot {
 namespace reconstruction {
 namespace superfgd {
-
 
 class FgdGenFitRecon : public FairTask
 {
@@ -45,6 +52,9 @@ class FgdGenFitRecon : public FairTask
   /** Destructor **/
   ~FgdGenFitRecon();
 
+  void SetMinInterations(Int_t minIterations) {fminGenFitInterations = minIterations;}
+  void SetMaxInterations(Int_t maxIterations) {fmaxGenFitIterations = maxIterations;}
+  void SetMinHits(Int_t minHits) {fminHits = minHits;}
 
   /** Virtual method Init **/
   virtual InitStatus Init() override;
@@ -57,8 +67,27 @@ class FgdGenFitRecon : public FairTask
 
 private:
 
+  enum FindTrackType{
+    STRAIGHT_LINE,
+    HELIX,
+    CURL
+  };
+
+  
+
+  /** Extrack tracks from the hit using Hough Transform **/
+  bool FindTracks(std::vector<pathfinder::basicHit>& digHits
+                  , std::vector<pathfinder::TrackFinderTrack>& foundTracks
+                  , FindTrackType trackType);
+
+  /** Fit the found tracks using genfit **/
+  void FitTracks(std::vector<pathfinder::TrackFinderTrack>& foundTracks);
+
   /** Define materials used in the reconstruction phase **/
   void DefineMaterials();
+  
+  /** Print information for fitted grack **/
+  void PrintFitTrack(genfit::Track& track);
 
   /** Class to hold the Detector parameters read from external file **/
   esbroot::geometry::superfgd::FgdDetectorParameters fParams;
@@ -99,6 +128,10 @@ private:
   /** Start position and momentum **/
   TVector3 fstartPos;
   TVector3 fstartMom;
+
+  Int_t fminGenFitInterations;
+  Int_t fmaxGenFitIterations;
+  Int_t fminHits;
 
   /** Are materials already defined **/
   bool isDefinedMaterials;
