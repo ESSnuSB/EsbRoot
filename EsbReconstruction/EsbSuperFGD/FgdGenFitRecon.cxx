@@ -287,22 +287,22 @@ bool FgdGenFitRecon::FindTracks(std::vector<pathfinder::basicHit>& digHits
 {
   LOG(debug2) << "digHits " << digHits.size();
 
-  unsigned int use_vertex = 0;
-  double vertexX = 0.;
-  double vertexY = 0.;
-  double maxdistxy = 5.;
-  double maxdistsz = 5.;
-  double maxdistxyfit = 3.;
-  double maxdistszfit = 3.;
-  unsigned int minhitnumber = 5;
-  unsigned int xythetabins = 1000;
-  unsigned int xyd0bins = 1000;
-  unsigned int xyomegabins = 300;
-  unsigned int szthetabins = 1000;
-  unsigned int szd0bins = 1000;
+  unsigned int use_vertex = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::PF_USE_VERTEX);
+  double vertexX = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::PF_VERTEXX);
+  double vertexY = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::PF_VERTEXY);
+  double maxdistxy = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::PF_MAXDISTXY);
+  double maxdistsz = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::PF_MAXDISTSZ);
+  double maxdistxyfit = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::PF_MAXDISTXYFIT);
+  double maxdistszfit = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::PF_MAXDISTSZFIT);
+  unsigned int minhitnumber = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::PF_MINHITNUMBER);
+  unsigned int xythetabins = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::PF_XYTHETABINS);
+  unsigned int xyd0bins = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::PF_XYD0BINS);
+  unsigned int xyomegabins = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::PF_XYOMEGABINS);
+  unsigned int szthetabins = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::PF_SZTHETABINS);
+  unsigned int szd0bins = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::PF_SZD0BINS);
   double maxdxy = f_total_X + f_total_Y;
   double maxdsz = f_total_Z;
-  unsigned int searchneighborhood = 1;
+  unsigned int searchneighborhood = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::PF_SEACHINTHENEIGHBORHOOD);
 
   pathfinder::FinderParameter* newFinderParameter = nullptr;
   switch(trackType)
@@ -324,7 +324,7 @@ bool FgdGenFitRecon::FindTracks(std::vector<pathfinder::basicHit>& digHits
 
 
   //  if(use_vertex == 0) newFinderParameter -> setUseVertex(false);
-  //  if(use_vertex == 1) newFinderParameter -> setUseVertex(true);
+  //  if(use_vertex == 1) newFinderParameter->setUseVertex(true);
 
   if(use_vertex == 1) 
   {  
@@ -404,7 +404,7 @@ void FgdGenFitRecon::FitTracks(std::vector<pathfinder::TrackFinderTrack>& foundT
           zLoc.insert(hitsOnTrack[bh].getZ());
           uniqueZHits.push_back(hitsOnTrack[bh]);
         }
-        //uniqueZHits.push_back(hitsOnTrack[bh]);
+        // uniqueZHits.push_back(hitsOnTrack[bh]);
       }
 
       // Set lower limit on track size
@@ -448,8 +448,11 @@ void FgdGenFitRecon::FitTracks(std::vector<pathfinder::TrackFinderTrack>& foundT
   
       genfit::Track* toFitTrack = new genfit::Track(rep, seedState, seedCov);
 
-      std::cout<<"track "<< i <<std::endl;
+      std::cout<<"******************************************* "<<std::endl;
+      std::cout<<"******    Track "<< i << "  ************************"<<std::endl;
+      std::cout<<"******************************************* "<<std::endl;
       std::cout<<"uniqueZHits.size(); "<< uniqueZHits.size() <<std::endl;
+      
       
       for(Int_t bh = 0; bh < uniqueZHits.size(); ++bh)
       {
@@ -478,6 +481,7 @@ void FgdGenFitRecon::FitTracks(std::vector<pathfinder::TrackFinderTrack>& foundT
         toFitTrack->checkConsistency();
 
         PrintFitTrack(*toFitTrack);
+        std::cout<<"******************************************* "<<std::endl;
         genfit::FitStatus* fiStatuStatus = toFitTrack->getFitStatus();
 
         if(fiStatuStatus->isFitted())

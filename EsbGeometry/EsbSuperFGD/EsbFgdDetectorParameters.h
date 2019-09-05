@@ -42,6 +42,22 @@ namespace DP
     static const string FGD_HIT = "FgdHit";
     static const string FGD_BRANCH_FIT = "FgdGenFitBranch";
     static const string FGD_FIT_TRACK = "FgdGenFitTrack";
+
+    static const string PF_USE_VERTEX = "use_vertex";
+    static const string PF_VERTEXX = "vertexX";
+    static const string PF_VERTEXY = "vertexY";
+    static const string PF_MAXDISTXY = "maxdistxy";
+    static const string PF_MAXDISTSZ = "maxdistsz";
+    static const string PF_MAXDISTXYFIT = "maxdistxyfit";
+    static const string PF_MAXDISTSZFIT = "maxdistszfit";
+    static const string PF_MINHITNUMBER = "minhitnumber";
+    static const string PF_XYTHETABINS = "xythetabins";
+
+    static const string PF_XYD0BINS = "xyd0bins";
+    static const string PF_XYOMEGABINS = "xyomegabins";
+    static const string PF_SZTHETABINS = "szthetabins";
+    static const string PF_SZD0BINS = "szd0bins";
+    static const string PF_SEACHINTHENEIGHBORHOOD = "searchneighborhood";
 }
 
 class FgdDetectorParameters : public TObject

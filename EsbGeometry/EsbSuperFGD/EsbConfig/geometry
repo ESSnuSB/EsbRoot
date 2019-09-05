@@ -12,8 +12,23 @@ number_cubes_Z=100
 #magnetic field [1 kGauss = 0.1 T]
 magField_X=0    #in [kG] 
 magField_Y=0    #in [kG] 
-magField_Z=150    #in [kG] 
+magField_Z=20    #in [kG] 
 
 #visualization
 visdetail=0 #1 is for true
 
+# Settings for PATHFINDER desy package
+use_vertex=1
+vertexX=0
+vertexY=0
+maxdistxy=5
+maxdistsz=5
+maxdistxyfit=5
+maxdistszfit=5
+minhitnumber=5
+xythetabins=1000
+xyd0bins=1000
+xyomegabins=300
+szthetabins=1000
+szd0bins=1000
+searchneighborhood=1
