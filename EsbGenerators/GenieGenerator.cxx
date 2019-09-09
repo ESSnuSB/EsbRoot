@@ -100,6 +100,8 @@ GenieGenerator::GenieGenerator(genie::GFluxI *fluxI, genie::GeomAnalyzerI *geomI
 				// particles to be tracked by the detector-level MC
 				if ((p->Status() == genie::EGHepStatus::kIStStableFinalState)) 
 				{
+						//Workaround for GENIE bug (or "feature") that treats nuclear energy as trackable particle
+						if(p->Pdg() >= 2000000000) continue;
 						primGen->AddTrack(p->Pdg(), p->Px(), p->Py(), p->Pz(), v->X(), v->Y(), v->Z());
 				}
 		}
