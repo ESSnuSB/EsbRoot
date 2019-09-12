@@ -80,6 +80,17 @@ private:
                   , std::vector<pathfinder::TrackFinderTrack>& foundTracks
                   , FindTrackType trackType);
 
+  /** Get only hits that are not alone or only have one hit near them **/
+  bool GetNoNoisehits(std::vector<pathfinder::basicHit>& allDigHits
+                      , std::vector<pathfinder::basicHit>& noNoiseHits
+                      , std::vector<pathfinder::basicHit>& noNoiseMppcs
+                      , std::vector<pathfinder::basicHit>& noNoisePhoto);
+
+  /** Try to find tracks from the passes hits **/
+  bool FindTracksFromHits(std::vector<pathfinder::basicHit>& noNoisePhoto
+                        , std::vector<pathfinder::basicHit>& noNoiseMppcs
+                        , std::vector<pathfinder::TrackFinderTrack>& foundTracks);
+                        
   /** Fit the found tracks using genfit **/
   void FitTracks(std::vector<pathfinder::TrackFinderTrack>& foundTracks);
 
