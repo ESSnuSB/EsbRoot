@@ -400,9 +400,14 @@ void FgdMuonOnlyGenFitRecon::Exec(Option_t* opt)
         outmuonFile << "fiStatuStatus->isFitConvergedPartially()  " << fiStatuStatus->isFitConvergedPartially() << std::endl;
         outmuonFile << "Total measurement points  " << points << std::endl;
 
-        outmuonFile << "#x " << std::fabs(momM.X()) << " " << std::fabs(100.*((momM.X() - (me.getMom()).X())/momM.X())) << std::endl;
-        outmuonFile << "#y " << std::fabs(momM.Y()) << " " << std::fabs(100.*((momM.Y() - (me.getMom()).Y())/momM.Y())) << std::endl;
-        outmuonFile << "#z " << std::fabs(momM.Z()) << " " << std::fabs(100.*((momM.Z() - (me.getMom()).Z())/momM.Z())) << std::endl;
+        outmuonFile << "#x " << momM.X() << " " << me.getMom().X() << std::endl;
+        outmuonFile << "#y " << momM.Y() << " " << me.getMom().Y() << std::endl;
+        outmuonFile << "#z " << momM.Z() << " " << me.getMom().Z() << std::endl;
+        outmuonFile << "#p " << momM.Mag() << " " << me.getMom().Mag() << std::endl;
+
+        // outmuonFile << "#x " << std::fabs(momM.X()) << " " << std::fabs(100.*((momM.X() - (me.getMom()).X())/momM.X())) << std::endl;
+        // outmuonFile << "#y " << std::fabs(momM.Y()) << " " << std::fabs(100.*((momM.Y() - (me.getMom()).Y())/momM.Y())) << std::endl;
+        // outmuonFile << "#z " << std::fabs(momM.Z()) << " " << std::fabs(100.*((momM.Z() - (me.getMom()).Z())/momM.Z())) << std::endl;
         outmuonFile << "=================================" << std::endl;
       }
       outmuonFile.close();
