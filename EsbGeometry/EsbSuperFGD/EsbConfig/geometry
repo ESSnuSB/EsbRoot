@@ -21,10 +21,10 @@ visdetail=0 #1 is for true
 use_vertex=1
 vertexX=0
 vertexY=0
-maxdistxy=5
-maxdistsz=5
-maxdistxyfit=5
-maxdistszfit=5
+maxdistxy=3
+maxdistsz=3
+maxdistxyfit=2
+maxdistszfit=2
 minhitnumber=5
 xythetabins=1000
 xyd0bins=1000
@@ -32,3 +32,7 @@ xyomegabins=300
 szthetabins=1000
 szd0bins=1000
 searchneighborhood=1
+
+# settings for noise and near cube search
+noiseRange=3
+errPhotoLimit=50
