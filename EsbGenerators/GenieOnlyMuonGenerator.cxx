@@ -134,6 +134,13 @@ GenieOnlyMuonGenerator::~GenieOnlyMuonGenerator()
 						fMuonfile << p->Px() << " " << p->Py() << " " << p->Pz() << " " << v->X() << " " << v->Y() << " " << v->Z() << std::endl;
 					}
 					fMuonfile.close();
+
+					std::ofstream fMuonParfile(GlobalState.fOutputMuonFileName + "_particles_per_event", std::ios::app);
+					if(fMuonParfile.is_open())
+					{
+						fMuonParfile << nParticles << std::endl;
+					}
+					fMuonParfile.close();
 				}
 				
 			}
