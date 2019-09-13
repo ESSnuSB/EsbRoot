@@ -28,13 +28,14 @@ class FgdHit : public FairHit
   FgdHit();
   
   /** Constructor with arguments
-   *@param x        X coordinates of cube
-   *@param y        Y coordinates of cube
-   *@param z        Z coordinates of cube
+   *@param x        X coordinates of cube in absolute coordinates
+   *@param y        Y coordinates of cube in absolute coordinates
+   *@param z        Z coordinates of cube in absolute coordinates
    *@param mppcLoc   bin locations for the mppcs
    *@param photoE    number of generated photons along each direction
+   *@param dpos      coordinate of the hit relative to the detector
    **/
-  FgdHit(Double_t x, Double_t y, Double_t z, TVector3 mppcLoc, TVector3 photoE);
+  FgdHit(Double_t x, Double_t y, Double_t z, TVector3 mppcLoc, TVector3 photoE, TVector3 dpos);
   
   /** Destructor **/
   virtual ~FgdHit();
@@ -42,10 +43,12 @@ class FgdHit : public FairHit
   /** Accessors **/ 
   TVector3 GetMppcLoc(){return fmppcLoc;}
   TVector3 GetPhotoE(){return fphotoE;}
+  TVector3 GetDpos(){return fdpos;}
 
   /** Modifiers **/
   void SetMppcLoc(TVector3 mppcLoc){fmppcLoc = mppcLoc;}
   void SetPhotoE(TVector3 p){fphotoE = p;}
+  void SetDpos(TVector3 dpos){fdpos = dpos;}
    
   /** Output to screen **/
   virtual void Print(const Option_t* opt) const;
@@ -54,6 +57,7 @@ class FgdHit : public FairHit
   /** Private variables to hold the position and number of generated photons in the cube **/
   TVector3 fmppcLoc;
   TVector3 fphotoE;
+  TVector3 fdpos;
 
   ClassDef(FgdHit, 2);
 };

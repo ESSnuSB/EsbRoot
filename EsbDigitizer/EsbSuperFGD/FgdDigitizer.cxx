@@ -181,7 +181,8 @@ void FgdDigitizer::Exec(Option_t* opt)
     if(peX!=0 || peY!=0 || peZ!=0)
     {
       TVector3 mppcLocalPosition(bin_pos_x,bin_pos_y,bin_pos_z);
-      new((*fHitArray)[nextPoint++]) data::superfgd::FgdHit(pos_x, pos_y, pos_z, mppcLocalPosition, photoElectrons);
+      TVector3 cubeCoordinatesRelToDetector(pos_x, pos_y ,pos_z);
+      new((*fHitArray)[nextPoint++]) data::superfgd::FgdHit(dpos.X(), dpos.Y(), dpos.Z(), mppcLocalPosition, photoElectrons, cubeCoordinatesRelToDetector);
     }
   }
 }
