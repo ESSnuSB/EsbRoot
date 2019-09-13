@@ -209,9 +209,6 @@ void FgdGenFitRecon::FinishTask()
 {
 }
 
-
-
-
 // 1. Hit points have to be sorted
 // 2. The materials have to be created beforehand e.g. in FgdDetector
 void FgdGenFitRecon::Exec(Option_t* opt) 
@@ -223,24 +220,17 @@ void FgdGenFitRecon::Exec(Option_t* opt)
     std::vector<pathfinder::basicHit> noNoiseMppcs;
     std::vector<pathfinder::basicHit> noNoisePhoto;
     std::vector<pathfinder::TrackFinderTrack> foundTracks;
-    if(GetNoNoisehits(allDigHits, noNoiseHits, noNoiseMppcs, noNoisePhoto) && FindTracks(allDigHits, foundTracks, FindTrackType::CURL))
+
+    if(GetNoNoisehits(allDigHits, noNoiseHits, noNoiseMppcs, noNoisePhoto)
+       && FindTracks(noNoiseHits, foundTracks, FindTrackType::CURL))
     {
       std::cout<<"foundTracks.size() "<< foundTracks.size() <<std::endl;
       FitTracks(foundTracks);
-    }else
+    }
+    else
     {
       std::cout<<" Could not find clean hits or tracks! " << std::endl;
     }
-
-    // std::vector<pathfinder::TrackFinderTrack> foundTracks2;
-    // if(GetNoNoisehits(allDigHits, noNoiseHits, noNoiseMppcs, noNoisePhoto) && FindTracksFromHits(noNoisePhoto, noNoiseMppcs, foundTracks2))
-    // {
-    //   std::cout<<"foundTracks2.size() "<< foundTracks2.size() <<std::endl;
-    //   FitTracks(foundTracks2);
-    // }else
-    // {
-    //   std::cout<<" Could not find clean hits or tracks! " << std::endl;
-    // }
   }
   catch(genfit::Exception& e)
   {
@@ -341,6 +331,7 @@ bool FgdGenFitRecon::FindTracks(std::vector<pathfinder::basicHit>& digHits
   {
     foundTracks = newTrackFinder.getTracks();
   }
+
   return found;
 }
 
@@ -349,284 +340,83 @@ bool FgdGenFitRecon::GetNoNoisehits(std::vector<pathfinder::basicHit>& allDigHit
                                     , std::vector<pathfinder::basicHit>& noNoiseMppcs
                                     , std::vector<pathfinder::basicHit>& noNoisePhoto)
 {
-  noNoiseHits.clear();
+  // Use shared_ptr for any memory leaks
+  std::shared_ptr<bool> rawPointerGuard(new bool[f_bin_X*f_bin_Y* f_bin_Z], [](bool *arr){delete[] arr; });
+  bool* visited = rawPointerGuard.get();
 
-  bool visited[f_bin_X][f_bin_Y][f_bin_Z];
-    for(int i=0; i< f_bin_X; i++)
-      for(int j=0; j< f_bin_Y; j++)
-        for(int k=0; k< f_bin_Z; k++)
-          visited[i][j][k]=false;
-
-    // double max_z = -10000;
-    int count(0);
-    std::vector<pathfinder::basicHit> digHits;
-    std::vector<pathfinder::basicHit> digMppcs;
-    std::vector<pathfinder::basicHit> digPhoto;
-    for(Int_t i =0; i <  fHitArray->GetEntries() ; i++)
-    {
-      data::superfgd::FgdHit* hit = (data::superfgd::FgdHit*)fHitArray->At(i);
-      TVector3  photoE = std::move(hit->GetPhotoE());    
-      TVector3  mppcLoc = std::move(hit->GetMppcLoc());  
-
-      if(visited[(int)mppcLoc.X()][(int)mppcLoc.Y()][(int)mppcLoc.Z()])
-      {
-          continue;
-      }
-      visited[(int)mppcLoc.X()][(int)mppcLoc.Y()][(int)mppcLoc.Z()] = true;
-      // if(max_z<=mppcLoc.Z())
-      // {
-      //   max_z=mppcLoc.Z();
-      // }
-      // else
-      // {
-      //   continue;
-      // }
-
-      if(photoE.X() !=0 || photoE.Y()!=0 || photoE.Z()!=0)
-      {
-        TVectorD hitPos(3);
-        hitPos(0) = -f_total_X/2 + f_step_X*mppcLoc.X()  +f_step_X/2;
-        hitPos(1) = -f_total_Y/2 + f_step_Y*mppcLoc.Y()  +f_step_Y/2;
-        hitPos(2) = -f_total_Z/2 + f_step_Z*mppcLoc.Z()  +f_step_Z/2;
-
-        digHits.emplace_back(pathfinder::basicHit(hitPos(0),hitPos(1),hitPos(2)));
-        digMppcs.emplace_back(pathfinder::basicHit(mppcLoc.X(),mppcLoc.Y(),mppcLoc.Z()));
-        digPhoto.emplace_back(pathfinder::basicHit(photoE.X(),photoE.Y(),photoE.Z()));
-        count++;
-      }
-    }
-    std::cout<<"count "<< count <<std::endl;
-
-    std::sort(digHits.begin(), digHits.end(), [](pathfinder::basicHit bh1, pathfinder::basicHit bh2){return bh1.getZ()<bh2.getZ();});
-
-    //std::vector<pathfinder::basicHit> noNoiseHits;
-
-    int range = fParams.ParamAsInt(esbroot::geometry::superfgd::DP::FGD_NOISE_RANGE);
-    for(int i = 0; i < digMppcs.size(); ++i)
-    {
-      pathfinder::basicHit& hit = digMppcs[i];
-      bool isNoise(true);
-
-      int x_min =  (0 > (hit.getX() - range)) ?  0 : (hit.getX() - range) ;
-      int x_max =  (f_bin_X < (hit.getX() + range)) ?  f_bin_X : (hit.getX() + range) ;
-
-      int y_min =  (0 > (hit.getY() - range)) ?  0 : (hit.getY() - range) ;
-      int y_max =  (f_bin_Y < (hit.getY() + range)) ?  f_bin_Y : (hit.getY() + range) ;
-
-      int z_min =  (0 > (hit.getZ() - range)) ?  0 : (hit.getZ() - range) ;
-      int z_max =  (f_bin_Z < (hit.getZ() + range)) ?  f_bin_Z : (hit.getZ() + range) ;
-
-      // 1. Search z planes
-      for(int x = x_min; isNoise && x <= x_max; ++x )
-      {
-        for(int y = y_min; y<= y_max; ++y )
-        {
-          if(visited[x][y][z_min])
-          {
-            isNoise = false;
-            break;
-          }
-        }
-      }
-
-      for(int x = x_min; isNoise && x <= x_max; ++x )
-      {
-        for(int y = y_min; y<= y_max; ++y )
-        {
-          if(visited[x][y][z_max])
-          {
-            isNoise = false;
-            break;
-          }
-        }
-      }
-
-      // 2. Search y planes
-      for(int x = x_min; isNoise && x <= x_max; ++x )
-      {
-        for(int z = z_min; z<= z_max; ++z )
-        {
-          if(visited[x][y_min][z])
-          {
-            isNoise = false;
-            break;
-          }
-        }
-      }
-
-      for(int x = x_min; isNoise && x <= x_max; ++x )
-      {
-        for(int z = z_min; z<= z_max; ++z )
-        {
-          if(visited[x][y_max][z])
-          {
-            isNoise = false;
-            break;
-          }
-        }
-      }
-
-      // 3. Search x planes
-      for(int y = y_min; isNoise && y <= y_max; ++y )
-      {
-        for(int z = z_min; z<= z_max; ++z )
-        {
-          if(visited[x_min][y][z])
-          {
-            isNoise = false;
-            break;
-          }
-        }
-      }
-
-      for(int y = y_min; isNoise && y <= y_max; ++y )
-      {
-        for(int z = z_min; z<= z_max; ++z )
-        {
-          if(visited[x_max][y][z])
-          {
-            isNoise = false;
-            break;
-          }
-        }
-      }
-
-      if(!isNoise)
-      {
-        noNoiseHits.emplace_back(digHits[i]);
-        noNoiseMppcs.emplace_back(digMppcs[i]);
-        noNoisePhoto.emplace_back(digPhoto[i]);
-      }
-    }
-
-    allDigHits = digHits;
-    return (noNoiseHits.size() > 0);
-}
-
-bool FgdGenFitRecon::FindTracksFromHits(std::vector<pathfinder::basicHit>& noNoisePhoto
-                        , std::vector<pathfinder::basicHit>& noNoiseMppcs
-                        , std::vector<pathfinder::TrackFinderTrack>& foundTracks)
-{
-  // 1. Initialize visited cubes - cube should participate in only one track
-  bool visited[f_bin_X][f_bin_Y][f_bin_Z];
-  for(int i=0; i< f_bin_X; i++)
-    for(int j=0; j< f_bin_Y; j++)
-      for(int k=0; k< f_bin_Z; k++)
-        visited[i][j][k]=false;
-
-  // 2. Initialize the locations of mppcs - index is their location
-  // true value - is cube hit
-  // false value - cube is not hit ignore for track finding
-  bool mppcLoc[f_bin_X][f_bin_Y][f_bin_Z];
-  for(int i=0; i< f_bin_X; i++)
-    for(int j=0; j< f_bin_Y; j++)
-      for(int k=0; k< f_bin_Z; k++)
-        mppcLoc[i][j][k]=false;
-
-  double errLimit = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::FGD_ERR_PHOTO_LIMIT);
   auto arrInd = [&](int i, int j, int k)-> long { 
                                                   return (i*f_bin_Y*f_bin_Z + j*f_bin_Z+k);
                                                 };
-  auto isInLimit = [&](int homeId, int nextId)-> bool 
-                      {
-                        double home = noNoisePhoto[homeId].getX() + noNoisePhoto[homeId].getY() + noNoisePhoto[homeId].getZ();
-                        double next = noNoisePhoto[nextId].getX() + noNoisePhoto[nextId].getY() + noNoisePhoto[nextId].getZ();
-                        return ((home - errLimit) < next) && ((home + errLimit) > next);
-                      };  
-  std::map<long,int> cubePhotoMap;
-  
-  // 3. Set which cubes are hit
-  for(int id = 0; id < noNoiseMppcs.size(); ++id)
-  {      
-    int x = (int)noNoiseMppcs[id].getX();
-    int y = (int)noNoiseMppcs[id].getY();
-    int z = (int)noNoiseMppcs[id].getZ();
-    mppcLoc[x][y][z]=true;
-    cubePhotoMap[arrInd(x,y,z)] = id;
-  }
-  
-  std::vector<pathfinder::basicHit> currentTrack;
-  for(int id = 0; id < noNoiseMppcs.size(); ++id)
+
+  // double max_z = -10000;
+  int count(0);
+  std::vector<pathfinder::basicHit> digHits;
+  std::vector<pathfinder::basicHit> digMppcs;
+  std::vector<pathfinder::basicHit> digPhoto;
+
+  // 1. Initialize the vector hits data
+  for(Int_t i =0; i <  fHitArray->GetEntries() ; i++)
   {
-    pathfinder::basicHit& mppc = noNoiseMppcs[id];
-    int x = (int)mppc.getX();
-    int y = (int)mppc.getY();
-    int z = (int)mppc.getZ();
-    if(!visited[x][y][z])
+    data::superfgd::FgdHit* hit = (data::superfgd::FgdHit*)fHitArray->At(i);
+    TVector3  photoE = std::move(hit->GetPhotoE());    
+    TVector3  mppcLoc = std::move(hit->GetMppcLoc());  
+
+    long ind = arrInd((int)mppcLoc.X(),(int)mppcLoc.Y(),(int)mppcLoc.Z());
+    if(visited[ind])
     {
-      visited[x][y][z] = true;
-      currentTrack.emplace_back(x,y,z);
+        continue;
     }
-    else
+    visited[ind] = true;
+
+    // if(visited[(int)mppcLoc.X()][(int)mppcLoc.Y()][(int)mppcLoc.Z()])
+    // {
+    //     continue;
+    // }
+    // visited[(int)mppcLoc.X()][(int)mppcLoc.Y()][(int)mppcLoc.Z()] = true;
+    // if(max_z<=mppcLoc.Z())
+    // {
+    //   max_z=mppcLoc.Z();
+    // }
+    // else
+    // {
+    //   continue;
+    // }
+
+    if(photoE.X() !=0 || photoE.Y()!=0 || photoE.Z()!=0)
     {
-      continue;
+      TVectorD hitPos(3);
+      hitPos(0) = -f_total_X/2 + f_step_X*mppcLoc.X()  +f_step_X/2;
+      hitPos(1) = -f_total_Y/2 + f_step_Y*mppcLoc.Y()  +f_step_Y/2;
+      hitPos(2) = -f_total_Z/2 + f_step_Z*mppcLoc.Z()  +f_step_Z/2;
+
+      digHits.emplace_back(pathfinder::basicHit(hitPos(0),hitPos(1),hitPos(2)));
+      digMppcs.emplace_back(pathfinder::basicHit(mppcLoc.X(),mppcLoc.Y(),mppcLoc.Z()));
+      digPhoto.emplace_back(pathfinder::basicHit(photoE.X(),photoE.Y(),photoE.Z()));
+      count++;
     }
-    
-    bool stop(false);
-
-    while(!stop)
-    {
-      stop = true;
-      // Search for the first nearest cube within limits
-      int x_min = (x-1) < 0 ? 0: (x-1);
-      int x_max = (x+1) >= f_bin_X ? f_bin_X: (x+1);
-
-      int y_min = (y-1) < 0 ? 0: (y-1);
-      int y_max = (y+1) >= f_bin_Y ? f_bin_Y: (y+1);
-
-      int z_min = (z-1) < 0 ? 0: (z-1);
-      int z_max = (z+1) >= f_bin_Z ? f_bin_Z: (z+1);
-
-      for(int x_loc=x_min; x_loc<=x_max; ++x_loc)
-      {
-        for(int y_loc=y_min; y_loc<=y_max; ++y_loc)
-        {
-          for(int z_loc=z_min; z_loc<=z_max; ++z_loc)
-          {
-            // if(!visited[x_loc][y_loc][z_loc]                  // do not look at adjacent searched cubes again
-            //     && mppcLoc[x_loc][y_loc][z_loc]               // check if it is a valid hit cube
-            //     && isInLimit(   cubePhotoMap[arrInd(x,y,z)]
-            //                   , cubePhotoMap[arrInd(x_loc,y_loc,z_loc)]) // check if the next cube is within the same photons limit (if it is, probably is the same track)
-            //     ) 
-            // {
-            //     currentTrack.emplace_back(x_loc,y_loc,z_loc);
-            //     visited[x_loc][y_loc][z_loc] = true;
-
-            //     // The first track cube will be the next examined in the track
-            //     // the rest in the vicinity are just added
-            //     if(stop)
-            //     {
-            //       x = x_loc;
-            //       y = y_loc;
-            //       z = z_loc;
-            //       stop = false;
-            //     }  
-            //}
-
-            if(!visited[x_loc][y_loc][z_loc]                  // do not look at adjacent searched cubes again
-                && mppcLoc[x_loc][y_loc][z_loc]               // check if it is a valid hit cube
-                ) 
-            {
-                x = x_loc;
-                y = y_loc;
-                z = z_loc;
-                currentTrack.emplace_back(x_loc,y_loc,z_loc);
-                stop = false;
-                visited[x_loc][y_loc][z_loc] = true;
-            }
-          }
-        }
-      }
-    }
-
-    if(currentTrack.size()>fminHits)
-    {
-      pathfinder::TrackFinderTrack tr(pathfinder::TrackParameterFull(0.,0.,0.,0.,0.),std::move(currentTrack));
-      foundTracks.emplace_back(tr);
-    }
-
-    currentTrack.clear();
   }
+  std::cout<<"count "<< count <<std::endl;
+
+  // 2. Sot the hits in z axis - the path of the progenitor particle
+  std::sort(digHits.begin(), digHits.end(), [](pathfinder::basicHit bh1, pathfinder::basicHit bh2){return bh1.getZ()<bh2.getZ();});
+  allDigHits = digHits;
+
+  //std::vector<pathfinder::basicHit> noNoiseHits;
+  int range = fParams.ParamAsInt(esbroot::geometry::superfgd::DP::FGD_NOISE_RANGE); 
+  
+  for(int i = 0; i < digMppcs.size(); ++i)
+  {
+    bool isCubeSingle = IsNoiseHit(digMppcs[i], 1 /* one cube distance */, visited);
+    bool areOneOrTwoCubesOnly = IsNoiseHit(digMppcs[i], range, visited);
+    if( !isCubeSingle &&  !areOneOrTwoCubesOnly)
+    {
+      noNoiseHits.emplace_back(digHits[i]);
+      noNoiseMppcs.emplace_back(digMppcs[i]);
+      noNoisePhoto.emplace_back(digPhoto[i]);
+    }
+  }
+
+  return (noNoiseHits.size() > 0);
 }
 
 void FgdGenFitRecon::FitTracks(std::vector<pathfinder::TrackFinderTrack>& foundTracks)
@@ -651,22 +441,11 @@ void FgdGenFitRecon::FitTracks(std::vector<pathfinder::TrackFinderTrack>& foundT
     {
       std::vector<pathfinder::basicHit>& hitsOnTrack = const_cast<std::vector<pathfinder::basicHit>&>(foundTracks[i].getHitsOnTrack());
       //std::sort(hitsOnTrack.begin(), hitsOnTrack.end(), [](pathfinder::basicHit bh1, pathfinder::basicHit bh2){return bh1.getZ()<bh2.getZ();});
-      std::vector<pathfinder::basicHit> uniqueZHits;
-      std::set<double> zLoc;
-      for(Int_t bh = 0; bh < hitsOnTrack.size(); ++bh)
-      {
-        // if(zLoc.find(hitsOnTrack[bh].getZ())==zLoc.end())
-        // {
-        //   zLoc.insert(hitsOnTrack[bh].getZ());
-        //   uniqueZHits.push_back(hitsOnTrack[bh]);
-        // }
-        uniqueZHits.push_back(hitsOnTrack[bh]);
-      }
 
       // Set lower limit on track size
-      if(uniqueZHits.size()<fminHits)
+      if(hitsOnTrack.size()<fminHits)
       {
-        std::cout << "Track " << i << " below limit, continue with next track (" << uniqueZHits.size() << " < " << fminHits << ")" << std::endl;
+        std::cout << "Track " << i << " below limit, continue with next track (" << hitsOnTrack.size() << " < " << fminHits << ")" << std::endl;
         continue;
       }
       
@@ -691,10 +470,10 @@ void FgdGenFitRecon::FitTracks(std::vector<pathfinder::TrackFinderTrack>& foundT
       hitCov(2,2) = resolution*resolution;
 
       TMatrixDSym covM(6);
-      for (int i = 0; i < 3; ++i)
-          covM(i,i) = resolution*resolution;
-      for (int i = 3; i < 6; ++i)
-          covM(i,i) = covM(i,i) = pow(  ((resolution / hitsOnTrack.size()) / sqrt(3)), 2); 
+      for (int ci = 0; ci < 3; ++ci)
+          covM(ci,ci) = resolution*resolution;
+      for (int ci = 3; ci < 6; ++ci)
+          covM(ci,ci) = covM(ci,ci) = pow(  ((resolution / hitsOnTrack.size()) / sqrt(3)), 2); 
 
       // trackrep
       genfit::AbsTrackRep* rep = new genfit::RKTrackRep(pdg);
@@ -710,19 +489,18 @@ void FgdGenFitRecon::FitTracks(std::vector<pathfinder::TrackFinderTrack>& foundT
   
       genfit::Track* toFitTrack = new genfit::Track(rep, seedState, seedCov);
 
-      LOG(debug)<<"******************************************* ";
       std::cout<<"******************************************* "<<std::endl;
       std::cout<<"******    Track "<< i << "  ************************"<<std::endl;
       std::cout<<"******************************************* "<<std::endl;
-      std::cout<<"uniqueZHits.size(); "<< uniqueZHits.size() <<std::endl;
+      std::cout<<"hitsOnTrack.size(); "<< hitsOnTrack.size() <<std::endl;
       
       
-      for(Int_t bh = 0; bh < uniqueZHits.size(); ++bh)
+      for(Int_t bh = 0; bh < hitsOnTrack.size(); ++bh)
       {
         TVectorD hitPos(3);
-        hitPos(0) = uniqueZHits[bh].getX();
-        hitPos(1) = uniqueZHits[bh].getY();
-        hitPos(2) = uniqueZHits[bh].getZ();
+        hitPos(0) = hitsOnTrack[bh].getX();
+        hitPos(1) = hitsOnTrack[bh].getY();
+        hitPos(2) = hitsOnTrack[bh].getZ();
 
         genfit::AbsMeasurement* measurement = new genfit::SpacepointMeasurement(hitPos, hitCov, detId, 0, nullptr);
         std::vector<genfit::AbsMeasurement*> measurements{measurement};
@@ -879,6 +657,100 @@ void FgdGenFitRecon::PrintFitTrack(genfit::Track& fitTrack)
   std::cout << "fiStatuStatus->isFitConvergedPartially()  " << fiStatuStatus->isFitConvergedPartially() << std::endl;
   std::cout << "getCharge  " << fiStatuStatus->getCharge() << std::endl;
   std::cout << "fitTrack.getNumPoints() " << fitTrack.getNumPoints() << std::endl;
+}
+
+bool FgdGenFitRecon::IsNoiseHit(pathfinder::basicHit& hit, int range, bool *visited)
+{
+  bool isNoise(true);
+  auto arrInd = [&](int i, int j, int k)-> long { 
+                                                  return (i*f_bin_Y*f_bin_Z + j*f_bin_Z+k);
+                                                };
+
+  int x_min =  (0 > (hit.getX() - range)) ?  0 : (hit.getX() - range) ;
+  int x_max =  (f_bin_X < (hit.getX() + range)) ?  f_bin_X : (hit.getX() + range) ;
+
+  int y_min =  (0 > (hit.getY() - range)) ?  0 : (hit.getY() - range) ;
+  int y_max =  (f_bin_Y < (hit.getY() + range)) ?  f_bin_Y : (hit.getY() + range) ;
+
+  int z_min =  (0 > (hit.getZ() - range)) ?  0 : (hit.getZ() - range) ;
+  int z_max =  (f_bin_Z < (hit.getZ() + range)) ?  f_bin_Z : (hit.getZ() + range) ;
+
+  // 1. Search z planes
+  for(int x = x_min; isNoise && x <= x_max; ++x )
+  {
+    for(int y = y_min; y<= y_max; ++y )
+    {
+      if(visited[arrInd(x,y,z_min)])
+      {
+        isNoise = false;
+        break;
+      }
+    }
+  }
+
+  for(int x = x_min; isNoise && x <= x_max; ++x )
+  {
+    for(int y = y_min; y<= y_max; ++y )
+    {
+      if(visited[arrInd(x,y,z_max)])
+      {
+        isNoise = false;
+        break;
+      }
+    }
+  }
+
+  // 2. Search y planes
+  for(int x = x_min; isNoise && x <= x_max; ++x )
+  {
+    for(int z = z_min; z<= z_max; ++z )
+    {
+      if(visited[arrInd(x,y_min,z)])
+      {
+        isNoise = false;
+        break;
+      }
+    }
+  }
+
+  for(int x = x_min; isNoise && x <= x_max; ++x )
+  {
+    for(int z = z_min; z<= z_max; ++z )
+    {
+      if(visited[arrInd(x,y_max,z)])
+      {
+        isNoise = false;
+        break;
+      }
+    }
+  }
+
+  // 3. Search x planes
+  for(int y = y_min; isNoise && y <= y_max; ++y )
+  {
+    for(int z = z_min; z<= z_max; ++z )
+    {
+      if(visited[arrInd(x_min,y,z)])
+      {
+        isNoise = false;
+        break;
+      }
+    }
+  }
+
+  for(int y = y_min; isNoise && y <= y_max; ++y )
+  {
+    for(int z = z_min; z<= z_max; ++z )
+    {
+      if(visited[arrInd(x_max,y,z)])
+      {
+        isNoise = false;
+        break;
+      }
+    }
+  }
+
+  return isNoise;
 }
 
 // -------------------------------------------------------------------------

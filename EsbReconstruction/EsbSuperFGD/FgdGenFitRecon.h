@@ -85,20 +85,18 @@ private:
                       , std::vector<pathfinder::basicHit>& noNoiseHits
                       , std::vector<pathfinder::basicHit>& noNoiseMppcs
                       , std::vector<pathfinder::basicHit>& noNoisePhoto);
-
-  /** Try to find tracks from the passes hits **/
-  bool FindTracksFromHits(std::vector<pathfinder::basicHit>& noNoisePhoto
-                        , std::vector<pathfinder::basicHit>& noNoiseMppcs
-                        , std::vector<pathfinder::TrackFinderTrack>& foundTracks);
                         
   /** Fit the found tracks using genfit **/
   void FitTracks(std::vector<pathfinder::TrackFinderTrack>& foundTracks);
 
   /** Define materials used in the reconstruction phase **/
   void DefineMaterials();
-  
+
   /** Print information for fitted grack **/
   void PrintFitTrack(genfit::Track& track);
+
+  /** Check if the passed hit does not contain nearby hits - if it does not, it is noise **/
+  bool IsNoiseHit(pathfinder::basicHit& hit, int range, bool *visited);
 
   /** Class to hold the Detector parameters read from external file **/
   esbroot::geometry::superfgd::FgdDetectorParameters fParams;
