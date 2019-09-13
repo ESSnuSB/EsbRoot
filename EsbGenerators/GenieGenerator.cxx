@@ -98,11 +98,11 @@ GenieGenerator::GenieGenerator(genie::GFluxI *fluxI, genie::GeomAnalyzerI *geomI
 		genie::GHepParticle *p = event->Particle(i);
 		// kIStStableFinalState - Genie documentation: generator-level final state
 		// particles to be tracked by the detector-level MC
-		if ((p->Status() == genie::EGHepStatus::kIStStableFinalState) // particles should be stable in the final state
-			&& (p->Pdg() < 2000000000)// Particles above 2000000000 are supersimetric particles and should be exclude from the simulation
-			) 
+		if ((p->Status() == genie::EGHepStatus::kIStStableFinalState)) 
 		{
-			primGen->AddTrack(p->Pdg(), p->Px(), p->Py(), p->Pz(), v->X(), v->Y(), v->Z());
+				//Workaround for GENIE bug (or "feature") that treats nuclear energy as trackable particle
+				if(p->Pdg() >= 2000000000) continue;
+				primGen->AddTrack(p->Pdg(), p->Px(), p->Py(), p->Pz(), v->X(), v->Y(), v->Z());
 		}
 	}
 		
