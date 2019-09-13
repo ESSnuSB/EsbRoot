@@ -68,6 +68,11 @@ FgdMuonOnlyGenFitRecon::FgdMuonOnlyGenFitRecon() :
   , fposX(0.)
   , fposY(0.)
   , fposZ(0.)
+  , fTfile(nullptr)
+  , fTtree(nullptr)
+  , fMomOutFile("")
+  , fx(0.), fy(0.), fz(0.), fp(0.)
+  , fx_fit(0.), fy_fit(0.), fz_fit(0.), fp_fit(0.)
 { 
   fInitialMomentum.clear();
   fInitialPosition.clear();
@@ -86,7 +91,8 @@ FgdMuonOnlyGenFitRecon::FgdMuonOnlyGenFitRecon(const char* name
                           , const char* outFile
                           , const char* inFile
                           , bool visualize
-                          , std::string visOption) :
+                          , std::string visOption
+                          , std::string momOutFile) :
   FairTask(name, verbose)
   , fsuperFgdVol(nullptr)
   , fgdConstructor(geoConfigFile)
@@ -104,6 +110,11 @@ FgdMuonOnlyGenFitRecon::FgdMuonOnlyGenFitRecon(const char* name
   , fposX(posX)
   , fposY(posY)
   , fposZ(posZ)
+  , fTfile(nullptr)
+  , fTtree(nullptr)
+  , fMomOutFile(momOutFile)
+  , fx(0.), fy(0.), fz(0.), fp(0.)
+  , fx_fit(0.), fy_fit(0.), fz_fit(0.), fp_fit(0.)
 { 
   fParams.LoadPartParams(geoConfigFile);
   fInitialMomentum.clear();
@@ -125,6 +136,17 @@ FgdMuonOnlyGenFitRecon::~FgdMuonOnlyGenFitRecon()
     fTracksArray->Delete();
     delete fTracksArray;
   }
+
+  if(fTfile)
+  {
+    delete fTfile;
+  }
+  
+  if(fTtree)
+  {
+    delete fTtree;
+  }
+    
 }
 // -------------------------------------------------------------------------
 
@@ -189,7 +211,24 @@ InitStatus FgdMuonOnlyGenFitRecon::Init()
   {
     fdisplay->setOptions(fGenFitVisOption);
   }
-  
+
+  if(!fMomOutFile.empty())
+  {
+    fTfile = new TFile(fMomOutFile.c_str(), "RECREATE", "Fgd Muon only fit momentums");
+    fTtree = new TTree("momentums", "Fitted momentums");
+
+    // Set Monte carlo momentum
+    fTtree->Branch("x_MC_momentum", &fx);
+    fTtree->Branch("y_MC_momentum", &fy);
+    fTtree->Branch("z_MC_momentum", &fz);
+    fTtree->Branch("total_MC_momentum", &fp);
+
+    // Set Genfit momentum
+    fTtree->Branch("x_Fit_momentum", &fx_fit);
+    fTtree->Branch("y_Fit_momentum", &fy_fit);
+    fTtree->Branch("z_Fit_momentum", &fz_fit);
+    fTtree->Branch("total_Fit_momentum", &fp_fit);
+  }
 
   return kSUCCESS;
 }
@@ -210,6 +249,11 @@ void FgdMuonOnlyGenFitRecon::FinishEvent()
 
 void FgdMuonOnlyGenFitRecon::FinishTask()
 {
+  if(!fMomOutFile.empty())
+  {
+    fTfile->WriteTObject(fTtree);
+    fTfile->Close();
+  }
 }
 
 
@@ -404,6 +448,24 @@ void FgdMuonOnlyGenFitRecon::Exec(Option_t* opt)
         outmuonFile << "#y " << momM.Y() << " " << me.getMom().Y() << std::endl;
         outmuonFile << "#z " << momM.Z() << " " << me.getMom().Z() << std::endl;
         outmuonFile << "#p " << momM.Mag() << " " << me.getMom().Mag() << std::endl;
+
+        if(fTtree!=nullptr)
+        {
+          // Set Monte Carlo momentum
+          fx = momM.X();
+          fy = momM.Y();
+          fz = momM.Z();
+          fp = momM.Mag();
+
+          // Set Genfit momentum
+          fx_fit = me.getMom().X();
+          fy_fit = me.getMom().Y();
+          fz_fit = me.getMom().Z();
+          fp_fit = me.getMom().Mag();
+
+          fTtree->Fill();
+        }
+        
 
         // outmuonFile << "#x " << std::fabs(momM.X()) << " " << std::fabs(100.*((momM.X() - (me.getMom()).X())/momM.X())) << std::endl;
         // outmuonFile << "#y " << std::fabs(momM.Y()) << " " << std::fabs(100.*((momM.Y() - (me.getMom()).Y())/momM.Y())) << std::endl;

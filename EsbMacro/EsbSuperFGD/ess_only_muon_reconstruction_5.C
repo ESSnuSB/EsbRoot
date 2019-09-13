@@ -14,7 +14,8 @@
 void ess_only_muon_reconstruction_5(TString inFile = "fgd_dig.root", 
 	      TString parFile = "params.root",
 	      TString outFile = "fgd_recon.root",
-              Int_t nStartEvent = 0, Int_t nEvents = 500)
+              Int_t nStartEvent = 0,
+              Int_t nEvents = 500)
 {
   using namespace esbroot;
 
@@ -47,7 +48,8 @@ void ess_only_muon_reconstruction_5(TString inFile = "fgd_dig.root",
     , "../../EsbMacro/tests/muon_mom.dat"  // output file with Monte Carlo and genfit momentum
     , "../../EsbMacro/tests/genie_muons.dat"  // input file with initial starting condistions
     , false                           // To visualize the tracks using genfit::Eventdisplay
-    , "D");                           // Option to be passed for genfit::Eventdisplay if used
+    , "D"                             // Option to be passed for genfit::Eventdisplay if used
+    ,"../../EsbMacro/tests/MC_Fit_momentum.root"); // root file containing the monte carlo and fitter momentums                          
   
   fRun->AddTask(recon);   
   fRun->Init(); // initializing

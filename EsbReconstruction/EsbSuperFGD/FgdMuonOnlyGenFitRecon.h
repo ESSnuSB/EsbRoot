@@ -8,6 +8,9 @@
 
 #include <include/EventDisplay.h>
 
+#include <TFile.h>
+#include <TTree.h>
+
 namespace esbroot {
 namespace reconstruction {
 namespace superfgd {
@@ -34,6 +37,7 @@ class FgdMuonOnlyGenFitRecon : public FairTask
    *@param inFile - in file with initial muon momentum and position
    *@param visualize - to visualize the event using genfit::EventDisplay
    *@param visOption - option to be passed to genfit::EventDisplay
+   *@param momOutFile - full path of the momentum root file to be written
   **/  
   FgdMuonOnlyGenFitRecon(const char* name
               , const char* geoConfigFile
@@ -46,7 +50,8 @@ class FgdMuonOnlyGenFitRecon : public FairTask
               , const char* outFile = ""
               , const char* inFile = ""
               , bool visualize = false
-              , std::string visOption ="D");
+              , std::string visOption ="D"
+              , std::string momOutFile = "");
 
   /** Destructor **/
   ~FgdMuonOnlyGenFitRecon();
@@ -83,6 +88,19 @@ private:
 
   /** Output array with genfit::Track(s) **/
   TClonesArray* fTracksArray;        //!
+
+  /** Write results (momentum for each fitted muon track) into root file **/
+  TFile* fTfile;//!<!
+  TTree* fTtree;//!<!
+  std::string fMomOutFile;//!<!
+  double fx;//!<!
+  double fy;//!<!
+  double fz;//!<!
+  double fp;//!<!
+  double fx_fit;//!<!
+  double fy_fit;//!<!
+  double fz_fit;//!<!
+  double fp_fit;//!<!
 
   /** Detector position **/
   double fposX;
