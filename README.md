@@ -99,7 +99,7 @@ make megalib
 ```
 Genie should now be built.
 
-## 4 Install GenFit (optional for now)
+## 4 Install GenFit and PathFinder (optional for now)
 
 Install the prerequisites for GenFit:
 
@@ -117,6 +117,26 @@ export ROOTSYS=/** PATH TO FAIRSOFT **/fairsoft
 export GENFIT_INCLUDE=/** PATH TO Downloaded GenFit directory **/
 export GENFIT_LIBRARY=/** PATH TO the bin directory in the used build folder**/
 ```
+
+Download PathFinder from 
+```
+https://svnsrv.desy.de/websvn/wsvn/General.pathfinder/trunk
+```
+
+The only prerequisite is to have CERN ROOT installed (which should be installed with Fairsoft installation).
+Create a folder and execute 
+```
+$cmake PATH_TO_PATHFINDERSOURCES
+```
+After the build is successdull two enviormental variables have to be defined.
+One to the include directory which is located 'include' folder of the downloaded Pathdinder source 
+directory, and the second environemntal variable is to the 'lib' folder in the Pathfinder build directory (the used cmake folder).
+```
+export PATHFINDER_INC=/** PATHFINDER_SOURCES **/include
+export PATHFINDER_LIB=/** PATHFINDER_BUILD_DIR **/lib
+```
+When building the EsbRoot application with the -DWITH_GENFIT=ON option, both 
+Genfit and Pathfinder will be included in EsbRoot.
 
 ## 5. Install EsbRoot
 Go to FairRoot install dir, source the config script and set FAIRROOTPATH:
