@@ -167,8 +167,11 @@ make
 ```
 To compile with Genie and GenFit support, do
 ```
+export GENIE=$INSTALL_PATH/GENIE
 export GENFIT_INCLUDE=/** PATH TO Downloaded GenFit directory **/
 export GENFIT_LIBRARY=/** PATH TO the bin directory in the used build folder**/
+export PATHFINDER_INC=/** PATHFINDER_SOURCES **/include
+export PATHFINDER_LIB=/** PATHFINDER_BUILD_DIR **/lib
 cmake -DWITH_GENIE=ON -DWITH_GENFIT=ON ..
 make
 ```
