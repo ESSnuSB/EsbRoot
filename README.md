@@ -99,6 +99,12 @@ make megalib
 ```
 Genie should now be built.
 
+```
+NOTE: to use Genie, the cross sections have to be downloaded (see: http://scisoft.fnal.gov/scisoft/packages/genie_xsec/).
+The following variable has to be defined in the macro files 
+generators::GenieGenerator::GlobalState.fXsecSplineFileName = "PATH_TO_CROSS_SECTION.xml"; 
+```
+
 ## 4 Install GenFit and PathFinder (optional for now)
 
 Install the prerequisites for GenFit:
