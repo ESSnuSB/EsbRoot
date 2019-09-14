@@ -182,7 +182,12 @@ void FgdDigitizer::Exec(Option_t* opt)
     {
       TVector3 mppcLocalPosition(bin_pos_x,bin_pos_y,bin_pos_z);
       TVector3 cubeCoordinatesRelToDetector(pos_x, pos_y ,pos_z);
-      new((*fHitArray)[nextPoint++]) data::superfgd::FgdHit(dpos.X(), dpos.Y(), dpos.Z(), mppcLocalPosition, photoElectrons, cubeCoordinatesRelToDetector);
+
+      double center_coor_x = (bin_pos_x*f_step_X - f_total_X/2 + f_step_X/2) + dpos.X(); 
+      double center_coor_y = (bin_pos_y*f_step_Y - f_total_Y/2 + f_step_Y/2) + dpos.Y(); 
+      double center_coor_z = (bin_pos_z*f_step_Z - f_total_Z/2 + f_step_Z/2) + dpos.Z(); 
+
+      new((*fHitArray)[nextPoint++]) data::superfgd::FgdHit(center_coor_x, center_coor_y, center_coor_z, mppcLocalPosition, photoElectrons, cubeCoordinatesRelToDetector);
     }
   }
 }
