@@ -199,3 +199,9 @@ Go to EsbMacro directory, try running:
 - diplay_event_ND.C - simple display of hits on walls of the detector
 - eventDisplay.C - full 3D event display, still not working properly
 - ess_sim_genie.C - example how to run with Genie generator. You will need to download the Genie cross-sections, see the code for comments.
+
+3. Since there are many environmental variables there is a helper file description for all the required environemntal variables located in
+```
+cd [EsbRoot directory]/EsbGeometry/EsbSuperFGD/EsbConfig/envs
+```
+Inside you will find description how to set and run them
