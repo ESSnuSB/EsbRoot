@@ -73,6 +73,8 @@ FgdMuonOnlyGenFitRecon::FgdMuonOnlyGenFitRecon() :
   , fMomOutFile("")
   , fx(0.), fy(0.), fz(0.), fp(0.)
   , fx_fit(0.), fy_fit(0.), fz_fit(0.), fp_fit(0.)
+  , fpMC_min_pFit(0.), fE_mu(0.), fE_mu_initial(0.), fxy(0.)
+  , fzMC_min_zFit(0.)
 { 
   fInitialMomentum.clear();
   fInitialPosition.clear();
@@ -115,6 +117,8 @@ FgdMuonOnlyGenFitRecon::FgdMuonOnlyGenFitRecon(const char* name
   , fMomOutFile(momOutFile)
   , fx(0.), fy(0.), fz(0.), fp(0.)
   , fx_fit(0.), fy_fit(0.), fz_fit(0.), fp_fit(0.)
+  , fpMC_min_pFit(0.), fE_mu(0.), fE_mu_initial(0.), fxy(0.)
+  , fzMC_min_zFit(0.)
 { 
   fParams.LoadPartParams(geoConfigFile);
   fInitialMomentum.clear();
@@ -228,6 +232,15 @@ InitStatus FgdMuonOnlyGenFitRecon::Init()
     fTtree->Branch("y_Fit_momentum", &fy_fit);
     fTtree->Branch("z_Fit_momentum", &fz_fit);
     fTtree->Branch("total_Fit_momentum", &fp_fit);
+
+    fTtree->Branch("XY_MC_minus_XY_FIt", &fxy);
+    fTtree->Branch("Z_MC_minus_Z_FIt", &fzMC_min_zFit);
+
+    // Set statistics
+    fTtree->Branch("P_monte_carlo_minus_P_genfit", &fpMC_min_pFit);
+    fTtree->Branch("E_fit_subtract_nu_momentum", &fE_mu);
+
+    
   }
 
   return kSUCCESS;
@@ -462,6 +475,19 @@ void FgdMuonOnlyGenFitRecon::Exec(Option_t* opt)
           fy_fit = me.getMom().Y();
           fz_fit = me.getMom().Z();
           fp_fit = me.getMom().Mag();
+
+          double tempXY_mc = sqrt(fx*fx + fy*fy);
+          double tempXY_fit = sqrt(fx_fit*fx_fit + fy_fit*fy_fit);
+          fxy = tempXY_mc - tempXY_fit;
+
+          fzMC_min_zFit = fz - fz_fit;
+
+          fpMC_min_pFit = momM.Mag() - me.getMom().Mag();
+          fE_mu = sqrt(
+                          0.106*0.106       /* mass of muon */ 
+                          + fp_fit*fp_fit   /* fitted momentum of muon */
+                      )
+                  - fE_mu_initial;          /* Initial energy of neutrino */
 
           fTtree->Fill();
         }

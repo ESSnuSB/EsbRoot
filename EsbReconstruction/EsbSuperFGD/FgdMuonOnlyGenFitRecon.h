@@ -66,6 +66,8 @@ class FgdMuonOnlyGenFitRecon : public FairTask
   /** Virtual method Exec **/
   virtual void Exec(Option_t* opt) override;
 
+  void SetInitialEmu(double eMu){fE_mu_initial=eMu;};
+
 private:
 
   /** Define materials used in the reconstruction phase **/
@@ -101,6 +103,11 @@ private:
   double fy_fit;//!<!
   double fz_fit;//!<!
   double fp_fit;//!<!
+  double fpMC_min_pFit;//!<!
+  double fE_mu;//!<!
+  double fE_mu_initial;//!<!
+  double fxy;//!<!
+  double fzMC_min_zFit;//!<!
 
   /** Detector position **/
   double fposX;
