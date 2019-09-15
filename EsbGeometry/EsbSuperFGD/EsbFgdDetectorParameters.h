@@ -45,6 +45,7 @@ namespace DP
 
     static const string FGD_NOISE_RANGE = "noiseRange";
     static const string FGD_ERR_PHOTO_LIMIT = "errPhotoLimit";
+    static const string FGD_TIME_INTERVAL_HITS = "timeIntervalHits";
 
     static const string PF_USE_VERTEX = "use_vertex";
     static const string PF_VERTEXX = "vertexX";

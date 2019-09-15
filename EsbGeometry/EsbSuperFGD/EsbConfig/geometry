@@ -21,11 +21,11 @@ visdetail=0 #1 is for true
 use_vertex=1
 vertexX=0
 vertexY=0
-maxdistxy=3
-maxdistsz=3
-maxdistxyfit=2
-maxdistszfit=2
-minhitnumber=5
+maxdistxy=2
+maxdistsz=2
+maxdistxyfit=1.5
+maxdistszfit=1.5
+minhitnumber=3
 xythetabins=1000
 xyd0bins=1000
 xyomegabins=300
@@ -36,3 +36,6 @@ searchneighborhood=1
 # settings for noise and near cube search
 noiseRange=3
 errPhotoLimit=50
+
+# Time interval for hits to be considered simultaneous
+timeIntervalHits=50         #in units used in reconstuction - from FgdDetector time is extracted in 1e-9 [s]
