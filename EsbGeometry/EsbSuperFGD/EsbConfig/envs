@@ -66,3 +66,7 @@ export PATHFINDER_LIB=/** Absolute path **/ESSnuSB_deps/Pathfinder/lib
 #  All required variables should not be set. To run the macro files, each macro file 
 #  may require paths to additional files, these should be populated manually for each 
 #  macro file - they are independent from the required environmental variables.
+#
+# For FGD detector additional settings - number of cubes in X,Y,Z direction,
+#   size of cubes, magnetic field inside FGD detector etc.
+#   Are located in [EsbRoot directory]/EsbGeometry/EsbSuperFGD/EsbConfig/geometry
