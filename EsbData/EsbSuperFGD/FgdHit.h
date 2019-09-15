@@ -34,8 +34,9 @@ class FgdHit : public FairHit
    *@param mppcLoc   bin locations for the mppcs
    *@param photoE    number of generated photons along each direction
    *@param dpos      coordinate of the hit relative to the detector
+   *@param time      time of entering of the particle inside the cube
    **/
-  FgdHit(Double_t x, Double_t y, Double_t z, TVector3 mppcLoc, TVector3 photoE, TVector3 dpos);
+  FgdHit(Double_t x, Double_t y, Double_t z, TVector3 mppcLoc, TVector3 photoE, TVector3 dpos, Double_t time);
   
   /** Destructor **/
   virtual ~FgdHit();
@@ -44,11 +45,13 @@ class FgdHit : public FairHit
   TVector3 GetMppcLoc(){return fmppcLoc;}
   TVector3 GetPhotoE(){return fphotoE;}
   TVector3 GetDpos(){return fdpos;}
+  Double_t GetTime(){return ftime;}
 
   /** Modifiers **/
   void SetMppcLoc(TVector3 mppcLoc){fmppcLoc = mppcLoc;}
   void SetPhotoE(TVector3 p){fphotoE = p;}
   void SetDpos(TVector3 dpos){fdpos = dpos;}
+  void SetTime(Double_t time){ftime=time;}
    
   /** Output to screen **/
   virtual void Print(const Option_t* opt) const;
@@ -58,6 +61,7 @@ class FgdHit : public FairHit
   TVector3 fmppcLoc;
   TVector3 fphotoE;
   TVector3 fdpos;
+  Double_t ftime;
 
   ClassDef(FgdHit, 2);
 };

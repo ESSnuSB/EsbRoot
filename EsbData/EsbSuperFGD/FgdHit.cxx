@@ -25,8 +25,8 @@ FgdHit::FgdHit()
 // -------------------------------------------------------------------------
 
 // -----   Standard constructor   ------------------------------------------
-FgdHit::FgdHit(Double_t x, Double_t y, Double_t z, TVector3 mppcLoc, TVector3 photoE,TVector3 dpos)
-  : FairHit(),fmppcLoc(mppcLoc),fphotoE(photoE), fdpos(dpos)
+FgdHit::FgdHit(Double_t x, Double_t y, Double_t z, TVector3 mppcLoc, TVector3 photoE,TVector3 dpos, Double_t time)
+  : FairHit(),fmppcLoc(mppcLoc),fphotoE(photoE), fdpos(dpos), ftime(time)
 {
   SetX(x);
   SetY(y);

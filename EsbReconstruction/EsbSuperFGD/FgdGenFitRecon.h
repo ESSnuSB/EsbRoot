@@ -73,19 +73,33 @@ private:
     CURL
   };
 
-  
+  class ReconHit{
+
+  public:
+    ReconHit(TVector3 mppcLoc, TVector3 hitPosition, TVector3 photons, Double_t time)
+      : fmppcLoc(mppcLoc), fHitPos(hitPosition),fphotons(fphotons), ftime(time)
+    {};
+
+    ReconHit(const ReconHit& c)
+      : fmppcLoc(c.fmppcLoc), fHitPos(c.fHitPos),fphotons(c.fphotons), ftime(c.ftime)
+    {};
+
+    ~ReconHit(){}
+
+    TVector3 fmppcLoc;
+    TVector3 fHitPos;
+    TVector3 fphotons;
+    Double_t ftime;
+  };
+
+  /** Get only hits that are not alone or only have one hit near them **/
+  bool GetNoNoisehits(std::vector<ReconHit>& allHits, std::vector<ReconHit>& noNoiseHits);
 
   /** Extrack tracks from the hit using Hough Transform **/
-  bool FindTracks(std::vector<pathfinder::basicHit>& digHits
+  bool FindTracks(std::vector<ReconHit>& hits
                   , std::vector<pathfinder::TrackFinderTrack>& foundTracks
                   , FindTrackType trackType);
 
-  /** Get only hits that are not alone or only have one hit near them **/
-  bool GetNoNoisehits(std::vector<pathfinder::basicHit>& allDigHits
-                      , std::vector<pathfinder::basicHit>& noNoiseHits
-                      , std::vector<pathfinder::basicHit>& noNoiseMppcs
-                      , std::vector<pathfinder::basicHit>& noNoisePhoto);
-                        
   /** Fit the found tracks using genfit **/
   void FitTracks(std::vector<pathfinder::TrackFinderTrack>& foundTracks);
 

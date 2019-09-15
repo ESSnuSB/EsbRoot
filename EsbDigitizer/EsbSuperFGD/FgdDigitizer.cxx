@@ -187,7 +187,11 @@ void FgdDigitizer::Exec(Option_t* opt)
       double center_coor_y = (bin_pos_y*f_step_Y - f_total_Y/2 + f_step_Y/2) + dpos.Y(); 
       double center_coor_z = (bin_pos_z*f_step_Z - f_total_Z/2 + f_step_Z/2) + dpos.Z(); 
 
-      new((*fHitArray)[nextPoint++]) data::superfgd::FgdHit(center_coor_x, center_coor_y, center_coor_z, mppcLocalPosition, photoElectrons, cubeCoordinatesRelToDetector);
+      new((*fHitArray)[nextPoint++]) data::superfgd::FgdHit(center_coor_x, center_coor_y, center_coor_z
+                                                            , mppcLocalPosition
+                                                            , photoElectrons
+                                                            , cubeCoordinatesRelToDetector
+                                                            , point->GetTime());
     }
   }
 }
