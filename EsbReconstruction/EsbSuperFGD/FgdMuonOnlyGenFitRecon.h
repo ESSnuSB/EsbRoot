@@ -66,7 +66,9 @@ class FgdMuonOnlyGenFitRecon : public FairTask
   /** Virtual method Exec **/
   virtual void Exec(Option_t* opt) override;
 
-  void SetInitialEmu(double eMu){fE_mu_initial=eMu;};
+  void SetInitialEmu(double eMu){fE_mu_initial=eMu;}
+  void SetConvergeFit(bool converge){fshouldCOnvergeToExport=converge;}
+  //void SetSortHistInZAxis(bool zSort){fSortHitsInZ = zSort;}
 
 private:
 
@@ -108,6 +110,8 @@ private:
   double fE_mu_initial;//!<!
   double fxy;//!<!
   double fzMC_min_zFit;//!<!
+  bool fshouldCOnvergeToExport;//!<!
+  //bool fSortHitsInZ;//!<!
 
   /** Detector position **/
   double fposX;

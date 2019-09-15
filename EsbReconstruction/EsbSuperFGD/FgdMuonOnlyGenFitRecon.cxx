@@ -75,6 +75,8 @@ FgdMuonOnlyGenFitRecon::FgdMuonOnlyGenFitRecon() :
   , fx_fit(0.), fy_fit(0.), fz_fit(0.), fp_fit(0.)
   , fpMC_min_pFit(0.), fE_mu(0.), fE_mu_initial(0.), fxy(0.)
   , fzMC_min_zFit(0.)
+  , fshouldCOnvergeToExport(false)
+  //, fSortHitsInZ(true)
 { 
   fInitialMomentum.clear();
   fInitialPosition.clear();
@@ -119,6 +121,8 @@ FgdMuonOnlyGenFitRecon::FgdMuonOnlyGenFitRecon(const char* name
   , fx_fit(0.), fy_fit(0.), fz_fit(0.), fp_fit(0.)
   , fpMC_min_pFit(0.), fE_mu(0.), fE_mu_initial(0.), fxy(0.)
   , fzMC_min_zFit(0.)
+  , fshouldCOnvergeToExport(false)
+  //, fSortHitsInZ(true)
 { 
   fParams.LoadPartParams(geoConfigFile);
   fInitialMomentum.clear();
@@ -278,7 +282,6 @@ void FgdMuonOnlyGenFitRecon::Exec(Option_t* opt)
 {  
   try
   {
-
     fTracksArray->Delete();
     const Int_t hits = fHitArray->GetEntries();
     unsigned int nMeasurements = hits;
@@ -337,9 +340,6 @@ void FgdMuonOnlyGenFitRecon::Exec(Option_t* opt)
 
     int detId(1); // Detector id, it is the same, we only have one detector
 
-    // TODO2 
-    //  1. Sort in Z diretion the mppc
-    //  2. Fix to have only one mppc with given coordinates
     double max_z = -10000;
     bool visited[f_bin_X][f_bin_Y][f_bin_Z];
     for(int i=0; i< f_bin_X; i++)
@@ -347,10 +347,9 @@ void FgdMuonOnlyGenFitRecon::Exec(Option_t* opt)
         for(int k=0; k< f_bin_Z; k++)
           visited[i][j][k]=false;
 
-    // TODO2 - extract initial pos, mom and tracks
-    //  fit every track seperately
-    int points(0);
-    for(Int_t i =0; i <  hits ; i++)
+    std::vector<TVector3> digHits;
+    // 1. Extract hits
+    for(Int_t i =0; i <  fHitArray->GetEntries() ; i++)
     {
       data::superfgd::FgdHit* hit = (data::superfgd::FgdHit*)fHitArray->At(i);
       TVector3  photoE = std::move(hit->GetPhotoE());    
@@ -362,43 +361,90 @@ void FgdMuonOnlyGenFitRecon::Exec(Option_t* opt)
       }
       visited[(int)mppcLoc.X()][(int)mppcLoc.Y()][(int)mppcLoc.Z()] = true;
 
-      if(max_z<mppcLoc.Z())
-      {
-        max_z=mppcLoc.Z();
-      }
-      else
-      {
-        continue;
-      }
-
       if(photoE.X() !=0 || photoE.Y()!=0 || photoE.Z()!=0)
       {
-        // TODO2 - use mppc location
         TVectorD hitPos(3);
-        // hitPos(0) = hit->GetX();
-        // hitPos(1) = hit->GetY();
-        // hitPos(2) = hit->GetZ();
-
         hitPos(0) = -f_total_X/2 + f_step_X*mppcLoc.X()  +f_step_X/2;
         hitPos(1) = -f_total_Y/2 + f_step_Y*mppcLoc.Y()  +f_step_Y/2;
         hitPos(2) = -f_total_Z/2 + f_step_Z*mppcLoc.Z()  +f_step_Z/2;
 
-        genfit::AbsMeasurement* measurement = new genfit::SpacepointMeasurement(hitPos, hitCov, detId, points, nullptr);
-        std::vector<genfit::AbsMeasurement*> measurements{measurement};
-
-        fitTrack.insertPoint(new genfit::TrackPoint(measurements, &fitTrack));
-        points++;
+        digHits.emplace_back(TVector3(hitPos(0),hitPos(1),hitPos(2)));
       }
     }
+    // 2. Sort hits
+    // if(fSortHitsInZ)
+    // {
+    //   std::sort(digHits.begin(), digHits.end(), [](TVector3 bh1, TVector3 bh2){return bh1.Z()<bh2.Z();});
+    // }
+
+    // 3. Initialize fit track
+    int points(0);
+    for(Int_t i =0; i <  digHits.size() ; i++)
+    {
+      TVectorD hitPos(3);
+      hitPos(0) = digHits[i].X();
+      hitPos(1) = digHits[i].Y();
+      hitPos(2) = digHits[i].Z();
+
+      genfit::AbsMeasurement* measurement = new genfit::SpacepointMeasurement(hitPos, hitCov, detId, points, nullptr);
+      std::vector<genfit::AbsMeasurement*> measurements{measurement};
+
+      fitTrack.insertPoint(new genfit::TrackPoint(measurements, &fitTrack));
+      points++;
+    }
+
+    // TODO2 - extract initial pos, mom and tracks
+    //  fit every track seperately
+  // int points(0);
+  // for(Int_t i =0; i <  hits ; i++)
+  // {
+  //   data::superfgd::FgdHit* hit = (data::superfgd::FgdHit*)fHitArray->At(i);
+  //   TVector3  photoE = std::move(hit->GetPhotoE());    
+  //   TVector3  mppcLoc = std::move(hit->GetMppcLoc());  
+
+  //   if(visited[(int)mppcLoc.X()][(int)mppcLoc.Y()][(int)mppcLoc.Z()])
+  //   {
+  //       continue;
+  //   }
+  //   visited[(int)mppcLoc.X()][(int)mppcLoc.Y()][(int)mppcLoc.Z()] = true;
+
+  //   if(max_z<mppcLoc.Z())
+  //   {
+  //     max_z=mppcLoc.Z();
+  //   }
+  //   else
+  //   {
+  //     continue;
+  //   }
+
+  //   if(photoE.X() !=0 || photoE.Y()!=0 || photoE.Z()!=0)
+  //   {
+  //     // TODO2 - use mppc location
+  //     TVectorD hitPos(3);
+  //     // hitPos(0) = hit->GetX();
+  //     // hitPos(1) = hit->GetY();
+  //     // hitPos(2) = hit->GetZ();
+
+  //     hitPos(0) = -f_total_X/2 + f_step_X*mppcLoc.X()  +f_step_X/2;
+  //     hitPos(1) = -f_total_Y/2 + f_step_Y*mppcLoc.Y()  +f_step_Y/2;
+  //     hitPos(2) = -f_total_Z/2 + f_step_Z*mppcLoc.Z()  +f_step_Z/2;
+
+  //     genfit::AbsMeasurement* measurement = new genfit::SpacepointMeasurement(hitPos, hitCov, detId, points, nullptr);
+  //     std::vector<genfit::AbsMeasurement*> measurements{measurement};
+
+  //     fitTrack.insertPoint(new genfit::TrackPoint(measurements, &fitTrack));
+  //     points++;
+  //   }
+  // }
   
-    // //check
+    // check
     fitTrack.checkConsistency();
 
     fitter->setDebugLvl(fDebuglvl_genfit);
-    // // do the fit
+    // 4. do the fit
     fitter->processTrack(&fitTrack);
 
-    // //check
+    // check
     fitTrack.checkConsistency();
 
     if(isGenFitVisualization)
@@ -426,7 +472,18 @@ void FgdMuonOnlyGenFitRecon::Exec(Option_t* opt)
     LOG(debug)<< "fiStatuStatus->isFitConvergedPartially()  " << fiStatuStatus->isFitConvergedPartially();
     LOG(debug)<< "Total measurement points  " << points;
 
-    if(fiStatuStatus->isFitted() && fiStatuStatus->isFitConverged())
+    bool exportTrack(false);
+
+    if(fshouldCOnvergeToExport)
+    {
+      exportTrack = fiStatuStatus->isFitted() && fiStatuStatus->isFitConverged();
+    }
+    else
+    {
+      exportTrack = fiStatuStatus->isFitted();
+    }
+    
+    if(exportTrack)
     {
       std::cout << "fiStatuStatus->isFitted()  " << fiStatuStatus->isFitted() << std::endl;
       std::cout << "fiStatuStatus->isFitConverged()  " << fiStatuStatus->isFitConverged() << std::endl;
