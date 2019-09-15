@@ -217,10 +217,24 @@ void FgdGenFitRecon::Exec(Option_t* opt)
     std::vector<ReconHit> allhits;
     std::vector<ReconHit> noNoisehits;
     std::vector<pathfinder::TrackFinderTrack> foundTracks;
-    if(GetNoNoisehits(allhits, noNoisehits)
-       && FindTracks(noNoisehits, foundTracks, FindTrackType::CURL))
+    // if(GetNoNoisehits(allhits, noNoisehits)
+    //    && FindTracks(noNoisehits, foundTracks, FindTrackType::CURL))
+    // {
+    //   std::cout<<"foundTracks.size() "<< foundTracks.size() <<std::endl;
+    //   std::cout<<"noNoisehits.size() "<< noNoisehits.size() <<std::endl;
+    //   std::cout<<"allhits.size() "<< allhits.size() <<std::endl;
+    //   FitTracks(foundTracks);
+    // }
+    // else
+    // {
+    //   std::cout<<" Could not find clean hits or tracks! " << std::endl;
+    // }
+
+    if(GetNoNoisehits(allhits, noNoisehits) && FindTracksByTime(noNoisehits,foundTracks))
     {
       std::cout<<"foundTracks.size() "<< foundTracks.size() <<std::endl;
+      std::cout<<"noNoisehits.size() "<< noNoisehits.size() <<std::endl;
+      std::cout<<"allhits.size() "<< allhits.size() <<std::endl;
       FitTracks(foundTracks);
     }
     else
@@ -251,13 +265,14 @@ bool FgdGenFitRecon::GetNoNoisehits(std::vector<ReconHit>& allHits
                                                 };
 
   // double max_z = -10000;
-  int count(0);
+  // int count(0);
   //std::vector<pathfinder::basicHit> digHits;
   std::vector<pathfinder::basicHit> digMppcs;
   //std::vector<pathfinder::basicHit> digPhoto;
   //std::vector<ReconHit> reconHits;
 
   // 1. Initialize the vector hits data
+  std::cout << " fHitArray->GetEntries() " << fHitArray->GetEntries() << std::endl;
   for(Int_t i =0; i <  fHitArray->GetEntries() ; i++)
   {
     data::superfgd::FgdHit* hit = (data::superfgd::FgdHit*)fHitArray->At(i);
@@ -302,10 +317,10 @@ bool FgdGenFitRecon::GetNoNoisehits(std::vector<ReconHit>& allHits
       //digHits.emplace_back(pathfinder::basicHit(hitPos(0),hitPos(1),hitPos(2)));
       digMppcs.emplace_back(pathfinder::basicHit(mppcLoc.X(),mppcLoc.Y(),mppcLoc.Z()));
       //digPhoto.emplace_back(pathfinder::basicHit(photoE.X(),photoE.Y(),photoE.Z()));
-      count++;
+      // count++;
     }
   }
-  std::cout<<"count "<< count <<std::endl;
+  // std::cout<<"count "<< count <<std::endl;
 
   // 2. Sot the hits in z axis - the path of the progenitor particle
   //std::sort(digHits.begin(), digHits.end(), [](pathfinder::basicHit bh1, pathfinder::basicHit bh2){return bh1.getZ()<bh2.getZ();});
@@ -326,6 +341,10 @@ bool FgdGenFitRecon::GetNoNoisehits(std::vector<ReconHit>& allHits
       //noNoisePhoto.emplace_back(digPhoto[i]);
     }
   }
+
+  // Sort by time of occurence
+  // std::sort(allHits.begin(), allHits.end(), [](ReconHit& bh1, ReconHit& bh2){return (bh1.ftime < bh2.ftime);});
+  // std::sort(noNoiseHits.begin(), noNoiseHits.end(), [](ReconHit& bh1, ReconHit& bh2){return (bh1.ftime < bh2.ftime);});
 
   return (noNoiseHits.size() > 0);
 }
@@ -434,6 +453,80 @@ bool FgdGenFitRecon::FindTracks(std::vector<ReconHit>& hits
   return found;
 }
 
+bool FgdGenFitRecon::FindTracksByTime(std::vector<ReconHit>& hits
+                  , std::vector<pathfinder::TrackFinderTrack>& foundTracks)
+{
+  if(hits.empty())
+  {
+    return false;
+  }
+
+  // cout << "size of hits  " << hits.size() << endl;
+  // for(Int_t i=1; i<hits.size(); ++i)
+  // {
+  //   ReconHit& hit = hits[i];
+  //   cout << "X " << hit.fHitPos.X()<< " Y " << hit.fHitPos.Y()<< " Z " << hit.fHitPos.Z() << endl;
+  // }
+
+  const Double_t timeInterval = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::FGD_TIME_INTERVAL_HITS);
+
+  const Double_t x_dist = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::length_X) * flunit;
+  const Double_t y_dist = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::length_Y) * flunit;
+  const Double_t z_dist = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::length_Z) * flunit;
+
+  auto isInLimit = [&](const ReconHit& rh1, const ReconHit& rh2)->bool{
+                                                            return ( std::fabs(rh1.fHitPos.X() - rh2.fHitPos.X()) <= x_dist  )
+                                                                    &&   ( std::fabs(rh1.fHitPos.Y() - rh2.fHitPos.Y()) <= y_dist  )
+                                                                    &&   ( std::fabs(rh1.fHitPos.Z() - rh2.fHitPos.Z()) <= z_dist  );
+                                                          };
+
+  std::sort(hits.begin(), hits.end(), [](ReconHit& rh1, ReconHit& rh2){return (rh1.ftime < rh2.ftime);});
+
+  std::vector<std::vector<int>> tracks;
+  tracks.push_back(std::vector<int>{0}); // First track starts with the most early hit
+
+  for(Int_t i=1; i<hits.size(); ++i)
+  {
+    bool isAddedInTrack(false);
+    ReconHit& hit = hits[i];
+    for(Int_t j=0; j<tracks.size(); ++j)
+    {
+      std::vector<int>& track = tracks[j];
+      int lastInd = track[track.size()-1];
+
+      if(isInLimit(hit,hits[lastInd]))
+      {
+        track.push_back(i);
+        isAddedInTrack = true;
+        break;
+      }
+    }
+
+    if(!isAddedInTrack)
+    {
+      tracks.push_back(std::vector<int>{i});
+    }
+  }
+
+
+  for(Int_t i=0; i<tracks.size(); ++i)
+  {
+    std::vector<int>& track = tracks[i];
+    std::vector<pathfinder::basicHit> currentTrack;
+    for(Int_t j=0; j<track.size(); ++j)
+    {
+      int ind = track[j];
+      currentTrack.emplace_back(hits[ind].fHitPos.X()
+                                , hits[ind].fHitPos.Y()
+                                , hits[ind].fHitPos.Z());
+    }
+    pathfinder::TrackFinderTrack tr(pathfinder::TrackParameterFull(0.,0.,0.,0.,0.),std::move(currentTrack));
+    foundTracks.emplace_back(tr);
+  }
+
+  return !foundTracks.empty();
+}
+
 void FgdGenFitRecon::FitTracks(std::vector<pathfinder::TrackFinderTrack>& foundTracks)
 {
     fTracksArray->Delete();
@@ -466,15 +559,19 @@ void FgdGenFitRecon::FitTracks(std::vector<pathfinder::TrackFinderTrack>& foundT
       
        // TODO2 extrack from finderTrack how to get initial guess for these values
       // =================================
-      const int pdg = 13;
-      // int pdg = 13;
-      // if(i==1)
-      // {
-      //   pdg=2212;
-      // }
+      //const int pdg = 13;
+      int pdg = 13;
 
       TVector3 posM(fstartPos);
       TVector3 momM(fstartMom);
+
+      // if(i==1)
+      // {
+      //   pdg=2212;
+      //   momM.SetX(0.343);
+      //   momM.SetY(0.248);
+      //   momM.SetZ(0.524);
+      // }
       // =================================
 
       // approximate covariance

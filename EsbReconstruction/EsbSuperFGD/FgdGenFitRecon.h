@@ -84,6 +84,15 @@ private:
       : fmppcLoc(c.fmppcLoc), fHitPos(c.fHitPos),fphotons(c.fphotons), ftime(c.ftime)
     {};
 
+    ReconHit& operator=(const ReconHit& c)
+    {
+      fmppcLoc = c.fmppcLoc;
+      fHitPos = c.fHitPos;
+      fphotons = c.fphotons;
+      ftime = c.ftime;
+      return *this;
+    }
+
     ~ReconHit(){}
 
     TVector3 fmppcLoc;
@@ -99,6 +108,10 @@ private:
   bool FindTracks(std::vector<ReconHit>& hits
                   , std::vector<pathfinder::TrackFinderTrack>& foundTracks
                   , FindTrackType trackType);
+
+  /** Extrack tracks from the hit using time of occurrence**/
+  bool FindTracksByTime(std::vector<ReconHit>& hits
+                  , std::vector<pathfinder::TrackFinderTrack>& foundTracks);
 
   /** Fit the found tracks using genfit **/
   void FitTracks(std::vector<pathfinder::TrackFinderTrack>& foundTracks);
