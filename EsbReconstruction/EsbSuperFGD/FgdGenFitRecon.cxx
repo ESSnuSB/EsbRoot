@@ -58,7 +58,6 @@
 #include <math.h>
 #include <bits/stdc++.h>
 
-
 namespace esbroot {
 namespace reconstruction {
 namespace superfgd {
@@ -493,7 +492,6 @@ void FgdGenFitRecon::FitTracks(std::vector<pathfinder::TrackFinderTrack>& foundT
       std::cout<<"******    Track "<< i << "  ************************"<<std::endl;
       std::cout<<"******************************************* "<<std::endl;
       std::cout<<"hitsOnTrack.size(); "<< hitsOnTrack.size() <<std::endl;
-      
       
       for(Int_t bh = 0; bh < hitsOnTrack.size(); ++bh)
       {
