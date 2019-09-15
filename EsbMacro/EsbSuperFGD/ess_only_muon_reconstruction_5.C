@@ -51,7 +51,8 @@ void ess_only_muon_reconstruction_5(TString inFile = "fgd_dig.root",
     , "D"                             // Option to be passed for genfit::Eventdisplay if used
     ,"../../EsbMacro/tests/MC_Fit_momentum.root"); // root file containing the monte carlo and fitter momentums
 
-  ((reconstruction::superfgd::FgdMuonOnlyGenFitRecon*)recon)->SetInitialEmu(0.6);                      
+  ((reconstruction::superfgd::FgdMuonOnlyGenFitRecon*)recon)->SetInitialEmu(0.6); 
+  ((reconstruction::superfgd::FgdMuonOnlyGenFitRecon*)recon)->SetConvergeFit(true);                   
   
   fRun->AddTask(recon);   
   fRun->Init(); // initializing
