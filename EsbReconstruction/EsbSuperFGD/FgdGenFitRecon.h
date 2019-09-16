@@ -25,6 +25,11 @@ class FgdGenFitRecon : public FairTask
 
  public:
 
+  enum TrackFinder{
+    HOUGH_PATHFINDER,
+    TIME_OF_HITS
+  };
+
   /** Default constructor **/  
   FgdGenFitRecon();
 
@@ -55,6 +60,7 @@ class FgdGenFitRecon : public FairTask
   void SetMinInterations(Int_t minIterations) {fminGenFitInterations = minIterations;}
   void SetMaxInterations(Int_t maxIterations) {fmaxGenFitIterations = maxIterations;}
   void SetMinHits(Int_t minHits) {fminHits = minHits;}
+  void SetUseTracker(FgdGenFitRecon::TrackFinder finder){ffinder=finder;}
 
   /** Virtual method Init **/
   virtual InitStatus Init() override;
@@ -101,8 +107,8 @@ private:
     Double_t ftime;
   };
 
-  /** Get only hits that are not alone or only have one hit near them **/
-  bool GetNoNoisehits(std::vector<ReconHit>& allHits, std::vector<ReconHit>& noNoiseHits);
+  /** Get all hits **/
+  bool GetHits(std::vector<ReconHit>& allHits);
 
   /** Extrack tracks from the hit using Hough Transform **/
   bool FindTracks(std::vector<ReconHit>& hits
@@ -157,6 +163,8 @@ private:
   //  1 - debug info
   //  2- detail info
   double fDebuglvl_genfit;
+
+  FgdGenFitRecon::TrackFinder ffinder;
 
   /** Path to the used media.geo file - containing definitions of materials **/
   std::string fmediaFile;

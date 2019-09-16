@@ -79,6 +79,7 @@ FgdGenFitRecon::FgdGenFitRecon() :
   , fminGenFitInterations(2)
   , fmaxGenFitIterations(4)
   , fminHits(25)
+  , ffinder(TrackFinder::TIME_OF_HITS)
 { 
 }
 // -------------------------------------------------------------------------
@@ -109,6 +110,7 @@ FgdGenFitRecon::FgdGenFitRecon(const char* name
   , fminGenFitInterations(2)
   , fmaxGenFitIterations(4)
   , fminHits(25)
+  , ffinder(TrackFinder::TIME_OF_HITS)
 { 
   fParams.LoadPartParams(geoConfigFile);
 }
@@ -198,14 +200,15 @@ InitStatus FgdGenFitRecon::Init()
 // -----   Public methods   --------------------------------------------
 void FgdGenFitRecon::FinishEvent()
 {
-  if(isGenFitVisualization)
-  {
-    fdisplay->open();
-  }
+  
 }
 
 void FgdGenFitRecon::FinishTask()
 {
+  if(isGenFitVisualization)
+  {
+    fdisplay->open();
+  }
 }
 
 // 1. Hit points have to be sorted
@@ -215,26 +218,30 @@ void FgdGenFitRecon::Exec(Option_t* opt)
   try
   {
     std::vector<ReconHit> allhits;
-    std::vector<ReconHit> noNoisehits;
     std::vector<pathfinder::TrackFinderTrack> foundTracks;
-    // if(GetNoNoisehits(allhits, noNoisehits)
-    //    && FindTracks(noNoisehits, foundTracks, FindTrackType::CURL))
-    // {
-    //   std::cout<<"foundTracks.size() "<< foundTracks.size() <<std::endl;
-    //   std::cout<<"noNoisehits.size() "<< noNoisehits.size() <<std::endl;
-    //   std::cout<<"allhits.size() "<< allhits.size() <<std::endl;
-    //   FitTracks(foundTracks);
-    // }
-    // else
-    // {
-    //   std::cout<<" Could not find clean hits or tracks! " << std::endl;
-    // }
 
-    if(GetNoNoisehits(allhits, noNoisehits) && FindTracksByTime(noNoisehits,foundTracks))
+    bool rc = GetHits(allhits);
+
+    if(rc)
+    { 
+      switch(ffinder)
+      {
+        case TrackFinder::HOUGH_PATHFINDER:
+                                          rc = FindTracks(allhits, foundTracks, FindTrackType::CURL);
+                                          break;
+        case TrackFinder::TIME_OF_HITS:
+                                          rc = FindTracksByTime(allhits, foundTracks);
+                                          break;
+        default: 
+                rc = false;
+                break;
+      }
+    }
+
+    if(rc)
     {
-      std::cout<<"foundTracks.size() "<< foundTracks.size() <<std::endl;
-      std::cout<<"noNoisehits.size() "<< noNoisehits.size() <<std::endl;
-      std::cout<<"allhits.size() "<< allhits.size() <<std::endl;
+      std::cout<<" Tracks found " << foundTracks.size() << std::endl;
+      std::cout<<" Hits to fit " << allhits.size() << std::endl;
       FitTracks(foundTracks);
     }
     else
@@ -253,54 +260,19 @@ void FgdGenFitRecon::Exec(Option_t* opt)
 
 // -----   Private methods   --------------------------------------------
 
-bool FgdGenFitRecon::GetNoNoisehits(std::vector<ReconHit>& allHits
-                                    , std::vector<ReconHit>& noNoiseHits)
+bool FgdGenFitRecon::GetHits(std::vector<ReconHit>& allHits)
 {
-  // Use shared_ptr for any memory leaks
-  std::shared_ptr<bool> rawPointerGuard(new bool[f_bin_X*f_bin_Y* f_bin_Z], [](bool *arr){delete[] arr; });
-  bool* visited = rawPointerGuard.get();
-
-  auto arrInd = [&](int i, int j, int k)-> long { 
-                                                  return (i*f_bin_Y*f_bin_Z + j*f_bin_Z+k);
-                                                };
-
-  // double max_z = -10000;
-  // int count(0);
-  //std::vector<pathfinder::basicHit> digHits;
-  std::vector<pathfinder::basicHit> digMppcs;
-  //std::vector<pathfinder::basicHit> digPhoto;
-  //std::vector<ReconHit> reconHits;
-
-  // 1. Initialize the vector hits data
-  std::cout << " fHitArray->GetEntries() " << fHitArray->GetEntries() << std::endl;
+  Double_t errPhotoLimit = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::FGD_ERR_PHOTO_LIMIT);
+  
   for(Int_t i =0; i <  fHitArray->GetEntries() ; i++)
   {
     data::superfgd::FgdHit* hit = (data::superfgd::FgdHit*)fHitArray->At(i);
     TVector3  photoE = std::move(hit->GetPhotoE());    
     TVector3  mppcLoc = std::move(hit->GetMppcLoc());  
 
-    long ind = arrInd((int)mppcLoc.X(),(int)mppcLoc.Y(),(int)mppcLoc.Z());
-    if(visited[ind])
-    {
-        continue;
-    }
-    visited[ind] = true;
-
-    // if(visited[(int)mppcLoc.X()][(int)mppcLoc.Y()][(int)mppcLoc.Z()])
-    // {
-    //     continue;
-    // }
-    // visited[(int)mppcLoc.X()][(int)mppcLoc.Y()][(int)mppcLoc.Z()] = true;
-    // if(max_z<=mppcLoc.Z())
-    // {
-    //   max_z=mppcLoc.Z();
-    // }
-    // else
-    // {
-    //   continue;
-    // }
-
-    if(photoE.X() !=0 || photoE.Y()!=0 || photoE.Z()!=0)
+    if(photoE.X() >= errPhotoLimit 
+        || photoE.Y()>= errPhotoLimit 
+        || photoE.Z()>= errPhotoLimit)
     {
       TVectorD hitPos(3);
       hitPos(0) = -f_total_X/2 + f_step_X*mppcLoc.X()  +f_step_X/2;
@@ -313,40 +285,10 @@ bool FgdGenFitRecon::GetNoNoisehits(std::vector<ReconHit>& allHits
                               , photoE
                               , hit->GetTime())
                             );
-
-      //digHits.emplace_back(pathfinder::basicHit(hitPos(0),hitPos(1),hitPos(2)));
-      digMppcs.emplace_back(pathfinder::basicHit(mppcLoc.X(),mppcLoc.Y(),mppcLoc.Z()));
-      //digPhoto.emplace_back(pathfinder::basicHit(photoE.X(),photoE.Y(),photoE.Z()));
-      // count++;
-    }
-  }
-  // std::cout<<"count "<< count <<std::endl;
-
-  // 2. Sot the hits in z axis - the path of the progenitor particle
-  //std::sort(digHits.begin(), digHits.end(), [](pathfinder::basicHit bh1, pathfinder::basicHit bh2){return bh1.getZ()<bh2.getZ();});
-  //allDigHits = digHits;
-
-  //std::vector<pathfinder::basicHit> noNoiseHits;
-  int range = fParams.ParamAsInt(esbroot::geometry::superfgd::DP::FGD_NOISE_RANGE); 
-  
-  for(int i = 0; i < digMppcs.size(); ++i)
-  {
-    bool isCubeSingle = IsNoiseHit(digMppcs[i], 1 /* one cube distance */, visited);
-    bool areOneOrTwoCubesOnly = IsNoiseHit(digMppcs[i], range, visited);
-    if( !isCubeSingle &&  !areOneOrTwoCubesOnly)
-    {
-      noNoiseHits.emplace_back(allHits[i]);
-      //noNoiseHits.emplace_back(digHits[i]);
-      //noNoiseMppcs.emplace_back(digMppcs[i]);
-      //noNoisePhoto.emplace_back(digPhoto[i]);
     }
   }
 
-  // Sort by time of occurence
-  // std::sort(allHits.begin(), allHits.end(), [](ReconHit& bh1, ReconHit& bh2){return (bh1.ftime < bh2.ftime);});
-  // std::sort(noNoiseHits.begin(), noNoiseHits.end(), [](ReconHit& bh1, ReconHit& bh2){return (bh1.ftime < bh2.ftime);});
-
-  return (noNoiseHits.size() > 0);
+  return (allHits.size() > 0);
 }
 
 bool FgdGenFitRecon::FindTracks(std::vector<ReconHit>& hits
@@ -461,13 +403,6 @@ bool FgdGenFitRecon::FindTracksByTime(std::vector<ReconHit>& hits
     return false;
   }
 
-  // cout << "size of hits  " << hits.size() << endl;
-  // for(Int_t i=1; i<hits.size(); ++i)
-  // {
-  //   ReconHit& hit = hits[i];
-  //   cout << "X " << hit.fHitPos.X()<< " Y " << hit.fHitPos.Y()<< " Z " << hit.fHitPos.Z() << endl;
-  // }
-
   const Double_t timeInterval = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::FGD_TIME_INTERVAL_HITS);
 
   const Double_t x_dist = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::length_X) * flunit;
@@ -563,7 +498,10 @@ void FgdGenFitRecon::FitTracks(std::vector<pathfinder::TrackFinderTrack>& foundT
       int pdg = 13;
 
       TVector3 posM(fstartPos);
-      TVector3 momM(fstartMom);
+      //TVector3 momM(fstartMom);
+
+      // First point should be the start of the track
+      TVector3 momM(hitsOnTrack[0].getX(),hitsOnTrack[0].getY(),hitsOnTrack[0].getZ());
 
       // if(i==1)
       // {
