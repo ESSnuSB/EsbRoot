@@ -69,4 +69,5 @@ errPhotoLimit=0     # Set lower limit for generated photons. There are hits gene
                     # Such "two hits" or cross talke should be removed so that the track can be extracted and fitted.
 
 # Time interval for hits to be considered simultaneous
-timeIntervalHits=50         #in units used in reconstuction - from FgdDetector time is extracted in 1e-9 [s]
+timeIntervalHits=0         #in units used in reconstuction - from FgdDetector time is extracted in 1e-9 [s]
+                            # 0 or negative number indicates that there is no time splitting
