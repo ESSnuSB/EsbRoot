@@ -187,11 +187,19 @@ void FgdDigitizer::Exec(Option_t* opt)
       double center_coor_y = (bin_pos_y*f_step_Y - f_total_Y/2 + f_step_Y/2) + dpos.Y(); 
       double center_coor_z = (bin_pos_z*f_step_Z - f_total_Z/2 + f_step_Z/2) + dpos.Z(); 
 
+      LOG(debug) << " Point " << i;
+      LOG(debug) << " pos_x " << pos_x << " pos_y " << pos_y << " pos_z " << pos_z;
+      LOG(debug) << " peX " << peX << " peY " << peY << " peZ " << peZ;
+      LOG(debug) << " bin_pos_x " << bin_pos_x << " bin_pos_y " << bin_pos_y << " bin_pos_z " << bin_pos_z;
+      LOG(debug) << " ======================================= ";
+
       new((*fHitArray)[nextPoint++]) data::superfgd::FgdHit(center_coor_x, center_coor_y, center_coor_z
                                                             , mppcLocalPosition
                                                             , photoElectrons
                                                             , cubeCoordinatesRelToDetector
-                                                            , point->GetTime());
+                                                            , point->GetTime()
+                                                            , TVector3(peX1, peY1, peZ1), TVector3(mppcX, mppcY, mppcZ)
+                                                            , TVector3(peX2, peY2, peZ2), TVector3(mppcX_2ndSide, mppcY_2ndSide, mppcZ_2ndSide));
     }
   }
 }
