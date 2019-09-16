@@ -34,8 +34,39 @@ szd0bins=1000
 searchneighborhood=1
 
 # settings for noise and near cube search
-noiseRange=3
-errPhotoLimit=50
+#noiseRange=3
+errPhotoLimit=0     # Set lower limit for generated photons. There are hits generated from (we suppose) delta electrons
+                    # which generate a few electrons causing a double hit or a hit in a nearby cube which is similar to cross talk
+                    # e.g. From investigating digitalization we have
+                    #
+                    # A) Noise inside the cube - as you can see a few photons are generated, but the bin positions in point 111
+                    #       are the same as in point 112 
+                    # ======================================= 
+                    # Point 111
+                    # pos_x -2.7779 pos_y -22.2442 pos_z 28.3774
+                    # peX 4 peY 3 peZ 4
+                    # bin_pos_x 47 bin_pos_y 27 bin_pos_z 78
+                    # ======================================= 
+                    # Point 112
+                    # pos_x -2.58122 pos_y -22.363 pos_z 28.478
+                    # peX 12 peY 10 peZ 13
+                    # bin_pos_x 47 bin_pos_y 27 bin_pos_z 78
+                    # =======================================
+                    #
+                    # B) Noise in a nearby cube - Point 30, similar noise as in case A
+                    # ======================================= 
+                    # Point 29
+                    # pos_x -1.27869 pos_y -3.83094 pos_z 5.02502
+                    # peX 10 peY 12 peZ 12
+                    # bin_pos_x 48 bin_pos_y 46 bin_pos_z 55
+                    # ======================================= 
+                    # Point 30
+                    # pos_x -1.33106 pos_y -4.025 pos_z 5.27698
+                    # peX 0 peY 1 peZ 1
+                    # bin_pos_x 48 bin_pos_y 45 bin_pos_z 55
+                    # ======================================= 
+                    #
+                    # Such "two hits" or cross talke should be removed so that the track can be extracted and fitted.
 
 # Time interval for hits to be considered simultaneous
 timeIntervalHits=50         #in units used in reconstuction - from FgdDetector time is extracted in 1e-9 [s]
