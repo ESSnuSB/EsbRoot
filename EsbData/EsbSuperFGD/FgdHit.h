@@ -35,8 +35,15 @@ class FgdHit : public FairHit
    *@param photoE    number of generated photons along each direction
    *@param dpos      coordinate of the hit relative to the detector
    *@param time      time of entering of the particle inside the cube
+   *@param photoE_direction1      generated photons on +x,+y,+z direction
+   *@param distance_to_mppcLoc1      distance to mppc to +x,+y,+z direction
+   *@param photoE_direction2      generated photons on -x,-y, z direction
+   *@param distance_to_mppcLoc1      distance to mppc to -x,-y,-z direction
    **/
-  FgdHit(Double_t x, Double_t y, Double_t z, TVector3 mppcLoc, TVector3 photoE, TVector3 dpos, Double_t time);
+  FgdHit(Double_t x, Double_t y, Double_t z, TVector3 mppcLoc
+        , TVector3 photoE, TVector3 dpos, Double_t time
+        , TVector3 photoE_direction1, TVector3 distance_to_mppcLoc1
+        , TVector3 photoE_direction2, TVector3 distance_to_mppcLoc2);
   
   /** Destructor **/
   virtual ~FgdHit();
@@ -47,11 +54,21 @@ class FgdHit : public FairHit
   TVector3 GetDpos(){return fdpos;}
   Double_t GetTime(){return ftime;}
 
+  TVector3 GetPhotoDist1(){return fphotoE_dist1;}
+  TVector3 GetMppcDist1(){return fmppcLoc_dist1;}
+  TVector3 GetPhotoDist2(){return fphotoE_dist2;}
+  TVector3 GetMppcDist2(){return fmppcLoc_dist2;}
+
   /** Modifiers **/
   void SetMppcLoc(TVector3 mppcLoc){fmppcLoc = mppcLoc;}
   void SetPhotoE(TVector3 p){fphotoE = p;}
   void SetDpos(TVector3 dpos){fdpos = dpos;}
   void SetTime(Double_t time){ftime=time;}
+
+  void SetPhotoDist1(TVector3 photo1){fphotoE_dist1 = photo1;}
+  void SetMppcDist1(TVector3 mppc1){fmppcLoc_dist1 = mppc1;}
+  void SetPhotoDist2(TVector3 photo2){fphotoE_dist2 = photo2;}
+  void SetMppcDist2(TVector3 mppc2){fmppcLoc_dist2 = mppc2;}
    
   /** Output to screen **/
   virtual void Print(const Option_t* opt) const;
@@ -62,6 +79,11 @@ class FgdHit : public FairHit
   TVector3 fphotoE;
   TVector3 fdpos;
   Double_t ftime;
+
+  TVector3 fphotoE_dist1;
+  TVector3 fmppcLoc_dist1;
+  TVector3 fphotoE_dist2;
+  TVector3 fmppcLoc_dist2;
 
   ClassDef(FgdHit, 2);
 };
