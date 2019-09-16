@@ -14,7 +14,7 @@
 void ess_reconstruction_5(TString inFile = "fgd_dig.root", 
 	      TString parFile = "params.root",
 	      TString outFile = "fgd_recon.root",
-              Int_t nStartEvent = 0, Int_t nEvents = 1)
+              Int_t nStartEvent = 17, Int_t nEvents = 1)
 {
   using namespace esbroot;
 
@@ -36,8 +36,8 @@ void ess_reconstruction_5(TString inFile = "fgd_dig.root",
   rtdb->saveOutput();
 
   // Set Tasks for Reconstruction
-  TVector3 mom(0.1,0.1,0.4);
-  TVector3 pos(0.,0.,-50);
+  TVector3 mom(0.2,0.2,0.4);
+  TVector3 pos(0.,0.,0.);
 
   double debugLvl = 0.0; 
 
@@ -52,7 +52,9 @@ void ess_reconstruction_5(TString inFile = "fgd_dig.root",
     , false                           // To visualize the tracks using genfit::Eventdisplay
     , "D");                           // Option to be passed for genfit::Eventdisplay if used
 
-  ((reconstruction::superfgd::FgdGenFitRecon*)recon)->SetMinHits(8);
+  ((reconstruction::superfgd::FgdGenFitRecon*)recon)->SetMinHits(4);
+  // ((reconstruction::superfgd::FgdGenFitRecon*)recon)->SetUseTracker(reconstruction::superfgd::FgdGenFitRecon::TrackFinder::HOUGH_PATHFINDER);
+  ((reconstruction::superfgd::FgdGenFitRecon*)recon)->SetUseTracker(reconstruction::superfgd::FgdGenFitRecon::TrackFinder::TIME_OF_HITS);
   
   fRun->AddTask(recon);   
   fRun->Init(); // initializing
