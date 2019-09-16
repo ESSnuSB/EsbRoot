@@ -411,7 +411,7 @@ bool FgdGenFitRecon::FindTracks(std::vector<ReconHit>& hits
 
     //do the actual track finding
     bool belowfound = newTrackFinder.find();
-    if(found)
+    if(belowfound)
     {
       foundTracks = newTrackFinder.getTracks();
     }
