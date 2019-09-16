@@ -372,6 +372,9 @@ bool FgdGenFitRecon::FindTracks(std::vector<ReconHit>& hits
 
   //set the vector of basic hits in which tracks should be found
   //here: use all hits deliverd by the track generator
+  const Double_t timeInterval = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::FGD_TIME_INTERVAL_HITS);
+  std::vector<pathfinder::basicHit> belowLimit;
+  std::vector<pathfinder::basicHit> aboveLimit;
   std::vector<pathfinder::basicHit> digHits;
   for(Int_t i=0; i< hits.size(); ++i)
   {
@@ -380,17 +383,71 @@ bool FgdGenFitRecon::FindTracks(std::vector<ReconHit>& hits
                                               , hits[i].fHitPos.Z()
                                               )
                         );
+
+    if(hits[i].ftime<=timeInterval)
+    {
+      belowLimit.emplace_back(pathfinder::basicHit(  hits[i].fHitPos.X()
+                                                    , hits[i].fHitPos.Y()
+                                                    , hits[i].fHitPos.Z()
+                                                  )
+                              );
+    }
+    else
+    {
+      aboveLimit.emplace_back(pathfinder::basicHit(  hits[i].fHitPos.X()
+                                                  , hits[i].fHitPos.Y()
+                                                  , hits[i].fHitPos.Z()
+                                                  )
+                              );
+    }
   }
   
+  bool found(false);
 
-  newTrackFinder.setInitialHits(digHits);
-
-  //do the actual track finding
-  bool found = newTrackFinder.find();
-  if(found)
+  if(timeInterval>0)
   {
-    foundTracks = newTrackFinder.getTracks();
+    // 1. Find below limit
+    newTrackFinder.setInitialHits(belowLimit);
+
+    //do the actual track finding
+    bool belowfound = newTrackFinder.find();
+    if(found)
+    {
+      foundTracks = newTrackFinder.getTracks();
+    }
+    std::cout << "Tracks below limit ["<< timeInterval <<"] " << foundTracks.size() << std::endl;
+
+    // 2. Find above limit
+    newTrackFinder.setInitialHits(aboveLimit);
+
+    bool abovefound = newTrackFinder.find();
+
+    //do the actual track finding
+    if(abovefound)
+    {
+      const std::vector<pathfinder::TrackFinderTrack>& aboveTracks = newTrackFinder.getTracks();
+      std::cout << "Tracks above limit ["<< timeInterval <<"] " << aboveTracks.size() << std::endl;
+      for(Int_t tr = 0; tr < aboveTracks.size(); ++tr)
+      {
+        foundTracks.push_back(aboveTracks[tr]);
+      }
+    }
+
+    found = belowfound || abovefound;
   }
+  else
+  {
+    newTrackFinder.setInitialHits(digHits);
+
+    //do the actual track finding
+    found = newTrackFinder.find();
+    if(found)
+    {
+      foundTracks = newTrackFinder.getTracks();
+    }
+  }
+  
+  
 
   return found;
 }
@@ -416,6 +473,11 @@ bool FgdGenFitRecon::FindTracksByTime(std::vector<ReconHit>& hits
                                                           };
 
   std::sort(hits.begin(), hits.end(), [](ReconHit& rh1, ReconHit& rh2){return (rh1.ftime < rh2.ftime);});
+
+  // for(Int_t k =0; k<hits.size(); ++k)
+  // {
+  //   std::cout << "time " << hits[k].ftime << std::endl;
+  // }
 
   std::vector<std::vector<int>> tracks;
   tracks.push_back(std::vector<int>{0}); // First track starts with the most early hit
@@ -578,7 +640,6 @@ void FgdGenFitRecon::FitTracks(std::vector<pathfinder::TrackFinderTrack>& foundT
         {
           genTracks.push_back(toFitTrack);
         }
-
       }
       catch(genfit::Exception& e)
       {
