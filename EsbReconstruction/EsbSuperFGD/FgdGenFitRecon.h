@@ -26,8 +26,9 @@ class FgdGenFitRecon : public FairTask
  public:
 
   enum TrackFinder{
-    HOUGH_PATHFINDER,
-    TIME_OF_HITS
+    HOUGH_PATHFINDER_ALL,
+    HOUGH_PATHFINDER_ABOVE_BELOW,
+    HOUGH_PATHFINDER_TIME_INTERVALS
   };
 
   /** Default constructor **/  
@@ -150,13 +151,18 @@ private:
   bool GetHits(std::vector<ReconHit>& allHits);
 
   /** Extrack tracks from the hit using Hough Transform **/
-  bool FindTracks(std::vector<ReconHit>& hits
+  bool FindAllTracks(std::vector<ReconHit>& hits
                   , std::vector<pathfinder::TrackFinderTrack>& foundTracks
                   , FindTrackType trackType);
 
-  /** Extrack tracks from the hit using time of occurrence**/
-  bool FindTracksByTime(std::vector<ReconHit>& hits
-                  , std::vector<pathfinder::TrackFinderTrack>& foundTracks);
+  bool FindAboveBelowTracks(std::vector<ReconHit>& hits
+                  , std::vector<pathfinder::TrackFinderTrack>& foundTracks
+                  , FindTrackType trackType);
+
+  bool FindByIntervalsTracks(std::vector<ReconHit>& hits
+                  , std::vector<pathfinder::TrackFinderTrack>& foundTracks
+                  , FindTrackType trackType);
+  
 
   /** Fit the found tracks using genfit **/
   void FitTracks(std::vector<pathfinder::TrackFinderTrack>& foundTracks);
