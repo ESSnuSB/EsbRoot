@@ -263,16 +263,16 @@ void FgdGenFitRecon::Exec(Option_t* opt)
 bool FgdGenFitRecon::GetHits(std::vector<ReconHit>& allHits)
 {
   Double_t errPhotoLimit = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::FGD_ERR_PHOTO_LIMIT);
-  
+ 
   for(Int_t i =0; i <  fHitArray->GetEntries() ; i++)
   {
     data::superfgd::FgdHit* hit = (data::superfgd::FgdHit*)fHitArray->At(i);
-    TVector3  photoE = std::move(hit->GetPhotoE());    
-    TVector3  mppcLoc = std::move(hit->GetMppcLoc());  
+    TVector3  photoE = hit->GetPhotoE();    
+    TVector3  mppcLoc = hit->GetMppcLoc();  
 
     if(photoE.X() >= errPhotoLimit 
-        || photoE.Y()>= errPhotoLimit 
-        || photoE.Z()>= errPhotoLimit)
+        & photoE.Y()>= errPhotoLimit 
+        & photoE.Z()>= errPhotoLimit)
     {
       TVectorD hitPos(3);
       hitPos(0) = -f_total_X/2 + f_step_X*mppcLoc.X()  +f_step_X/2;
@@ -286,7 +286,11 @@ bool FgdGenFitRecon::GetHits(std::vector<ReconHit>& allHits)
                               , hit->GetTime()
                               , hit->GetPgd()
                               , hit->GetTrackId()
-                            ));
+                              , hit->GetPhotoDist1()
+                              , hit->GetMppcDist1()
+                              , hit->GetPhotoDist2()
+                              , hit->GetMppcDist2()
+                            )); 
     }
   }
 
@@ -297,7 +301,7 @@ bool FgdGenFitRecon::FindTracks(std::vector<ReconHit>& hits
                                 , std::vector<pathfinder::TrackFinderTrack>& foundTracks
                                 , FindTrackType trackType)
 {
-  LOG(debug2) << "hits " << hits.size();
+  LOG(debug) << "hits " << hits.size();
 
   unsigned int use_vertex = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::PF_USE_VERTEX);
   double vertexX = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::PF_VERTEXX);

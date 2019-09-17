@@ -87,19 +87,31 @@ private:
             , TVector3 photons
             , Double_t time
             , Int_t pdg
-            , Int_t trackId)
+            , Int_t trackId
+            , TVector3 ph1
+            , TVector3 mppc1
+            , TVector3 ph2
+            , TVector3 mppc2)
       : fmppcLoc(mppcLoc)
         , fHitPos(hitPosition)
-        , fphotons(fphotons)
+        , fphotons(photons)
         , ftime(time)
         , fpdg(pdg)
         , ftrackId(trackId)
+        , fph1(ph1)
+        , fmppc1(mppc1)
+        , fph2(ph2)
+        , fmppc2(mppc2)
     {};
 
     ReconHit(const ReconHit& c)
       : fmppcLoc(c.fmppcLoc)
         , fHitPos(c.fHitPos)
         , fphotons(c.fphotons)
+        , fph1(c.fph1)
+        , fmppc1(c.fmppc1)
+        , fph2(c.fph2)
+        , fmppc2(c.fmppc2)
         , ftime(c.ftime)
         , fpdg(c.fpdg)
         , ftrackId(c.ftrackId)
@@ -110,6 +122,10 @@ private:
       fmppcLoc = c.fmppcLoc;
       fHitPos = c.fHitPos;
       fphotons = c.fphotons;
+      fph1 = c.fph1;
+      fmppc1 = c.fmppc1;
+      fph2 = c.fph2;
+      fmppc2 = c.fmppc2;
       ftime = c.ftime;
       fpdg = c.fpdg;
       ftrackId = c.ftrackId;
@@ -121,6 +137,10 @@ private:
     TVector3 fmppcLoc;
     TVector3 fHitPos;
     TVector3 fphotons;
+    TVector3 fph1;
+    TVector3 fmppc1;
+    TVector3 fph2;
+    TVector3 fmppc2;
     Double_t ftime;
     Int_t fpdg;
     Int_t ftrackId;
