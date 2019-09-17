@@ -280,11 +280,13 @@ bool FgdGenFitRecon::GetHits(std::vector<ReconHit>& allHits)
       hitPos(2) = -f_total_Z/2 + f_step_Z*mppcLoc.Z()  +f_step_Z/2;
 
       allHits.emplace_back(FgdGenFitRecon::ReconHit(
-                              mppcLoc
+                                mppcLoc
                               , TVector3(hitPos(0),hitPos(1),hitPos(2))
                               , photoE
-                              , hit->GetTime())
-                            );
+                              , hit->GetTime()
+                              , hit->GetPgd()
+                              , hit->GetTrackId()
+                            ));
     }
   }
 

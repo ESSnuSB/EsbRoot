@@ -113,6 +113,7 @@ FgdDetector::~FgdDetector()
 void FgdDetector::Initialize()
 {
   FairDetector::Initialize();
+  fpdgCodes.clear();
 }
 
 //___________________________________________________________________
@@ -141,24 +142,27 @@ Bool_t  FgdDetector::ProcessHits(FairVolume* vol)
     //~ if (fELoss == 0. ) { return kFALSE; }
     TVirtualMC::GetMC()->TrackPosition(fPosExit);
 
-    LOG(debug2) << "  TrackPid " << TVirtualMC::GetMC()->TrackPid();
-    LOG(debug2) << "  TrackCharge " << TVirtualMC::GetMC()->TrackCharge();
-    LOG(debug2) << "  Is track entering " << TVirtualMC::GetMC()->IsTrackEntering();
-    LOG(debug2) << "  Is track exiting " << TVirtualMC::GetMC()->IsTrackExiting();
-    LOG(debug2) << "  vol->getCopyNo() " << vol->getCopyNo();
-    LOG(debug2) << "  vol->getVolumeId() " << vol->getVolumeId();
-    LOG(debug2) << "  fPos.X() " << fPos.X();
-    LOG(debug2) << "  fPos.Y() " << fPos.Y();
-    LOG(debug2) << "  fPos.Z() " << fPos.Z();
-    LOG(debug2) << "  TrackLength " << TVirtualMC::GetMC()->TrackLength();
-    LOG(debug2) << "  GetCurrentTrackNumber " << TVirtualMC::GetMC()->GetStack()->GetCurrentTrackNumber();
+    LOG(debug) << "  TrackPid " << TVirtualMC::GetMC()->TrackPid();
+    LOG(debug) << "  TrackCharge " << TVirtualMC::GetMC()->TrackCharge();
+    LOG(debug) << "  Is track entering " << TVirtualMC::GetMC()->IsTrackEntering();
+    LOG(debug) << "  Is track exiting " << TVirtualMC::GetMC()->IsTrackExiting();
+    LOG(debug) << "  vol->getCopyNo() " << vol->getCopyNo();
+    LOG(debug) << "  vol->getVolumeId() " << vol->getVolumeId();
+    LOG(debug) << "  fPos.X() " << fPos.X();
+    LOG(debug) << "  fPos.Y() " << fPos.Y();
+    LOG(debug) << "  fPos.Z() " << fPos.Z();
+    LOG(debug) << "  TrackLength " << TVirtualMC::GetMC()->TrackLength();
+    LOG(debug) << "  GetCurrentTrackNumber " << TVirtualMC::GetMC()->GetStack()->GetCurrentTrackNumber();
+    LOG(debug) << "  TrackPid " << TVirtualMC::GetMC()->TrackPid();
 
     AddHit(fTrackID, fVolumeID
           ,TVector3(fposX,       fposY,       fposZ)
           ,TVector3(fPos.X(),       fPos.Y(),       fPos.Z())
           ,TVector3(fPosExit.X(),   fPosExit.Y(),   fPosExit.Z())
           ,TVector3(fMom.Px(),      fMom.Py(),      fMom.Pz())
-          ,fTime, fELoss, fLength); 
+          ,fTime, fELoss, fLength, TVirtualMC::GetMC()->TrackPid()); 
+
+    fpdgCodes.clear();
   }    
 
   return kTRUE;
@@ -223,21 +227,22 @@ void FgdDetector::ConstructGeometry()
 //___________________________________________________________________
 data::superfgd::FgdDetectorPoint* FgdDetector::AddHit(Int_t trackID, Int_t detID, 
 					  TVector3 detectorPos, TVector3 pos , TVector3 posExit, TVector3 mom,
-					  Double32_t time, Double32_t edep, Double32_t trackLength)
+					  Double32_t time, Double32_t edep, Double32_t trackLength, Int_t pdg)
 {
-    LOG(debug2) << "FgdDetector::AddHit";
-    LOG(debug2) << "trackID " << trackID;
-    LOG(debug2) << "detID " << detID;
-    LOG(debug2) << "pos.X() " << pos.X() << "; pos.Y() " << pos.Y()<< "; pos.Z() " << pos.Z();
-    LOG(debug2) << "mom.Px() " << mom.Px() << "; mom.Py() " << mom.Py() << "; mom.Pz() " << mom.Pz();
-    LOG(debug2) << "time " << time;
-    LOG(debug2) << "edep " << edep;
+    LOG(debug) << "FgdDetector::AddHit";
+    LOG(debug) << "trackID " << trackID;
+    LOG(debug) << "detID " << detID;
+    LOG(debug) << "pos.X() " << pos.X() << "; pos.Y() " << pos.Y()<< "; pos.Z() " << pos.Z();
+    LOG(debug) << "mom.Px() " << mom.Px() << "; mom.Py() " << mom.Py() << "; mom.Pz() " << mom.Pz();
+    LOG(debug) << "time " << time;
+    LOG(debug) << "edep " << edep;
+    LOG(debug) << "pdg " << pdg;
 
   TClonesArray& clref = *fFgdDetectorPointCollection;
   Int_t size = clref.GetEntriesFast();
 
   return new(clref[size]) data::superfgd::FgdDetectorPoint(trackID, detID, detectorPos, pos, posExit, mom, 
-					     time, edep, trackLength);
+					     time, edep, trackLength, pdg);
 }
 
 void  FgdDetector::SetSpecialPhysicsCuts()

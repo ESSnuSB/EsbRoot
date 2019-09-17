@@ -37,9 +37,10 @@ class FgdDetectorPoint : public FairMCPoint
      *@param mom      Momentum of track at entrance [GeV]
      *@param tof      Time since event start [ns]
      *@param edep     total energy loss [GeV]
+     *@param pdg     pdg code of particle
      **/
     FgdDetectorPoint(Int_t trackID, Int_t detID, TVector3 detectorPos, TVector3 pos, TVector3 posExit, TVector3 mom,
-		       Double_t tof,  Double_t edep, Double_t trackLenght);
+		       Double_t tof,  Double_t edep, Double_t trackLenght, Int_t pdg);
     
     /** Destructor **/
     virtual ~FgdDetectorPoint();
@@ -59,6 +60,8 @@ class FgdDetectorPoint : public FairMCPoint
     // Get the detector position
     TVector3 GetDetectorpos(){return fdetectorPos;};
 
+    Int_t GetPdg(){return fpdg;} 
+
     // Get the track lenght 
     Double_t GetTrackLenght(){return ftrackLenght;}
 
@@ -73,6 +76,7 @@ class FgdDetectorPoint : public FairMCPoint
     TVector3 fposExit;  // Member to hold the position of the particle when it exits the sensitive volume
     TVector3 fdetectorPos;
     Double_t ftrackLenght;
+    Int_t fpdg;
 
     ClassDef(FgdDetectorPoint,2)
 };

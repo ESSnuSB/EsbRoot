@@ -39,11 +39,14 @@ class FgdHit : public FairHit
    *@param distance_to_mppcLoc1      distance to mppc to +x,+y,+z direction
    *@param photoE_direction2      generated photons on -x,-y, z direction
    *@param distance_to_mppcLoc1      distance to mppc to -x,-y,-z direction
+   *@param pdg      pdg codes of particles 
+   *@param trackId      trackId
    **/
   FgdHit(Double_t x, Double_t y, Double_t z, TVector3 mppcLoc
         , TVector3 photoE, TVector3 dpos, Double_t time
         , TVector3 photoE_direction1, TVector3 distance_to_mppcLoc1
-        , TVector3 photoE_direction2, TVector3 distance_to_mppcLoc2);
+        , TVector3 photoE_direction2, TVector3 distance_to_mppcLoc2
+        , Int_t pdg, Int_t trackId);
   
   /** Destructor **/
   virtual ~FgdHit();
@@ -58,6 +61,8 @@ class FgdHit : public FairHit
   TVector3 GetMppcDist1(){return fmppcLoc_dist1;}
   TVector3 GetPhotoDist2(){return fphotoE_dist2;}
   TVector3 GetMppcDist2(){return fmppcLoc_dist2;}
+  Int_t GetPgd(){return fpdg;}
+  Int_t GetTrackId(){return ftrackId;}
 
   /** Modifiers **/
   void SetMppcLoc(TVector3 mppcLoc){fmppcLoc = mppcLoc;}
@@ -69,6 +74,8 @@ class FgdHit : public FairHit
   void SetMppcDist1(TVector3 mppc1){fmppcLoc_dist1 = mppc1;}
   void SetPhotoDist2(TVector3 photo2){fphotoE_dist2 = photo2;}
   void SetMppcDist2(TVector3 mppc2){fmppcLoc_dist2 = mppc2;}
+  void SetPgd(Int_t pdg){fpdg = pdg;}
+  void SetTrackId(Int_t trackId){ftrackId = trackId;}
    
   /** Output to screen **/
   virtual void Print(const Option_t* opt) const;
@@ -84,6 +91,9 @@ class FgdHit : public FairHit
   TVector3 fmppcLoc_dist1;
   TVector3 fphotoE_dist2;
   TVector3 fmppcLoc_dist2;
+
+  Int_t fpdg;
+  Int_t ftrackId;
 
   ClassDef(FgdHit, 2);
 };

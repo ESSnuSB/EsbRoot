@@ -82,12 +82,27 @@ private:
   class ReconHit{
 
   public:
-    ReconHit(TVector3 mppcLoc, TVector3 hitPosition, TVector3 photons, Double_t time)
-      : fmppcLoc(mppcLoc), fHitPos(hitPosition),fphotons(fphotons), ftime(time)
+    ReconHit(TVector3 mppcLoc
+            , TVector3 hitPosition
+            , TVector3 photons
+            , Double_t time
+            , Int_t pdg
+            , Int_t trackId)
+      : fmppcLoc(mppcLoc)
+        , fHitPos(hitPosition)
+        , fphotons(fphotons)
+        , ftime(time)
+        , fpdg(pdg)
+        , ftrackId(trackId)
     {};
 
     ReconHit(const ReconHit& c)
-      : fmppcLoc(c.fmppcLoc), fHitPos(c.fHitPos),fphotons(c.fphotons), ftime(c.ftime)
+      : fmppcLoc(c.fmppcLoc)
+        , fHitPos(c.fHitPos)
+        , fphotons(c.fphotons)
+        , ftime(c.ftime)
+        , fpdg(c.fpdg)
+        , ftrackId(c.ftrackId)
     {};
 
     ReconHit& operator=(const ReconHit& c)
@@ -96,6 +111,8 @@ private:
       fHitPos = c.fHitPos;
       fphotons = c.fphotons;
       ftime = c.ftime;
+      fpdg = c.fpdg;
+      ftrackId = c.ftrackId;
       return *this;
     }
 
@@ -105,6 +122,8 @@ private:
     TVector3 fHitPos;
     TVector3 fphotons;
     Double_t ftime;
+    Int_t fpdg;
+    Int_t ftrackId;
   };
 
   /** Get all hits **/

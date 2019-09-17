@@ -78,7 +78,7 @@ namespace geometry {
 		data::superfgd::FgdDetectorPoint* AddHit(Int_t trackID, Int_t detID,
 								 TVector3 detectorPos,
 								 TVector3 pos, TVector3 posExit, TVector3 mom,
-								 Double32_t time, Double32_t edep, Double32_t trackLength);
+								 Double32_t time, Double32_t edep, Double32_t trackLength, Int_t pdg);
 
 		/** The following methods can be implemented if you need to make
 		 *  any optional action in your detector during the transport.
@@ -118,6 +118,8 @@ namespace geometry {
 		double fposX;
 		double fposY;
 		double fposZ;
+
+		std::set<Int_t> fpdgCodes;//!<!
 
 		esbroot::geometry::superfgd::SuperFGDDetectorConstruction    fgdConstructor;	   //! SuperFgd Detector Constructor
 		/** container for data points */
