@@ -5,6 +5,7 @@
 #include "EsbData/EsbSuperFGD/FgdHit.h"
 #include "EsbGeometry/EsbSuperFGD/EsbFgdDetectorParameters.h"
 #include "EsbGeometry/EsbSuperFGD/EsbSuperFGDDetectorConstruction.h"
+#include "EsbReconstruction/EsbSuperFGD/FgdReconHit.h"
 
 // FairRoot headers
 #include <FairTask.h>
@@ -28,7 +29,8 @@ class FgdGenFitRecon : public FairTask
   enum TrackFinder{
     HOUGH_PATHFINDER_ALL,
     HOUGH_PATHFINDER_ABOVE_BELOW,
-    HOUGH_PATHFINDER_TIME_INTERVALS
+    HOUGH_PATHFINDER_TIME_INTERVALS,
+    LOCAL_SCAN
   };
 
   /** Default constructor **/  
@@ -80,89 +82,26 @@ private:
     CURL
   };
 
-  class ReconHit{
-
-  public:
-    ReconHit(TVector3 mppcLoc
-            , TVector3 hitPosition
-            , TVector3 photons
-            , Double_t time
-            , Int_t pdg
-            , Int_t trackId
-            , TVector3 ph1
-            , TVector3 mppc1
-            , TVector3 ph2
-            , TVector3 mppc2)
-      : fmppcLoc(mppcLoc)
-        , fHitPos(hitPosition)
-        , fphotons(photons)
-        , ftime(time)
-        , fpdg(pdg)
-        , ftrackId(trackId)
-        , fph1(ph1)
-        , fmppc1(mppc1)
-        , fph2(ph2)
-        , fmppc2(mppc2)
-    {};
-
-    ReconHit(const ReconHit& c)
-      : fmppcLoc(c.fmppcLoc)
-        , fHitPos(c.fHitPos)
-        , fphotons(c.fphotons)
-        , fph1(c.fph1)
-        , fmppc1(c.fmppc1)
-        , fph2(c.fph2)
-        , fmppc2(c.fmppc2)
-        , ftime(c.ftime)
-        , fpdg(c.fpdg)
-        , ftrackId(c.ftrackId)
-    {};
-
-    ReconHit& operator=(const ReconHit& c)
-    {
-      fmppcLoc = c.fmppcLoc;
-      fHitPos = c.fHitPos;
-      fphotons = c.fphotons;
-      fph1 = c.fph1;
-      fmppc1 = c.fmppc1;
-      fph2 = c.fph2;
-      fmppc2 = c.fmppc2;
-      ftime = c.ftime;
-      fpdg = c.fpdg;
-      ftrackId = c.ftrackId;
-      return *this;
-    }
-
-    ~ReconHit(){}
-
-    TVector3 fmppcLoc;
-    TVector3 fHitPos;
-    TVector3 fphotons;
-    TVector3 fph1;
-    TVector3 fmppc1;
-    TVector3 fph2;
-    TVector3 fmppc2;
-    Double_t ftime;
-    Int_t fpdg;
-    Int_t ftrackId;
-  };
-
   /** Get all hits **/
-  bool GetHits(std::vector<ReconHit>& allHits);
+  Bool_t GetHits(std::vector<ReconHit>& allHits);
 
   /** Extrack tracks from the hit using Hough Transform **/
-  bool FindAllTracks(std::vector<ReconHit>& hits
+  Bool_t FindAllTracks(std::vector<ReconHit>& hits
                   , std::vector<pathfinder::TrackFinderTrack>& foundTracks
                   , FindTrackType trackType);
 
-  bool FindAboveBelowTracks(std::vector<ReconHit>& hits
+  Bool_t FindAboveBelowTracks(std::vector<ReconHit>& hits
                   , std::vector<pathfinder::TrackFinderTrack>& foundTracks
                   , FindTrackType trackType);
 
-  bool FindByIntervalsTracks(std::vector<ReconHit>& hits
+  Bool_t FindByIntervalsTracks(std::vector<ReconHit>& hits
                   , std::vector<pathfinder::TrackFinderTrack>& foundTracks
                   , FindTrackType trackType);
+
+  Bool_t FindByLocalScan(std::vector<ReconHit>& hits
+                  , std::vector<pathfinder::TrackFinderTrack>& foundTracks);
   
+  void BuildGraph(std::vector<ReconHit>& hits);
 
   /** Fit the found tracks using genfit **/
   void FitTracks(std::vector<pathfinder::TrackFinderTrack>& foundTracks);
@@ -173,8 +112,7 @@ private:
   /** Print information for fitted grack **/
   void PrintFitTrack(genfit::Track& track);
 
-  /** Check if the passed hit does not contain nearby hits - if it does not, it is noise **/
-  bool IsNoiseHit(pathfinder::basicHit& hit, int range, bool *visited);
+  Long_t ArrInd(int i, int j, int k);
 
   /** Class to hold the Detector parameters read from external file **/
   esbroot::geometry::superfgd::FgdDetectorParameters fParams;
@@ -229,6 +167,7 @@ private:
   genfit::EventDisplay* fdisplay;//!<!
   bool isGenFitVisualization;//!<!
   std::string fGenFitVisOption;//!<!
+
   	   
   ClassDef(FgdGenFitRecon, 2);
 

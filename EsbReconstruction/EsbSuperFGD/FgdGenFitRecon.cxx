@@ -233,6 +233,9 @@ void FgdGenFitRecon::Exec(Option_t* opt)
         case TrackFinder::HOUGH_PATHFINDER_TIME_INTERVALS:
                                           rc = FindByIntervalsTracks(allhits, foundTracks, FindTrackType::CURL);
                                           break;
+        case TrackFinder::LOCAL_SCAN:
+                                          rc = FindByLocalScan(allhits, foundTracks);
+                                          break;
         default: 
                 rc = false;
                 break;
@@ -261,15 +264,29 @@ void FgdGenFitRecon::Exec(Option_t* opt)
 
 // -----   Private methods   --------------------------------------------
 
-bool FgdGenFitRecon::GetHits(std::vector<ReconHit>& allHits)
+Bool_t FgdGenFitRecon::GetHits(std::vector<ReconHit>& allHits)
 {
   Double_t errPhotoLimit = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::FGD_ERR_PHOTO_LIMIT);
+
+  std::cout << "fHitArray->GetEntries() " << fHitArray->GetEntries() << std::endl;
+
+  std::map<Long_t, Bool_t> visited;
  
   for(Int_t i =0; i <  fHitArray->GetEntries() ; i++)
   {
     data::superfgd::FgdHit* hit = (data::superfgd::FgdHit*)fHitArray->At(i);
     TVector3  photoE = hit->GetPhotoE();    
     TVector3  mppcLoc = hit->GetMppcLoc();  
+
+    Int_t&& x = mppcLoc.X();
+    Int_t&& y = mppcLoc.Y();
+    Int_t&& z = mppcLoc.Z();
+    cout  << "GetHits" << " x " << x << " y " << y << " z " << z << endl;
+    if(visited[ArrInd(x,y,z)])
+    {
+      continue;
+    }
+    visited[ArrInd(x,y,z)] = true;
 
     if(photoE.X() >= errPhotoLimit 
         & photoE.Y()>= errPhotoLimit 
@@ -280,7 +297,7 @@ bool FgdGenFitRecon::GetHits(std::vector<ReconHit>& allHits)
       hitPos(1) = -f_total_Y/2 + f_step_Y*mppcLoc.Y()  +f_step_Y/2;
       hitPos(2) = -f_total_Z/2 + f_step_Z*mppcLoc.Z()  +f_step_Z/2;
 
-      allHits.emplace_back(FgdGenFitRecon::ReconHit(
+      allHits.emplace_back(ReconHit(
                                 mppcLoc
                               , TVector3(hitPos(0),hitPos(1),hitPos(2))
                               , photoE
@@ -295,10 +312,12 @@ bool FgdGenFitRecon::GetHits(std::vector<ReconHit>& allHits)
     }
   }
 
+  std::cout << "allHits.size()" << allHits.size() << std::endl;
+
   return (allHits.size() > 0);
 }
 
-bool FgdGenFitRecon::FindAllTracks(std::vector<ReconHit>& hits
+Bool_t FgdGenFitRecon::FindAllTracks(std::vector<ReconHit>& hits
                                 , std::vector<pathfinder::TrackFinderTrack>& foundTracks
                                 , FindTrackType trackType)
 {
@@ -400,7 +419,7 @@ bool FgdGenFitRecon::FindAllTracks(std::vector<ReconHit>& hits
   return found;
 }
 
-bool FgdGenFitRecon::FindAboveBelowTracks(std::vector<ReconHit>& hits
+Bool_t FgdGenFitRecon::FindAboveBelowTracks(std::vector<ReconHit>& hits
                                 , std::vector<pathfinder::TrackFinderTrack>& foundTracks
                                 , FindTrackType trackType)
 {
@@ -572,7 +591,7 @@ bool FgdGenFitRecon::FindAboveBelowTracks(std::vector<ReconHit>& hits
   return found;
 }
 
-bool FgdGenFitRecon::FindByIntervalsTracks(std::vector<ReconHit>& hits
+Bool_t FgdGenFitRecon::FindByIntervalsTracks(std::vector<ReconHit>& hits
                                 , std::vector<pathfinder::TrackFinderTrack>& foundTracks
                                 , FindTrackType trackType)
 {
@@ -660,7 +679,7 @@ bool FgdGenFitRecon::FindByIntervalsTracks(std::vector<ReconHit>& hits
     throw errMsg;
   }
 
-  std::sort(hits.begin(), hits.end(), [](ReconHit& rh1, ReconHit& rh2)->bool{return rh1.ftime < rh2.ftime;});
+  std::sort(hits.begin(), hits.end(), [](ReconHit& rh1, ReconHit& rh2)->bool{ return rh1.ftime < rh2.ftime;});
 
   Bool_t found(false);
 
@@ -705,6 +724,175 @@ bool FgdGenFitRecon::FindByIntervalsTracks(std::vector<ReconHit>& hits
   return found;
 }
 
+Bool_t FgdGenFitRecon::FindByLocalScan(std::vector<ReconHit>& hits
+                  , std::vector<pathfinder::TrackFinderTrack>& foundTracks)
+{
+  if(hits.empty())
+  {
+    return false;
+  }
+
+  BuildGraph(hits);
+
+
+  std::vector<std::vector<Int_t>> tracks;
+
+  for(Int_t i=0; i<hits.size(); ++i)
+  {
+    if(hits[i].IsLeaf())
+    {
+      tracks.push_back(std::vector<int>{i});
+    }
+  }
+
+
+  for(Int_t i=0; i<hits.size(); ++i)
+  {
+    cout << "i " << i << endl;
+    for(Int_t j=0; j<hits[i].fLocalHits.size(); ++j)
+    {
+      cout << " Local Id " << hits[i].fLocalHits[j] << endl;
+    }
+
+    if(hits[i].IsLeaf())
+    {
+      cout << "IsLeaf" << endl;
+    }
+    cout << "=====" << endl;
+  }
+
+  for(Int_t i=0; i<tracks.size(); ++i)
+  {
+    // Start in the graph from the initial Leaf
+    std::vector<Int_t>& track = tracks[i];
+    Int_t previousId = track[0];
+    std::cout << "Next Track " << previousId  << std::endl;
+    ReconHit& currentHit = hits[previousId];
+    Int_t nextId(-1);
+    while(currentHit.GetNext(previousId, nextId))
+    {
+      std::cout << "previousId " << previousId << " nextId " << nextId << std::endl;
+      previousId = currentHit.fLocalId;
+      currentHit = hits[nextId];
+      track.push_back(nextId);
+
+      if(currentHit.IsLeaf())
+      {
+        std::cout << "currentHit.IsLeaf() "  << std::endl;
+        break;
+      }
+    }
+  }
+
+  for(Int_t i=0; i<tracks.size(); ++i)
+  {
+    std::vector<Int_t>& track = tracks[i];
+    std::vector<pathfinder::basicHit> currentTrack;
+    for(Int_t j=0; j<track.size(); ++j)
+    {
+      Int_t ind = track[j];
+      currentTrack.emplace_back(hits[ind].fHitPos.X()
+                                , hits[ind].fHitPos.Y()
+                                , hits[ind].fHitPos.Z());
+    }
+    pathfinder::TrackFinderTrack tr(pathfinder::TrackParameterFull(0.,0.,0.,0.,0.),std::move(currentTrack));
+    foundTracks.emplace_back(tr);
+  }
+
+  return !foundTracks.empty();
+}
+
+void FgdGenFitRecon::BuildGraph(std::vector<ReconHit>& hits)
+{
+    cout << " ================================ " << endl;
+    // 1. Create the position to which index in the vector it is poiting
+    std::map<Long_t, Int_t> positionToId;
+    for(Int_t i=0; i<hits.size(); ++i)
+    {
+      Int_t&& x = hits[i].fHitPos.X();
+      Int_t&& y = hits[i].fHitPos.Y();
+      Int_t&& z = hits[i].fHitPos.Z();
+
+      cout  << endl;
+      Int_t&& ind = ArrInd(x,y,z);
+      cout  << "coordintes" << " x " << x << " y " << y << " z " << z << endl;
+      cout  << "build index " << ind << " val " << i << endl;
+
+      cout  << endl;
+
+      positionToId[ind] = i;
+
+      hits[i].fLocalHits.clear(); // Clear previous index positions
+      hits[i].fLocalId = i;
+    }
+    cout << " ================================ " << endl;
+
+    auto checkNext = [&](Int_t x_pos, Int_t y_pos, Int_t z_pos, Int_t ind){
+                                                                  if(positionToId[ArrInd(x_pos,y_pos,z_pos)])
+                                                                  {
+                                                                    Int_t& index = positionToId[ArrInd(x_pos,y_pos,z_pos)];
+                                                                    hits[ind].fLocalHits.push_back(index);
+
+                                                                    cout << "link " << " x " << x_pos << " y " << y_pos << " z " << z_pos << endl;
+                                                                    cout << "current index " << index << endl;
+                                                                    cout  << endl;
+                                                                  }
+                                                                };
+
+    for(Int_t i=0; i<hits.size(); ++i)
+    {
+      Int_t&& x = hits[i].fHitPos.X();
+      Int_t&& y = hits[i].fHitPos.Y();
+      Int_t&& z = hits[i].fHitPos.Z();
+
+      cout << "current i " << i << endl;
+      cout << "current " << " x " << x << " y " << y << " z " << z << endl;
+      cout  << endl;
+
+      // Check in X axis
+      checkNext(x+1,y,z, i);
+      checkNext(x-1,y,z, i);
+
+      // Check in Y axis
+      checkNext(x,y+1,z, i);
+      checkNext(x,y-1,z, i);
+
+      // Check in Z axis
+      checkNext(x,y,z+1, i);
+      checkNext(x,y,z-1, i);
+      cout << " ==== " << endl;
+
+      // // Check in X,Y corners
+      // checkNext(x+1,y+1,z, i);
+      // checkNext(x+1,y-1,z, i);
+      // checkNext(x-1,y+1,z, i);
+      // checkNext(x-1,y-1,z, i);
+
+      // // Check in X,Z corners
+      // checkNext(x+1,y,z+1, i);
+      // checkNext(x+1,y,z-1, i);
+      // checkNext(x-1,y,z+1, i);
+      // checkNext(x-1,y,z-1, i);
+
+      // // Check in Y,Z corners
+      // checkNext(x,y+1,z+1, i);
+      // checkNext(x,y+1,z-1, i);
+      // checkNext(x,y-1,z+1, i);
+      // checkNext(x,y-1,z-1, i);
+
+      // // Check in X,Y,Z corners
+      // checkNext(x+1,y+1,z+1, i);
+      // checkNext(x+1,y+1,z-1, i);
+      // checkNext(x+1,y-1,z+1, i);
+      // checkNext(x+1,y-1,z-1, i);
+
+      // checkNext(x-1,y+1,z+1, i);
+      // checkNext(x-1,y+1,z-1, i);
+      // checkNext(x-1,y-1,z+1, i);
+      // checkNext(x-1,y-1,z-1, i);
+    }
+}
+
 void FgdGenFitRecon::FitTracks(std::vector<pathfinder::TrackFinderTrack>& foundTracks)
 {
     fTracksArray->Delete();
@@ -740,7 +928,7 @@ void FgdGenFitRecon::FitTracks(std::vector<pathfinder::TrackFinderTrack>& foundT
       //const int pdg = 13;
       int pdg = 13;
 
-      pdg = (i ==0) ? 211 : 11;
+      // pdg = (i ==0) ? 211 : 11;
 
       //TVector3 posM(fstartPos);
       TVector3 posM(hitsOnTrack[0].getX(),hitsOnTrack[0].getY(),hitsOnTrack[0].getZ());
@@ -748,15 +936,15 @@ void FgdGenFitRecon::FitTracks(std::vector<pathfinder::TrackFinderTrack>& foundT
 
       // First point should be the start of the track
       //TVector3 momM(hitsOnTrack[0].getX(),hitsOnTrack[0].getY(),hitsOnTrack[0].getZ());
-      if(i==0)
-      {
-        momM.SetXYZ(-0.187,0.079, 0.150);
-      }
+      // if(i==0)
+      // {
+      //   momM.SetXYZ(-0.187,0.079, 0.150);
+      // }
 
-      if(i==1)
-      {
-        momM.SetXYZ(-0.070,-0.197,0.348);
-      }
+      // if(i==1)
+      // {
+      //   momM.SetXYZ(-0.070,-0.197,0.348);
+      // }
 
       // if(i==1)
       // {
@@ -962,98 +1150,9 @@ void FgdGenFitRecon::PrintFitTrack(genfit::Track& fitTrack)
   std::cout << "fitTrack.getNumPoints() " << fitTrack.getNumPoints() << std::endl;
 }
 
-bool FgdGenFitRecon::IsNoiseHit(pathfinder::basicHit& hit, int range, bool *visited)
+Long_t FgdGenFitRecon::ArrInd(int x, int y, int z)
 {
-  bool isNoise(true);
-  auto arrInd = [&](int i, int j, int k)-> long { 
-                                                  return (i*f_bin_Y*f_bin_Z + j*f_bin_Z+k);
-                                                };
-
-  int x_min =  (0 > (hit.getX() - range)) ?  0 : (hit.getX() - range) ;
-  int x_max =  (f_bin_X < (hit.getX() + range)) ?  f_bin_X : (hit.getX() + range) ;
-
-  int y_min =  (0 > (hit.getY() - range)) ?  0 : (hit.getY() - range) ;
-  int y_max =  (f_bin_Y < (hit.getY() + range)) ?  f_bin_Y : (hit.getY() + range) ;
-
-  int z_min =  (0 > (hit.getZ() - range)) ?  0 : (hit.getZ() - range) ;
-  int z_max =  (f_bin_Z < (hit.getZ() + range)) ?  f_bin_Z : (hit.getZ() + range) ;
-
-  // 1. Search z planes
-  for(int x = x_min; isNoise && x <= x_max; ++x )
-  {
-    for(int y = y_min; y<= y_max; ++y )
-    {
-      if(visited[arrInd(x,y,z_min)])
-      {
-        isNoise = false;
-        break;
-      }
-    }
-  }
-
-  for(int x = x_min; isNoise && x <= x_max; ++x )
-  {
-    for(int y = y_min; y<= y_max; ++y )
-    {
-      if(visited[arrInd(x,y,z_max)])
-      {
-        isNoise = false;
-        break;
-      }
-    }
-  }
-
-  // 2. Search y planes
-  for(int x = x_min; isNoise && x <= x_max; ++x )
-  {
-    for(int z = z_min; z<= z_max; ++z )
-    {
-      if(visited[arrInd(x,y_min,z)])
-      {
-        isNoise = false;
-        break;
-      }
-    }
-  }
-
-  for(int x = x_min; isNoise && x <= x_max; ++x )
-  {
-    for(int z = z_min; z<= z_max; ++z )
-    {
-      if(visited[arrInd(x,y_max,z)])
-      {
-        isNoise = false;
-        break;
-      }
-    }
-  }
-
-  // 3. Search x planes
-  for(int y = y_min; isNoise && y <= y_max; ++y )
-  {
-    for(int z = z_min; z<= z_max; ++z )
-    {
-      if(visited[arrInd(x_min,y,z)])
-      {
-        isNoise = false;
-        break;
-      }
-    }
-  }
-
-  for(int y = y_min; isNoise && y <= y_max; ++y )
-  {
-    for(int z = z_min; z<= z_max; ++z )
-    {
-      if(visited[arrInd(x_max,y,z)])
-      {
-        isNoise = false;
-        break;
-      }
-    }
-  }
-
-  return isNoise;
+  return (x*f_bin_Y*f_bin_Z + y*f_bin_Z+z);
 }
 
 // -------------------------------------------------------------------------

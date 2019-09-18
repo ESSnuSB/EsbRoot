@@ -49,11 +49,13 @@ link_directories( ${LINK_DIRECTORIES})
 set(SRCS
 	EsbSuperFGD/FgdGenFitRecon.cxx
 	EsbSuperFGD/FgdMuonOnlyGenFitRecon.cxx
+	EsbSuperFGD/FgdReconHit.cxx
 )
 
 Set(HEADERS 
 	${CMAKE_SOURCE_DIR}/EsbReconstruction/EsbSuperFGD/FgdGenFitRecon.h
 	${CMAKE_SOURCE_DIR}/EsbReconstruction/EsbSuperFGD/FgdMuonOnlyGenFitRecon.h
+	${CMAKE_SOURCE_DIR}/EsbReconstruction/EsbSuperFGD/FgdReconHit.h
 )
 
 Set(LINKDEF ${CMAKE_SOURCE_DIR}/EsbReconstruction/ReconLinkDef.h)
