@@ -1071,7 +1071,9 @@ Bool_t FgdGenFitRecon::IsLeaf(Int_t& ind, std::vector<ReconHit>& hits)
 Bool_t FgdGenFitRecon::GetNext(Int_t previousId, Int_t currentId, Int_t& nextId, std::vector<ReconHit>& hits)
 {
   // Check initial conditions
-  if(previousId>=hits.size() || currentId<0 || currentId>=hits.size())
+  if( previousId>=0 && previousId>=hits.size() 
+      || currentId<0 
+      || currentId>=hits.size())
   {
     std::string errMsg = "Index out of bounds exception! ";
     std::cerr << errMsg << __FILE__ << __LINE__ << endl;
@@ -1081,6 +1083,19 @@ Bool_t FgdGenFitRecon::GetNext(Int_t previousId, Int_t currentId, Int_t& nextId,
   Bool_t found(false);
   ReconHit* currentHit = &hits[currentId];
   currentHit->fIsVisited=true;
+
+  // Search for breaking conditions, that is if the current hit is a 'blob' of hits, in which case we cannot determine the track if belongs to
+  Int_t&& localHitSize = currentHit->fLocalHits.size();
+  Int_t&& localEdgeSize = currentHit->fLocalEdges.size();
+  Int_t&& localCornerSize = currentHit->fLocalCorner.size();
+
+  Int_t totalSize = localHitSize + localEdgeSize + localCornerSize;
+
+  Int_t limitNodes = fParams.ParamAsInt(esbroot::geometry::superfgd::DP::FGD_MAX_NEIGHTBOUR_NODES);
+  if(totalSize>=limitNodes)
+  {
+    return false;
+  }
 
   if(previousId<0)// It is a leaf, return nearest neighbour
   {
@@ -1139,6 +1154,60 @@ Bool_t FgdGenFitRecon::GetNext(Int_t previousId, Int_t currentId, Int_t& nextId,
       nextId = (previousId == currentHit->fLocalEdges[0]) ? currentHit->fLocalCorner[0] : currentHit->fLocalEdges[0];
       found = true;
     }
+    // Find next hit if there are multiple neightbour hits
+    // 3. Find the ONE hit which is not visited (faile if more than 1 is not visited)
+    else
+    {
+      Int_t notVisitedCount(0);
+
+      // Search local hits
+      for(Int_t lh = 0; lh < currentHit->fLocalHits.size(); ++lh)
+      {
+        if(!currentHit->fLocalHits[lh])
+        {
+          nextId = currentHit->fLocalHits[lh];
+          ++notVisitedCount;
+          if(notVisitedCount>1)
+          {
+            break;
+          }
+        }
+      }
+
+      // Search local edges
+      for(Int_t le = 0; le < currentHit->fLocalEdges.size(); ++le)
+      {
+        if(!currentHit->fLocalEdges[le])
+        {
+          nextId = currentHit->fLocalEdges[le];
+          ++notVisitedCount;
+          if(notVisitedCount>1)
+          {
+            break;
+          }
+        }
+      }
+
+      // Search local corners
+      for(Int_t lc = 0; lc < currentHit->fLocalCorner.size(); ++lc)
+      {
+        if(!currentHit->fLocalCorner[lc])
+        {
+          nextId = currentHit->fLocalCorner[lc];
+          ++notVisitedCount;
+          if(notVisitedCount>1)
+          {
+            break;
+          }
+        }
+      }
+
+      // Only one not visited cube is found.
+      found = (notVisitedCount==1);
+    }
+    
+
+    // If non of the above conditions are meet, return false
   }
 
 
