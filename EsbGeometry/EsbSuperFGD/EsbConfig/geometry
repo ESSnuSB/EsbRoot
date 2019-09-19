@@ -11,8 +11,8 @@ number_cubes_Z=100
 
 #magnetic field [1 kGauss = 0.1 T]
 magField_X=0    #in [kG] 
-magField_Y=0    #in [kG] 
-magField_Z=20    #in [kG] 
+magField_Y=20    #in [kG] 
+magField_Z=0    #in [kG] 
 
 #visualization
 visdetail=0 #1 is for true
@@ -76,6 +76,9 @@ timeIntervalHits=1000          #in units used in reconstuction - from FgdDetecto
 # If the 'timeIntervalHits' is bigger than 0, you can exlude the hits below or above the selected time interval
 #1 indicates true
 #0 indicates false
-excludeHitsAbove=1  
+excludeHitsAbove=0  
 excludeHitsBelow=0 
 
+# The belog setting sets the endind condition in the graph.
+# That is, how many neighbour nodes does the current node have in order to stop traversing the graph
+maxNeightbourNodes=4;
