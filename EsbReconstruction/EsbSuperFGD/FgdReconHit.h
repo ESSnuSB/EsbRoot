@@ -33,18 +33,18 @@ public:
 
     bool operator==(const ReconHit& c);
 
-    bool IsLeaf()
-    {
-        Int_t totalSize = fLocalHits.size() + fLocalEdges.size();
-        return (totalSize==1); 
-    }
+    // bool IsLeaf()
+    // {
+    //     Int_t totalSize = fLocalHits.size() + fLocalEdges.size();
+    //     return (totalSize==1); 
+    // }
 
-    bool IsAlone()
-    {
-        return fLocalHits.empty(); 
-    }
+    // bool IsAlone()
+    // {
+    //     return fLocalHits.empty(); 
+    // }
 
-    bool GetNext(Int_t& previousId, Int_t& nextId);
+    // bool GetNext(Int_t& previousId, Int_t& nextId);
 
     TVector3 fmppcLoc;
     TVector3 fHitPos;
@@ -60,8 +60,8 @@ public:
     Int_t fLocalId;
     Bool_t fIsVisited;
     std::vector<Int_t> fLocalHits;//!<! 
-    std::vector<Int_t> fLocalEdges;//!<! 
-    std::vector<Int_t> fLocalCorner;//!<! 
+    // std::vector<Int_t> fLocalEdges;//!<! 
+    // std::vector<Int_t> fLocalCorner;//!<! 
 
 private:
 

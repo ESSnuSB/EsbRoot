@@ -748,7 +748,7 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
 
   for(Int_t i=0; i<hits.size(); ++i)
   {
-    if(hits[i].IsLeaf())
+    if(IsLeaf(i, hits))
     {
       tracks.push_back(std::vector<int>{i});
     }
@@ -781,6 +781,7 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
     ReconHit* currentHit = &hits[previousId];
 
     Int_t nextId(-1);
+    Int_t currentId(-1);
 
     if(currentHit->fIsVisited)
     {
@@ -788,13 +789,13 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
     }
     currentHit->fIsVisited = true;
 
-    if(currentHit->GetNext(previousId, nextId))
+    if(GetNext(-1 /* Initial hit is a leaf, no previousId*/, previousId, nextId, hits))
     {
       currentHit = &hits[nextId];
       currentHit->fIsVisited = true;
     }
     
-    while(currentHit->GetNext(previousId, nextId))
+    while(GetNext(previousId, currentHit->fLocalId, nextId, hits))
     {
       // std::cout << " nextId " << nextId << std::endl; // TODO2
       previousId = currentHit->fLocalId;
@@ -803,7 +804,7 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
       currentHit->fIsVisited = true;
       track.push_back(nextId);
 
-      if(currentHit->IsLeaf())
+      if(IsLeaf(currentHit->fLocalId, hits))
       {
         // std::cout << "currentHit.IsLeaf() "  << std::endl;// TODO2
         break;
@@ -883,29 +884,29 @@ void FgdGenFitRecon::BuildGraph(std::vector<ReconHit>& hits)
                                                                   }
                                                                 };
 
-    auto checkNextEdge = [&](Int_t x_pos, Int_t y_pos, Int_t z_pos, Int_t ind){
-                                                                  Long_t&& key = ArrInd(x_pos,y_pos,z_pos);
-                                                                  if(positionToId.find(key)!=positionToId.end())
-                                                                  {
-                                                                    hits[ind].fLocalEdges.push_back(positionToId[key]);
+    // auto checkNextEdge = [&](Int_t x_pos, Int_t y_pos, Int_t z_pos, Int_t ind){
+    //                                                               Long_t&& key = ArrInd(x_pos,y_pos,z_pos);
+    //                                                               if(positionToId.find(key)!=positionToId.end())
+    //                                                               {
+    //                                                                 hits[ind].fLocalEdges.push_back(positionToId[key]);
 
-                                                                    // cout << "link " << " x " << x_pos << " y " << y_pos << " z " << z_pos << endl;
-                                                                    // cout << "current key " << key << endl;
-                                                                    // cout  << endl;
-                                                                  }
-                                                                };
+    //                                                                 // cout << "link " << " x " << x_pos << " y " << y_pos << " z " << z_pos << endl;
+    //                                                                 // cout << "current key " << key << endl;
+    //                                                                 // cout  << endl;
+    //                                                               }
+    //                                                             };
 
-    auto checkNextCorner = [&](Int_t x_pos, Int_t y_pos, Int_t z_pos, Int_t ind){
-                                                                  Long_t&& key = ArrInd(x_pos,y_pos,z_pos);
-                                                                  if(positionToId.find(key)!=positionToId.end())
-                                                                  {
-                                                                    hits[ind].fLocalCorner.push_back(positionToId[key]);
+    // auto checkNextCorner = [&](Int_t x_pos, Int_t y_pos, Int_t z_pos, Int_t ind){
+    //                                                               Long_t&& key = ArrInd(x_pos,y_pos,z_pos);
+    //                                                               if(positionToId.find(key)!=positionToId.end())
+    //                                                               {
+    //                                                                 hits[ind].fLocalCorner.push_back(positionToId[key]);
 
-                                                                    // cout << "link " << " x " << x_pos << " y " << y_pos << " z " << z_pos << endl;
-                                                                    // cout << "current key " << key << endl;
-                                                                    // cout  << endl;
-                                                                  }
-                                                                };
+    //                                                                 // cout << "link " << " x " << x_pos << " y " << y_pos << " z " << z_pos << endl;
+    //                                                                 // cout << "current key " << key << endl;
+    //                                                                 // cout  << endl;
+    //                                                               }
+    //                                                             };
 
     for(Int_t i=0; i<hits.size(); ++i)
     {
@@ -935,64 +936,76 @@ void FgdGenFitRecon::BuildGraph(std::vector<ReconHit>& hits)
 
       // cout << " ==== " << endl;
 
-      // // Check in X,Y corners
-      // checkNext(x+1,y+1,z, i);
-      // checkNext(x+1,y-1,z, i);
-      // checkNext(x-1,y+1,z, i);
-      // checkNext(x-1,y-1,z, i);
-
-      // // Check in X,Z corners
-      // checkNext(x+1,y,z+1, i);
-      // checkNext(x+1,y,z-1, i);
-      // checkNext(x-1,y,z+1, i);
-      // checkNext(x-1,y,z-1, i);
-
-      // // Check in Y,Z corners
-      // checkNext(x,y+1,z+1, i);
-      // checkNext(x,y+1,z-1, i);
-      // checkNext(x,y-1,z+1, i);
-      // checkNext(x,y-1,z-1, i);
-
-      // // Check in X,Y,Z corners
-      // checkNext(x+1,y+1,z+1, i);
-      // checkNext(x+1,y+1,z-1, i);
-      // checkNext(x+1,y-1,z+1, i);
-      // checkNext(x+1,y-1,z-1, i);
-
-      // checkNext(x-1,y+1,z+1, i);
-      // checkNext(x-1,y+1,z-1, i);
-      // checkNext(x-1,y-1,z+1, i);
-      // checkNext(x-1,y-1,z-1, i);
-
       // Check in X,Y corners
-      checkNextEdge(x+1,y+1,z, i);
-      checkNextEdge(x+1,y-1,z, i);
-      checkNextEdge(x-1,y+1,z, i);
-      checkNextEdge(x-1,y-1,z, i);
+      checkNext(x+1,y+1,z, i);
+      checkNext(x+1,y-1,z, i);
+      checkNext(x-1,y+1,z, i);
+      checkNext(x-1,y-1,z, i);
 
       // Check in X,Z corners
-      checkNextEdge(x+1,y,z+1, i);
-      checkNextEdge(x+1,y,z-1, i);
-      checkNextEdge(x-1,y,z+1, i);
-      checkNextEdge(x-1,y,z-1, i);
+      checkNext(x+1,y,z+1, i);
+      checkNext(x+1,y,z-1, i);
+      checkNext(x-1,y,z+1, i);
+      checkNext(x-1,y,z-1, i);
 
       // Check in Y,Z corners
-      checkNextEdge(x,y+1,z+1, i);
-      checkNextEdge(x,y+1,z-1, i);
-      checkNextEdge(x,y-1,z+1, i);
-      checkNextEdge(x,y-1,z-1, i);
+      checkNext(x,y+1,z+1, i);
+      checkNext(x,y+1,z-1, i);
+      checkNext(x,y-1,z+1, i);
+      checkNext(x,y-1,z-1, i);
 
       // Check in X,Y,Z corners
-      checkNextCorner(x+1,y+1,z+1, i);
-      checkNextCorner(x+1,y+1,z-1, i);
-      checkNextCorner(x+1,y-1,z+1, i);
-      checkNextCorner(x+1,y-1,z-1, i);
+      checkNext(x+1,y+1,z+1, i);
+      checkNext(x+1,y+1,z-1, i);
+      checkNext(x+1,y-1,z+1, i);
+      checkNext(x+1,y-1,z-1, i);
 
-      checkNextCorner(x-1,y+1,z+1, i);
-      checkNextCorner(x-1,y+1,z-1, i);
-      checkNextCorner(x-1,y-1,z+1, i);
-      checkNextCorner(x-1,y-1,z-1, i);
+      checkNext(x-1,y+1,z+1, i);
+      checkNext(x-1,y+1,z-1, i);
+      checkNext(x-1,y-1,z+1, i);
+      checkNext(x-1,y-1,z-1, i);
+
+      // // Check in X,Y corners
+      // checkNextEdge(x+1,y+1,z, i);
+      // checkNextEdge(x+1,y-1,z, i);
+      // checkNextEdge(x-1,y+1,z, i);
+      // checkNextEdge(x-1,y-1,z, i);
+
+      // // Check in X,Z corners
+      // checkNextEdge(x+1,y,z+1, i);
+      // checkNextEdge(x+1,y,z-1, i);
+      // checkNextEdge(x-1,y,z+1, i);
+      // checkNextEdge(x-1,y,z-1, i);
+
+      // // Check in Y,Z corners
+      // checkNextEdge(x,y+1,z+1, i);
+      // checkNextEdge(x,y+1,z-1, i);
+      // checkNextEdge(x,y-1,z+1, i);
+      // checkNextEdge(x,y-1,z-1, i);
+
+      // // Check in X,Y,Z corners
+      // checkNextCorner(x+1,y+1,z+1, i);
+      // checkNextCorner(x+1,y+1,z-1, i);
+      // checkNextCorner(x+1,y-1,z+1, i);
+      // checkNextCorner(x+1,y-1,z-1, i);
+
+      // checkNextCorner(x-1,y+1,z+1, i);
+      // checkNextCorner(x-1,y+1,z-1, i);
+      // checkNextCorner(x-1,y-1,z+1, i);
+      // checkNextCorner(x-1,y-1,z-1, i);
     }
+}
+
+Bool_t FgdGenFitRecon::IsLeaf(Int_t& ind, std::vector<ReconHit>& hits)
+{
+  // TODO implement
+  return false;
+}
+
+Bool_t FgdGenFitRecon::GetNext(Int_t previousId, Int_t currentId, Int_t& nextId, std::vector<ReconHit>& hits)
+{
+  // TODO implement
+  return false;
 }
 
 void FgdGenFitRecon::FitTracks(std::vector<pathfinder::TrackFinderTrack>& foundTracks)
