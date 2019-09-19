@@ -144,25 +144,12 @@ void FgdMppcDisplay::FinishTask()
 
 void FgdMppcDisplay::Exec(Option_t* opt) 
 {
-  cout << "Event " << fevNum << endl;
   const Int_t hits = fHitArray->GetEntries();
   for(Int_t i =0; i < hits; i++)
   {
       data::superfgd::FgdHit* hit = (data::superfgd::FgdHit*)fHitArray->At(i);
       TVector3  photoE = std::move(hit->GetPhotoE()); //returns a temp obj
       TVector3  mppcLoc = std::move(hit->GetMppcLoc()); //returns a temp obj
-
-      
-      Int_t&& x = mppcLoc.X();
-      Int_t&& y = mppcLoc.Y();
-      Int_t&& z = mppcLoc.Z();
-
-      Int_t&& px = photoE.X();
-      Int_t&& py = photoE.Y();
-      Int_t&& pz = photoE.Z();
-      cout  << "GetHits" << " x " << x << " y " << y << " z " << z << endl;
-      cout  << "Photons" << " px " << px << " py " << py << " pz " << pz << endl;
-      
 
       if(f_xy_hist) f_xy_hist->Fill(mppcLoc.X(), mppcLoc.Y(), photoE.Z());
       if(f_yz_hist) f_yz_hist->Fill(mppcLoc.Y(), mppcLoc.Z(), photoE.X());
