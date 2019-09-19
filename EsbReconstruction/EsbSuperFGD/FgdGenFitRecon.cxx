@@ -1070,8 +1070,85 @@ Bool_t FgdGenFitRecon::IsLeaf(Int_t& ind, std::vector<ReconHit>& hits)
 
 Bool_t FgdGenFitRecon::GetNext(Int_t previousId, Int_t currentId, Int_t& nextId, std::vector<ReconHit>& hits)
 {
-  // TODO implement
-  return false;
+  // Check initial conditions
+  if(previousId>=hits.size() || currentId<0 || currentId>=hits.size())
+  {
+    std::string errMsg = "Index out of bounds exception! ";
+    std::cerr << errMsg << __FILE__ << __LINE__ << endl;
+    throw errMsg;
+  }
+
+  Bool_t found(false);
+  ReconHit* currentHit = &hits[currentId];
+  currentHit->fIsVisited=true;
+
+  if(previousId<0)// It is a leaf, return nearest neighbour
+  {
+    // The conditions here are based on the conditions in IsLeaf methods
+    // If it is a Leaf, then the nearest hits are the ones below
+    if(currentHit->fLocalHits.size()==1)
+    {
+      nextId = currentHit->fLocalHits[0];
+      found = true;
+    } 
+    else if(currentHit->fLocalEdges.size()==1)
+    {
+      nextId = currentHit->fLocalEdges[0];
+      found = true;
+    } 
+    else if(currentHit->fLocalCorner.size()==1)
+    {
+      nextId = currentHit->fLocalCorner[0];
+      found = true;
+    }
+  }
+  else
+  {
+    ReconHit* previuosHit = &hits[previousId];
+    // Find next hit if only two hits are adjacent to the current hit
+    // 1. 2 hits on face, edge or corner
+    if(currentHit->fLocalHits.size()==2 && currentHit->fLocalEdges.empty() && currentHit->fLocalCorner.empty())
+    {
+      nextId = (previousId == currentHit->fLocalHits[0]) ? currentHit->fLocalHits[1] : currentHit->fLocalHits[0];
+      found = true;
+    } 
+    else if(currentHit->fLocalHits.empty() && (currentHit->fLocalEdges.size()==2) && currentHit->fLocalCorner.empty())
+    {
+      nextId = (previousId == currentHit->fLocalEdges[0]) ? currentHit->fLocalEdges[1] : currentHit->fLocalEdges[0];
+      found = true;
+    } 
+    else if(currentHit->fLocalHits.empty() && currentHit->fLocalEdges.empty() && (currentHit->fLocalCorner.size()==2))
+    {
+      nextId = (previousId == currentHit->fLocalCorner[0]) ? currentHit->fLocalCorner[1] : currentHit->fLocalCorner[0];
+      found = true;
+    }
+    // Find next hit if only two hits are adjacent to the current hit
+    // 2. 1 hit on face, 1 on edge and 1 one corner (all combinations)
+    else if(currentHit->fLocalHits.size()==1 && currentHit->fLocalEdges.size()==1 && currentHit->fLocalCorner.empty())
+    {
+      nextId = (previousId == currentHit->fLocalCorner[0]) ? currentHit->fLocalEdges[0] : currentHit->fLocalCorner[0];
+      found = true;
+    }
+    else if(currentHit->fLocalHits.size()==1 && currentHit->fLocalEdges.empty() && currentHit->fLocalCorner.size()==1)
+    {
+      nextId = (previousId == currentHit->fLocalCorner[0]) ? currentHit->fLocalCorner[0] : currentHit->fLocalCorner[0];
+      found = true;
+    }
+    else if(currentHit->fLocalHits.empty() && currentHit->fLocalEdges.size()==1 && currentHit->fLocalCorner.size()==1)
+    {
+      nextId = (previousId == currentHit->fLocalEdges[0]) ? currentHit->fLocalCorner[0] : currentHit->fLocalEdges[0];
+      found = true;
+    }
+  }
+
+
+  if(found && hits[nextId].fIsVisited)
+  {
+    // If the next hit is already visited return false - it is already added in a track
+    found = false;
+  }
+
+  return found;
 }
 
 void FgdGenFitRecon::FitTracks(std::vector<pathfinder::TrackFinderTrack>& foundTracks)
