@@ -48,6 +48,7 @@ namespace DP
     static const string FGD_TIME_INTERVAL_HITS = "timeIntervalHits";
     static const string FGD_EXCLUDE_HITS_ABOVE_TIME_INTERVAL = "excludeHitsAbove";
     static const string FGD_EXCLUDE_HITS_BELOW_TIME_INTERVAL = "excludeHitsBelow";
+    static const string FGD_MAX_NEIGHTBOUR_NODES = "maxNeightbourNodes";
 
     static const string PF_USE_VERTEX = "use_vertex";
     static const string PF_VERTEXX = "vertexX";
