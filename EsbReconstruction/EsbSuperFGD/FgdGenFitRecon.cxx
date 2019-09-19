@@ -1157,12 +1157,12 @@ Bool_t FgdGenFitRecon::GetNext(Int_t previousId, Int_t currentId, Int_t& nextId,
     // 2. 1 hit on face, 1 on edge and 1 one corner (all combinations)
     else if(currentHit->fLocalHits.size()==1 && currentHit->fLocalEdges.size()==1 && currentHit->fLocalCorner.empty())
     {
-      nextId = (previousId == currentHit->fLocalCorner[0]) ? currentHit->fLocalEdges[0] : currentHit->fLocalCorner[0];
+      nextId = (previousId == currentHit->fLocalHits[0]) ? currentHit->fLocalEdges[0] : currentHit->fLocalHits[0];
       found = true;
     }
     else if(currentHit->fLocalHits.size()==1 && currentHit->fLocalEdges.empty() && currentHit->fLocalCorner.size()==1)
     {
-      nextId = (previousId == currentHit->fLocalCorner[0]) ? currentHit->fLocalCorner[0] : currentHit->fLocalCorner[0];
+      nextId = (previousId == currentHit->fLocalHits[0]) ? currentHit->fLocalCorner[0] : currentHit->fLocalHits[0];
       found = true;
     }
     else if(currentHit->fLocalHits.empty() && currentHit->fLocalEdges.size()==1 && currentHit->fLocalCorner.size()==1)
