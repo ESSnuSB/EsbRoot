@@ -271,6 +271,8 @@ Bool_t FgdGenFitRecon::GetHits(std::vector<ReconHit>& allHits)
   std::cout << "fHitArray->GetEntries() " << fHitArray->GetEntries() << std::endl;
 
   std::map<Long_t, Bool_t> visited;
+
+  Int_t numVis(0);
  
   for(Int_t i =0; i <  fHitArray->GetEntries() ; i++)
   {
@@ -281,12 +283,17 @@ Bool_t FgdGenFitRecon::GetHits(std::vector<ReconHit>& allHits)
     Int_t&& x = mppcLoc.X();
     Int_t&& y = mppcLoc.Y();
     Int_t&& z = mppcLoc.Z();
-    cout  << "GetHits" << " x " << x << " y " << y << " z " << z << endl;
-    if(visited[ArrInd(x,y,z)])
+    
+    Int_t ind = ArrInd(x,y,z);
+    if(visited[ind])
     {
       continue;
     }
-    visited[ArrInd(x,y,z)] = true;
+    visited[ind] = true;
+    // cout << "numVis " << numVis++ << endl;
+    // cout << "ind " << ind << endl;
+    // cout  << "GetHits" << " x " << x << " y " << y << " z " << z << endl;
+    // cout << endl;
 
     if(photoE.X() >= errPhotoLimit 
         & photoE.Y()>= errPhotoLimit 
@@ -296,6 +303,8 @@ Bool_t FgdGenFitRecon::GetHits(std::vector<ReconHit>& allHits)
       hitPos(0) = -f_total_X/2 + f_step_X*mppcLoc.X()  +f_step_X/2;
       hitPos(1) = -f_total_Y/2 + f_step_Y*mppcLoc.Y()  +f_step_Y/2;
       hitPos(2) = -f_total_Z/2 + f_step_Z*mppcLoc.Z()  +f_step_Z/2;
+
+      // cout  << "ReconHit" << " x " << hitPos(0) << " y " << hitPos(1) << " z " << hitPos(2) << endl;
 
       allHits.emplace_back(ReconHit(
                                 mppcLoc
@@ -746,39 +755,57 @@ Bool_t FgdGenFitRecon::FindByLocalScan(std::vector<ReconHit>& hits
   }
 
 
-  for(Int_t i=0; i<hits.size(); ++i)
-  {
-    cout << "i " << i << endl;
-    for(Int_t j=0; j<hits[i].fLocalHits.size(); ++j)
-    {
-      cout << " Local Id " << hits[i].fLocalHits[j] << endl;
-    }
+  // TODO2
+  // for(Int_t i=0; i<hits.size(); ++i)
+  // {
+  //   cout << "i " << i << endl;
+  //   for(Int_t j=0; j<hits[i].fLocalHits.size(); ++j)
+  //   {
+  //     cout << " Local Id " << hits[i].fLocalHits[j] << endl;
+  //   }
 
-    if(hits[i].IsLeaf())
-    {
-      cout << "IsLeaf" << endl;
-    }
-    cout << "=====" << endl;
-  }
+  //   if(hits[i].IsLeaf())
+  //   {
+  //     cout << "IsLeaf" << endl;
+  //   }
+  //   cout << "=====" << endl;
+  // }
+  // TODO2
 
   for(Int_t i=0; i<tracks.size(); ++i)
   {
     // Start in the graph from the initial Leaf
     std::vector<Int_t>& track = tracks[i];
     Int_t previousId = track[0];
-    std::cout << "Next Track " << previousId  << std::endl;
-    ReconHit& currentHit = hits[previousId];
+    // std::cout << "Next Track " << previousId  << std::endl;// TODO2
+    ReconHit* currentHit = &hits[previousId];
+
     Int_t nextId(-1);
-    while(currentHit.GetNext(previousId, nextId))
+
+    if(currentHit->fIsVisited)
     {
-      std::cout << "previousId " << previousId << " nextId " << nextId << std::endl;
-      previousId = currentHit.fLocalId;
-      currentHit = hits[nextId];
+      continue;
+    }
+    currentHit->fIsVisited = true;
+
+    if(currentHit->GetNext(previousId, nextId))
+    {
+      currentHit = &hits[nextId];
+      currentHit->fIsVisited = true;
+    }
+    
+    while(currentHit->GetNext(previousId, nextId))
+    {
+      // std::cout << " nextId " << nextId << std::endl; // TODO2
+      previousId = currentHit->fLocalId;
+      currentHit = &hits[nextId];
+      // std::cout << "currentHit.fLocalId " << currentHit->fLocalId  << std::endl;// TODO2
+      currentHit->fIsVisited = true;
       track.push_back(nextId);
 
-      if(currentHit.IsLeaf())
+      if(currentHit->IsLeaf())
       {
-        std::cout << "currentHit.IsLeaf() "  << std::endl;
+        // std::cout << "currentHit.IsLeaf() "  << std::endl;// TODO2
         break;
       }
     }
@@ -804,50 +831,58 @@ Bool_t FgdGenFitRecon::FindByLocalScan(std::vector<ReconHit>& hits
 
 void FgdGenFitRecon::BuildGraph(std::vector<ReconHit>& hits)
 {
-    cout << " ================================ " << endl;
+    // cout << " ================================ " << endl;
     // 1. Create the position to which index in the vector it is poiting
     std::map<Long_t, Int_t> positionToId;
     for(Int_t i=0; i<hits.size(); ++i)
     {
-      Int_t&& x = hits[i].fHitPos.X();
-      Int_t&& y = hits[i].fHitPos.Y();
-      Int_t&& z = hits[i].fHitPos.Z();
+      // Int_t&& x = hits[i].fHitPos.X();
+      // Int_t&& y = hits[i].fHitPos.Y();
+      // Int_t&& z = hits[i].fHitPos.Z();
 
-      cout  << endl;
+      Int_t&& x = hits[i].fmppcLoc.X();
+      Int_t&& y = hits[i].fmppcLoc.Y();
+      Int_t&& z = hits[i].fmppcLoc.Z();
+
+      // cout  << endl;
       Int_t&& ind = ArrInd(x,y,z);
-      cout  << "coordintes" << " x " << x << " y " << y << " z " << z << endl;
-      cout  << "build index " << ind << " val " << i << endl;
+      // cout  << "coordintes" << " x " << x << " y " << y << " z " << z << endl;
+      // cout  << "build index " << ind << " val " << i << endl;
 
-      cout  << endl;
+      // cout  << endl;
 
       positionToId[ind] = i;
 
       hits[i].fLocalHits.clear(); // Clear previous index positions
       hits[i].fLocalId = i;
     }
-    cout << " ================================ " << endl;
+    // cout << " ================================ " << endl;
 
     auto checkNext = [&](Int_t x_pos, Int_t y_pos, Int_t z_pos, Int_t ind){
-                                                                  if(positionToId[ArrInd(x_pos,y_pos,z_pos)])
+                                                                  Long_t&& key = ArrInd(x_pos,y_pos,z_pos);
+                                                                  if(positionToId.find(key)!=positionToId.end())
                                                                   {
-                                                                    Int_t& index = positionToId[ArrInd(x_pos,y_pos,z_pos)];
-                                                                    hits[ind].fLocalHits.push_back(index);
+                                                                    hits[ind].fLocalHits.push_back(positionToId[key]);
 
-                                                                    cout << "link " << " x " << x_pos << " y " << y_pos << " z " << z_pos << endl;
-                                                                    cout << "current index " << index << endl;
-                                                                    cout  << endl;
+                                                                    // cout << "link " << " x " << x_pos << " y " << y_pos << " z " << z_pos << endl;
+                                                                    // cout << "current key " << key << endl;
+                                                                    // cout  << endl;
                                                                   }
                                                                 };
 
     for(Int_t i=0; i<hits.size(); ++i)
     {
-      Int_t&& x = hits[i].fHitPos.X();
-      Int_t&& y = hits[i].fHitPos.Y();
-      Int_t&& z = hits[i].fHitPos.Z();
+      // Int_t&& x = hits[i].fHitPos.X();
+      // Int_t&& y = hits[i].fHitPos.Y();
+      // Int_t&& z = hits[i].fHitPos.Z();
 
-      cout << "current i " << i << endl;
-      cout << "current " << " x " << x << " y " << y << " z " << z << endl;
-      cout  << endl;
+      Int_t&& x = hits[i].fmppcLoc.X();
+      Int_t&& y = hits[i].fmppcLoc.Y();
+      Int_t&& z = hits[i].fmppcLoc.Z();
+
+      // cout << "current i " << i << endl;
+      // cout << "current " << " x " << x << " y " << y << " z " << z << endl;
+      // cout  << endl;
 
       // Check in X axis
       checkNext(x+1,y,z, i);
@@ -860,7 +895,8 @@ void FgdGenFitRecon::BuildGraph(std::vector<ReconHit>& hits)
       // Check in Z axis
       checkNext(x,y,z+1, i);
       checkNext(x,y,z-1, i);
-      cout << " ==== " << endl;
+
+      // cout << " ==== " << endl;
 
       // // Check in X,Y corners
       // checkNext(x+1,y+1,z, i);
