@@ -758,20 +758,28 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
 
 
   // TODO2
-  // for(Int_t i=0; i<hits.size(); ++i)
-  // {
-  //   cout << "i " << i << endl;
-  //   for(Int_t j=0; j<hits[i].fLocalHits.size(); ++j)
-  //   {
-  //     cout << " Local Id " << hits[i].fLocalHits[j] << endl;
-  //   }
+  for(Int_t i=0; i<hits.size(); ++i)
+  {
+    cout << "i " << i << endl;
+    for(Int_t j=0; j<hits[i].fLocalHits.size(); ++j)
+    {
+      cout << " Local Id " << hits[i].fLocalHits[j] << endl;
+    }
+    for(Int_t j=0; j<hits[i].fLocalEdges.size(); ++j)
+    {
+      cout << " Edge Id " << hits[i].fLocalEdges[j] << endl;
+    }
+    for(Int_t j=0; j<hits[i].fLocalCorner.size(); ++j)
+    {
+      cout << " Corner Id " << hits[i].fLocalCorner[j] << endl;
+    }
 
-  //   if(hits[i].IsLeaf())
-  //   {
-  //     cout << "IsLeaf" << endl;
-  //   }
-  //   cout << "=====" << endl;
-  // }
+    // if(hits[i].IsLeaf())
+    // {
+    //   cout << "IsLeaf" << endl;
+    // }
+    cout << "=====" << endl;
+  }
   // TODO2
 
   for(Int_t i=0; i<tracks.size(); ++i)
@@ -785,32 +793,40 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
     Int_t nextId(-1);
     Int_t currentId(-1);
 
-    if(currentHit->fIsVisited)
-    {
-      continue;
-    }
-    currentHit->fIsVisited = true;
+    // if(currentHit->fIsVisited)
+    // {
+    //   continue;
+    // }
+    // currentHit->fIsVisited = true;
 
     if(GetNext(-1 /* Initial hit is a leaf, no previousId*/, previousId, nextId, hits))
     {
+      cout << "I am here if condition" << endl;
+      cout << "previousId " << previousId << endl;
+      cout << "nextId " << nextId << endl;
       currentHit = &hits[nextId];
       currentHit->fIsVisited = true;
     }
     
     while(GetNext(previousId, currentHit->fLocalId, nextId, hits))
     {
+      cout << "I am here while condition" << endl;
+
       // std::cout << " nextId " << nextId << std::endl; // TODO2
       previousId = currentHit->fLocalId;
       currentHit = &hits[nextId];
       // std::cout << "currentHit.fLocalId " << currentHit->fLocalId  << std::endl;// TODO2
-      currentHit->fIsVisited = true;
+      // currentHit->fIsVisited = true;
       track.push_back(nextId);
 
-      if(IsLeaf(currentHit->fLocalId, hits))
-      {
-        // std::cout << "currentHit.IsLeaf() "  << std::endl;// TODO2
-        break;
-      }
+      // if(IsLeaf(currentHit->fLocalId, hits))
+      // {
+      //   // std::cout << "currentHit.IsLeaf() "  << std::endl;// TODO2
+      //   break;
+      // }
+
+      cout << "previousId " << previousId << endl;
+      cout << "nextId " << nextId << endl;
     }
   }
 
