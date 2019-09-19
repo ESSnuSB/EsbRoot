@@ -30,7 +30,7 @@ class FgdGenFitRecon : public FairTask
     HOUGH_PATHFINDER_ALL,
     HOUGH_PATHFINDER_ABOVE_BELOW,
     HOUGH_PATHFINDER_TIME_INTERVALS,
-    LOCAL_SCAN
+    USE_GRAPH
   };
 
   /** Default constructor **/  
@@ -98,7 +98,7 @@ private:
                   , std::vector<pathfinder::TrackFinderTrack>& foundTracks
                   , FindTrackType trackType);
 
-  Bool_t FindByLocalScan(std::vector<ReconHit>& hits
+  Bool_t FindUsingGraph(std::vector<ReconHit>& hits
                   , std::vector<pathfinder::TrackFinderTrack>& foundTracks);
   
   void BuildGraph(std::vector<ReconHit>& hits);

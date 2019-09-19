@@ -233,8 +233,8 @@ void FgdGenFitRecon::Exec(Option_t* opt)
         case TrackFinder::HOUGH_PATHFINDER_TIME_INTERVALS:
                                           rc = FindByIntervalsTracks(allhits, foundTracks, FindTrackType::CURL);
                                           break;
-        case TrackFinder::LOCAL_SCAN:
-                                          rc = FindByLocalScan(allhits, foundTracks);
+        case TrackFinder::USE_GRAPH:
+                                          rc = FindUsingGraph(allhits, foundTracks);
                                           break;
         default: 
                 rc = false;
@@ -733,7 +733,7 @@ Bool_t FgdGenFitRecon::FindByIntervalsTracks(std::vector<ReconHit>& hits
   return found;
 }
 
-Bool_t FgdGenFitRecon::FindByLocalScan(std::vector<ReconHit>& hits
+Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
                   , std::vector<pathfinder::TrackFinderTrack>& foundTracks)
 {
   if(hits.empty())
@@ -815,12 +815,25 @@ Bool_t FgdGenFitRecon::FindByLocalScan(std::vector<ReconHit>& hits
   {
     std::vector<Int_t>& track = tracks[i];
     std::vector<pathfinder::basicHit> currentTrack;
+    cout << "Track " << i << endl;
+    Int_t z_mppc=-1;
     for(Int_t j=0; j<track.size(); ++j)
     {
       Int_t ind = track[j];
+      if(z_mppc<hits[ind].fmppcLoc.Z())
+      {
+        z_mppc = hits[ind].fmppcLoc.Z();
+      }
+      else
+      {
+        continue;
+      }
+      
       currentTrack.emplace_back(hits[ind].fHitPos.X()
                                 , hits[ind].fHitPos.Y()
                                 , hits[ind].fHitPos.Z());
+
+      cout << "X " << hits[ind].fmppcLoc.X()<< " Y " << hits[ind].fmppcLoc.Y()<< " Z " << hits[ind].fmppcLoc.Z() << endl;
     }
     pathfinder::TrackFinderTrack tr(pathfinder::TrackParameterFull(0.,0.,0.,0.,0.),std::move(currentTrack));
     foundTracks.emplace_back(tr);
@@ -863,6 +876,30 @@ void FgdGenFitRecon::BuildGraph(std::vector<ReconHit>& hits)
                                                                   if(positionToId.find(key)!=positionToId.end())
                                                                   {
                                                                     hits[ind].fLocalHits.push_back(positionToId[key]);
+
+                                                                    // cout << "link " << " x " << x_pos << " y " << y_pos << " z " << z_pos << endl;
+                                                                    // cout << "current key " << key << endl;
+                                                                    // cout  << endl;
+                                                                  }
+                                                                };
+
+    auto checkNextEdge = [&](Int_t x_pos, Int_t y_pos, Int_t z_pos, Int_t ind){
+                                                                  Long_t&& key = ArrInd(x_pos,y_pos,z_pos);
+                                                                  if(positionToId.find(key)!=positionToId.end())
+                                                                  {
+                                                                    hits[ind].fLocalEdges.push_back(positionToId[key]);
+
+                                                                    // cout << "link " << " x " << x_pos << " y " << y_pos << " z " << z_pos << endl;
+                                                                    // cout << "current key " << key << endl;
+                                                                    // cout  << endl;
+                                                                  }
+                                                                };
+
+    auto checkNextCorner = [&](Int_t x_pos, Int_t y_pos, Int_t z_pos, Int_t ind){
+                                                                  Long_t&& key = ArrInd(x_pos,y_pos,z_pos);
+                                                                  if(positionToId.find(key)!=positionToId.end())
+                                                                  {
+                                                                    hits[ind].fLocalCorner.push_back(positionToId[key]);
 
                                                                     // cout << "link " << " x " << x_pos << " y " << y_pos << " z " << z_pos << endl;
                                                                     // cout << "current key " << key << endl;
@@ -926,6 +963,35 @@ void FgdGenFitRecon::BuildGraph(std::vector<ReconHit>& hits)
       // checkNext(x-1,y+1,z-1, i);
       // checkNext(x-1,y-1,z+1, i);
       // checkNext(x-1,y-1,z-1, i);
+
+      // Check in X,Y corners
+      checkNextEdge(x+1,y+1,z, i);
+      checkNextEdge(x+1,y-1,z, i);
+      checkNextEdge(x-1,y+1,z, i);
+      checkNextEdge(x-1,y-1,z, i);
+
+      // Check in X,Z corners
+      checkNextEdge(x+1,y,z+1, i);
+      checkNextEdge(x+1,y,z-1, i);
+      checkNextEdge(x-1,y,z+1, i);
+      checkNextEdge(x-1,y,z-1, i);
+
+      // Check in Y,Z corners
+      checkNextEdge(x,y+1,z+1, i);
+      checkNextEdge(x,y+1,z-1, i);
+      checkNextEdge(x,y-1,z+1, i);
+      checkNextEdge(x,y-1,z-1, i);
+
+      // Check in X,Y,Z corners
+      checkNextCorner(x+1,y+1,z+1, i);
+      checkNextCorner(x+1,y+1,z-1, i);
+      checkNextCorner(x+1,y-1,z+1, i);
+      checkNextCorner(x+1,y-1,z-1, i);
+
+      checkNextCorner(x-1,y+1,z+1, i);
+      checkNextCorner(x-1,y+1,z-1, i);
+      checkNextCorner(x-1,y-1,z+1, i);
+      checkNextCorner(x-1,y-1,z-1, i);
     }
 }
 
@@ -950,7 +1016,7 @@ void FgdGenFitRecon::FitTracks(std::vector<pathfinder::TrackFinderTrack>& foundT
     for(Int_t i =0; i <  foundTracks.size() ; i++)
     {
       std::vector<pathfinder::basicHit>& hitsOnTrack = const_cast<std::vector<pathfinder::basicHit>&>(foundTracks[i].getHitsOnTrack());
-      //std::sort(hitsOnTrack.begin(), hitsOnTrack.end(), [](pathfinder::basicHit bh1, pathfinder::basicHit bh2){return bh1.getZ()<bh2.getZ();});
+      std::sort(hitsOnTrack.begin(), hitsOnTrack.end(), [](pathfinder::basicHit bh1, pathfinder::basicHit bh2){return bh1.getZ()<bh2.getZ();});
 
       // Set lower limit on track size
       if(hitsOnTrack.size()<fminHits)
@@ -964,7 +1030,7 @@ void FgdGenFitRecon::FitTracks(std::vector<pathfinder::TrackFinderTrack>& foundT
       //const int pdg = 13;
       int pdg = 13;
 
-      // pdg = (i ==0) ? 211 : 11;
+      pdg = (i ==0) ? 2212 : 11;
 
       //TVector3 posM(fstartPos);
       TVector3 posM(hitsOnTrack[0].getX(),hitsOnTrack[0].getY(),hitsOnTrack[0].getZ());
@@ -972,10 +1038,10 @@ void FgdGenFitRecon::FitTracks(std::vector<pathfinder::TrackFinderTrack>& foundT
 
       // First point should be the start of the track
       //TVector3 momM(hitsOnTrack[0].getX(),hitsOnTrack[0].getY(),hitsOnTrack[0].getZ());
-      // if(i==0)
-      // {
-      //   momM.SetXYZ(-0.187,0.079, 0.150);
-      // }
+      if(i==0)
+      {
+        momM.SetXYZ(-0.106, -0.133, 0.663);
+      }
 
       // if(i==1)
       // {

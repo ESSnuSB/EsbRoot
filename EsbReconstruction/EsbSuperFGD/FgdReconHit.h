@@ -35,7 +35,8 @@ public:
 
     bool IsLeaf()
     {
-        return (fLocalHits.size()==1); 
+        Int_t totalSize = fLocalHits.size() + fLocalEdges.size();
+        return (totalSize==1); 
     }
 
     bool IsAlone()
@@ -43,30 +44,8 @@ public:
         return fLocalHits.empty(); 
     }
 
-    // return next if:
-    //  a) It is a leaf -> there is only one neightbour cube
-    //  b) It is empty -> no hits near it
-    //  c) It has more than 2 neightbour hits - it is in a vertex or a complicated interavtion
-    //      and the track cannot be extracted.
-    bool GetNext(Int_t& previousId, Int_t& nextId)
-    {
-        if(fLocalHits.size()==1 && previousId!=fLocalHits[0])
-        {
-            nextId = fLocalHits[0];
-            return true;
-        }
+    bool GetNext(Int_t& previousId, Int_t& nextId);
 
-        // The previous Id has to be in the LocalHits
-        if(fLocalHits.size()==2 && std::find(fLocalHits.begin(), fLocalHits.end(),previousId)!=fLocalHits.end())
-        {
-            nextId = (fLocalHits[0] == previousId) ? fLocalHits[1] : fLocalHits[0];
-            return true;
-        }
-
-        return false;
-    }
-
-    
     TVector3 fmppcLoc;
     TVector3 fHitPos;
     TVector3 fphotons;
@@ -81,6 +60,8 @@ public:
     Int_t fLocalId;
     Bool_t fIsVisited;
     std::vector<Int_t> fLocalHits;//!<! 
+    std::vector<Int_t> fLocalEdges;//!<! 
+    std::vector<Int_t> fLocalCorner;//!<! 
 
 private:
 
