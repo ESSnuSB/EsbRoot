@@ -754,6 +754,8 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
     }
   }
 
+  cout << "Leaves found " << tracks.size() << endl;
+
 
   // TODO2
   // for(Int_t i=0; i<hits.size(); ++i)
@@ -998,8 +1000,72 @@ void FgdGenFitRecon::BuildGraph(std::vector<ReconHit>& hits)
 
 Bool_t FgdGenFitRecon::IsLeaf(Int_t& ind, std::vector<ReconHit>& hits)
 {
-  // TODO implement
-  return false;
+  // There is only 1 nearby hit because the leaf is at the end of the track
+  // Thus search for possible scenarios in which the cube has only one neightbour hit 
+  // in contact with the current`s cube face, edge or corner.
+  Bool_t isHitLeaf(false);
+
+  ReconHit* hit = &hits[ind];
+
+  Bool_t isOnlyOnelocalHit = hit->fLocalEdges.empty() && hit->fLocalCorner.empty() && (hit->fLocalHits.size()==1);
+  Bool_t isOnlyOneEdge = hit->fLocalHits.empty() && hit->fLocalCorner.empty() && (hit->fLocalEdges.size()==1);
+  Bool_t isOnlyOneCorner = hit->fLocalHits.empty() && hit->fLocalEdges.empty() && (hit->fLocalCorner.size()==1);
+
+  Bool_t isOnTrackEdge(false);
+  Bool_t isOnTrackCorner(false);
+  Bool_t isOnTrackEdgeOrCorner(false);
+  // ===============================
+  // Check if the neightbour hits lie on the same face, if so the current track starts (presumably from the current hit)
+  if(hit->fLocalHits.size()==1 && hit->fLocalEdges.size()==1 && hit->fLocalCorner.empty())
+  {
+      ReconHit* localHit = &hits[hit->fLocalHits[0]];
+      ReconHit* edgeHit = &hits[hit->fLocalEdges[0]];
+
+      isOnTrackEdge = (localHit->fmppcLoc.X() == edgeHit->fmppcLoc.X())
+                      || (localHit->fmppcLoc.Y() == edgeHit->fmppcLoc.Y())
+                      || (localHit->fmppcLoc.Z() == edgeHit->fmppcLoc.Z());
+  }
+
+  if(hit->fLocalHits.size()==1 && hit->fLocalCorner.size()==1 && hit->fLocalEdges.empty())
+  {
+      ReconHit* localHit = &hits[hit->fLocalHits[0]];
+      ReconHit* cornerHit = &hits[hit->fLocalCorner[0]];
+
+      isOnTrackCorner = (localHit->fmppcLoc.X() == cornerHit->fmppcLoc.X())
+                      || (localHit->fmppcLoc.Y() == cornerHit->fmppcLoc.Y())
+                      || (localHit->fmppcLoc.Z() == cornerHit->fmppcLoc.Z());
+  }
+
+  if(hit->fLocalHits.size()==1 && hit->fLocalCorner.size()==1 && hit->fLocalEdges.size()==1)
+  {
+      ReconHit* localHit = &hits[hit->fLocalHits[0]];
+      ReconHit* cornerHit = &hits[hit->fLocalCorner[0]];
+      ReconHit* edgeHit = &hits[hit->fLocalEdges[0]];
+
+      Bool_t samePlane = ((localHit->fmppcLoc.X() == cornerHit->fmppcLoc.X())
+                              || (localHit->fmppcLoc.Y() == cornerHit->fmppcLoc.Y())
+                              || (localHit->fmppcLoc.Z() == cornerHit->fmppcLoc.Z())
+                        )
+                      &&
+                      ((localHit->fmppcLoc.X() == edgeHit->fmppcLoc.X())
+                          || (localHit->fmppcLoc.Y() == edgeHit->fmppcLoc.Y())
+                          || (localHit->fmppcLoc.Z() == edgeHit->fmppcLoc.Z())
+                      );
+
+      Bool_t  sameCorner = (cornerHit->fmppcLoc.X() == edgeHit->fmppcLoc.X()) || (cornerHit->fmppcLoc.Y() == edgeHit->fmppcLoc.Y());
+      isOnTrackEdgeOrCorner = samePlane && sameCorner;
+  }
+
+  // ===============================
+
+  isHitLeaf = isOnlyOnelocalHit           // There is only one hit on face
+              || isOnlyOneEdge            // There is only one hit on edge
+              || isOnlyOneCorner          // There is only one hit on corner
+              || isOnTrackEdge            // There is one hit on the face and one on the edge, those hits are adjacent thus on the same track
+              || isOnTrackCorner          // There is one hit on the face and one on the coner, those hits are adjacent thus on the same track
+              || isOnTrackEdgeOrCorner;   // There is one hit on the face,edge and  coner, if those hits are adjacent thus on the same track
+
+  return isHitLeaf;
 }
 
 Bool_t FgdGenFitRecon::GetNext(Int_t previousId, Int_t currentId, Int_t& nextId, std::vector<ReconHit>& hits)

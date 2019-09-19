@@ -71,7 +71,7 @@ ReconHit& ReconHit::operator=(const ReconHit& c)
     return *this;
 }
 
-bool ReconHit::operator==(const ReconHit& c)
+Bool_t ReconHit::operator==(const ReconHit& c)
 {
     return (this->fHitPos.X() == c.fHitPos.X()
             && this->fHitPos.Y() == c.fHitPos.Y()

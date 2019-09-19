@@ -31,7 +31,7 @@ public:
 
     ReconHit& operator=(const ReconHit& c);
 
-    bool operator==(const ReconHit& c);
+    Bool_t operator==(const ReconHit& c);
 
     // bool IsLeaf()
     // {
