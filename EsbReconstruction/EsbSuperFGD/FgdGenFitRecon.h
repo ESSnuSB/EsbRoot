@@ -103,10 +103,6 @@ private:
   
   void BuildGraph(std::vector<ReconHit>& hits);
 
-  // Bool_t IsLeaf(Int_t& ind, std::vector<ReconHit>& hits);
-
-  // Bool_t GetNext(Int_t previousId, Int_t currentId, Int_t& nextId, std::vector<ReconHit>& hits);
-
   /** Fit the found tracks using genfit **/
   void FitTracks(std::vector<pathfinder::TrackFinderTrack>& foundTracks);
 
