@@ -50,12 +50,14 @@ set(SRCS
 	EsbSuperFGD/FgdGenFitRecon.cxx
 	EsbSuperFGD/FgdMuonOnlyGenFitRecon.cxx
 	EsbSuperFGD/FgdReconHit.cxx
+	EsbSuperFGD/FgdReconTemplate.cxx
 )
 
 Set(HEADERS 
 	${CMAKE_SOURCE_DIR}/EsbReconstruction/EsbSuperFGD/FgdGenFitRecon.h
 	${CMAKE_SOURCE_DIR}/EsbReconstruction/EsbSuperFGD/FgdMuonOnlyGenFitRecon.h
 	${CMAKE_SOURCE_DIR}/EsbReconstruction/EsbSuperFGD/FgdReconHit.h
+	${CMAKE_SOURCE_DIR}/EsbReconstruction/EsbSuperFGD/FgdReconTemplate.h
 )
 
 Set(LINKDEF ${CMAKE_SOURCE_DIR}/EsbReconstruction/ReconLinkDef.h)
