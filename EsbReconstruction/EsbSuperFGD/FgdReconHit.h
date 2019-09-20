@@ -14,6 +14,10 @@ class ReconHit : public TObject
 {
 
 public:
+
+    /** Default constructor **/  
+    ReconHit();
+
     ReconHit(TVector3 mppcLoc
             , TVector3 hitPosition
             , TVector3 photons

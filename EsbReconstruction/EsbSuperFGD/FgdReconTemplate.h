@@ -28,6 +28,9 @@ class FgdReconTemplate : public TObject
 
 public:
 
+    /** Default constructor **/  
+    FgdReconTemplate();
+
     /** Constructor with argument
         *@param templateConfigFile - path to the template configuration file
     **/ 

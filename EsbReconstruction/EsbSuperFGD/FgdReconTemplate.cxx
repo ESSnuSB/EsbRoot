@@ -6,10 +6,13 @@ namespace reconstruction {
 namespace superfgd {
 
 
-FgdReconTemplate::FgdReconTemplate(const char* templateConfigFile)
+FgdReconTemplate::FgdReconTemplate()
 {
 }
 
+FgdReconTemplate::FgdReconTemplate(const char* templateConfigFile)
+{
+}
 
 FgdReconTemplate::~FgdReconTemplate()
 {

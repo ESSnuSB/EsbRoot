@@ -6,6 +6,9 @@ namespace esbroot {
 namespace reconstruction {
 namespace superfgd {
 
+ReconHit::ReconHit()
+{
+}
 
 ReconHit::ReconHit(TVector3 mppcLoc
             , TVector3 hitPosition
