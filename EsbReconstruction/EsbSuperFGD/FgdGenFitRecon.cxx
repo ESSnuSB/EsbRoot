@@ -746,89 +746,89 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
 
   std::vector<std::vector<Int_t>> tracks;
 
-  for(Int_t i=0; i<hits.size(); ++i)
-  {
-    if(IsLeaf(i, hits))
-    {
-      tracks.push_back(std::vector<int>{i});
-    }
-  }
+  // for(Int_t i=0; i<hits.size(); ++i)
+  // {
+  //   if(IsLeaf(i, hits))
+  //   {
+  //     tracks.push_back(std::vector<int>{i});
+  //   }
+  // }
 
-  cout << "Leaves found " << tracks.size() << endl;
+  // cout << "Leaves found " << tracks.size() << endl;
 
 
-  // TODO2
-  for(Int_t i=0; i<hits.size(); ++i)
-  {
-    cout << "i " << i << endl;
-    for(Int_t j=0; j<hits[i].fLocalHits.size(); ++j)
-    {
-      cout << " Local Id " << hits[i].fLocalHits[j] << endl;
-    }
-    for(Int_t j=0; j<hits[i].fLocalEdges.size(); ++j)
-    {
-      cout << " Edge Id " << hits[i].fLocalEdges[j] << endl;
-    }
-    for(Int_t j=0; j<hits[i].fLocalCorner.size(); ++j)
-    {
-      cout << " Corner Id " << hits[i].fLocalCorner[j] << endl;
-    }
+  // // TODO2
+  // for(Int_t i=0; i<hits.size(); ++i)
+  // {
+  //   cout << "i " << i << endl;
+  //   for(Int_t j=0; j<hits[i].fLocalHits.size(); ++j)
+  //   {
+  //     cout << " Local Id " << hits[i].fLocalHits[j] << endl;
+  //   }
+  //   for(Int_t j=0; j<hits[i].fLocalEdges.size(); ++j)
+  //   {
+  //     cout << " Edge Id " << hits[i].fLocalEdges[j] << endl;
+  //   }
+  //   for(Int_t j=0; j<hits[i].fLocalCorner.size(); ++j)
+  //   {
+  //     cout << " Corner Id " << hits[i].fLocalCorner[j] << endl;
+  //   }
 
-    // if(hits[i].IsLeaf())
-    // {
-    //   cout << "IsLeaf" << endl;
-    // }
-    cout << "=====" << endl;
-  }
-  // TODO2
+  //   if(IsLeaf(i, hits))
+  //   {
+  //     cout << "IsLeaf" << endl;
+  //   }
+  //   cout << "=====" << endl;
+  // }
+  // // TODO2
 
-  for(Int_t i=0; i<tracks.size(); ++i)
-  {
-    // Start in the graph from the initial Leaf
-    std::vector<Int_t>& track = tracks[i];
-    Int_t previousId = track[0];
-    // std::cout << "Next Track " << previousId  << std::endl;// TODO2
-    ReconHit* currentHit = &hits[previousId];
+  // for(Int_t i=0; i<tracks.size(); ++i)
+  // {
+  //   // Start in the graph from the initial Leaf
+  //   std::vector<Int_t>& track = tracks[i];
+  //   Int_t previousId = track[0];
+  //   // std::cout << "Next Track " << previousId  << std::endl;// TODO2
+  //   ReconHit* currentHit = &hits[previousId];
 
-    Int_t nextId(-1);
-    Int_t currentId(-1);
+  //   Int_t nextId(-1);
+  //   Int_t currentId(-1);
 
-    // if(currentHit->fIsVisited)
-    // {
-    //   continue;
-    // }
-    // currentHit->fIsVisited = true;
+  //   // if(currentHit->fIsVisited)
+  //   // {
+  //   //   continue;
+  //   // }
+  //   // currentHit->fIsVisited = true;
 
-    if(GetNext(-1 /* Initial hit is a leaf, no previousId*/, previousId, nextId, hits))
-    {
-      cout << "I am here if condition" << endl;
-      cout << "previousId " << previousId << endl;
-      cout << "nextId " << nextId << endl;
-      currentHit = &hits[nextId];
-      currentHit->fIsVisited = true;
-    }
+  //   if(GetNext(-1 /* Initial hit is a leaf, no previousId*/, previousId, nextId, hits))
+  //   {
+  //     cout << "I am here if condition" << endl;
+  //     cout << "previousId " << previousId << endl;
+  //     cout << "nextId " << nextId << endl;
+  //     currentHit = &hits[nextId];
+  //     currentHit->fIsVisited = true;
+  //   }
     
-    while(GetNext(previousId, currentHit->fLocalId, nextId, hits))
-    {
-      cout << "I am here while condition" << endl;
+  //   while(GetNext(previousId, currentHit->fLocalId, nextId, hits))
+  //   {
+  //     cout << "I am here while condition" << endl;
 
-      // std::cout << " nextId " << nextId << std::endl; // TODO2
-      previousId = currentHit->fLocalId;
-      currentHit = &hits[nextId];
-      // std::cout << "currentHit.fLocalId " << currentHit->fLocalId  << std::endl;// TODO2
-      // currentHit->fIsVisited = true;
-      track.push_back(nextId);
+  //     // std::cout << " nextId " << nextId << std::endl; // TODO2
+  //     previousId = currentHit->fLocalId;
+  //     currentHit = &hits[nextId];
+  //     // std::cout << "currentHit.fLocalId " << currentHit->fLocalId  << std::endl;// TODO2
+  //     // currentHit->fIsVisited = true;
+  //     track.push_back(nextId);
 
-      // if(IsLeaf(currentHit->fLocalId, hits))
-      // {
-      //   // std::cout << "currentHit.IsLeaf() "  << std::endl;// TODO2
-      //   break;
-      // }
+  //     // if(IsLeaf(currentHit->fLocalId, hits))
+  //     // {
+  //     //   // std::cout << "currentHit.IsLeaf() "  << std::endl;// TODO2
+  //     //   break;
+  //     // }
 
-      cout << "previousId " << previousId << endl;
-      cout << "nextId " << nextId << endl;
-    }
-  }
+  //     cout << "previousId " << previousId << endl;
+  //     cout << "nextId " << nextId << endl;
+  //   }
+  // }
 
   for(Int_t i=0; i<tracks.size(); ++i)
   {
@@ -1014,227 +1014,213 @@ void FgdGenFitRecon::BuildGraph(std::vector<ReconHit>& hits)
     }
 }
 
-Bool_t FgdGenFitRecon::IsLeaf(Int_t& ind, std::vector<ReconHit>& hits)
-{
-  // There is only 1 nearby hit because the leaf is at the end of the track
-  // Thus search for possible scenarios in which the cube has only one neightbour hit 
-  // in contact with the current`s cube face, edge or corner.
-  Bool_t isHitLeaf(false);
+// Bool_t FgdGenFitRecon::IsLeaf(Int_t& ind, std::vector<ReconHit>& hits)
+// {
+//   // There is only 1 nearby hit because the leaf is at the end of the track
+//   // Thus search for possible scenarios in which the cube has only one neightbour hit 
+//   // in contact with the current`s cube face, edge or corner.
+//   Bool_t isHitLeaf(false);
 
-  ReconHit* hit = &hits[ind];
+//   ReconHit* hit = &hits[ind];
 
-  Bool_t isOnlyOnelocalHit = hit->fLocalEdges.empty() && hit->fLocalCorner.empty() && (hit->fLocalHits.size()==1);
-  Bool_t isOnlyOneEdge = hit->fLocalHits.empty() && hit->fLocalCorner.empty() && (hit->fLocalEdges.size()==1);
-  Bool_t isOnlyOneCorner = hit->fLocalHits.empty() && hit->fLocalEdges.empty() && (hit->fLocalCorner.size()==1);
+//   Bool_t isOnlyOnelocalHit = hit->fLocalEdges.empty() && hit->fLocalCorner.empty() && (hit->fLocalHits.size()==1);
+//   Bool_t isOnlyOneEdge = hit->fLocalHits.empty() && hit->fLocalCorner.empty() && (hit->fLocalEdges.size()==1);
+//   Bool_t isOnlyOneCorner = hit->fLocalHits.empty() && hit->fLocalEdges.empty() && (hit->fLocalCorner.size()==1);
 
-  Bool_t isOnTrackEdge(false);
-  Bool_t isOnTrackCorner(false);
-  Bool_t isOnTrackEdgeOrCorner(false);
-  // ===============================
-  // Check if the neightbour hits lie on the same face, if so the current track starts (presumably from the current hit)
-  if(hit->fLocalHits.size()==1 && hit->fLocalEdges.size()==1 && hit->fLocalCorner.empty())
-  {
-      ReconHit* localHit = &hits[hit->fLocalHits[0]];
-      ReconHit* edgeHit = &hits[hit->fLocalEdges[0]];
+//   Bool_t isOnTrackEdge(false);
+//   Bool_t isOnTrackCorner(false);
+//   Bool_t isOnTrackEdgeOrCorner(false);
+//   // ===============================
+//   // Check if the neightbour hits lie on the same face, if so the current track starts (presumably from the current hit)
+//   if(hit->fLocalHits.size()==1 && hit->fLocalEdges.size()==1 && hit->fLocalCorner.empty())
+//   {
+//       ReconHit* localHit = &hits[hit->fLocalHits[0]];
+//       ReconHit* edgeHit = &hits[hit->fLocalEdges[0]];
 
-      isOnTrackEdge = (localHit->fmppcLoc.X() == edgeHit->fmppcLoc.X())
-                      || (localHit->fmppcLoc.Y() == edgeHit->fmppcLoc.Y())
-                      || (localHit->fmppcLoc.Z() == edgeHit->fmppcLoc.Z());
-  }
+//       isOnTrackEdge = (localHit->fmppcLoc.X() == edgeHit->fmppcLoc.X())
+//                       || (localHit->fmppcLoc.Y() == edgeHit->fmppcLoc.Y())
+//                       || (localHit->fmppcLoc.Z() == edgeHit->fmppcLoc.Z());
+//   }
 
-  if(hit->fLocalHits.size()==1 && hit->fLocalCorner.size()==1 && hit->fLocalEdges.empty())
-  {
-      ReconHit* localHit = &hits[hit->fLocalHits[0]];
-      ReconHit* cornerHit = &hits[hit->fLocalCorner[0]];
+//   if(hit->fLocalHits.size()==1 && hit->fLocalCorner.size()==1 && hit->fLocalEdges.empty())
+//   {
+//       ReconHit* localHit = &hits[hit->fLocalHits[0]];
+//       ReconHit* cornerHit = &hits[hit->fLocalCorner[0]];
 
-      isOnTrackCorner = (localHit->fmppcLoc.X() == cornerHit->fmppcLoc.X())
-                      || (localHit->fmppcLoc.Y() == cornerHit->fmppcLoc.Y())
-                      || (localHit->fmppcLoc.Z() == cornerHit->fmppcLoc.Z());
-  }
+//       isOnTrackCorner = (localHit->fmppcLoc.X() == cornerHit->fmppcLoc.X())
+//                       || (localHit->fmppcLoc.Y() == cornerHit->fmppcLoc.Y())
+//                       || (localHit->fmppcLoc.Z() == cornerHit->fmppcLoc.Z());
+//   }
 
-  if(hit->fLocalHits.size()==1 && hit->fLocalCorner.size()==1 && hit->fLocalEdges.size()==1)
-  {
-      ReconHit* localHit = &hits[hit->fLocalHits[0]];
-      ReconHit* cornerHit = &hits[hit->fLocalCorner[0]];
-      ReconHit* edgeHit = &hits[hit->fLocalEdges[0]];
+//   if(hit->fLocalHits.size()==1 && hit->fLocalCorner.size()==1 && hit->fLocalEdges.size()==1)
+//   {
+//       ReconHit* localHit = &hits[hit->fLocalHits[0]];
+//       ReconHit* cornerHit = &hits[hit->fLocalCorner[0]];
+//       ReconHit* edgeHit = &hits[hit->fLocalEdges[0]];
 
-      Bool_t samePlane = ((localHit->fmppcLoc.X() == cornerHit->fmppcLoc.X())
-                              || (localHit->fmppcLoc.Y() == cornerHit->fmppcLoc.Y())
-                              || (localHit->fmppcLoc.Z() == cornerHit->fmppcLoc.Z())
-                        )
-                      &&
-                      ((localHit->fmppcLoc.X() == edgeHit->fmppcLoc.X())
-                          || (localHit->fmppcLoc.Y() == edgeHit->fmppcLoc.Y())
-                          || (localHit->fmppcLoc.Z() == edgeHit->fmppcLoc.Z())
-                      );
+//       Bool_t samePlane = ((localHit->fmppcLoc.X() == cornerHit->fmppcLoc.X())
+//                               || (localHit->fmppcLoc.Y() == cornerHit->fmppcLoc.Y())
+//                               || (localHit->fmppcLoc.Z() == cornerHit->fmppcLoc.Z())
+//                         )
+//                       &&
+//                       ((localHit->fmppcLoc.X() == edgeHit->fmppcLoc.X())
+//                           || (localHit->fmppcLoc.Y() == edgeHit->fmppcLoc.Y())
+//                           || (localHit->fmppcLoc.Z() == edgeHit->fmppcLoc.Z())
+//                       );
 
-      Bool_t  sameCorner = (cornerHit->fmppcLoc.X() == edgeHit->fmppcLoc.X()) || (cornerHit->fmppcLoc.Y() == edgeHit->fmppcLoc.Y());
-      isOnTrackEdgeOrCorner = samePlane && sameCorner;
-  }
+//       Bool_t  sameCorner = (cornerHit->fmppcLoc.X() == edgeHit->fmppcLoc.X()) || (cornerHit->fmppcLoc.Y() == edgeHit->fmppcLoc.Y());
+//       isOnTrackEdgeOrCorner = samePlane && sameCorner;
+//   }
 
-  // ===============================
+//   // ===============================
 
-  isHitLeaf = isOnlyOnelocalHit           // There is only one hit on face
-              || isOnlyOneEdge            // There is only one hit on edge
-              || isOnlyOneCorner          // There is only one hit on corner
-              || isOnTrackEdge            // There is one hit on the face and one on the edge, those hits are adjacent thus on the same track
-              || isOnTrackCorner          // There is one hit on the face and one on the coner, those hits are adjacent thus on the same track
-              || isOnTrackEdgeOrCorner;   // There is one hit on the face,edge and  coner, if those hits are adjacent thus on the same track
+//   isHitLeaf = isOnlyOnelocalHit           // There is only one hit on face
+//               || isOnlyOneEdge            // There is only one hit on edge
+//               || isOnlyOneCorner          // There is only one hit on corner
+//               || isOnTrackEdge            // There is one hit on the face and one on the edge, those hits are adjacent thus on the same track
+//               || isOnTrackCorner          // There is one hit on the face and one on the coner, those hits are adjacent thus on the same track
+//               || isOnTrackEdgeOrCorner;   // There is one hit on the face,edge and  coner, if those hits are adjacent thus on the same track
 
-  return isHitLeaf;
-}
+//   return isHitLeaf;
+// }
 
-Bool_t FgdGenFitRecon::GetNext(Int_t previousId, Int_t currentId, Int_t& nextId, std::vector<ReconHit>& hits)
-{
-  // Check initial conditions
-  if( previousId>=0 && previousId>=hits.size() 
-      || currentId<0 
-      || currentId>=hits.size())
-  {
-    std::string errMsg = "Index out of bounds exception! ";
-    std::cerr << errMsg << __FILE__ << __LINE__ << endl;
-    throw errMsg;
-  }
+// Bool_t FgdGenFitRecon::GetNext(Int_t previousId, Int_t currentId, Int_t& nextId, std::vector<ReconHit>& hits)
+// {
+//   // Check initial conditions
+//   if( previousId>=0 && previousId>=hits.size() 
+//       || currentId<0 
+//       || currentId>=hits.size())
+//   {
+//     std::string errMsg = "Index out of bounds exception! ";
+//     std::cerr << errMsg << __FILE__ << __LINE__ << endl;
+//     throw errMsg;
+//   }
 
-  Bool_t found(false);
-  ReconHit* currentHit = &hits[currentId];
-  currentHit->fIsVisited=true;
+//   Bool_t found(false);
+//   ReconHit* currentHit = &hits[currentId];
+//   currentHit->fIsVisited=true;
 
-  // Search for breaking conditions, that is if the current hit is a 'blob' of hits, in which case we cannot determine the track if belongs to
-  Int_t&& localHitSize = currentHit->fLocalHits.size();
-  Int_t&& localEdgeSize = currentHit->fLocalEdges.size();
-  Int_t&& localCornerSize = currentHit->fLocalCorner.size();
+//   // Search for breaking conditions, that is if the current hit is a 'blob' of hits, in which case we cannot determine the track if belongs to
+//   Int_t&& localHitSize = currentHit->fLocalHits.size();
+//   Int_t&& localEdgeSize = currentHit->fLocalEdges.size();
+//   Int_t&& localCornerSize = currentHit->fLocalCorner.size();
 
-  Int_t totalSize = localHitSize + localEdgeSize + localCornerSize;
+//   Int_t totalSize = localHitSize + localEdgeSize + localCornerSize;
 
-  Int_t limitNodes = fParams.ParamAsInt(esbroot::geometry::superfgd::DP::FGD_MAX_NEIGHTBOUR_NODES);
-  if(totalSize>=limitNodes)
-  {
-    return false;
-  }
+//   Int_t limitNodes = fParams.ParamAsInt(esbroot::geometry::superfgd::DP::FGD_MAX_NEIGHTBOUR_NODES);
+//   if(totalSize>=limitNodes)
+//   {
+//     return false;
+//   }
 
-  if(previousId<0)// It is a leaf, return nearest neighbour
-  {
-    // The conditions here are based on the conditions in IsLeaf methods
-    // If it is a Leaf, then the nearest hits are the ones below
-    if(currentHit->fLocalHits.size()==1)
-    {
-      nextId = currentHit->fLocalHits[0];
-      found = true;
-    } 
-    else if(currentHit->fLocalEdges.size()==1)
-    {
-      nextId = currentHit->fLocalEdges[0];
-      found = true;
-    } 
-    else if(currentHit->fLocalCorner.size()==1)
-    {
-      nextId = currentHit->fLocalCorner[0];
-      found = true;
-    }
-  }
-  else
-  {
-    ReconHit* previuosHit = &hits[previousId];
-    // Find next hit if only two hits are adjacent to the current hit
-    // 1. 2 hits on face, edge or corner
-    if(currentHit->fLocalHits.size()==2 && currentHit->fLocalEdges.empty() && currentHit->fLocalCorner.empty())
-    {
-      nextId = (previousId == currentHit->fLocalHits[0]) ? currentHit->fLocalHits[1] : currentHit->fLocalHits[0];
-      found = true;
-    } 
-    else if(currentHit->fLocalHits.empty() && (currentHit->fLocalEdges.size()==2) && currentHit->fLocalCorner.empty())
-    {
-      nextId = (previousId == currentHit->fLocalEdges[0]) ? currentHit->fLocalEdges[1] : currentHit->fLocalEdges[0];
-      found = true;
-    } 
-    else if(currentHit->fLocalHits.empty() && currentHit->fLocalEdges.empty() && (currentHit->fLocalCorner.size()==2))
-    {
-      nextId = (previousId == currentHit->fLocalCorner[0]) ? currentHit->fLocalCorner[1] : currentHit->fLocalCorner[0];
-      found = true;
-    }
-    // Find next hit if only two hits are adjacent to the current hit
-    // 2. 1 hit on face, 1 on edge and 1 one corner (all combinations)
-    else if(currentHit->fLocalHits.size()==1 && currentHit->fLocalEdges.size()==1 && currentHit->fLocalCorner.empty())
-    {
-      nextId = (previousId == currentHit->fLocalHits[0]) ? currentHit->fLocalEdges[0] : currentHit->fLocalHits[0];
-      found = true;
-    }
-    else if(currentHit->fLocalHits.size()==1 && currentHit->fLocalEdges.empty() && currentHit->fLocalCorner.size()==1)
-    {
-      nextId = (previousId == currentHit->fLocalHits[0]) ? currentHit->fLocalCorner[0] : currentHit->fLocalHits[0];
-      found = true;
-    }
-    else if(currentHit->fLocalHits.empty() && currentHit->fLocalEdges.size()==1 && currentHit->fLocalCorner.size()==1)
-    {
-      nextId = (previousId == currentHit->fLocalEdges[0]) ? currentHit->fLocalCorner[0] : currentHit->fLocalEdges[0];
-      found = true;
-    }
-    // Find next hit if there are multiple neightbour hits
-    // 3. Find the ONE hit which is not visited (faile if more than 1 is not visited)
-    else
-    {
-      Int_t notVisitedCount(0);
+//   if(previousId<0)// It is a leaf, return nearest neighbour
+//   {
+//     // The conditions here are based on the conditions in IsLeaf methods
+//     // If it is a Leaf, then the nearest hits are the ones below
+//     if(currentHit->fLocalHits.size()==1)
+//     {
+//       nextId = currentHit->fLocalHits[0];
+//       found = true;
+//     } 
+//     else if(currentHit->fLocalEdges.size()==1)
+//     {
+//       nextId = currentHit->fLocalEdges[0];
+//       found = true;
+//     } 
+//     else if(currentHit->fLocalCorner.size()==1)
+//     {
+//       nextId = currentHit->fLocalCorner[0];
+//       found = true;
+//     }
+//   }
+//   else
+//   {
+//     ReconHit* previuosHit = &hits[previousId];
+//     // Find next hit if only two hits are adjacent to the current hit
+//     // 1. 2 hits on face, edge or corner - in that order of priority
+//     if(currentHit->fLocalHits.size()==2 && currentHit->fLocalHits.find(previousId)!=currentHit->fLocalHits.end()) 
+//     {
+//       nextId = (previousId == currentHit->fLocalHits[0]) ? currentHit->fLocalHits[1] : currentHit->fLocalHits[0];
+//       found = true;
+//     } 
+//     else if(currentHit->fLocalEdges.size()==2 && currentHit->fLocalEdges.find(previousId)!=currentHit->fLocalEdges.end()) 
+//     {
+//       nextId = (previousId == currentHit->fLocalEdges[0]) ? currentHit->fLocalEdges[1] : currentHit->fLocalEdges[0];
+//       found = true;
+//     } 
+//     else if(currentHit->fLocalCorner.size()==2 && currentHit->fLocalCorner.find(previousId)!=currentHit->fLocalCorner.end())
+//     {
+//       nextId = (previousId == currentHit->fLocalCorner[0]) ? currentHit->fLocalCorner[1] : currentHit->fLocalCorner[0];
+//       found = true;
+//     }
+//     // Find next hit if only two hits are adjacent to the current hit
+//     // 2. 1 hit on face, 1 on edge and 1 one corner (all combinations)
+//     else if(currentHit->fLocalHits.size()==1 && currentHit->fLocalEdges.size()==1)
+//     {
+//       nextId = (previousId == currentHit->fLocalHits[0]) ? currentHit->fLocalEdges[0] : currentHit->fLocalHits[0];
+//       found = true;
+//     }
+//     else if(currentHit->fLocalHits.size()==1 && currentHit->fLocalCorner.size()==1)
+//     {
+//       nextId = (previousId == currentHit->fLocalHits[0]) ? currentHit->fLocalCorner[0] : currentHit->fLocalHits[0];
+//       found = true;
+//     }
+//     else if(currentHit->fLocalEdges.size()==1 && currentHit->fLocalCorner.size()==1)
+//     {
+//       nextId = (previousId == currentHit->fLocalEdges[0]) ? currentHit->fLocalCorner[0] : currentHit->fLocalEdges[0];
+//       found = true;
+//     }
+//     // Find next hit if there are multiple neightbour hits
+//     // 3. Find the ONE hit which is not visited (faile if more than 1 is not visited)
+//     else
+//     {
+//       // Search local hits
+//       for(Int_t lh = 0; lh < currentHit->fLocalHits.size(); ++lh)
+//       {
+//         if(!currentHit->fLocalHits[lh])
+//         {
+//           nextId = currentHit->fLocalHits[lh];
+//           found = true;
+//           break;
+//         }
+//       }
 
-      // Search local hits
-      for(Int_t lh = 0; lh < currentHit->fLocalHits.size(); ++lh)
-      {
-        if(!currentHit->fLocalHits[lh])
-        {
-          nextId = currentHit->fLocalHits[lh];
-          ++notVisitedCount;
-          if(notVisitedCount>1)
-          {
-            break;
-          }
-        }
-      }
+//       // Search local edges
+//       for(Int_t le = 0; !found && le < currentHit->fLocalEdges.size(); ++le)
+//       {
+//         if(!currentHit->fLocalEdges[le])
+//         {
+//           nextId = currentHit->fLocalEdges[le];
+//           found = true;
+//           break;
+//         }
+//       }
 
-      // Search local edges
-      for(Int_t le = 0; le < currentHit->fLocalEdges.size(); ++le)
-      {
-        if(!currentHit->fLocalEdges[le])
-        {
-          nextId = currentHit->fLocalEdges[le];
-          ++notVisitedCount;
-          if(notVisitedCount>1)
-          {
-            break;
-          }
-        }
-      }
-
-      // Search local corners
-      for(Int_t lc = 0; lc < currentHit->fLocalCorner.size(); ++lc)
-      {
-        if(!currentHit->fLocalCorner[lc])
-        {
-          nextId = currentHit->fLocalCorner[lc];
-          ++notVisitedCount;
-          if(notVisitedCount>1)
-          {
-            break;
-          }
-        }
-      }
-
-      // Only one not visited cube is found.
-      found = (notVisitedCount==1);
-    }
+//       // Search local corners
+//       for(Int_t lc = 0; !found && lc < currentHit->fLocalCorner.size(); ++lc)
+//       {
+//         if(!currentHit->fLocalCorner[lc])
+//         {
+//           nextId = currentHit->fLocalCorner[lc];
+//           found = true;
+//           break;
+//         }
+//       }
+//     }
     
 
-    // If non of the above conditions are meet, return false
-  }
+//     // If non of the above conditions are meet, return false
+//   }
 
 
-  if(found && hits[nextId].fIsVisited)
-  {
-    // If the next hit is already visited return false - it is already added in a track
-    found = false;
-  }
+//   if(found && hits[nextId].fIsVisited)
+//   {
+//     // If the next hit is already visited return false - it is already added in a track
+//     found = false;
+//   }
 
-  return found;
-}
+//   return found;
+// }
 
 void FgdGenFitRecon::FitTracks(std::vector<pathfinder::TrackFinderTrack>& foundTracks)
 {
