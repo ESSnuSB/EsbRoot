@@ -33,6 +33,8 @@ public:
 
     Bool_t operator==(const ReconHit& c);
 
+    TVector3 operator-(const ReconHit& c);
+
     // bool IsLeaf()
     // {
     //     Int_t totalSize = fLocalHits.size() + fLocalEdges.size();

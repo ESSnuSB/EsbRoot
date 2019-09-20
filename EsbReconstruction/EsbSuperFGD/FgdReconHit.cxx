@@ -78,6 +78,15 @@ Bool_t ReconHit::operator==(const ReconHit& c)
             && this->fHitPos.Z() == c.fHitPos.Z());
 }
 
+
+TVector3 ReconHit::operator-(const ReconHit& c)
+{
+    Int_t&& x = this->fmppcLoc.X()-c.fmppcLoc.X();
+    Int_t&& y = this->fmppcLoc.Y()-c.fmppcLoc.Y();
+    Int_t&& z = this->fmppcLoc.Z()-c.fmppcLoc.Z();
+    return TVector3(x,y,z);
+}
+
 // return next if:
 //  a) It is a leaf -> there is only one neightbour cube
 //  b) It is empty -> no hits near it
