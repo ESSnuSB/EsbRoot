@@ -4,11 +4,447 @@
 #   First row defines whether the next is a template for a Leaf of for next node - Leaf or GetNextNode respectively.
 #   We use local hits, this the cubes size is 3x3x3 with the current hit in the middle.
 #   To define the template the first 9 are the cubes at Z-1 coordinates, than at Z and than at Z+1.
-#   'O' (letter O) is used for no hit, 'X' is for hit, 'P' is used in GetNextNode templates to denote previous node
-#   'N' is used in GetNextNode templates to denote next node. ONE space is used to separate the matrixes
+#   'O' (letter O) or '-' is used for no hit, 'X' is for hit, 'P' is used in GetNextNode templates to denote previous node
+#   'N' is used in GetNextNode templates to denote next node, 'C' denotes center cube position. ONE space is used to separate the matrixes
 
-Leaf 
-OOO OOO OOO
-OOO OXO OXO
-OOO OOO OOO
+#########################################################
+#######          Leaves with one nearby hit       #######
+#########################################################
 
+#   Hits with one nearby hits are considered leaves by default. The leaves with
+#   One hit are listed here for completion.
+
+## Local Hits
+Leaf
+--- --- ---
+--- -C- -X-
+--- --- ---
+
+Leaf
+--- --- ---
+--- -C- ---
+--- -X- ---
+
+Leaf
+--- --- ---
+-X- -C- ---
+--- --- ---
+
+Leaf
+--- -X- ---
+--- -C- ---
+--- --- ---
+
+Leaf
+--- --- ---
+--- -CX ---
+--- --- ---
+
+Leaf
+--- --- ---
+--- XC- ---
+--- --- ---
+
+
+## Corner Hits
+Leaf
+--- --- --X
+--- -C- ---
+--- --- ---
+
+Leaf
+--- --- X--
+--- -C- ---
+--- --- ---
+
+Leaf
+--- --- ---
+--- -C- ---
+--- --- --X
+
+Leaf
+--- --- ---
+--- -C- ---
+--- --- X--
+
+Leaf
+--X --- ---
+--- -C- ---
+--- --- ---
+
+Leaf
+X-- --- ---
+--- -C- ---
+--- --- ---
+
+Leaf
+--- --- ---
+--- -C- ---
+X-- --- ---
+
+Leaf
+--- --- ---
+--- -C- ---
+--X --- ---
+
+## Edge Hits
+Leaf
+--- --- ---
+--- -C- X--
+--- --- ---
+
+Leaf
+--- --- ---
+--- -C- --X
+--- --- ---
+
+Leaf
+--- --- ---
+--X -C- ---
+--- --- ---
+
+Leaf
+--- --- ---
+X-- -C- ---
+--- --- ---
+
+Leaf
+--- X-- ---
+--- -C- ---
+--- --- ---
+
+Leaf
+--- --X ---
+--- -C- ---
+--- --- ---
+
+Leaf
+--- --- ---
+--- -C- ---
+--- X-- ---
+
+Leaf
+--- --- ---
+--- -C- ---
+--- --X ---
+
+Leaf
+-X- --- ---
+--- -C- ---
+--- --- ---
+
+Leaf
+--- --- ---
+--- -C- ---
+-X- --- ---
+
+Leaf
+--- --- -X-
+--- -C- ---
+--- --- ---
+
+Leaf
+--- --- ---
+--- -C- ---
+--- --- -X-
+
+#########################################################
+#######          Leaves with two nearby hits      #######
+#########################################################
+
+#Right
+
+Leaf
+--- --- ---
+--- -C- XX-
+--- --- ---
+
+Leaf
+--- --- ---
+--- -C- -XX
+--- --- ---
+
+Leaf
+--- --- -X-
+--- -C- -X-
+--- --- ---
+
+Leaf
+--- --- ---
+--- -C- -X-
+--- --- -X-
+
+Leaf
+--- --- --X
+--- -C- -X-
+--- --- ---
+
+Leaf
+--- --- X--
+--- -C- -X-
+--- --- ---
+
+Leaf
+--- --- ---
+--- -C- -X-
+--- --- --X
+
+Leaf
+--- --- ---
+--- -C- -X-
+--- --- X--
+
+Leaf
+--- --- X--
+--- -C- X--
+--- --- ---
+
+Leaf
+--- --- ---
+--- -C- X--
+--- --- X--
+
+Leaf
+--- --- --X
+--- -C- --X
+--- --- ---
+
+Leaf
+--- --- ---
+--- -C- --X
+--- --- --X
+
+
+#Left
+
+Leaf
+--- --- ---
+-XX -C- ---
+--- --- ---
+
+Leaf
+--- --- ---
+XX- -C- ---
+--- --- ---
+
+Leaf
+-X- --- ---
+-X- -C- ---
+--- --- ---
+
+Leaf
+--- --- ---
+-X- -C- ---
+-X- --- ---
+
+Leaf
+X-- --- ---
+-X- -C- ---
+--- --- ---
+
+Leaf
+--X --- ---
+-X- -C- ---
+--- --- ---
+
+Leaf
+--- --- ---
+-X- -C- ---
+--X --- ---
+
+Leaf
+--- --- ---
+-X- -C- ---
+X-- --- ---
+
+Leaf
+X-- --- ---
+X-- -C- ---
+--- --- ---
+
+Leaf
+--- --- ---
+X-- -C- ---
+X-- --- ---
+
+Leaf
+--X --- ---
+--X -C- ---
+--- --- ---
+
+Leaf
+--- --- ---
+--X -C- ---
+--X --- ---
+
+#Center
+
+Leaf
+--- --X ---
+--- -CX ---
+--- --- ---
+
+Leaf
+--- --- ---
+--- -CX ---
+--- --X ---
+
+Leaf
+--- X-- ---
+--- XC- ---
+--- --- ---
+
+Leaf
+--- --- ---
+--- XC- ---
+--- X-- ---
+
+Leaf
+--- XX- ---
+--- -C- ---
+--- --- ---
+
+Leaf
+--- -XX ---
+--- -C- ---
+--- --- ---
+
+Leaf
+--- --- ---
+--- -C- ---
+--- -XX ---
+
+Leaf
+--- --- ---
+--- -C- ---
+--- XX- ---
+
+Leaf
+--- --X X--
+--- -C- ---
+--- --- ---
+
+Leaf
+--- --- ---
+--- -C- ---
+--- --X X--
+
+Leaf
+--X X-- ---
+--- -C- ---
+--- --- ---
+
+Leaf
+--- --- ---
+--- -C- ---
+--X X-- ---
+
+#########################################################
+#######        Leaves with three nearby hits      #######
+#########################################################
+
+#Right
+
+Leaf
+--- --- X--
+--- -C- XX-
+--- --- ---
+
+Leaf
+--- --- --X
+--- -C- -XX
+--- --- ---
+
+Leaf
+--- --- ---
+--- -C- -XX
+--- --- --X
+
+Leaf
+--- --- ---
+--- -C- XX-
+--- --- X--
+
+#Left
+
+Leaf
+--X --- ---
+-XX -C- ---
+--- --- ---
+
+Leaf
+X-- --- ---
+XX- -C- ---
+--- --- ---
+
+Leaf
+--- --- ---
+XX- -C- ---
+X-- --- ---
+
+Leaf
+--- --- ---
+-XX -C- ---
+--X --- ---
+
+#Center
+
+Leaf
+--- --- X--
+--- -CX X--
+--- --- ---
+
+Leaf
+--- --- ---
+--- -CX X--
+--- --- X--
+
+Leaf
+--X --- ---
+--X XCX ---
+--- --- ---
+
+Leaf
+--- --- ---
+--X XC- ---
+--X --- ---
+
+Leaf
+--- -X- -XX
+--- -C- ---
+--- --- ---
+
+Leaf
+--- -X- XX-
+--- -C- ---
+--- --- ---
+
+Leaf
+XX- -X- ---
+--- -C- ---
+--- --- ---
+
+Leaf
+-XX -X- ---
+--- -C- ---
+--- --- ---
+
+Leaf
+--- --- ---
+--- -C- ---
+--- -X- -XX
+
+Leaf
+--- --- ---
+--- -C- ---
+--- -X- XX-
+
+Leaf
+--- --- ---
+--- -C- ---
+-XX -X- ---
+
+Leaf
+--- --- ---
+--- -C- ---
+XX- -X- ---
