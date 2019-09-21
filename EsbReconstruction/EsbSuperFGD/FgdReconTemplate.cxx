@@ -29,6 +29,7 @@ Bool_t FgdReconTemplate::IsLeaf(ReconHit* hit, std::vector<ReconHit>& hits)
     if(hit->fLocalHits.size()==1)
     {
         // If it has only one local hit, there is not another option to check
+        // cout << "Leaf " << "X " << hit->fmppcLoc.X() << " Y " << hit->fmppcLoc.Y()<< " Z " << hit->fmppcLoc.Z() << endl;
         isHitLeaf = true;
     }
     else
@@ -44,12 +45,11 @@ Bool_t FgdReconTemplate::IsLeaf(ReconHit* hit, std::vector<ReconHit>& hits)
 
                 for(size_t i=0; doesMatchTemplate && i<vecs.size(); ++i)
                 {
-                    ;
                     doesMatchTemplate = (   
                                             std::find(tempVecs.begin(), tempVecs.end(),vecs[i])     !=  tempVecs.end()
                                         );
                 }
-                isHitLeaf = doesMatchTemplate;
+                isHitLeaf = doesMatchTemplate && !vecs.empty();
             }
         }
     }
@@ -119,6 +119,7 @@ void FgdReconTemplate::LoadTemplates()
             {
                 hitTemp.hitVectors.emplace_back(center - leaves[leaf]);
             }
+
             if(!leaves.empty())
             {
                 fLeafVectors.push_back(hitTemp);
@@ -148,9 +149,11 @@ void FgdReconTemplate::LoadTemplates()
 
 void FgdReconTemplate::GetHitVectors(ReconHit* hit, std::vector<ReconHit>& hits, std::vector<TVector3>& vecs)
 {
-    for(size_t i; i< hit->fLocalHits.size(); ++i)
+    for(size_t i=0; i< hit->fLocalHits.size(); ++i)
     {
-        vecs.emplace_back(hit->fmppcLoc - hits[i].fmppcLoc);
+        ReconHit& neightbourHit = hits[hit->fLocalHits[i]];
+        TVector3 result = hit->fmppcLoc - neightbourHit.fmppcLoc;
+        vecs.emplace_back(result);
     }
 }
 
