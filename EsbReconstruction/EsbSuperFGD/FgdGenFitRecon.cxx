@@ -894,7 +894,12 @@ void FgdGenFitRecon::BuildGraph(std::vector<ReconHit>& hits)
 
       // cout  << endl;
 
-      positionToId[ind] = i;
+      // GUARD agains double or more hits in the same cube
+      if(positionToId.find(ind)==positionToId.end())
+      {
+        positionToId[ind] = i;
+      }
+      
 
       hits[i].fLocalHits.clear(); // Clear previous index positions
       hits[i].fLocalId = i;
