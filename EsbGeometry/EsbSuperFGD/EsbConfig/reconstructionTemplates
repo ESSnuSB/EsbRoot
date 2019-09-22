@@ -488,3 +488,2168 @@ Leaf
 --- --- ---
 --- -C- ---
 XX- -X- ---
+
+
+
+#########################################################
+#######      Next nodes with two nearby hits      #######
+#########################################################
+
+# Most Left previous
+GetNextNode
+--- --- ---
+-P- -C- -N-
+--- --- ---
+
+GetNextNode
+--- --- ---
+-P- -C- --N
+--- --- ---
+
+GetNextNode
+--- --- ---
+-P- -C- N--
+--- --- ---
+
+GetNextNode
+--- --- N--
+-P- -C- ---
+--- --- ---
+
+GetNextNode
+--- --- -N-
+-P- -C- ---
+--- --- ---
+
+GetNextNode
+--- --- --N
+-P- -C- ---
+--- --- ---
+
+GetNextNode
+--- --- ---
+-P- -C- ---
+--- --- N--
+
+GetNextNode
+--- --- ---
+-P- -C- ---
+--- --- -N-
+
+GetNextNode
+--- --- ---
+-P- -C- ---
+--- --- --N
+
+GetNextNode
+--- --- ---
+-P- -CN ---
+--- --- ---
+
+GetNextNode
+--- --- ---
+-P- NC- ---
+--- --- ---
+
+GetNextNode
+--- --- ---
+-P- -C- ---
+--- N-- ---
+
+GetNextNode
+--- --- ---
+-P- -C- ---
+--- -N- ---
+
+GetNextNode
+--- --- ---
+-P- -C- ---
+--- --N ---
+
+GetNextNode
+--- --N ---
+-P- -C- ---
+--- --- ---
+
+GetNextNode
+--- -N- ---
+-P- -C- ---
+--- --- ---
+
+GetNextNode
+--- N-- ---
+-P- -C- ---
+--- --- ---
+
+
+
+
+
+# Center Left previous
+
+GetNextNode
+--- --- ---
+--- PCN ---
+--- --- ---
+
+GetNextNode
+--- --N ---
+--- PC- ---
+--- --- ---
+
+GetNextNode
+--- -N- ---
+--- PC- ---
+--- --- ---
+
+GetNextNode
+--- --- ---
+--- PC- ---
+--- --N ---
+
+GetNextNode
+--- --- ---
+--- PC- ---
+--- -N- ---
+
+GetNextNode
+--- --- ---
+--- PC- -N-
+--- --- ---
+
+GetNextNode
+--- --- ---
+--- PC- --N
+--- --- ---
+
+GetNextNode
+--- --- -N-
+--- PC- ---
+--- --- ---
+
+GetNextNode
+--- --- --N
+--- PC- ---
+--- --- ---
+
+GetNextNode
+--- --- ---
+--- PC- ---
+--- --- -N-
+
+GetNextNode
+--- --- ---
+--- PC- ---
+--- --- --N
+
+GetNextNode
+--- --- ---
+-N- PC- ---
+--- --- ---
+
+GetNextNode
+--- --- ---
+N-- PC- ---
+--- --- ---
+
+GetNextNode
+-N- --- ---
+--- PC- ---
+--- --- ---
+
+GetNextNode
+N-- --- ---
+--- PC- ---
+--- --- ---
+
+GetNextNode
+--- --- ---
+--- PC- ---
+-N- --- ---
+
+GetNextNode
+--- --- ---
+--- PC- ---
+N-- --- ---
+
+
+
+
+
+
+# Most Right previous
+
+GetNextNode
+--- --- ---
+-N- -C- -P-
+--- --- ---
+
+GetNextNode
+--- --- ---
+--N -C- -P-
+--- --- ---
+
+GetNextNode
+--N --- ---
+--- -C- -P-
+--- --- ---
+
+GetNextNode
+-N- --- ---
+--- -C- -P-
+--- --- ---
+
+GetNextNode
+N-- --- ---
+--- -C- -P-
+--- --- ---
+
+GetNextNode
+--- --- ---
+N-- -C- -P-
+--- --- ---
+
+GetNextNode
+--- --- ---
+--- -C- -P-
+N-- --- ---
+
+GetNextNode
+--- --- ---
+--- -C- -P-
+-N- --- ---
+
+GetNextNode
+--- --- ---
+--- -C- -P-
+--N --- ---
+
+GetNextNode
+--- -N- ---
+--- -C- -P-
+--- --- ---
+
+GetNextNode
+--- --N ---
+--- -C- -P-
+--- --- ---
+
+GetNextNode
+--- --- ---
+--- -CN -P-
+--- --- ---
+
+GetNextNode
+--- --- ---
+--- -C- -P-
+--- --N ---
+
+GetNextNode
+--- --- ---
+--- -C- -P-
+--- -N- ---
+
+GetNextNode
+--- --- ---
+--- -C- -P-
+--- N-- ---
+
+GetNextNode
+--- --- ---
+--- NC- -P-
+--- --- ---
+
+GetNextNode
+--- N-- ---
+--- -C- -P-
+--- --- ---
+
+
+
+
+
+# Center Right previous
+
+GetNextNode
+--- --- ---
+--- NCP ---
+--- --- ---
+
+GetNextNode
+--- N-- ---
+--- -CP ---
+--- --- ---
+
+GetNextNode
+--- -N- ---
+--- -CP ---
+--- --- ---
+
+GetNextNode
+--- --- ---
+--- -CP ---
+--- N-- ---
+
+GetNextNode
+--- --- ---
+--- -CP ---
+--- -N- ---
+
+GetNextNode
+--- --- ---
+--- -CP ---
+-N- --- ---
+
+GetNextNode
+--- --- ---
+--- -CP ---
+N-- --- ---
+
+GetNextNode
+--- --- ---
+-N- -CP ---
+--- --- ---
+
+GetNextNode
+--- --- ---
+N-- -CP ---
+--- --- ---
+
+GetNextNode
+-N- --- ---
+--- -CP ---
+--- --- ---
+
+GetNextNode
+N-- --- ---
+--- -CP ---
+--- --- ---
+
+GetNextNode
+--- --- -N-
+--- -CP ---
+--- --- ---
+
+GetNextNode
+--- --- N--
+--- -CP ---
+--- --- ---
+
+GetNextNode
+--- --- ---
+--- -CP -N-
+--- --- ---
+
+GetNextNode
+--- --- ---
+--- -CP ---
+--- --- N--
+
+GetNextNode
+--- --- ---
+--- -CP ---
+--- --- -N-
+
+
+
+
+#Center down previous
+
+GetNextNode
+--- -N- ---
+--- -C- ---
+--- -P- ---
+
+GetNextNode
+--- --N ---
+--- -C- ---
+--- -P- ---
+
+GetNextNode
+--- --- ---
+--- -CN ---
+--- -P- ---
+
+GetNextNode
+--- --- ---
+--- NC- ---
+--- -P- ---
+
+GetNextNode
+--- N-- ---
+--- -C- ---
+--- -P- ---
+
+GetNextNode
+--- --- ---
+--- -C- N--
+--- -P- ---
+
+GetNextNode
+--- --- ---
+--- -C- -N-
+--- -P- ---
+
+GetNextNode
+--- --- ---
+--- -C- --N
+--- -P- ---
+
+GetNextNode
+--- --- --N
+--- -C- ---
+--- -P- ---
+
+GetNextNode
+--- --- -N-
+--- -C- ---
+--- -P- ---
+
+GetNextNode
+--- --- N--
+--- -C- ---
+--- -P- ---
+
+GetNextNode
+--- --- ---
+--N -C- ---
+--- -P- ---
+
+GetNextNode
+--- --- ---
+-N- -C- ---
+--- -P- ---
+
+GetNextNode
+--- --- ---
+N-- -C- ---
+--- -P- ---
+
+GetNextNode
+N-- --- ---
+--- -C- ---
+--- -P- ---
+
+GetNextNode
+-N- --- ---
+--- -C- ---
+--- -P- ---
+
+GetNextNode
+--N --- ---
+--- -C- ---
+--- -P- ---
+
+#Center up previous
+
+GetNextNode
+--- -P- ---
+--- -C- ---
+--- -N- ---
+
+GetNextNode
+--- -P- ---
+--- -C- ---
+--- --N ---
+
+GetNextNode
+--- -P- ---
+--- -CN ---
+--- --- ---
+
+GetNextNode
+--- -P- ---
+--- NC- ---
+--- --- ---
+
+GetNextNode
+--- -P- ---
+--- -C- ---
+--- N-- ---
+
+GetNextNode
+--- -P- ---
+--- -C- ---
+--N --- ---
+
+GetNextNode
+--- -P- ---
+--- -C- ---
+-N- --- ---
+
+GetNextNode
+--- -P- ---
+--- -C- ---
+N-- --- ---
+
+GetNextNode
+--- -P- ---
+N-- -C- ---
+--- --- ---
+
+GetNextNode
+--- -P- ---
+-N- -C- ---
+--- --- ---
+
+GetNextNode
+--- -P- ---
+--N -C- ---
+--- --- ---
+
+GetNextNode
+--- -P- ---
+--- -C- N--
+--- --- ---
+
+GetNextNode
+--- -P- ---
+--- -C- -N-
+--- --- ---
+
+GetNextNode
+--- -P- ---
+--- -C- --N
+--- --- ---
+
+GetNextNode
+--- -P- ---
+--- -C- ---
+--- --- --N
+
+GetNextNode
+--- -P- ---
+--- -C- ---
+--- --- -N-
+
+GetNextNode
+--- -P- ---
+--- -C- ---
+--- --- N--
+
+
+# Left up edge
+
+GetNextNode
+-P- --- ---
+--- -CN ---
+--- --- ---
+
+GetNextNode
+-P- --- ---
+--- NC- ---
+--- --- ---
+
+GetNextNode
+-P- --- ---
+--- -C- ---
+--- N-- ---
+
+GetNextNode
+-P- --- ---
+--- -C- ---
+--- -N- ---
+
+GetNextNode
+-P- --- ---
+--- -C- ---
+--- --N ---
+
+GetNextNode
+-P- --- ---
+--- -C- -N-
+--- --- ---
+
+GetNextNode
+-P- --- ---
+--- -C- N--
+--- --- ---
+
+GetNextNode
+-P- --- ---
+--- -C- --N
+--- --- ---
+
+GetNextNode
+-P- --- ---
+--- -C- ---
+--- --- N--
+
+GetNextNode
+-P- --- ---
+--- -C- ---
+--- --- -N-
+
+GetNextNode
+-P- --- N--
+--- -C- ---
+--- --- ---
+
+GetNextNode
+-P- --- -N-
+--- -C- ---
+--- --- ---
+
+GetNextNode
+-P- --- --N
+--- -C- ---
+--- --- ---
+
+GetNextNode
+-P- --- ---
+--- -C- ---
+--- --- --N
+
+GetNextNode
+-P- --- ---
+--- -C- ---
+--N --- ---
+
+GetNextNode
+-P- --- ---
+--- -C- ---
+-N- --- ---
+
+GetNextNode
+-P- --- ---
+--- -C- ---
+N-- --- ---
+
+# Right up edge
+
+GetNextNode
+--- --- -P-
+--- -CN ---
+--- --- ---
+
+GetNextNode
+--- --- -P-
+--- NC- ---
+--- --- ---
+
+GetNextNode
+--- --- -P-
+--- -C- ---
+--- N-- ---
+
+GetNextNode
+--- --- -P-
+--- -C- ---
+--- -N- ---
+
+GetNextNode
+--- --- -P-
+--- -C- ---
+--- --N ---
+
+GetNextNode
+--- --- -P-
+--N -C- ---
+--- --- ---
+
+GetNextNode
+--- --- -P-
+-N- -C- ---
+--- --- ---
+
+GetNextNode
+--- --- -P-
+N-- -C- ---
+--- --- ---
+
+GetNextNode
+--- --- -P-
+--- -C- ---
+N-- --- ---
+
+GetNextNode
+--- --- -P-
+--- -C- ---
+-N- --- ---
+
+GetNextNode
+--- --- -P-
+--- -C- ---
+--N --- ---
+
+GetNextNode
+N-- --- -P-
+--- -C- ---
+--- --- ---
+
+GetNextNode
+-N- --- -P-
+--- -C- ---
+--- --- ---
+
+GetNextNode
+--N --- -P-
+--- -C- ---
+--- --- ---
+
+GetNextNode
+--- --- -P-
+--- -C- ---
+--- --- N--
+
+GetNextNode
+--- --- -P-
+--- -C- ---
+--- --- -N-
+
+GetNextNode
+--- --- -P-
+--- -C- ---
+--- --- --N
+
+
+# Left down edge
+
+GetNextNode
+--- --- ---
+--- -CN ---
+-P- --- ---
+
+GetNextNode
+--- --- ---
+--- NC- ---
+-P- --- ---
+
+GetNextNode
+--- N-- ---
+--- -C- ---
+-P- --- ---
+
+GetNextNode
+--- -N- ---
+--- -C- ---
+-P- --- ---
+
+GetNextNode
+--- --N ---
+--- -C- ---
+-P- --- ---
+
+GetNextNode
+--- --- N--
+--- -C- ---
+-P- --- ---
+
+GetNextNode
+--- --- -N-
+--- -C- ---
+-P- --- ---
+
+GetNextNode
+--- --- --N
+--- -C- ---
+-P- --- ---
+
+GetNextNode
+--- --- ---
+--- -C- N--
+-P- --- ---
+
+GetNextNode
+--- --- ---
+--- -C- -N-
+-P- --- ---
+
+GetNextNode
+--- --- ---
+--- -C- --N
+-P- --- ---
+
+GetNextNode
+--- --- ---
+--- -C- ---
+-P- --- --N
+
+GetNextNode
+--- --- ---
+--- -C- ---
+-P- --- -N-
+
+GetNextNode
+--- --- ---
+--- -C- ---
+-P- --- N--
+
+GetNextNode
+--N --- ---
+--- -C- ---
+-P- --- ---
+
+GetNextNode
+-N- --- ---
+--- -C- ---
+-P- --- ---
+
+GetNextNode
+N-- --- ---
+--- -C- ---
+-P- --- ---
+
+# Right down edge
+
+GetNextNode
+--- --- ---
+--- -CN ---
+--- --- -P-
+
+GetNextNode
+--- --- ---
+--- NC- ---
+--- --- -P-
+
+GetNextNode
+--- --N ---
+--- -C- ---
+--- --- -P-
+
+GetNextNode
+--- -N- ---
+--- -C- ---
+--- --- -P-
+
+GetNextNode
+--- N-- ---
+--- -C- ---
+--- --- -P-
+
+GetNextNode
+--- --- ---
+--- -C- ---
+--N --- -P-
+
+GetNextNode
+--- --- ---
+--- -C- ---
+-N- --- -P-
+
+GetNextNode
+--- --- ---
+--- -C- ---
+N-- --- -P-
+
+GetNextNode
+--- --- ---
+--N -C- ---
+--- --- -P-
+
+GetNextNode
+--- --- ---
+-N- -C- ---
+--- --- -P-
+
+GetNextNode
+--- --- ---
+N-- -C- ---
+--- --- -P-
+
+GetNextNode
+--N --- ---
+--- -C- ---
+--- --- -P-
+
+GetNextNode
+-N- --- ---
+--- -C- ---
+--- --- -P-
+
+GetNextNode
+N-- --- ---
+--- -C- ---
+--- --- -P-
+
+GetNextNode
+--- --- -N-
+--- -C- ---
+--- --- -P-
+
+GetNextNode
+--- --- N--
+--- -C- ---
+--- --- -P-
+
+GetNextNode
+--- --- --N
+--- -C- ---
+--- --- -P-
+
+# Center left up edge
+
+GetNextNode
+--- P-- ---
+--- -C- ---
+--- --- ---
+
+GetNextNode
+--- P-- ---
+--- -CN ---
+--- --- ---
+
+GetNextNode
+--- P-- ---
+--- -C- ---
+--- -N- ---
+
+GetNextNode
+--- P-- ---
+--- -C- ---
+--- --N ---
+
+GetNextNode
+--- P-- ---
+--- -C- ---
+--- N-- ---
+
+GetNextNode
+--- P-- ---
+--- -C- ---
+--- --- --N
+
+GetNextNode
+--- P-- ---
+--- -C- ---
+--- --- -N-
+
+GetNextNode
+--- P-- ---
+--- -C- ---
+--- --- N--
+
+GetNextNode
+--- P-- ---
+--- -C- ---
+--N --- ---
+
+GetNextNode
+--- P-- ---
+--- -C- ---
+-N- --- ---
+
+GetNextNode
+--- P-- ---
+--- -C- ---
+N-- --- ---
+
+# Center right up edge
+
+GetNextNode
+--- --P ---
+--- -C- ---
+--- --- ---
+
+GetNextNode
+--- --P ---
+--- -C- ---
+--- N-- ---
+
+GetNextNode
+--- --P ---
+--- -C- ---
+--- -N- ---
+
+GetNextNode
+--- --P ---
+--- -C- ---
+--- --N ---
+
+GetNextNode
+--- --P ---
+--- NC- ---
+--- --- ---
+
+GetNextNode
+--- --P ---
+--- -C- ---
+N-- --- ---
+
+GetNextNode
+--- --P ---
+--- -C- ---
+-N- --- ---
+
+GetNextNode
+--- --P ---
+--- -C- ---
+--N --- ---
+
+GetNextNode
+--- --P ---
+--- -C- ---
+--- --- N--
+
+GetNextNode
+--- --P ---
+--- -C- ---
+--- --- -N-
+
+GetNextNode
+--- --P ---
+--- -C- ---
+--- --- --N
+
+
+
+# Center right down edge
+
+GetNextNode
+--- N-- ---
+--- -C- ---
+--- --P ---
+
+GetNextNode
+--- -N- ---
+--- -C- ---
+--- --P ---
+
+GetNextNode
+--- --N ---
+--- -C- ---
+--- --P ---
+
+GetNextNode
+N-- --- ---
+--- -C- ---
+--- --P ---
+
+GetNextNode
+-N- --- ---
+--- -C- ---
+--- --P ---
+
+GetNextNode
+--N --- ---
+--- -C- ---
+--- --P ---
+
+GetNextNode
+--- --- ---
+--- NC- ---
+--- --P ---
+
+GetNextNode
+--- --- ---
+-N- -C- ---
+--- --P ---
+
+GetNextNode
+--- --- ---
+--N -C- ---
+--- --P ---
+
+GetNextNode
+--- --- ---
+N-- -C- ---
+--- --P ---
+
+GetNextNode
+--- --- N--
+--- -C- ---
+--- --P ---
+
+GetNextNode
+--- --- -N-
+--- -C- ---
+--- --P ---
+
+GetNextNode
+--- --- --N
+--- -C- ---
+--- --P ---
+
+
+
+
+# Center left down edge
+
+GetNextNode
+--- --- ---
+--- -CN ---
+--- P-- ---
+
+GetNextNode
+--- --N ---
+--- -C- ---
+--- P-- ---
+
+GetNextNode
+--- -N- ---
+--- -C- ---
+--- P-- ---
+
+GetNextNode
+--- N-- ---
+--- -C- ---
+--- P-- ---
+
+GetNextNode
+N-- --- ---
+--- -C- ---
+--- P-- ---
+
+GetNextNode
+-N- --- ---
+--- -C- ---
+--- P-- ---
+
+GetNextNode
+--N --- ---
+--- -C- ---
+--- P-- ---
+
+GetNextNode
+--- --- N--
+--- -C- ---
+--- P-- ---
+
+GetNextNode
+--- --- -N-
+--- -C- ---
+--- P-- ---
+
+GetNextNode
+--- --- --N
+--- -C- ---
+--- P-- ---
+
+GetNextNode
+--- --- ---
+--- -C- -N-
+--- P-- ---
+
+GetNextNode
+--- --- ---
+--- -C- N--
+--- P-- ---
+
+GetNextNode
+--- --- ---
+--- -C- --N
+--- P-- ---
+
+
+
+
+# Center center left left edge
+
+GetNextNode
+--- --- ---
+P-- -CN ---
+--- --- ---
+
+GetNextNode
+--- --N ---
+P-- -C- ---
+--- --- ---
+
+GetNextNode
+--- -N- ---
+P-- -C- ---
+--- --- ---
+
+GetNextNode
+--- --- ---
+P-- -C- ---
+--- --N ---
+
+GetNextNode
+--- --- ---
+P-- -C- ---
+--- -N- ---
+
+GetNextNode
+--- --- N--
+P-- -C- ---
+--- --- ---
+
+GetNextNode
+--- --- -N-
+P-- -C- ---
+--- --- ---
+
+GetNextNode
+--- --- --N
+P-- -C- ---
+--- --- ---
+
+GetNextNode
+--- --- ---
+P-- -C- N--
+--- --- ---
+
+GetNextNode
+--- --- ---
+P-- -C- -N-
+--- --- ---
+
+GetNextNode
+--- --- ---
+P-- -C- --N
+--- --- ---
+
+GetNextNode
+--- --- ---
+P-- -C- ---
+--- --- N--
+
+GetNextNode
+--- --- ---
+P-- -C- ---
+--- --- -N-
+
+GetNextNode
+--- --- ---
+P-- -C- ---
+--- --- --N
+
+
+
+
+# Center center left right edge
+
+GetNextNode
+--- --- ---
+--P -C- ---
+--- --- ---
+
+GetNextNode
+--- --- ---
+--P NC- ---
+--- --- ---
+
+GetNextNode
+--- --- ---
+--P -C- ---
+--- -N- ---
+
+GetNextNode
+--- --- ---
+--P -C- ---
+--- N-- ---
+
+GetNextNode
+--- N-- ---
+--P -C- ---
+--- --- ---
+
+GetNextNode
+--- -N- ---
+--P -C- ---
+--- --- ---
+
+GetNextNode
+--- --- N--
+--P -C- ---
+--- --- ---
+
+GetNextNode
+--- --- -N-
+--P -C- ---
+--- --- ---
+
+GetNextNode
+--- --- --N
+--P -C- ---
+--- --- ---
+
+GetNextNode
+--- --- ---
+--P -C- N--
+--- --- ---
+
+GetNextNode
+--- --- ---
+--P -C- -N-
+--- --- ---
+
+GetNextNode
+--- --- ---
+--P -C- --N
+--- --- ---
+
+GetNextNode
+--- --- ---
+--P -C- ---
+--- --- N--
+
+GetNextNode
+--- --- ---
+--P -C- ---
+--- --- -N-
+
+GetNextNode
+--- --- ---
+--P -C- ---
+--- --- --N
+
+
+
+# Center center right right edge
+
+GetNextNode
+--- --- ---
+--- -C- --P
+--- --- ---
+
+GetNextNode
+--- -N- ---
+--- -C- --P
+--- --- ---
+
+GetNextNode
+--- N-- ---
+--- -C- --P
+--- --- ---
+
+GetNextNode
+--- --- ---
+--- NC- --P
+--- --- ---
+
+GetNextNode
+--- --- ---
+--- -C- --P
+--- N-- ---
+
+GetNextNode
+--- --- ---
+--- -C- --P
+--- -N- ---
+
+GetNextNode
+--N --- ---
+--- -C- --P
+--- --- ---
+
+GetNextNode
+-N- --- ---
+--- -C- --P
+--- --- ---
+
+GetNextNode
+N-- --- ---
+--- -C- --P
+--- --- ---
+
+GetNextNode
+--- --- ---
+--N -C- --P
+--- --- ---
+
+GetNextNode
+--- --- ---
+-N- -C- --P
+--- --- ---
+
+GetNextNode
+--- --- ---
+N-- -C- --P
+--- --- ---
+
+GetNextNode
+--- --- ---
+--- -C- --P
+--N --- ---
+
+GetNextNode
+--- --- ---
+--- -C- --P
+-N- --- ---
+
+GetNextNode
+--- --- ---
+--- -C- --P
+N-- --- ---
+
+
+
+
+# Center center right left edge
+
+GetNextNode
+--- --- ---
+--- -C- P--
+--- --- ---
+
+GetNextNode
+--- --- ---
+--- -CN P--
+--- --- ---
+
+GetNextNode
+--- --N ---
+--- -C- P--
+--- --- ---
+
+GetNextNode
+--- -N- ---
+--- -C- P--
+--- --- ---
+
+GetNextNode
+--- --- ---
+--- -C- P--
+--- -N- ---
+
+GetNextNode
+--- --- ---
+--- -C- P--
+--- --N ---
+
+GetNextNode
+--N --- ---
+--- -C- P--
+--- --- ---
+
+GetNextNode
+-N- --- ---
+--- -C- P--
+--- --- ---
+
+GetNextNode
+N-- --- ---
+--- -C- P--
+--- --- ---
+
+GetNextNode
+--- --- ---
+--N -C- P--
+--- --- ---
+
+GetNextNode
+--- --- ---
+-N- -C- P--
+--- --- ---
+
+GetNextNode
+--- --- ---
+N-- -C- P--
+--- --- ---
+
+GetNextNode
+--- --- ---
+--- -C- P--
+--N --- ---
+
+GetNextNode
+--- --- ---
+--- -C- P--
+-N- --- ---
+
+GetNextNode
+--- --- ---
+--- -C- P--
+N-- --- ---
+
+
+# Left left up corner
+
+GetNextNode
+P-- --- ---
+--- -C- ---
+--- --- ---
+
+GetNextNode
+P-- --- ---
+--- -CN ---
+--- --- ---
+
+GetNextNode
+P-- --- ---
+--- -C- ---
+--- --N ---
+
+GetNextNode
+P-- --- ---
+--- -C- ---
+--- -N- ---
+
+GetNextNode
+P-- --- ---
+--- -C- ---
+--- N-- ---
+
+GetNextNode
+P-- --- --N
+--- -C- ---
+--- --- ---
+
+GetNextNode
+P-- --- -N-
+--- -C- ---
+--- --- ---
+
+GetNextNode
+P-- --- N--
+--- -C- ---
+--- --- ---
+
+GetNextNode
+P-- --- ---
+--- -C- --N
+--- --- ---
+
+GetNextNode
+P-- --- ---
+--- -C- -N-
+--- --- ---
+
+GetNextNode
+P-- --- ---
+--- -C- N--
+--- --- ---
+
+GetNextNode
+P-- --- ---
+--- -C- ---
+--- --- --N
+
+GetNextNode
+P-- --- ---
+--- -C- ---
+--- --- -N-
+
+GetNextNode
+P-- --- ---
+--- -C- ---
+--- --- N--
+
+GetNextNode
+P-- --- ---
+--- -C- ---
+--N --- ---
+
+GetNextNode
+P-- --- ---
+--- -C- ---
+-N- --- ---
+
+GetNextNode
+P-- --- ---
+--- -C- ---
+N-- --- ---
+
+
+
+
+# Left right up corner
+
+GetNextNode
+--P --- ---
+--- NC- ---
+--- --- ---
+
+GetNextNode
+--P --- ---
+--- -CN ---
+--- --- ---
+
+GetNextNode
+--P --- ---
+--- -C- ---
+--- N-- ---
+
+GetNextNode
+--P --- ---
+--- -C- ---
+--- -N- ---
+
+GetNextNode
+--P --- ---
+--- -C- ---
+--- --N ---
+
+GetNextNode
+--P --- N--
+--- -C- ---
+--- --- ---
+
+GetNextNode
+--P --- -N-
+--- -C- ---
+--- --- ---
+
+GetNextNode
+--P --- --N
+--- -C- ---
+--- --- ---
+
+GetNextNode
+--P --- ---
+--- -C- N--
+--- --- ---
+
+GetNextNode
+--P --- ---
+--- -C- -N-
+--- --- ---
+
+GetNextNode
+--P --- ---
+--- -C- --N
+--- --- ---
+
+GetNextNode
+--P --- ---
+--- -C- ---
+--- --- --N
+
+GetNextNode
+--P --- ---
+--- -C- ---
+--- --- -N-
+
+GetNextNode
+--P --- ---
+--- -C- ---
+--- --- N--
+
+GetNextNode
+--P --- ---
+--- -C- ---
+--N --- ---
+
+GetNextNode
+--P --- ---
+--- -C- ---
+-N- --- ---
+
+GetNextNode
+--P --- ---
+--- -C- ---
+N-- --- ---
+
+
+
+# Left left down corner
+
+GetNextNode
+--- --- ---
+--- -C- ---
+P-- --- ---
+
+GetNextNode
+N-- --- ---
+--- -C- ---
+P-- --- ---
+
+GetNextNode
+-N- --- ---
+--- -C- ---
+P-- --- ---
+
+GetNextNode
+--N --- ---
+--- -C- ---
+P-- --- ---
+
+GetNextNode
+--- --- ---
+--- -CN ---
+P-- --- ---
+
+GetNextNode
+--- --N ---
+--- -C- ---
+P-- --- ---
+
+GetNextNode
+--- -N- ---
+--- -C- ---
+P-- --- ---
+
+GetNextNode
+--- N-- ---
+--- -C- ---
+P-- --- ---
+
+GetNextNode
+--- --- --N
+--- -C- ---
+P-- --- ---
+
+GetNextNode
+--- --- -N-
+--- -C- ---
+P-- --- ---
+
+GetNextNode
+--- --- N--
+--- -C- ---
+P-- --- ---
+
+GetNextNode
+--- --- ---
+--- -C- --N
+P-- --- ---
+
+GetNextNode
+--- --- ---
+--- -C- -N-
+P-- --- ---
+
+GetNextNode
+--- --- ---
+--- -C- N--
+P-- --- ---
+
+GetNextNode
+--- --- ---
+--- -C- ---
+P-- --- --N
+
+GetNextNode
+--- --- ---
+--- -C- ---
+P-- --- -N-
+
+GetNextNode
+--- --- ---
+--- -C- ---
+P-- --- N--
+
+
+
+
+# Left right down corner
+
+GetNextNode
+--- --- ---
+--- -C- ---
+--P --- ---
+
+GetNextNode
+--N --- ---
+--- -C- ---
+--P --- ---
+
+GetNextNode
+-N- --- ---
+--- -C- ---
+--P --- ---
+
+GetNextNode
+N-- --- ---
+--- -C- ---
+--P --- ---
+
+GetNextNode
+--- --- ---
+--- NC- ---
+--P --- ---
+
+GetNextNode
+--- --N ---
+--- -C- ---
+--P --- ---
+
+GetNextNode
+--- -N- ---
+--- -C- ---
+--P --- ---
+
+GetNextNode
+--- N-- ---
+--- -C- ---
+--P --- ---
+
+GetNextNode
+--- --- --N
+--- -C- ---
+--P --- ---
+
+GetNextNode
+--- --- -N-
+--- -C- ---
+--P --- ---
+
+GetNextNode
+--- --- N--
+--- -C- ---
+--P --- ---
+
+GetNextNode
+--- --- ---
+--- -C- --N
+--P --- ---
+
+GetNextNode
+--- --- ---
+--- -C- -N-
+--P --- ---
+
+GetNextNode
+--- --- ---
+--- -C- N--
+--P --- ---
+
+GetNextNode
+--- --- ---
+--- -C- ---
+--P --- --N
+
+GetNextNode
+--- --- ---
+--- -C- ---
+--P --- -N-
+
+GetNextNode
+--- --- ---
+--- -C- ---
+--P --- N--
+
+
+# Right right up corner
+
+GetNextNode
+--- --- --P
+--- -C- ---
+--- --- ---
+
+GetNextNode
+--- --- --P
+--- -C- ---
+--- --- --N
+
+GetNextNode
+--- --- --P
+--- -C- ---
+--- --- -N-
+
+GetNextNode
+--- --- --P
+--- -C- ---
+--- --- N--
+
+GetNextNode
+--- --- --P
+--- NC- ---
+--- --- ---
+
+GetNextNode
+--- --- --P
+--- -C- ---
+--- N-- ---
+
+GetNextNode
+--- --- --P
+--- -C- ---
+--- -N- ---
+
+GetNextNode
+--N --- --P
+--- -C- ---
+--- --- ---
+
+GetNextNode
+-N- --- --P
+--- -C- ---
+--- --- ---
+
+GetNextNode
+N-- --- --P
+--- -C- ---
+--- --- ---
+
+GetNextNode
+--- --- --P
+--N -C- ---
+--- --- ---
+
+GetNextNode
+--- --- --P
+-N- -C- ---
+--- --- ---
+
+GetNextNode
+--- --- --P
+N-- -C- ---
+--- --- ---
+
+GetNextNode
+--- --- --P
+--- -C- ---
+--N --- ---
+
+GetNextNode
+--- --- --P
+--- -C- ---
+-N- --- ---
+
+GetNextNode
+--- --- --P
+--- -C- ---
+N-- --- ---
+
+
+
+# Right left up corner
+
+GetNextNode
+--- --- P--
+--- -C- ---
+--- --- ---
+
+GetNextNode
+--- --- P--
+--- -CN ---
+--- --- ---
+
+GetNextNode
+--- --- P--
+--- -C- ---
+--- --N ---
+
+GetNextNode
+--- --- P--
+--- -C- ---
+--- -N- ---
+
+GetNextNode
+--- --- P--
+--- -C- ---
+--- N-- ---
+
+GetNextNode
+--- --- P--
+--- -C- ---
+--- --- --N
+
+GetNextNode
+--- --- P--
+--- -C- ---
+--- --- -N-
+
+GetNextNode
+--- --- P--
+--- -C- ---
+--- --- N--
+
+GetNextNode
+--N --- P--
+--- -C- ---
+--- --- ---
+
+GetNextNode
+-N- --- P--
+--- -C- ---
+--- --- ---
+
+GetNextNode
+N-- --- P--
+--- -C- ---
+--- --- ---
+
+GetNextNode
+--- --- P--
+--N -C- ---
+--- --- ---
+
+GetNextNode
+--- --- P--
+-N- -C- ---
+--- --- ---
+
+GetNextNode
+--- --- P--
+N-- -C- ---
+--- --- ---
+
+GetNextNode
+--- --- P--
+--- -C- ---
+--N --- ---
+
+GetNextNode
+--- --- P--
+--- -C- ---
+-N- --- ---
+
+GetNextNode
+--- --- P--
+--- -C- ---
+N-- --- ---
+
+
+
+
+# Right right down corner
+
+GetNextNode
+--- --- ---
+--- -C- ---
+--- --- --P
+
+GetNextNode
+--- --- ---
+--- NC- ---
+--- --- --P
+
+GetNextNode
+--- N-- ---
+--- -C- ---
+--- --- --P
+
+GetNextNode
+--- -N- ---
+--- -C- ---
+--- --- --P
+
+GetNextNode
+--- --N ---
+--- -C- ---
+--- --- --P
+
+GetNextNode
+--- --- N--
+--- -C- ---
+--- --- --P
+
+GetNextNode
+--- --- -N-
+--- -C- ---
+--- --- --P
+
+GetNextNode
+--- --- --N
+--- -C- ---
+--- --- --P
+
+GetNextNode
+--N --- ---
+--- -C- ---
+--- --- --P
+
+GetNextNode
+-N- --- ---
+--- -C- ---
+--- --- --P
+
+GetNextNode
+N-- --- ---
+--- -C- ---
+--- --- --P
+
+GetNextNode
+--- --- ---
+--N -C- ---
+--- --- --P
+
+GetNextNode
+--- --- ---
+-N- -C- ---
+--- --- --P
+
+GetNextNode
+--- --- ---
+N-- -C- ---
+--- --- --P
+
+GetNextNode
+--- --- ---
+--- -C- ---
+--N --- --P
+
+GetNextNode
+--- --- ---
+--- -C- ---
+-N- --- --P
+
+GetNextNode
+--- --- ---
+--- -C- ---
+N-- --- --P
+
+
+
+# RIght left down corner
+
+GetNextNode
+--- --N ---
+--- -C- ---
+--- --- P--
+
+GetNextNode
+--- --- ---
+--- NC- ---
+--- --- P--
+
+GetNextNode
+--- -N- ---
+--- -C- ---
+--- --- P--
+
+GetNextNode
+--- N-- ---
+--- -C- ---
+--- --- P--
+
+GetNextNode
+--- --- --N
+--- -C- ---
+--- --- P--
+
+GetNextNode
+--- --- -N-
+--- -C- ---
+--- --- P--
+
+GetNextNode
+--- --- N--
+--- -C- ---
+--- --- P--
+
+GetNextNode
+--N --- ---
+--- -C- ---
+--- --- P--
+
+GetNextNode
+-N- --- ---
+--- -C- ---
+--- --- P--
+
+GetNextNode
+N-- --- ---
+--- -C- ---
+--- --- P--
+
+GetNextNode
+--- --- ---
+--N -C- ---
+--- --- P--
+
+GetNextNode
+--- --- ---
+-N- -C- ---
+--- --- P--
+
+GetNextNode
+--- --- ---
+N-- -C- ---
+--- --- P--
+
+GetNextNode
+--- --- ---
+--- -C- ---
+--N --- P--
+
+GetNextNode
+--- --- ---
+--- -C- ---
+-N- --- P--
+
+GetNextNode
+--- --- ---
+--- -C- ---
+N-- --- P--
+
+##########################################
+#Below the templates are not yet completed
+
+#########################################################
+#######    Next nodes with three nearby hits      #######
+#########################################################
