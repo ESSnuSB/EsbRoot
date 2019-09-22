@@ -764,31 +764,31 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
 
 
   // // TODO2
-  for(Int_t i=0; i<hits.size(); ++i)
-  {
-    cout << "i " << i << endl;
-    for(Int_t j=0; j<hits[i].fLocalHits.size(); ++j)
-    {
-      cout << " Local Id " << hits[i].fLocalHits[j] << endl;
-    }
-    cout << "X " << hits[i].fmppcLoc.X() << " Y " << hits[i].fmppcLoc.Y()<< " Z " << hits[i].fmppcLoc.Z() << endl;
+  // for(Int_t i=0; i<hits.size(); ++i)
+  // {
+  //   cout << "i " << i << endl;
+  //   for(Int_t j=0; j<hits[i].fLocalHits.size(); ++j)
+  //   {
+  //     cout << " Local Id " << hits[i].fLocalHits[j] << endl;
+  //   }
+  //   cout << "X " << hits[i].fmppcLoc.X() << " Y " << hits[i].fmppcLoc.Y()<< " Z " << hits[i].fmppcLoc.Z() << endl;
 
 
-    // for(Int_t j=0; j<hits[i].fLocalEdges.size(); ++j)
-    // {
-    //   cout << " Edge Id " << hits[i].fLocalEdges[j] << endl;
-    // }
-    // for(Int_t j=0; j<hits[i].fLocalCorner.size(); ++j)
-    // {
-    //   cout << " Corner Id " << hits[i].fLocalCorner[j] << endl;
-    // }
+  //   // for(Int_t j=0; j<hits[i].fLocalEdges.size(); ++j)
+  //   // {
+  //   //   cout << " Edge Id " << hits[i].fLocalEdges[j] << endl;
+  //   // }
+  //   // for(Int_t j=0; j<hits[i].fLocalCorner.size(); ++j)
+  //   // {
+  //   //   cout << " Corner Id " << hits[i].fLocalCorner[j] << endl;
+  //   // }
 
-    // if(IsLeaf(i, hits))
-    // {
-    //   cout << "IsLeaf" << endl;
-    // }
-    cout << "=====" << endl;
-  }
+  //   // if(IsLeaf(i, hits))
+  //   // {
+  //   //   cout << "IsLeaf" << endl;
+  //   // }
+  //   cout << "=====" << endl;
+  // }
   // // TODO2
 
   // for(Int_t i=0; i<tracks.size(); ++i)

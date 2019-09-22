@@ -1,0 +1,56 @@
+# This holds the tempaltes used to identify leafs and next hit to traverge when using a graph
+#   for track identification.
+#   The syntax is the following:
+#   First row defines whether the next is a template for a Leaf of for next node - Leaf or GetNextNode respectively.
+#   We use local hits, this the cubes size is 3x3x3 with the current hit in the middle.
+#   To define the template the first 9 are the cubes at Z-1 coordinates, than at Z and than at Z+1.
+#   'O' (letter O) or '-' is used for no hit, 'X' is for hit, 'P' is used in GetNextNode templates to denote previous node
+#   'N' is used in GetNextNode templates to denote next node, 'C' denotes center cube position. ONE space is used to separate the matrixes
+
+#########################################################
+#######          Leaves with one nearby hit       #######
+#########################################################
+
+#   Hits with one nearby hits are considered leaves by default. The leaves with
+#   One hit are listed here for completion.
+
+# This is the initial position, to match 23 permutations of the defined templare are made
+#   in X,Y,Z axis to covered all possibilities
+
+## Local Hits
+#Leaf
+--- --- ---
+--- -C- -X-
+--- --- ---
+
+#Leaf
+--- --- -X-
+--- -C- ---
+--- --- ---
+
+#Leaf
+--- --- --X
+--- -C- ---
+--- --- ---
+
+Leaf
+--- --- -X-
+--- -C- -X-
+--- --- ---
+
+Leaf
+--- --- --X
+--- -C- -X-
+--- --- ---
+
+Leaf
+--- --- -XX
+--- -C- -X-
+--- --- ---
+
+Leaf
+--- --- XX-
+--- -C- -X-
+--- --- ---
+
+
