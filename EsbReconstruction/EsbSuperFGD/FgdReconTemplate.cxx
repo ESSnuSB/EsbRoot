@@ -68,13 +68,17 @@ void FgdReconTemplate::LoadTemplates()
 {
     TVector3 center;
     std::vector<TVector3> leaves;
-    std::vector<TVector3> next;
+
+    std::vector<TVector3> nextNodes;
+    TVector3 nextNode;
+    TVector3 previousNode;
 
     std::ifstream file(freconFile);
     std::string line;
     
     while(std::getline(file,line))
     {
+        // 1. Check for leaf
         size_t leafInd = line.find(ReconTemplates::LEAF);
         if( leafInd==0                       // String starts with The searched pattern
             && leafInd!=std::string::npos)   // Search found a result
@@ -128,22 +132,73 @@ void FgdReconTemplate::LoadTemplates()
             leaves.clear();
         }
 
-        // size_t leafInd = line.find(ReconTemplates::GET_NEXT);
-        // if( leafInd==0                       // String starts with The searched pattern
-        //     && leafInd!=std::string::npos)   // Search found a result
-        // {
-        //     for(Int_t row =0; row < 3; ++row)
-        //     {
-        //         if(std::getline(file,line))
-        //         {
-        //             for(size_t cube=0; cube<line.size(); ++cube)
-        //             {
+
+        // 2. Check for getnext
+        size_t nextInd = line.find(ReconTemplates::GET_NEXT);
+        if( nextInd==0                       // String starts with The searched pattern
+            && nextInd!=std::string::npos)   // Search found a result
+        {
+            FgdReconTemplate::HitTemplate hitTemp;
+            for(Int_t y = 1; y >= -1; --y)
+            {
+                Int_t x = 1;
+                Int_t z = -1;
+                if(std::getline(file,line))
+                {
+                    for(size_t cube=0; cube<line.size(); ++cube)
+                    {
+                        if(line[cube]==ReconTemplates::SEPARATOR)
+                        {
+                            continue;
+                        }
+
+                        switch(line[cube])
+                        {
+                            case 'C':   center.SetX(x); 
+                                        center.SetY(y); 
+                                        center.SetZ(z);
+                                        break;
+                            case 'X':   nextNodes.emplace_back(x,y,z);
+                                        break;
+                            case 'N':   nextNode.SetX(x); 
+                                        nextNode.SetY(y); 
+                                        nextNode.SetZ(z);
+                                        nextNode.emplace_back(x,y,z);
+                                        break;
+                            case 'P':   previousNode.SetX(x); 
+                                        previousNode.SetY(y); 
+                                        previousNode.SetZ(z)
+                                        nextNodes.emplace_back(x,y,z);
+                                        break;
+                            default:
+                                        break;
+                        }
+
                         
-        //             }
-        //         }
-        //     }
-        //     next.clear();
-        // }
+                        --x;
+                        if(x==-2)
+                        {
+                            ++z;
+                            x = 1;
+                        } 
+                    }
+                }
+            }
+
+            for(Int_t leaf=0; leaf<nextNodes.size(); leaf++)
+            {
+                hitTemp.hitVectors.emplace_back(center - nextNodes[leaf]);
+            }
+
+            if(!nextNodes.empty())
+            {
+                hitTemp.previousHit = center - previousNode;
+                hitTemp.nextHit = center - nextNode;
+                fGetNExtVectors.push_back(hitTemp);
+            }
+            
+            nextNodes.clear();
+        }
     }
 }
 

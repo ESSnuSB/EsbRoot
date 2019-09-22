@@ -17,7 +17,7 @@ namespace superfgd {
 namespace ReconTemplates
 {
     static const std::string LEAF = "Leaf";
-    static const std::string GET_NEXT = "GetNext";
+    static const std::string GET_NEXT = "GetNextNode";
 
     static const char SEPARATOR = ' ';
     static const char NO_HIT = 'O';
