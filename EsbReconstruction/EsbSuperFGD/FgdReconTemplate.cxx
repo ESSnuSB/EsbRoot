@@ -163,11 +163,11 @@ void FgdReconTemplate::LoadTemplates()
                             case 'N':   nextNode.SetX(x); 
                                         nextNode.SetY(y); 
                                         nextNode.SetZ(z);
-                                        nextNode.emplace_back(x,y,z);
+                                        nextNodes.emplace_back(x,y,z);
                                         break;
                             case 'P':   previousNode.SetX(x); 
                                         previousNode.SetY(y); 
-                                        previousNode.SetZ(z)
+                                        previousNode.SetZ(z);
                                         nextNodes.emplace_back(x,y,z);
                                         break;
                             default:
