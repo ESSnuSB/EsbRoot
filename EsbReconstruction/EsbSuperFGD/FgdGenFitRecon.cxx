@@ -762,6 +762,17 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
 
   cout << "Leaves found " << tracks.size() << endl;
 
+  // Print out the build graph
+  for(Int_t i=0; i<hits.size(); ++i)
+  {
+    LOG(debug) << "i " << i;
+    for(Int_t j=0; j<hits[i].fLocalHits.size(); ++j)
+    {
+      LOG(debug) << " Local Id " << hits[i].fLocalHits[j];
+    }
+    LOG(debug) << "X " << hits[i].fmppcLoc.X() << " Y " << hits[i].fmppcLoc.Y()<< " Z " << hits[i].fmppcLoc.Z();
+    LOG(debug) << "=====";
+  }
 
   // // TODO2
   // for(Int_t i=0; i<hits.size(); ++i)
