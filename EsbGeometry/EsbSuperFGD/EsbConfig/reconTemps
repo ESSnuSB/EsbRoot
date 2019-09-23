@@ -7,15 +7,104 @@
 #   'O' (letter O) or '-' is used for no hit, 'X' is for hit, 'P' is used in GetNextNode templates to denote previous node
 #   'N' is used in GetNextNode templates to denote next node, 'C' denotes center cube position. ONE space is used to separate the matrixes
 
-#########################################################
-#######          Leaves with one nearby hit       #######
-#########################################################
-
 #   Hits with one nearby hits are considered leaves by default. The leaves with
 #   One hit are listed here for completion.
 
 # This is the initial position, to match 23 permutations of the defined templare are made
 #   in X,Y,Z axis to covered all possibilities
+
+
+#########################################################
+#######                  Permutations             #######
+#########################################################
+#
+#        The following are the permutations used for each templates
+#        defined for Leaves and GetNextNodes.
+#
+#        case 1:
+#                vec.RotateZ(rot90deg);
+#                break;
+#        case 2:
+#                vec.RotateZ(2*rot90deg);
+#                break;
+#        case 3:
+#                vec.RotateZ(3*rot90deg);
+#                break;
+#        case 4:
+#                vec.RotateY(rot90deg);
+#                break;
+#        case 5:
+#               vec.RotateY(rot90deg);
+#                vec.RotateX(rot90deg);
+#                break;
+#        case 6:
+#                vec.RotateY(rot90deg);
+#                vec.RotateX(2*rot90deg);
+#                break;
+#        case 7:
+#                vec.RotateY(rot90deg);
+#                vec.RotateX(3*rot90deg);
+#                break;
+#        case 8:
+#                vec.RotateY(2*rot90deg);
+#                break;
+#        case 9:
+#                vec.RotateY(2*rot90deg);
+#                vec.RotateZ(rot90deg);
+#                break;
+#        case 10:
+#                vec.RotateY(2*rot90deg);
+#                vec.RotateZ(2*rot90deg);
+#                break;
+#        case 11:
+#                vec.RotateY(2*rot90deg);
+#                vec.RotateZ(3*rot90deg);
+#                break;
+#        case 12:
+#                vec.RotateY(3*rot90deg);
+#                break;
+#        case 13:
+#                vec.RotateY(3*rot90deg);
+#                vec.RotateX(rot90deg);
+#                break;
+#        case 14:
+#                vec.RotateY(3*rot90deg);
+#                vec.RotateX(2*rot90deg);
+#                break;
+#        case 15:
+#                vec.RotateY(3*rot90deg);
+#                vec.RotateX(3*rot90deg);
+#                break;
+#        case 16:
+#                vec.RotateX(rot90deg);
+#                break;
+#        case 17:
+#                vec.RotateX(rot90deg);
+#                vec.RotateY(rot90deg);
+#                break;
+#        case 18:
+#                vec.RotateX(rot90deg);
+#                vec.RotateY(2*rot90deg);
+#                break;
+#        case 19:
+#                vec.RotateX(rot90deg);
+#                vec.RotateY(3*rot90deg);
+#                break;
+#        case 20:
+#                vec.RotateX(-rot90deg);
+#                break;
+#        case 21:
+#                vec.RotateX(-rot90deg);
+#                vec.RotateY(rot90deg);
+#                break;
+#        case 22:
+#                vec.RotateX(-rot90deg);
+#                vec.RotateY(2*rot90deg);
+#                break;
+#        case 23:
+#                vec.RotateX(-rot90deg);
+#                vec.RotateY(3*rot90deg);
+#                break;
 
 #########################################################
 #######                   Leaves                  #######
@@ -118,5 +207,31 @@ GetNextNode
 --- --- ---
 -P- -C- -N-
 X-- --- ---
+
+GetNextNode
+--- --- ---
+-PX -C- -N-
+--- --- -X-
+
+GetNextNode
+--- --- ---
+XP- -C- -N-
+--- --- -X-
+
+
+GetNextNode
+-X- --- ---
+-P- -C- -N-
+--- --- -X-
+
+GetNextNode
+X-- --- ---
+-P- -C- -N-
+--- --- -X-
+
+GetNextNode
+X-- --- ---
+-P- -C- -N-
+--- --- --X
 
 
