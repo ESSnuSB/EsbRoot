@@ -85,7 +85,7 @@ Bool_t FgdReconTemplate::GetNextHit(ReconHit* previous, ReconHit* current, Recon
                 for(size_t i=1; i<=PERMUTATIONS; ++i)
                 {
                     TVector3 tmp =  GetPermutation(prevVecTem,i);
-                    if(tmp==prevVec)
+                    if(tmp == prevVec)
                     {
                         TVector3& nextVecTem = fGetNExtVectors[temp].nextHit;
                         TVector3 nextTmp =  GetPermutation(nextVecTem,i);
@@ -93,8 +93,13 @@ Bool_t FgdReconTemplate::GetNextHit(ReconHit* previous, ReconHit* current, Recon
                         for(size_t nid = 0; nid< current->fLocalHits.size(); nid++)
                         {
                             ReconHit* toComp = &hits[current->fLocalHits[nid]];
-                            if(toComp->fmppcLoc == nextTmp)
+                            TVector3 vecPosition = current->fmppcLoc - toComp->fmppcLoc;
+                            cout  << "coordintes" << " x " << vecPosition.X() << " y " << vecPosition.Y() << " z " << vecPosition.Z() << endl;
+                            cout  << "coordintes" << " x " << nextTmp.X() << " y " << nextTmp.Y() << " z " << nextTmp.Z() << endl;
+
+                            if(vecPosition == nextTmp)
                             {
+                                cout << " next = toComp; " << endl;
                                 next = toComp;
                                 break;
                             }
