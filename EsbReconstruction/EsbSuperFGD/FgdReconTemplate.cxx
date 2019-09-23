@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <map>
 
 namespace esbroot {
 namespace reconstruction {
@@ -28,8 +29,6 @@ Bool_t FgdReconTemplate::IsLeaf(ReconHit* hit, std::vector<ReconHit>& hits)
 
     if(hit->fLocalHits.size()==1)
     {
-        // If it has only one local hit, there is not another option to check
-        // cout << "Leaf " << "X " << hit->fmppcLoc.X() << " Y " << hit->fmppcLoc.Y()<< " Z " << hit->fmppcLoc.Z() << endl;
         cout << "Leaf " << endl;
         isHitLeaf = true;
     }
@@ -37,14 +36,6 @@ Bool_t FgdReconTemplate::IsLeaf(ReconHit* hit, std::vector<ReconHit>& hits)
     {
         std::vector<TVector3> vecs;
         GetHitVectors(hit, hits, vecs);
-        // if(vecs.size()==2)
-        //     cout << " X " << hit->fmppcLoc.X()  << " Y " <<  hit->fmppcLoc.Y()  << " Z " << hit->fmppcLoc.Z() << endl;
-
-        // for(int i =0; vecs.size()==2 && i < vecs.size();++i)
-        // {
-        //     cout << " X " << vecs[i].X()  << " Y " <<  vecs[i].Y()  << " Z " << vecs[i].Z() << endl;
-        // }
-        // cout << " ===="  << endl;
         for(size_t temp=0; !isHitLeaf && temp < fLeafVectors.size(); ++temp)
         {
             if(fLeafVectors[temp].hitVectors.size() == hit->fLocalHits.size())
@@ -359,10 +350,11 @@ TVector3 FgdReconTemplate::GetPermutation(TVector3 vec, Int_t numPermutation)
                 break;
     }
 
-    return TVector3((Int_t)vec.X()
-                    ,(Int_t)vec.Y()
-                    ,(Int_t)vec.Z()
-                    );
+    Double_t&& x = std::round(vec.X());
+    Double_t&& y = std::round(vec.Y());
+    Double_t&& z = std::round(vec.Z());
+
+    return TVector3(x,y,z);
 }
 
 } //superfgd
