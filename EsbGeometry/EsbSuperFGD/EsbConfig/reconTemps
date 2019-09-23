@@ -17,7 +17,9 @@
 # This is the initial position, to match 23 permutations of the defined templare are made
 #   in X,Y,Z axis to covered all possibilities
 
-## Local Hits
+#########################################################
+#######                   Leaves                  #######
+#########################################################
 #Leaf
 --- --- ---
 --- -C- -X-
@@ -62,5 +64,59 @@ Leaf
 --- --- --X
 --- -C- --X
 --- --- ---
+
+#########################################################
+#######                Next Nodes                 #######
+#########################################################
+
+GetNextNode
+--- --- ---
+-P- -C- -N-
+--- --- ---
+
+GetNextNode
+--- --- -N-
+-P- -C- ---
+--- --- ---
+
+GetNextNode
+-P- --- ---
+--- -C- -N-
+--- --- ---
+
+GetNextNode
+-P- --- -N-
+--- -C- ---
+--- --- ---
+
+GetNextNode
+P-- --- --N
+--- -C- ---
+--- --- ---
+
+GetNextNode
+P-- --- ---
+--- -C- -N-
+--- --- ---
+
+GetNextNode
+--- --- --N
+-P- -C- ---
+--- --- ---
+
+GetNextNode
+--- --- ---
+-P- -C- -N-
+-X- --- ---
+
+GetNextNode
+--- --- ---
+-P- -C- -N-
+--- --- -X-
+
+GetNextNode
+--- --- ---
+-P- -C- -N-
+X-- --- ---
 
 
