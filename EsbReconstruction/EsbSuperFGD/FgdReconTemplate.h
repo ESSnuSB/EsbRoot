@@ -44,7 +44,7 @@ public:
 
     Bool_t IsLeaf(ReconHit* hit, std::vector<ReconHit>& hits);
 
-    Bool_t GetNextHit(ReconHit* previous, ReconHit* current, ReconHit* next, std::vector<ReconHit>& hits);
+    Bool_t GetNextHit(ReconHit* previous, ReconHit* current, ReconHit*& next, std::vector<ReconHit>& hits);
 
     void LoadTemplates();
 

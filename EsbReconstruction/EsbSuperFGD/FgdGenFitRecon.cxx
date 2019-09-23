@@ -830,7 +830,7 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
     
   //   while(GetNext(previousId, currentHit->fLocalId, nextId, hits))
   //   {
-  //     cout << "I am here while condition" << endl;
+  //     // cout << "I am here while condition" << endl;
 
   //     // std::cout << " nextId " << nextId << std::endl; // TODO2
   //     previousId = currentHit->fLocalId;
@@ -853,21 +853,48 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
   for(Int_t i=0; i<tracks.size(); ++i)
   {
     std::vector<Int_t>& track = tracks[i];
+    Int_t previousId = track[0];
+
+    ReconHit* currentHit = &hits[previousId];
+    ReconHit* nextHit = nullptr;
+    ReconHit* previousHit = nullptr;
+
+    if(currentHit->fIsVisited)
+    {
+      continue;
+    }
+    currentHit->fIsVisited = true;
+
+    if(reconTemplates.GetNextHit(previousHit, currentHit, nextHit, hits))
+    {
+      previousHit = currentHit;
+      currentHit = nextHit;
+      currentHit->fIsVisited = true;
+    }
+    
+    while(reconTemplates.GetNextHit(previousHit, currentHit, nextHit, hits))
+    {
+      track.push_back(nextHit->fLocalId);
+      previousHit = currentHit;
+      currentHit = nextHit;
+      currentHit->fIsVisited = true;
+
+      if(reconTemplates.IsLeaf(currentHit, hits))
+      {
+        break;
+      }
+    }
+  }
+
+  for(Int_t i=0; i<tracks.size(); ++i)
+  {
+    std::vector<Int_t>& track = tracks[i];
     std::vector<pathfinder::basicHit> currentTrack;
     cout << "Track " << i << endl;
     Int_t z_mppc=-1;
     for(Int_t j=0; j<track.size(); ++j)
     {
       Int_t ind = track[j];
-      if(z_mppc<hits[ind].fmppcLoc.Z())
-      {
-        z_mppc = hits[ind].fmppcLoc.Z();
-      }
-      else
-      {
-        continue;
-      }
-      
       currentTrack.emplace_back(hits[ind].fHitPos.X()
                                 , hits[ind].fHitPos.Y()
                                 , hits[ind].fHitPos.Z());

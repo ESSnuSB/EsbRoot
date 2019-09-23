@@ -10,6 +10,8 @@ namespace superfgd {
 
 using namespace std;
 
+#define PERMUTATIONS 23
+
 FgdReconTemplate::FgdReconTemplate()
 {
 }
@@ -29,7 +31,6 @@ Bool_t FgdReconTemplate::IsLeaf(ReconHit* hit, std::vector<ReconHit>& hits)
 
     if(hit->fLocalHits.size()==1)
     {
-        cout << "Leaf " << endl;
         isHitLeaf = true;
     }
     else
@@ -49,10 +50,67 @@ Bool_t FgdReconTemplate::IsLeaf(ReconHit* hit, std::vector<ReconHit>& hits)
     return isHitLeaf;
 }
 
-Bool_t FgdReconTemplate::GetNextHit(ReconHit* previous, ReconHit* current, ReconHit* next, std::vector<ReconHit>& hits)
+Bool_t FgdReconTemplate::GetNextHit(ReconHit* previous, ReconHit* current, ReconHit*& next, std::vector<ReconHit>& hits)
 {
-    // TODO Implement
-    return false;
+    Bool_t nextFound(false);
+
+    if(current==nullptr || current!=nullptr && current->fLocalHits.size()>1 && previous==nullptr)
+    {
+        return nextFound;
+    }
+
+    if(current->fLocalHits.size()==1)
+    {
+        next = &hits[current->fLocalHits[0]];
+        nextFound = true;
+    }
+    else
+    {
+        std::vector<TVector3> vecs;
+        GetHitVectors(current, hits, vecs);
+        for(size_t temp=0; !nextFound && temp < fGetNExtVectors.size(); ++temp)
+        {
+            if(fGetNExtVectors[temp].hitVectors.size() == current->fLocalHits.size())
+            {
+                std::vector<TVector3>& tempVecs = fGetNExtVectors[temp].hitVectors;
+                nextFound = AreVectorsEqual(tempVecs, vecs);
+            }
+
+            if(nextFound)
+            {
+                TVector3 prevVec = current->fmppcLoc - previous->fmppcLoc;
+                TVector3& prevVecTem = fGetNExtVectors[temp].previousHit;
+
+                Bool_t previousHitMatches(false);
+                for(size_t i=1; i<=PERMUTATIONS; ++i)
+                {
+                    TVector3 tmp =  GetPermutation(prevVecTem,i);
+                    if(tmp==prevVec)
+                    {
+                        TVector3& nextVecTem = fGetNExtVectors[temp].nextHit;
+                        TVector3 nextTmp =  GetPermutation(nextVecTem,i);
+
+                        for(size_t nid = 0; nid< current->fLocalHits.size(); nid++)
+                        {
+                            ReconHit* toComp = &hits[current->fLocalHits[nid]];
+                            if(toComp->fmppcLoc == nextTmp)
+                            {
+                                next = toComp;
+                                break;
+                            }
+                        }
+
+                        previousHitMatches = true;
+                        break;
+                    }
+                }
+
+                nextFound = previousHitMatches;
+            }
+        }
+    }
+    
+    return nextFound;
 }
 
 
@@ -111,7 +169,7 @@ void FgdReconTemplate::LoadTemplates()
                     }
                 }
             }
-            for(Int_t leaf=0; leaf<leaves.size(); leaf++)
+            for(size_t leaf=0; leaf<leaves.size(); leaf++)
             {
                 hitTemp.hitVectors.emplace_back(center - leaves[leaf]);
             }
@@ -177,9 +235,9 @@ void FgdReconTemplate::LoadTemplates()
                 }
             }
 
-            for(Int_t leaf=0; leaf<nextNodes.size(); leaf++)
+            for(size_t node=0; node<nextNodes.size(); node++)
             {
-                hitTemp.hitVectors.emplace_back(center - nextNodes[leaf]);
+                hitTemp.hitVectors.emplace_back(center - nextNodes[node]);
             }
 
             if(!nextNodes.empty())
@@ -194,7 +252,7 @@ void FgdReconTemplate::LoadTemplates()
     }
 
     std::cout << " Leaf templates found " << fLeafVectors.size() << std::endl;
-    std::cout << " GetNext templates found " << nextNodes.size() << std::endl;
+    std::cout << " GetNext templates found " << fGetNExtVectors.size() << std::endl;
 }
 
 void FgdReconTemplate::GetHitVectors(ReconHit* hit, std::vector<ReconHit>& hits, std::vector<TVector3>& vecs)
@@ -222,7 +280,7 @@ Bool_t FgdReconTemplate::AreVectorsEqual(const std::vector<TVector3>& tempVecs, 
     std::vector<TVector3> tempVecPermut = tempVecs;
 
     Int_t permutation(1);
-    Int_t limitPermutations = 23;
+    Int_t limitPermutations = PERMUTATIONS;
 
     while(!areEqual && permutation<=limitPermutations)
     {
@@ -255,7 +313,7 @@ TVector3 FgdReconTemplate::GetPermutation(TVector3 vec, Int_t numPermutation)
     Double_t rot90deg = TMath::Pi()/2;
     Double_t rot180deg = TMath::Pi();
 
-    if(numPermutation<1 || numPermutation>23)
+    if(numPermutation<1 || numPermutation>PERMUTATIONS)
     {
         throw "Invalid permutation";
     }
