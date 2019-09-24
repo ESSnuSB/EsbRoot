@@ -19,8 +19,12 @@
 #########################################################
 #
 #        The following are the permutations used for each templates
-#        defined for Leaves and GetNextNodes.
+#        defined for Leaves and GetNextNodes - vec is a TVector3 object
+#        and the cases below show which rotations are used for the permutations.
 #
+#        case 0:
+#                // No rotation
+#                break;
 #        case 1:
 #                vec.RotateZ(rot90deg);
 #                break;
@@ -164,9 +168,24 @@ GetNextNode
 --- --- ---
 
 GetNextNode
+--- --- ---
+-P- -C- N--
+--- --- ---
+
+GetNextNode
 --- --- -N-
 -P- -C- ---
 --- --- ---
+
+GetNextNode
+--- -N- ---
+-P- -C- ---
+--- --- ---
+
+GetNextNode
+--- --- ---
+-P- -C- ---
+--- -N- ---
 
 GetNextNode
 -P- --- ---
@@ -205,6 +224,21 @@ GetNextNode
 
 GetNextNode
 --- --- ---
+-P- -C- ---
+--- -N- -X-
+
+GetNextNode
+--- -N- -X-
+-P- -C- ---
+--- --- ---
+
+GetNextNode
+--- --- ---
+-P- -C- -N-
+--- --- --X
+
+GetNextNode
+--- --- ---
 -P- -C- -N-
 X-- --- ---
 
@@ -225,6 +259,11 @@ GetNextNode
 --- --- -X-
 
 GetNextNode
+-X- --- -X-
+-P- -C- -N-
+--- --- ---
+
+GetNextNode
 X-- --- ---
 -P- -C- -N-
 --- --- -X-
@@ -233,5 +272,10 @@ GetNextNode
 X-- --- ---
 -P- -C- -N-
 --- --- --X
+
+GetNextNode
+X-- --- --X
+-P- -C- -N-
+--- --- ---
 
 
