@@ -39,9 +39,14 @@ public:
 
     TVector3 operator-(const ReconHit& c);
 
-    bool IsAlone()
+    Bool_t IsAlone()
     {
         return fLocalHits.empty(); 
+    } 
+
+    Bool_t HasLocalHit(Int_t hitId)
+    {
+        return (find(fLocalHits.begin(), fLocalHits.end(), hitId)!=fLocalHits.end());
     }
 
 

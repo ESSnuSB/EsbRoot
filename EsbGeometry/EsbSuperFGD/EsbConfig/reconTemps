@@ -38,7 +38,7 @@
 #                vec.RotateY(rot90deg);
 #                break;
 #        case 5:
-#               vec.RotateY(rot90deg);
+#                vec.RotateY(rot90deg);
 #                vec.RotateX(rot90deg);
 #                break;
 #        case 6:
@@ -233,6 +233,16 @@ GetNextNode
 --- --- ---
 
 GetNextNode
+--- -P- -X-
+-N- -C- ---
+--- --- ---
+
+GetNextNode
+--- -N- ---
+--- -C- ---
+-X- -P- ---
+
+GetNextNode
 --- --- ---
 -P- -C- -N-
 --- --- --X
@@ -243,6 +253,21 @@ GetNextNode
 X-- --- ---
 
 GetNextNode
+--- --- -N-
+-P- -C- ---
+-X- --- ---
+
+GetNextNode
+--- --- --N
+-P- -C- ---
+-X- --- ---
+
+GetNextNode
+--- --- N--
+-P- -C- ---
+-X- --- ---
+
+GetNextNode
 --- --- ---
 -PX -C- -N-
 --- --- -X-
@@ -251,6 +276,16 @@ GetNextNode
 --- --- ---
 XP- -C- -N-
 --- --- -X-
+
+GetNextNode
+--- --- ---
+-P- -C- -N-
+-XX --- ---
+
+GetNextNode
+--- --- ---
+-P- -C- -N-
+XX- --- ---
 
 
 GetNextNode
@@ -277,5 +312,10 @@ GetNextNode
 X-- --- --X
 -P- -C- -N-
 --- --- ---
+
+GetNextNode
+--- --- ---
+-P- -C- -N-
+-XX --- ---
 
 

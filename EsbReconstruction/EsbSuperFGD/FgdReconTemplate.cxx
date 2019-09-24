@@ -52,6 +52,113 @@ Bool_t FgdReconTemplate::IsLeaf(ReconHit* hit, std::vector<ReconHit>& hits)
     return isHitLeaf;
 }
 
+// Bool_t FgdReconTemplate::GetNextHit(ReconHit* previous, ReconHit* current, ReconHit*& next, std::vector<ReconHit>& hits)
+// {
+//     Bool_t nextFound(false);
+
+//     if(current==nullptr)
+//     {
+//         // cout   << endl;
+//         // cout << " previous==nullptr " << (previous==nullptr) << " current->fLocalHits.size() " << current->fLocalHits.size() << endl;
+//         // cout << "======================"  << endl;
+//         throw "Invalid condition";
+//     }
+
+//     if(current->fIsLeaf)
+//     {
+//         // 1. If it has only one near hit, it is the next one
+//         if(current->fLocalHits.size()==1)
+//         {
+//             next = &hits[current->fLocalHits[0]];
+//             nextFound = true;
+//         }
+//         // 2. If more than 1 hit is a neighbour - choose the nearest one (for a leaf)
+//         else
+//         {
+//             if(current->fLocalHits.empty())
+//             {
+//                 return nextFound;
+//             }
+
+//             size_t nearestId(0);
+//             Int_t min_dist = std::numeric_limits<Int_t>::max();
+//             for(size_t nid = 0; nid< current->fLocalHits.size(); ++nid)
+//             {
+//                 ReconHit* toComp = &hits[current->fLocalHits[nid]];
+//                 TVector3 vecPosition = current->fmppcLoc - toComp->fmppcLoc;
+//                 Int_t dist = vecPosition.X()*vecPosition.X() + vecPosition.Y()*vecPosition.Y() + vecPosition.Z()*vecPosition.Z();
+
+//                 if(dist < min_dist)
+//                 {
+//                     min_dist = dist;
+//                     nearestId = nid;
+//                 }
+//             }
+
+//             next = &hits[current->fLocalHits[nearestId]];
+//             nextFound = true;
+//         }
+//     }
+//     // The logic is the following:
+//     //  A) If it has two hits, 1 is the previous return the next one
+//     //  B) If it has more hits, check if it has on opposite to the previous 
+//     //      e.g. if previous vec was (0,0,1) check if there is (0,0,-1)
+//     //      if yes, return it else check for the nearest hit
+//     else if(current->fLocalHits.size()==2)
+//     {
+//         for(size_t nid = 0; nid< current->fLocalHits.size(); ++nid)
+//         {
+//             if(nid!=previous->fLocalId)
+//             {
+//                 nextFound = true;
+//                 next = &hits[current->fLocalHits[nid]];
+//                 break;
+//             }
+//         }
+//     }
+//     else
+//     {
+//         TVector3 prevVec = current->fmppcLoc - previous->fmppcLoc;
+//         TVector3 oppositeVec(-prevVec.X(),-prevVec.Y(),-prevVec.Z());
+
+//         for(size_t nid = 0; nid< current->fLocalHits.size(); ++nid)
+//         {
+//             ReconHit* localHit = &hits[current->fLocalHits[nid]];
+//             TVector3 localDiff = current->fmppcLoc -localHit->fmppcLoc;
+//             if(localDiff==oppositeVec)
+//             {
+//                 nextFound = true;
+//                 next = localHit;
+//                 break;
+//             }
+//         }
+
+//         if(!nextFound)
+//         {
+//             size_t nearestId(0);
+//             Int_t min_dist = std::numeric_limits<Int_t>::max();
+//             for(size_t nid = 0; nid < current->fLocalHits.size(); ++nid)
+//             {
+//                 ReconHit* toComp = &hits[current->fLocalHits[nid]];
+//                 TVector3 vecPosition = current->fmppcLoc - toComp->fmppcLoc;
+//                 Int_t dist = vecPosition.X()*vecPosition.X() + vecPosition.Y()*vecPosition.Y() + vecPosition.Z()*vecPosition.Z();
+
+//                 if(toComp->fLocalId!=previous->fLocalId
+//                     &&  dist < min_dist)
+//                 {
+//                     min_dist = dist;
+//                     nearestId = nid;
+//                 }
+//             }
+
+//             next = &hits[current->fLocalHits[nearestId]];
+//             nextFound = true;
+//         }
+//     }  
+    
+//     return nextFound;
+// }
+
 Bool_t FgdReconTemplate::GetNextHit(ReconHit* previous, ReconHit* current, ReconHit*& next, std::vector<ReconHit>& hits)
 {
     Bool_t nextFound(false);
@@ -109,64 +216,65 @@ Bool_t FgdReconTemplate::GetNextHit(ReconHit* previous, ReconHit* current, Recon
             if(fGetNExtVectors[temp].hitVectors.size() == current->fLocalHits.size())
             {
                 std::vector<TVector3>& tempVecs = fGetNExtVectors[temp].hitVectors;
-                nextFound = AreVectorsEqual(tempVecs, vecs, foundPermut);
+                
+                if(AreVectorsEqual(tempVecs, vecs, foundPermut))
+                {
+                    TVector3 prevVec = current->fmppcLoc - previous->fmppcLoc;
+                    TVector3& prevVecTem = fGetNExtVectors[temp].previousHit;
+                    TVector3 tmp =  GetPermutation(prevVecTem, foundPermut);
+                    nextFound = (tmp == prevVec);
+
+                    if(current->fLocalId == 32)
+                    {
+                        cout << " temp " << temp << endl;
+                        cout << " foundPermut " << foundPermut << endl;
+                        cout << " nextFound " << nextFound << endl;
+                        cout << " prevVec " << " X " << prevVec.X()<< " Y " << prevVec.Y()<< " Z " << prevVec.Z() << endl;
+                        cout << " prevVecTem " << " X " << prevVecTem.X()<< " Y " << prevVecTem.Y()<< " Z " << prevVecTem.Z() << endl;
+                        cout << " tmp " << " X " << tmp.X()<< " Y " << tmp.Y()<< " Z " << tmp.Z() << endl;
+                        cout << endl;
+                        for(size_t jj = 0; jj< tempVecs.size(); ++jj)
+                        {
+                            cout << " tempVecs " << " X " << tempVecs[jj].X()<< " Y " << tempVecs[jj].Y()<< " Z " << tempVecs[jj].Z() << endl;
+                        }
+                        cout << endl;
+                        for(size_t jj = 0; jj< tempVecs.size(); ++jj)
+                        {
+                            TVector3 tt =  GetPermutation(tempVecs[jj], foundPermut);
+                            cout << " tempVecs Permute" << " X " << tt.X()<< " Y " << tt.Y()<< " Z " << tt.Z() << endl;
+                        }
+                        cout << endl;
+                        for(size_t jj = 0; jj< vecs.size(); ++jj)
+                        {
+                            cout << " vecs " << " X " << vecs[jj].X()<< " Y " << vecs[jj].Y()<< " Z " << vecs[jj].Z() << endl;
+                        }
+                    }
+                }
             }
+               
 
             if(nextFound)
             {
-                TVector3 prevVec = current->fmppcLoc - previous->fmppcLoc;
-                TVector3& prevVecTem = fGetNExtVectors[temp].previousHit;
+                // if(current->fLocalId == 32)
 
-                // cout << "======================"  << endl;
-                Bool_t previousHitMatches(false);
+                TVector3& nextVecTem = fGetNExtVectors[temp].nextHit;
+                TVector3 nextTmp =  GetPermutation(nextVecTem, foundPermut);
 
-                TVector3 tmp =  GetPermutation(prevVecTem, foundPermut);
-                if(tmp == prevVec)
+
+                
+                for(size_t nid = 0; nid< current->fLocalHits.size(); ++nid)
                 {
-                    TVector3& nextVecTem = fGetNExtVectors[temp].nextHit;
-                    TVector3 nextTmp =  GetPermutation(nextVecTem, foundPermut);
+                    ReconHit* toComp = &hits[current->fLocalHits[nid]];
+                    TVector3 vecPosition = current->fmppcLoc - toComp->fmppcLoc;
 
 
-                    
-                    for(size_t nid = 0; nid< current->fLocalHits.size(); ++nid)
+                    if(vecPosition == nextTmp)
                     {
-                        ReconHit* toComp = &hits[current->fLocalHits[nid]];
-                        TVector3 vecPosition = current->fmppcLoc - toComp->fmppcLoc;
-
-
-
-                        // cout  << "vecPosition" << " x " << vecPosition.X() << " y " << vecPosition.Y() << " z " << vecPosition.Z() << endl;
-                        // cout  << "tmp" << " x " << tmp.X() << " y " << tmp.Y() << " z " << tmp.Z() << endl;
-                        // cout  << " current->fLocalHits.size() " << current->fLocalHits.size() << endl;
-                        // cout  << endl;
-                        // for(size_t d = 0; d< current->fLocalHits.size(); d++)
-                        // {
-                        //     ReconHit* dd = &hits[current->fLocalHits[d]];
-                        //     TVector3 vd = current->fmppcLoc - dd->fmppcLoc;
-                        //     cout  << "localPositions" << " x " << vd.X() << " y " << vd.Y() << " z " << vd.Z() << endl;
-                        // }
-
-                        // cout  << endl;
-                        // cout  << "prevVec" << " x " << prevVec.X() << " y " << prevVec.Y() << " z " << prevVec.Z() << endl;
-                        // cout  << "nextTmp" << " x " << nextTmp.X() << " y " << nextTmp.Y() << " z " << nextTmp.Z() << endl;
-
-
-
-
-                        if(vecPosition == nextTmp)
-                        {
-                            // cout << " next = toComp; " << endl;
-                            next = toComp;
-                            break;
-                        }
+                        if(current->fLocalId == 32) cout << " next = toComp; " << endl;
+                        next = toComp;
+                        break;
                     }
-
-                    previousHitMatches = true;
-                    break;
                 }
-                // cout << "======================"  << endl;
-
-                nextFound = previousHitMatches;
             }
         }
     }
@@ -340,12 +448,19 @@ Bool_t FgdReconTemplate::AreVectorsEqual(const std::vector<TVector3>& tempVecs, 
 
     std::vector<TVector3> tempVecPermut = tempVecs;
 
-    foundPermutation = 0;
-    Int_t permutation(1);
+    Int_t permutation(0);
     Int_t limitPermutations = PERMUTATIONS;
 
     while(!areEqual && permutation<=limitPermutations)
     {
+        for(size_t i=0; i<tempVecs.size(); ++i)
+        {
+            TVector3 tmp =  GetPermutation(tempVecs[i],permutation);
+            tempVecPermut[i].SetX(tmp.X());
+            tempVecPermut[i].SetY(tmp.Y());
+            tempVecPermut[i].SetZ(tmp.Z());
+        }
+
         Bool_t allVecsAreEqual(true);
         for(size_t i=0; allVecsAreEqual && i<vecs.size(); ++i)
         {
@@ -354,17 +469,12 @@ Bool_t FgdReconTemplate::AreVectorsEqual(const std::vector<TVector3>& tempVecs, 
 
         areEqual = allVecsAreEqual;
 
-        if(areEqual) break;
-
-        for(size_t i=0; i<tempVecs.size(); ++i)
+        if(areEqual)
         {
-            TVector3 tmp =  GetPermutation(tempVecs[i],permutation);
-            tempVecPermut[i].SetX(tmp.X());
-            tempVecPermut[i].SetY(tmp.Y());
-            tempVecPermut[i].SetZ(tmp.Z());
+            foundPermutation = permutation;
+            break;
         }
-           
-        foundPermutation = permutation;
+
         ++permutation;
     }
 

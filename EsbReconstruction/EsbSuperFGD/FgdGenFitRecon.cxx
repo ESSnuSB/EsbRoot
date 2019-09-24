@@ -876,7 +876,7 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
         }
 
         track.push_back(nextHit->fLocalId);
-        currentHit->fIsVisited = true;
+        //currentHit->fIsVisited = true;
         previousHit = currentHit;
         currentHit = nextHit;
       }
