@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <limits>
 #include <map>
 
 namespace esbroot {
@@ -35,6 +36,7 @@ Bool_t FgdReconTemplate::IsLeaf(ReconHit* hit, std::vector<ReconHit>& hits)
     }
     else
     {
+        Int_t permutation(0);
         std::vector<TVector3> vecs;
         GetHitVectors(hit, hits, vecs);
         for(size_t temp=0; !isHitLeaf && temp < fLeafVectors.size(); ++temp)
@@ -42,7 +44,7 @@ Bool_t FgdReconTemplate::IsLeaf(ReconHit* hit, std::vector<ReconHit>& hits)
             if(fLeafVectors[temp].hitVectors.size() == hit->fLocalHits.size())
             {
                 std::vector<TVector3>& tempVecs = fLeafVectors[temp].hitVectors;
-                isHitLeaf = AreVectorsEqual(tempVecs, vecs);
+                isHitLeaf = AreVectorsEqual(tempVecs, vecs, permutation);
             }
         }
     }
@@ -54,15 +56,48 @@ Bool_t FgdReconTemplate::GetNextHit(ReconHit* previous, ReconHit* current, Recon
 {
     Bool_t nextFound(false);
 
-    if(current==nullptr || current!=nullptr && current->fLocalHits.size()>1 && previous==nullptr)
+    if(current==nullptr)
     {
-        return nextFound;
+        // cout   << endl;
+        // cout << " previous==nullptr " << (previous==nullptr) << " current->fLocalHits.size() " << current->fLocalHits.size() << endl;
+        // cout << "======================"  << endl;
+        throw "Invalid condition";
     }
 
-    if(current->fLocalHits.size()==1)
+    if(current->fIsLeaf)
     {
-        next = &hits[current->fLocalHits[0]];
-        nextFound = true;
+        // 1. If it has only one near hit, it is the next one
+        if(current->fLocalHits.size()==1)
+        {
+            next = &hits[current->fLocalHits[0]];
+            nextFound = true;
+        }
+        // 2. If more than 1 hit is a neighbour - choose the nearest one (for a leaf)
+        else
+        {
+            if(current->fLocalHits.empty())
+            {
+                return nextFound;
+            }
+
+            size_t nearestId(0);
+            Int_t min_dist = std::numeric_limits<Int_t>::max();
+            for(size_t nid = 0; nid< current->fLocalHits.size(); ++nid)
+            {
+                ReconHit* toComp = &hits[current->fLocalHits[nid]];
+                TVector3 vecPosition = current->fmppcLoc - toComp->fmppcLoc;
+                Int_t dist = vecPosition.X()*vecPosition.X() + vecPosition.Y()*vecPosition.Y() + vecPosition.Z()*vecPosition.Z();
+
+                if(dist < min_dist)
+                {
+                    min_dist = dist;
+                    nearestId = nid;
+                }
+            }
+
+            next = &hits[current->fLocalHits[nearestId]];
+            nextFound = true;
+        }
     }
     else
     {
@@ -70,10 +105,11 @@ Bool_t FgdReconTemplate::GetNextHit(ReconHit* previous, ReconHit* current, Recon
         GetHitVectors(current, hits, vecs);
         for(size_t temp=0; !nextFound && temp < fGetNExtVectors.size(); ++temp)
         {
+            Int_t foundPermut;
             if(fGetNExtVectors[temp].hitVectors.size() == current->fLocalHits.size())
             {
                 std::vector<TVector3>& tempVecs = fGetNExtVectors[temp].hitVectors;
-                nextFound = AreVectorsEqual(tempVecs, vecs);
+                nextFound = AreVectorsEqual(tempVecs, vecs, foundPermut);
             }
 
             if(nextFound)
@@ -81,34 +117,54 @@ Bool_t FgdReconTemplate::GetNextHit(ReconHit* previous, ReconHit* current, Recon
                 TVector3 prevVec = current->fmppcLoc - previous->fmppcLoc;
                 TVector3& prevVecTem = fGetNExtVectors[temp].previousHit;
 
+                // cout << "======================"  << endl;
                 Bool_t previousHitMatches(false);
-                for(size_t i=1; i<=PERMUTATIONS; ++i)
+
+                TVector3 tmp =  GetPermutation(prevVecTem, foundPermut);
+                if(tmp == prevVec)
                 {
-                    TVector3 tmp =  GetPermutation(prevVecTem,i);
-                    if(tmp == prevVec)
+                    TVector3& nextVecTem = fGetNExtVectors[temp].nextHit;
+                    TVector3 nextTmp =  GetPermutation(nextVecTem, foundPermut);
+
+
+                    
+                    for(size_t nid = 0; nid< current->fLocalHits.size(); ++nid)
                     {
-                        TVector3& nextVecTem = fGetNExtVectors[temp].nextHit;
-                        TVector3 nextTmp =  GetPermutation(nextVecTem,i);
+                        ReconHit* toComp = &hits[current->fLocalHits[nid]];
+                        TVector3 vecPosition = current->fmppcLoc - toComp->fmppcLoc;
 
-                        for(size_t nid = 0; nid< current->fLocalHits.size(); nid++)
+
+
+                        // cout  << "vecPosition" << " x " << vecPosition.X() << " y " << vecPosition.Y() << " z " << vecPosition.Z() << endl;
+                        // cout  << "tmp" << " x " << tmp.X() << " y " << tmp.Y() << " z " << tmp.Z() << endl;
+                        // cout  << " current->fLocalHits.size() " << current->fLocalHits.size() << endl;
+                        // cout  << endl;
+                        // for(size_t d = 0; d< current->fLocalHits.size(); d++)
+                        // {
+                        //     ReconHit* dd = &hits[current->fLocalHits[d]];
+                        //     TVector3 vd = current->fmppcLoc - dd->fmppcLoc;
+                        //     cout  << "localPositions" << " x " << vd.X() << " y " << vd.Y() << " z " << vd.Z() << endl;
+                        // }
+
+                        // cout  << endl;
+                        // cout  << "prevVec" << " x " << prevVec.X() << " y " << prevVec.Y() << " z " << prevVec.Z() << endl;
+                        // cout  << "nextTmp" << " x " << nextTmp.X() << " y " << nextTmp.Y() << " z " << nextTmp.Z() << endl;
+
+
+
+
+                        if(vecPosition == nextTmp)
                         {
-                            ReconHit* toComp = &hits[current->fLocalHits[nid]];
-                            TVector3 vecPosition = current->fmppcLoc - toComp->fmppcLoc;
-                            cout  << "coordintes" << " x " << vecPosition.X() << " y " << vecPosition.Y() << " z " << vecPosition.Z() << endl;
-                            cout  << "coordintes" << " x " << nextTmp.X() << " y " << nextTmp.Y() << " z " << nextTmp.Z() << endl;
-
-                            if(vecPosition == nextTmp)
-                            {
-                                cout << " next = toComp; " << endl;
-                                next = toComp;
-                                break;
-                            }
+                            // cout << " next = toComp; " << endl;
+                            next = toComp;
+                            break;
                         }
-
-                        previousHitMatches = true;
-                        break;
                     }
+
+                    previousHitMatches = true;
+                    break;
                 }
+                // cout << "======================"  << endl;
 
                 nextFound = previousHitMatches;
             }
@@ -273,7 +329,7 @@ void FgdReconTemplate::GetHitVectors(ReconHit* hit, std::vector<ReconHit>& hits,
 // Compares if the two vectors are equal
 // This also includes rotational symmetry
 // Make a copy of the template since it will be modified
-Bool_t FgdReconTemplate::AreVectorsEqual(const std::vector<TVector3>& tempVecs, const std::vector<TVector3>& vecs)
+Bool_t FgdReconTemplate::AreVectorsEqual(const std::vector<TVector3>& tempVecs, const std::vector<TVector3>& vecs,  Int_t& foundPermutation )
 {
     Bool_t areEqual(false);
 
@@ -284,6 +340,7 @@ Bool_t FgdReconTemplate::AreVectorsEqual(const std::vector<TVector3>& tempVecs, 
 
     std::vector<TVector3> tempVecPermut = tempVecs;
 
+    foundPermutation = 0;
     Int_t permutation(1);
     Int_t limitPermutations = PERMUTATIONS;
 
@@ -307,6 +364,7 @@ Bool_t FgdReconTemplate::AreVectorsEqual(const std::vector<TVector3>& tempVecs, 
             tempVecPermut[i].SetZ(tmp.Z());
         }
            
+        foundPermutation = permutation;
         ++permutation;
     }
 
@@ -318,13 +376,16 @@ TVector3 FgdReconTemplate::GetPermutation(TVector3 vec, Int_t numPermutation)
     Double_t rot90deg = TMath::Pi()/2;
     Double_t rot180deg = TMath::Pi();
 
-    if(numPermutation<1 || numPermutation>PERMUTATIONS)
+    if(numPermutation<0 || numPermutation>PERMUTATIONS)
     {
         throw "Invalid permutation";
     }
 
     switch(numPermutation)
     {
+        case 0:
+                // No rotation
+                break;
         case 1:
                 vec.RotateZ(rot90deg);
                 break;

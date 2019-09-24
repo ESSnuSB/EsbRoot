@@ -31,6 +31,7 @@ ReconHit::ReconHit(TVector3 mppcLoc
         , fph2(ph2)
         , fmppc2(mppc2)
         , fIsVisited(false)
+        , fIsLeaf(false)
 {
     
 }
@@ -53,6 +54,7 @@ ReconHit::ReconHit(const ReconHit& c)
         , ftrackId(c.ftrackId)
         , fLocalHits(c.fLocalHits)
         , fIsVisited(c.fIsVisited)
+        , fIsLeaf(c.fIsLeaf)
 {
     
 }
@@ -71,6 +73,7 @@ ReconHit& ReconHit::operator=(const ReconHit& c)
     ftrackId = c.ftrackId;
     fLocalHits = c.fLocalHits;
     fIsVisited = c.fIsVisited;
+    fIsLeaf = c.fIsLeaf;
     return *this;
 }
 

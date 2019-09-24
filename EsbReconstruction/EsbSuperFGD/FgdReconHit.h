@@ -39,18 +39,11 @@ public:
 
     TVector3 operator-(const ReconHit& c);
 
-    // bool IsLeaf()
-    // {
-    //     Int_t totalSize = fLocalHits.size() + fLocalEdges.size();
-    //     return (totalSize==1); 
-    // }
+    bool IsAlone()
+    {
+        return fLocalHits.empty(); 
+    }
 
-    // bool IsAlone()
-    // {
-    //     return fLocalHits.empty(); 
-    // }
-
-    // bool GetNext(Int_t& previousId, Int_t& nextId);
 
     TVector3 fmppcLoc;
     TVector3 fHitPos;
@@ -62,6 +55,7 @@ public:
     Double_t ftime;
     Int_t fpdg;
     Int_t ftrackId;
+    Bool_t fIsLeaf;
 
     Int_t fLocalId;
     Bool_t fIsVisited;

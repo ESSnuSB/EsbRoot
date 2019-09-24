@@ -82,7 +82,7 @@ private:
 
     void GetHitVectors(ReconHit* hit, std::vector<ReconHit>& hits, std::vector<TVector3>& vecs);
 
-    Bool_t AreVectorsEqual(const std::vector<TVector3>& tempVecs, const std::vector<TVector3>& vecs);
+    Bool_t AreVectorsEqual(const std::vector<TVector3>& tempVecs, const std::vector<TVector3>& vecs, Int_t& foundPermutation );
     TVector3 GetPermutation(TVector3 vec, Int_t numPermutation);
 
     std::vector<FgdReconTemplate::HitTemplate> fLeafVectors;//!<!  

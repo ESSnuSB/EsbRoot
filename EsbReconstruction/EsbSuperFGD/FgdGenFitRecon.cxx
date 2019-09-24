@@ -747,21 +747,6 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
 
   BuildGraph(hits);
 
-  FgdReconTemplate reconTemplates(freconFile.c_str());
-  reconTemplates.LoadTemplates();
-
-  std::vector<std::vector<Int_t>> tracks;
-
-  for(size_t i=0; i<hits.size(); ++i)
-  {
-    if(reconTemplates.IsLeaf(&hits[i], hits))
-    {
-      tracks.push_back(std::vector<int>{i});
-    }
-  }
-
-  cout << "Leaves found " << tracks.size() << endl;
-
   // Print out the build graph
   for(Int_t i=0; i<hits.size(); ++i)
   {
@@ -775,31 +760,31 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
   }
 
   // // TODO2
-  // for(Int_t i=0; i<hits.size(); ++i)
-  // {
-  //   cout << "i " << i << endl;
-  //   for(Int_t j=0; j<hits[i].fLocalHits.size(); ++j)
-  //   {
-  //     cout << " Local Id " << hits[i].fLocalHits[j] << endl;
-  //   }
-  //   cout << "X " << hits[i].fmppcLoc.X() << " Y " << hits[i].fmppcLoc.Y()<< " Z " << hits[i].fmppcLoc.Z() << endl;
+  for(Int_t i=0; i<hits.size(); ++i)
+  {
+    cout << "i " << i << endl;
+    for(Int_t j=0; j<hits[i].fLocalHits.size(); ++j)
+    {
+      cout << " Local Id " << hits[i].fLocalHits[j] << endl;
+    }
+    cout << "X " << hits[i].fmppcLoc.X() << " Y " << hits[i].fmppcLoc.Y()<< " Z " << hits[i].fmppcLoc.Z() << endl;
 
 
-  //   // for(Int_t j=0; j<hits[i].fLocalEdges.size(); ++j)
-  //   // {
-  //   //   cout << " Edge Id " << hits[i].fLocalEdges[j] << endl;
-  //   // }
-  //   // for(Int_t j=0; j<hits[i].fLocalCorner.size(); ++j)
-  //   // {
-  //   //   cout << " Corner Id " << hits[i].fLocalCorner[j] << endl;
-  //   // }
+    // for(Int_t j=0; j<hits[i].fLocalEdges.size(); ++j)
+    // {
+    //   cout << " Edge Id " << hits[i].fLocalEdges[j] << endl;
+    // }
+    // for(Int_t j=0; j<hits[i].fLocalCorner.size(); ++j)
+    // {
+    //   cout << " Corner Id " << hits[i].fLocalCorner[j] << endl;
+    // }
 
-  //   // if(IsLeaf(i, hits))
-  //   // {
-  //   //   cout << "IsLeaf" << endl;
-  //   // }
-  //   cout << "=====" << endl;
-  // }
+    // if(IsLeaf(i, hits))
+    // {
+    //   cout << "IsLeaf" << endl;
+    // }
+    cout << "=====" << endl;
+  }
   // // TODO2
 
   // for(Int_t i=0; i<tracks.size(); ++i)
@@ -850,41 +835,94 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
   //   }
   // }
 
-  for(Int_t i=0; i<tracks.size(); ++i)
+
+  FgdReconTemplate reconTemplates(freconFile.c_str());
+  reconTemplates.LoadTemplates();
+
+  std::vector<std::vector<Int_t>> tracks;
+
+  // for(size_t i=0; i<hits.size(); ++i)
+  // {
+  //   if(reconTemplates.IsLeaf(&hits[i], hits))
+  //   {
+  //     tracks.push_back(std::vector<int>{i});
+  //     hits[i].fIsLeaf = true;
+  //   }
+  // }
+
+  ReconHit* currentHit = nullptr;
+  ReconHit* nextHit = nullptr;
+  ReconHit* previousHit = nullptr;
+  for(size_t i=0; i<hits.size(); ++i)
   {
-    std::vector<Int_t>& track = tracks[i];
-    Int_t previousId = track[0];
-
-    ReconHit* currentHit = &hits[previousId];
-    ReconHit* nextHit = nullptr;
-    ReconHit* previousHit = nullptr;
-
-    if(currentHit->fIsVisited)
+    if(hits[i].fIsVisited)
     {
       continue;
     }
-    currentHit->fIsVisited = true;
 
-    if(reconTemplates.GetNextHit(previousHit, currentHit, nextHit, hits))
+    if(reconTemplates.IsLeaf(&hits[i], hits))
     {
-      previousHit = currentHit;
-      currentHit = nextHit;
-      currentHit->fIsVisited = true;
-    }
-    
-    while(reconTemplates.GetNextHit(previousHit, currentHit, nextHit, hits))
-    {
-      track.push_back(nextHit->fLocalId);
-      previousHit = currentHit;
-      currentHit = nextHit;
-      currentHit->fIsVisited = true;
+      std::vector<int> track;
+      track.push_back(i);
 
-      if(reconTemplates.IsLeaf(currentHit, hits))
+      hits[i].fIsLeaf = true;
+      currentHit = &hits[i];
+
+      while(reconTemplates.GetNextHit(previousHit, currentHit, nextHit, hits))
       {
-        break;
+        if(nextHit->fIsLeaf || nextHit->fIsVisited)
+        {
+          break;
+        }
+
+        track.push_back(nextHit->fLocalId);
+        currentHit->fIsVisited = true;
+        previousHit = currentHit;
+        currentHit = nextHit;
       }
+
+      tracks.push_back(track);
     }
   }
+  
+
+  // for(Int_t i=0; i<tracks.size(); ++i)
+  // {
+  //   std::vector<Int_t>& track = tracks[i];
+  //   Int_t previousId = track[0];
+
+  //   ReconHit* currentHit = &hits[previousId];
+  //   ReconHit* nextHit = nullptr;
+  //   ReconHit* previousHit = nullptr;
+
+  //   if(currentHit->fIsVisited)
+  //   {
+  //     continue;
+  //   }
+  //   currentHit->fIsVisited = true;
+
+  //   if(reconTemplates.GetNextHit(previousHit, currentHit, nextHit, hits))
+  //   {
+  //     previousHit = currentHit;
+  //     currentHit = nextHit;
+  //     currentHit->fIsVisited = true;
+  //   }
+    
+  //   while(reconTemplates.GetNextHit(previousHit, currentHit, nextHit, hits))
+  //   {
+  //     if(nextHit->fIsLeaf || nextHit->fIsVisited)
+  //     {
+  //       break;
+  //     }
+
+  //     track.push_back(nextHit->fLocalId);
+  //     previousHit = currentHit;
+  //     currentHit = nextHit;
+  //     currentHit->fIsVisited = true; 
+  //   }
+  // }
+
+  cout << "Leaves found " << tracks.size() << endl;
 
   for(Int_t i=0; i<tracks.size(); ++i)
   {
@@ -905,9 +943,7 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
     foundTracks.emplace_back(tr);
   }
 
-  // return !foundTracks.empty();
-
-  return false;
+  return !foundTracks.empty();
 }
 
 void FgdGenFitRecon::BuildGraph(std::vector<ReconHit>& hits)
