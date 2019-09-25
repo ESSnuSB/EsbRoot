@@ -1,5 +1,7 @@
 #include "EsbReconstruction/EsbSuperFGD/FgdReconTemplate.h"
 
+#include "FairLogger.h"
+
 #include <fstream>
 #include <iostream>
 #include <limits>
@@ -208,6 +210,17 @@ Bool_t FgdReconTemplate::GetNextHit(ReconHit* previous, ReconHit* current, Recon
     }
     else
     {
+        cout << " ======================= "<< endl;
+        cout << endl;
+        cout << endl;
+        cout << " TRY TO GET NEXT "<< endl;
+        cout << " current->fLocalId " << current->fLocalId << endl;
+
+        LOG(debug) << " ======================= ";
+        LOG(debug) << " TRY TO GET NEXT ";
+        LOG(debug) << " current->fLocalId " << current->fLocalId;
+        
+
         std::vector<TVector3> vecs;
         GetHitVectors(current, hits, vecs);
         for(size_t temp=0; !nextFound && temp < fGetNExtVectors.size(); ++temp)
@@ -217,12 +230,41 @@ Bool_t FgdReconTemplate::GetNextHit(ReconHit* previous, ReconHit* current, Recon
             {
                 std::vector<TVector3>& tempVecs = fGetNExtVectors[temp].hitVectors;
                 
+                
                 if(AreVectorsEqual(tempVecs, vecs, foundPermut))
                 {
                     TVector3 prevVec = current->fmppcLoc - previous->fmppcLoc;
                     TVector3& prevVecTem = fGetNExtVectors[temp].previousHit;
                     TVector3 tmp =  GetPermutation(prevVecTem, foundPermut);
                     nextFound = (tmp == prevVec);
+
+                    // Print debug information in FairLog
+                    /* ==================================== */
+                    /* ========      Start       ========== */
+                    /* ==================================== */
+                    LOG(debug) << " temp " << temp;
+                    LOG(debug) << " foundPermut " << foundPermut;
+                    LOG(debug) << " nextFound " << nextFound;
+                    LOG(debug) << " prevVec " << " X " << prevVec.X()<< " Y " << prevVec.Y()<< " Z " << prevVec.Z();
+                    LOG(debug) << " prevVecTem " << " X " << prevVecTem.X()<< " Y " << prevVecTem.Y()<< " Z " << prevVecTem.Z();
+                    LOG(debug) << " tmp " << " X " << tmp.X()<< " Y " << tmp.Y()<< " Z " << tmp.Z() << endl;
+                    
+                    for(size_t jj = 0; jj< tempVecs.size(); ++jj)
+                    {
+                        LOG(debug) << " tempVecs " << " X " << tempVecs[jj].X()<< " Y " << tempVecs[jj].Y()<< " Z " << tempVecs[jj].Z();
+                    }
+                    for(size_t jj = 0; jj< tempVecs.size(); ++jj)
+                    {
+                        TVector3 tt =  GetPermutation(tempVecs[jj], foundPermut);
+                        LOG(debug) << " tempVecs Permute" << " X " << tt.X()<< " Y " << tt.Y()<< " Z " << tt.Z();
+                    }
+                    for(size_t jj = 0; jj< vecs.size(); ++jj)
+                    {
+                        LOG(debug) << " vecs " << " X " << vecs[jj].X()<< " Y " << vecs[jj].Y()<< " Z " << vecs[jj].Z();
+                    }
+                    /* ==================================== */
+                    /* ========        End       ========== */
+                    /* ==================================== */
 
                     if(current->fLocalId == 32)
                     {
@@ -233,6 +275,7 @@ Bool_t FgdReconTemplate::GetNextHit(ReconHit* previous, ReconHit* current, Recon
                         cout << " prevVecTem " << " X " << prevVecTem.X()<< " Y " << prevVecTem.Y()<< " Z " << prevVecTem.Z() << endl;
                         cout << " tmp " << " X " << tmp.X()<< " Y " << tmp.Y()<< " Z " << tmp.Z() << endl;
                         cout << endl;
+                        
                         for(size_t jj = 0; jj< tempVecs.size(); ++jj)
                         {
                             cout << " tempVecs " << " X " << tempVecs[jj].X()<< " Y " << tempVecs[jj].Y()<< " Z " << tempVecs[jj].Z() << endl;
@@ -255,11 +298,15 @@ Bool_t FgdReconTemplate::GetNextHit(ReconHit* previous, ReconHit* current, Recon
 
             if(nextFound)
             {
-                // if(current->fLocalId == 32)
-
                 TVector3& nextVecTem = fGetNExtVectors[temp].nextHit;
                 TVector3 nextTmp =  GetPermutation(nextVecTem, foundPermut);
 
+                cout << " nextVecTem " << " X " << nextVecTem.X()<< " Y " << nextVecTem.Y()<< " Z " << nextVecTem.Z() << endl;
+                cout << " nextTmp " << " X " << nextTmp.X()<< " Y " << nextTmp.Y()<< " Z " << nextTmp.Z() << endl;
+                cout << endl;
+
+                LOG(debug) << " nextVecTem " << " X " << nextVecTem.X()<< " Y " << nextVecTem.Y()<< " Z " << nextVecTem.Z();
+                LOG(debug) << " nextTmp " << " X " << nextTmp.X()<< " Y " << nextTmp.Y()<< " Z " << nextTmp.Z();
 
                 
                 for(size_t nid = 0; nid< current->fLocalHits.size(); ++nid)
@@ -267,16 +314,21 @@ Bool_t FgdReconTemplate::GetNextHit(ReconHit* previous, ReconHit* current, Recon
                     ReconHit* toComp = &hits[current->fLocalHits[nid]];
                     TVector3 vecPosition = current->fmppcLoc - toComp->fmppcLoc;
 
+                    cout << " vecPosition " << " X " << vecPosition.X()<< " Y " << vecPosition.Y()<< " Z " << vecPosition.Z() << endl;
 
                     if(vecPosition == nextTmp)
                     {
-                        if(current->fLocalId == 32) cout << " next = toComp; " << endl;
+                        cout << " next = toComp; " << endl;
+                        cout << " ReconHit* toComp " << toComp->fLocalId << endl;
+                        LOG(debug) << " next ReconHit* id " << toComp->fLocalId << endl;
                         next = toComp;
                         break;
                     }
                 }
             }
         }
+
+        cout << " ======================= "<< endl;
     }
     
     return nextFound;
@@ -289,8 +341,6 @@ void FgdReconTemplate::LoadTemplates()
     std::vector<TVector3> leaves;
 
     std::vector<TVector3> nextNodes;
-    TVector3 nextNode;
-    TVector3 previousNode;
 
     std::ifstream file(freconFile);
     std::string line;
@@ -357,6 +407,8 @@ void FgdReconTemplate::LoadTemplates()
         if( nextInd==0                       // String starts with The searched pattern
             && nextInd!=std::string::npos)   // Search found a result
         {
+            TVector3 nextNode;
+            TVector3 previousNode;
             FgdReconTemplate::HitTemplate hitTemp;
             for(Int_t y = 1; y >= -1; --y)
             {

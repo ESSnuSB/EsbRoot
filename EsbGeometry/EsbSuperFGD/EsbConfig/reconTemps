@@ -113,47 +113,47 @@
 #########################################################
 #######                   Leaves                  #######
 #########################################################
-#Leaf
+#Leaf 0
 --- --- ---
 --- -C- -X-
 --- --- ---
 
-#Leaf
+#Leaf 1
 --- --- -X-
 --- -C- ---
 --- --- ---
 
-#Leaf
+#Leaf 2
 --- --- --X
 --- -C- ---
 --- --- ---
 
-Leaf
+Leaf 3
 --- --- -X-
 --- -C- -X-
 --- --- ---
 
-Leaf
+Leaf 4
 --- --- --X
 --- -C- -X-
 --- --- ---
 
-Leaf
+Leaf 5
 --- --- -XX
 --- -C- -X-
 --- --- ---
 
-Leaf
+Leaf 6
 --- --- XX-
 --- -C- -X-
 --- --- ---
 
-Leaf
+Leaf 7
 --- --- X--
 --- -C- X--
 --- --- ---
 
-Leaf
+Leaf 8
 --- --- --X
 --- -C- --X
 --- --- ---
@@ -162,160 +162,170 @@ Leaf
 #######                Next Nodes                 #######
 #########################################################
 
-GetNextNode
+GetNextNode 0
 --- --- ---
 -P- -C- -N-
 --- --- ---
 
-GetNextNode
+GetNextNode 1
 --- --- ---
 -P- -C- N--
 --- --- ---
 
-GetNextNode
+GetNextNode 2
 --- --- -N-
 -P- -C- ---
 --- --- ---
 
-GetNextNode
+GetNextNode 3
 --- -N- ---
 -P- -C- ---
 --- --- ---
 
-GetNextNode
+GetNextNode 4
 --- --- ---
 -P- -C- ---
 --- -N- ---
 
-GetNextNode
+GetNextNode 5
 -P- --- ---
 --- -C- -N-
 --- --- ---
 
-GetNextNode
+GetNextNode 6
 -P- --- -N-
 --- -C- ---
 --- --- ---
 
-GetNextNode
+GetNextNode 7
 P-- --- --N
 --- -C- ---
 --- --- ---
 
-GetNextNode
+GetNextNode 8
 P-- --- ---
 --- -C- -N-
 --- --- ---
 
-GetNextNode
+GetNextNode 9
 --- --- --N
 -P- -C- ---
 --- --- ---
 
-GetNextNode
+GetNextNode 10
 --- --- ---
 -P- -C- -N-
 -X- --- ---
 
-GetNextNode
+GetNextNode 11
 --- --- ---
 -P- -C- -N-
 --- --- -X-
 
-GetNextNode
+GetNextNode 12
 --- --- ---
 -P- -C- ---
 --- -N- -X-
 
-GetNextNode
+GetNextNode 13
 --- -N- -X-
 -P- -C- ---
 --- --- ---
 
-GetNextNode
+GetNextNode 14
 --- -P- -X-
 -N- -C- ---
 --- --- ---
 
-GetNextNode
+GetNextNode 15
 --- -N- ---
 --- -C- ---
 -X- -P- ---
 
-GetNextNode
+GetNextNode 16
 --- --- ---
 -P- -C- -N-
 --- --- --X
 
-GetNextNode
+GetNextNode 17
 --- --- ---
 -P- -C- -N-
 X-- --- ---
 
-GetNextNode
+GetNextNode 18
 --- --- -N-
 -P- -C- ---
 -X- --- ---
 
-GetNextNode
+GetNextNode 19
 --- --- --N
 -P- -C- ---
 -X- --- ---
 
-GetNextNode
+GetNextNode 20
 --- --- N--
 -P- -C- ---
 -X- --- ---
 
-GetNextNode
+GetNextNode 21
 --- --- ---
 -PX -C- -N-
 --- --- -X-
 
-GetNextNode
+GetNextNode 22
 --- --- ---
 XP- -C- -N-
 --- --- -X-
 
-GetNextNode
+GetNextNode 23
 --- --- ---
 -P- -C- -N-
 -XX --- ---
 
-GetNextNode
+GetNextNode 24
 --- --- ---
 -P- -C- -N-
 XX- --- ---
 
 
-GetNextNode
+GetNextNode 25
 -X- --- ---
 -P- -C- -N-
 --- --- -X-
 
-GetNextNode
+GetNextNode 26
 -X- --- -X-
 -P- -C- -N-
 --- --- ---
 
-GetNextNode
+GetNextNode 27
 X-- --- ---
 -P- -C- -N-
 --- --- -X-
 
-GetNextNode
+GetNextNode 28
 X-- --- ---
 -P- -C- -N-
 --- --- --X
 
-GetNextNode
+GetNextNode 29
 X-- --- --X
 -P- -C- -N-
 --- --- ---
 
-GetNextNode
+GetNextNode 30
 --- --- ---
 -P- -C- -N-
 -XX --- ---
+
+GetNextNode 31
+--- --- ---
+XN- -C- -P-
+--- --- -X-
+
+GetNextNode 32
+--- --- ---
+--- -CN -P-
+--X --- ---
 
 
