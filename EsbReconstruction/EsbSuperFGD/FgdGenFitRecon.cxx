@@ -937,7 +937,7 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
                                 , hits[ind].fHitPos.Y()
                                 , hits[ind].fHitPos.Z());
 
-      cout << "X " << hits[ind].fmppcLoc.X()<< " Y " << hits[ind].fmppcLoc.Y()<< " Z " << hits[ind].fmppcLoc.Z() << endl;
+      cout << "Id " << ind << " X " << hits[ind].fmppcLoc.X()<< " Y " << hits[ind].fmppcLoc.Y()<< " Z " << hits[ind].fmppcLoc.Z() << endl;
     }
     pathfinder::TrackFinderTrack tr(pathfinder::TrackParameterFull(0.,0.,0.,0.,0.),std::move(currentTrack));
     foundTracks.emplace_back(tr);

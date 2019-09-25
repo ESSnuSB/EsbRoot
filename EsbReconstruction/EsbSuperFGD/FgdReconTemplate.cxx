@@ -210,11 +210,11 @@ Bool_t FgdReconTemplate::GetNextHit(ReconHit* previous, ReconHit* current, Recon
     }
     else
     {
-        cout << " ======================= "<< endl;
-        cout << endl;
-        cout << endl;
-        cout << " TRY TO GET NEXT "<< endl;
-        cout << " current->fLocalId " << current->fLocalId << endl;
+        // cout << " ======================= "<< endl;
+        // cout << endl;
+        // cout << endl;
+        // cout << " TRY TO GET NEXT "<< endl;
+        // cout << " current->fLocalId " << current->fLocalId << endl;
 
         LOG(debug) << " ======================= ";
         LOG(debug) << " TRY TO GET NEXT ";
@@ -266,32 +266,32 @@ Bool_t FgdReconTemplate::GetNextHit(ReconHit* previous, ReconHit* current, Recon
                     /* ========        End       ========== */
                     /* ==================================== */
 
-                    if(current->fLocalId == 32)
-                    {
-                        cout << " temp " << temp << endl;
-                        cout << " foundPermut " << foundPermut << endl;
-                        cout << " nextFound " << nextFound << endl;
-                        cout << " prevVec " << " X " << prevVec.X()<< " Y " << prevVec.Y()<< " Z " << prevVec.Z() << endl;
-                        cout << " prevVecTem " << " X " << prevVecTem.X()<< " Y " << prevVecTem.Y()<< " Z " << prevVecTem.Z() << endl;
-                        cout << " tmp " << " X " << tmp.X()<< " Y " << tmp.Y()<< " Z " << tmp.Z() << endl;
-                        cout << endl;
+                    // if(current->fLocalId == 32)
+                    // {
+                    //     cout << " temp " << temp << endl;
+                    //     cout << " foundPermut " << foundPermut << endl;
+                    //     cout << " nextFound " << nextFound << endl;
+                    //     cout << " prevVec " << " X " << prevVec.X()<< " Y " << prevVec.Y()<< " Z " << prevVec.Z() << endl;
+                    //     cout << " prevVecTem " << " X " << prevVecTem.X()<< " Y " << prevVecTem.Y()<< " Z " << prevVecTem.Z() << endl;
+                    //     cout << " tmp " << " X " << tmp.X()<< " Y " << tmp.Y()<< " Z " << tmp.Z() << endl;
+                    //     cout << endl;
                         
-                        for(size_t jj = 0; jj< tempVecs.size(); ++jj)
-                        {
-                            cout << " tempVecs " << " X " << tempVecs[jj].X()<< " Y " << tempVecs[jj].Y()<< " Z " << tempVecs[jj].Z() << endl;
-                        }
-                        cout << endl;
-                        for(size_t jj = 0; jj< tempVecs.size(); ++jj)
-                        {
-                            TVector3 tt =  GetPermutation(tempVecs[jj], foundPermut);
-                            cout << " tempVecs Permute" << " X " << tt.X()<< " Y " << tt.Y()<< " Z " << tt.Z() << endl;
-                        }
-                        cout << endl;
-                        for(size_t jj = 0; jj< vecs.size(); ++jj)
-                        {
-                            cout << " vecs " << " X " << vecs[jj].X()<< " Y " << vecs[jj].Y()<< " Z " << vecs[jj].Z() << endl;
-                        }
-                    }
+                    //     for(size_t jj = 0; jj< tempVecs.size(); ++jj)
+                    //     {
+                    //         cout << " tempVecs " << " X " << tempVecs[jj].X()<< " Y " << tempVecs[jj].Y()<< " Z " << tempVecs[jj].Z() << endl;
+                    //     }
+                    //     cout << endl;
+                    //     for(size_t jj = 0; jj< tempVecs.size(); ++jj)
+                    //     {
+                    //         TVector3 tt =  GetPermutation(tempVecs[jj], foundPermut);
+                    //         cout << " tempVecs Permute" << " X " << tt.X()<< " Y " << tt.Y()<< " Z " << tt.Z() << endl;
+                    //     }
+                    //     cout << endl;
+                    //     for(size_t jj = 0; jj< vecs.size(); ++jj)
+                    //     {
+                    //         cout << " vecs " << " X " << vecs[jj].X()<< " Y " << vecs[jj].Y()<< " Z " << vecs[jj].Z() << endl;
+                    //     }
+                    // }
                 }
             }
                
@@ -301,9 +301,9 @@ Bool_t FgdReconTemplate::GetNextHit(ReconHit* previous, ReconHit* current, Recon
                 TVector3& nextVecTem = fGetNExtVectors[temp].nextHit;
                 TVector3 nextTmp =  GetPermutation(nextVecTem, foundPermut);
 
-                cout << " nextVecTem " << " X " << nextVecTem.X()<< " Y " << nextVecTem.Y()<< " Z " << nextVecTem.Z() << endl;
-                cout << " nextTmp " << " X " << nextTmp.X()<< " Y " << nextTmp.Y()<< " Z " << nextTmp.Z() << endl;
-                cout << endl;
+                // cout << " nextVecTem " << " X " << nextVecTem.X()<< " Y " << nextVecTem.Y()<< " Z " << nextVecTem.Z() << endl;
+                // cout << " nextTmp " << " X " << nextTmp.X()<< " Y " << nextTmp.Y()<< " Z " << nextTmp.Z() << endl;
+                // cout << endl;
 
                 LOG(debug) << " nextVecTem " << " X " << nextVecTem.X()<< " Y " << nextVecTem.Y()<< " Z " << nextVecTem.Z();
                 LOG(debug) << " nextTmp " << " X " << nextTmp.X()<< " Y " << nextTmp.Y()<< " Z " << nextTmp.Z();
@@ -314,12 +314,12 @@ Bool_t FgdReconTemplate::GetNextHit(ReconHit* previous, ReconHit* current, Recon
                     ReconHit* toComp = &hits[current->fLocalHits[nid]];
                     TVector3 vecPosition = current->fmppcLoc - toComp->fmppcLoc;
 
-                    cout << " vecPosition " << " X " << vecPosition.X()<< " Y " << vecPosition.Y()<< " Z " << vecPosition.Z() << endl;
+                    // cout << " vecPosition " << " X " << vecPosition.X()<< " Y " << vecPosition.Y()<< " Z " << vecPosition.Z() << endl;
 
                     if(vecPosition == nextTmp)
                     {
-                        cout << " next = toComp; " << endl;
-                        cout << " ReconHit* toComp " << toComp->fLocalId << endl;
+                        // cout << " next = toComp; " << endl;
+                        // cout << " ReconHit* toComp " << toComp->fLocalId << endl;
                         LOG(debug) << " next ReconHit* id " << toComp->fLocalId << endl;
                         next = toComp;
                         break;
@@ -328,7 +328,7 @@ Bool_t FgdReconTemplate::GetNextHit(ReconHit* previous, ReconHit* current, Recon
             }
         }
 
-        cout << " ======================= "<< endl;
+        // cout << " ======================= "<< endl;
     }
     
     return nextFound;
