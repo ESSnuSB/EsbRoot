@@ -32,7 +32,7 @@ Bool_t FgdReconTemplate::IsLeaf(ReconHit* hit, std::vector<ReconHit>& hits)
 {
     Bool_t isHitLeaf(false);
 
-    if(hit->fLocalHits.size()==1)
+    if(hit->fAllHits.size()==1)
     {
         cout << "Single leaf " << hit->fLocalId << endl;
         isHitLeaf = true;
@@ -44,7 +44,7 @@ Bool_t FgdReconTemplate::IsLeaf(ReconHit* hit, std::vector<ReconHit>& hits)
         GetHitVectors(hit, hits, vecs);
         for(size_t temp=0; !isHitLeaf && temp < fLeafVectors.size(); ++temp)
         {
-            if(fLeafVectors[temp].hitVectors.size() == hit->fLocalHits.size())
+            if(fLeafVectors[temp].hitVectors.size() == hit->fAllHits.size())
             {
                 std::vector<TVector3>& tempVecs = fLeafVectors[temp].hitVectors;
                 isHitLeaf = AreVectorsEqual(tempVecs, vecs, permutation);
@@ -53,7 +53,7 @@ Bool_t FgdReconTemplate::IsLeaf(ReconHit* hit, std::vector<ReconHit>& hits)
 
         if(isHitLeaf)
         {
-            cout << "Leaf  " << hit->fLocalId << " with local hits " << hit->fLocalHits.size() << endl;
+            cout << "Leaf  " << hit->fLocalId << " with local hits " << hit->fAllHits.size() << endl;
         }
     }
     
@@ -369,9 +369,9 @@ Bool_t FgdReconTemplate::GetNextHit(ReconHit* previous, ReconHit* current, Recon
     if(current->fIsLeaf)
     {
         // 1. If it has only one near hit, it is the next one
-        if(current->fLocalHits.size()==1)
+        if(current->fAllHits.size()==1)
         {
-            next = &hits[current->fLocalHits[0]];
+            next = &hits[current->fAllHits[0]];
             nextFound = true;
         }
         // 2. If more than 1 hit is a neighbour - choose the nearest one (for a leaf)
@@ -384,7 +384,7 @@ Bool_t FgdReconTemplate::GetNextHit(ReconHit* previous, ReconHit* current, Recon
 
             size_t nearestId(0);
             Int_t min_dist = std::numeric_limits<Int_t>::max();
-            for(size_t nid = 0; nid< current->fLocalHits.size(); ++nid)
+            for(size_t nid = 0; nid< current->fAllHits.size(); ++nid)
             {
                 ReconHit* toComp = &hits[current->fLocalHits[nid]];
                 TVector3 vecPosition = current->fmppcLoc - toComp->fmppcLoc;
@@ -397,7 +397,7 @@ Bool_t FgdReconTemplate::GetNextHit(ReconHit* previous, ReconHit* current, Recon
                 }
             }
 
-            next = &hits[current->fLocalHits[nearestId]];
+            next = &hits[current->fAllHits[nearestId]];
             nextFound = true;
         }
     }
@@ -413,13 +413,21 @@ Bool_t FgdReconTemplate::GetNextHit(ReconHit* previous, ReconHit* current, Recon
             }
         }
     }
+    else if(current->fLocalHits.size()>2)
+    {
+        next = nullptr;
+        nextFound = false;
+    }
     else
     {
-        size_t nearestId(0);
+        size_t invalid_val = -1;
+        size_t nearestId(invalid_val);
         Int_t min_dist = std::numeric_limits<Int_t>::max();
-        for(size_t nid = 0; nid < current->fLocalHits.size(); ++nid)
+
+        // Search in edges
+        for(size_t nid = 0; nid < current->fLocalEdges.size(); ++nid)
         {
-            ReconHit* toComp = &hits[current->fLocalHits[nid]];
+            ReconHit* toComp = &hits[current->fLocalEdges[nid]];
             TVector3 vecPosition = current->fmppcLoc - toComp->fmppcLoc;
             Int_t dist = vecPosition.X()*vecPosition.X() + vecPosition.Y()*vecPosition.Y() + vecPosition.Z()*vecPosition.Z();
 
@@ -433,8 +441,43 @@ Bool_t FgdReconTemplate::GetNextHit(ReconHit* previous, ReconHit* current, Recon
             }
         }
 
-        next = &hits[current->fLocalHits[nearestId]];
-        nextFound = true;
+        nextFound = (nearestId!=invalid_val);
+
+        if(nextFound)
+        {
+            next = &hits[current->fLocalEdges[nearestId]];
+        }
+
+
+        // If not found search in conrers
+        if(!nextFound)
+        {
+            nearestId = invalid_val;
+            min_dist = std::numeric_limits<Int_t>::max();
+            for(size_t nid = 0; nid < current->fLocalCorner.size(); ++nid)
+            {
+                ReconHit* toComp = &hits[current->fLocalCorner[nid]];
+                TVector3 vecPosition = current->fmppcLoc - toComp->fmppcLoc;
+                Int_t dist = vecPosition.X()*vecPosition.X() + vecPosition.Y()*vecPosition.Y() + vecPosition.Z()*vecPosition.Z();
+
+                if(toComp->fLocalId!=previous->fLocalId
+                    && !toComp->fIsVisited
+                    && !toComp->fIsLeaf
+                    &&  dist < min_dist)
+                {
+                    min_dist = dist;
+                    nearestId = nid;
+                }
+            }
+
+            nextFound = (nearestId!=invalid_val);
+
+            if(nextFound)
+            {
+                next = &hits[current->fLocalCorner[nearestId]];
+            }
+        }
+
     }
     
     return nextFound;
@@ -583,9 +626,9 @@ void FgdReconTemplate::LoadTemplates()
 
 void FgdReconTemplate::GetHitVectors(ReconHit* hit, std::vector<ReconHit>& hits, std::vector<TVector3>& vecs)
 {
-    for(size_t i=0; i< hit->fLocalHits.size(); ++i)
+    for(size_t i=0; i< hit->fAllHits.size(); ++i)
     {
-        ReconHit& neightbourHit = hits[hit->fLocalHits[i]];
+        ReconHit& neightbourHit = hits[hit->fAllHits[i]];
         TVector3 result = hit->fmppcLoc - neightbourHit.fmppcLoc;
         vecs.emplace_back(result);
     }

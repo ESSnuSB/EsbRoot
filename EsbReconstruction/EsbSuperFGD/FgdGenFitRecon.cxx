@@ -992,6 +992,7 @@ void FgdGenFitRecon::BuildGraph(std::vector<ReconHit>& hits)
                                                                   if(positionToId.find(key)!=positionToId.end())
                                                                   {
                                                                     hits[ind].fLocalHits.push_back(positionToId[key]);
+                                                                    hits[ind].fAllHits.push_back(positionToId[key]);
 
                                                                     // cout << "link " << " x " << x_pos << " y " << y_pos << " z " << z_pos << endl;
                                                                     // cout << "current key " << key << endl;
@@ -999,29 +1000,29 @@ void FgdGenFitRecon::BuildGraph(std::vector<ReconHit>& hits)
                                                                   }
                                                                 };
 
-    // auto checkNextEdge = [&](Int_t x_pos, Int_t y_pos, Int_t z_pos, Int_t ind){
-    //                                                               Long_t&& key = ArrInd(x_pos,y_pos,z_pos);
-    //                                                               if(positionToId.find(key)!=positionToId.end())
-    //                                                               {
-    //                                                                 hits[ind].fLocalEdges.push_back(positionToId[key]);
+    auto checkNextEdge = [&](Int_t x_pos, Int_t y_pos, Int_t z_pos, Int_t ind){
+                                                                  Long_t&& key = ArrInd(x_pos,y_pos,z_pos);
+                                                                  if(positionToId.find(key)!=positionToId.end())
+                                                                  {
+                                                                    hits[ind].fLocalEdges.push_back(positionToId[key]);
+                                                                    hits[ind].fAllHits.push_back(positionToId[key]);
+                                                                    // cout << "link " << " x " << x_pos << " y " << y_pos << " z " << z_pos << endl;
+                                                                    // cout << "current key " << key << endl;
+                                                                    // cout  << endl;
+                                                                  }
+                                                                };
 
-    //                                                                 // cout << "link " << " x " << x_pos << " y " << y_pos << " z " << z_pos << endl;
-    //                                                                 // cout << "current key " << key << endl;
-    //                                                                 // cout  << endl;
-    //                                                               }
-    //                                                             };
-
-    // auto checkNextCorner = [&](Int_t x_pos, Int_t y_pos, Int_t z_pos, Int_t ind){
-    //                                                               Long_t&& key = ArrInd(x_pos,y_pos,z_pos);
-    //                                                               if(positionToId.find(key)!=positionToId.end())
-    //                                                               {
-    //                                                                 hits[ind].fLocalCorner.push_back(positionToId[key]);
-
-    //                                                                 // cout << "link " << " x " << x_pos << " y " << y_pos << " z " << z_pos << endl;
-    //                                                                 // cout << "current key " << key << endl;
-    //                                                                 // cout  << endl;
-    //                                                               }
-    //                                                             };
+    auto checkNextCorner = [&](Int_t x_pos, Int_t y_pos, Int_t z_pos, Int_t ind){
+                                                                  Long_t&& key = ArrInd(x_pos,y_pos,z_pos);
+                                                                  if(positionToId.find(key)!=positionToId.end())
+                                                                  {
+                                                                    hits[ind].fLocalCorner.push_back(positionToId[key]);
+                                                                    hits[ind].fAllHits.push_back(positionToId[key]);
+                                                                    // cout << "link " << " x " << x_pos << " y " << y_pos << " z " << z_pos << endl;
+                                                                    // cout << "current key " << key << endl;
+                                                                    // cout  << endl;
+                                                                  }
+                                                                };
 
     for(Int_t i=0; i<hits.size(); ++i)
     {
@@ -1052,62 +1053,62 @@ void FgdGenFitRecon::BuildGraph(std::vector<ReconHit>& hits)
       // cout << " ==== " << endl;
 
       // Check in X,Y corners
-      checkNext(x+1,y+1,z, i);
-      checkNext(x+1,y-1,z, i);
-      checkNext(x-1,y+1,z, i);
-      checkNext(x-1,y-1,z, i);
-
-      // Check in X,Z corners
-      checkNext(x+1,y,z+1, i);
-      checkNext(x+1,y,z-1, i);
-      checkNext(x-1,y,z+1, i);
-      checkNext(x-1,y,z-1, i);
-
-      // Check in Y,Z corners
-      checkNext(x,y+1,z+1, i);
-      checkNext(x,y+1,z-1, i);
-      checkNext(x,y-1,z+1, i);
-      checkNext(x,y-1,z-1, i);
-
-      // Check in X,Y,Z corners
-      checkNext(x+1,y+1,z+1, i);
-      checkNext(x+1,y+1,z-1, i);
-      checkNext(x+1,y-1,z+1, i);
-      checkNext(x+1,y-1,z-1, i);
-
-      checkNext(x-1,y+1,z+1, i);
-      checkNext(x-1,y+1,z-1, i);
-      checkNext(x-1,y-1,z+1, i);
-      checkNext(x-1,y-1,z-1, i);
-
-      // // Check in X,Y corners
-      // checkNextEdge(x+1,y+1,z, i);
-      // checkNextEdge(x+1,y-1,z, i);
-      // checkNextEdge(x-1,y+1,z, i);
-      // checkNextEdge(x-1,y-1,z, i);
+      // checkNext(x+1,y+1,z, i);
+      // checkNext(x+1,y-1,z, i);
+      // checkNext(x-1,y+1,z, i);
+      // checkNext(x-1,y-1,z, i);
 
       // // Check in X,Z corners
-      // checkNextEdge(x+1,y,z+1, i);
-      // checkNextEdge(x+1,y,z-1, i);
-      // checkNextEdge(x-1,y,z+1, i);
-      // checkNextEdge(x-1,y,z-1, i);
+      // checkNext(x+1,y,z+1, i);
+      // checkNext(x+1,y,z-1, i);
+      // checkNext(x-1,y,z+1, i);
+      // checkNext(x-1,y,z-1, i);
 
       // // Check in Y,Z corners
-      // checkNextEdge(x,y+1,z+1, i);
-      // checkNextEdge(x,y+1,z-1, i);
-      // checkNextEdge(x,y-1,z+1, i);
-      // checkNextEdge(x,y-1,z-1, i);
+      // checkNext(x,y+1,z+1, i);
+      // checkNext(x,y+1,z-1, i);
+      // checkNext(x,y-1,z+1, i);
+      // checkNext(x,y-1,z-1, i);
 
       // // Check in X,Y,Z corners
-      // checkNextCorner(x+1,y+1,z+1, i);
-      // checkNextCorner(x+1,y+1,z-1, i);
-      // checkNextCorner(x+1,y-1,z+1, i);
-      // checkNextCorner(x+1,y-1,z-1, i);
+      // checkNext(x+1,y+1,z+1, i);
+      // checkNext(x+1,y+1,z-1, i);
+      // checkNext(x+1,y-1,z+1, i);
+      // checkNext(x+1,y-1,z-1, i);
 
-      // checkNextCorner(x-1,y+1,z+1, i);
-      // checkNextCorner(x-1,y+1,z-1, i);
-      // checkNextCorner(x-1,y-1,z+1, i);
-      // checkNextCorner(x-1,y-1,z-1, i);
+      // checkNext(x-1,y+1,z+1, i);
+      // checkNext(x-1,y+1,z-1, i);
+      // checkNext(x-1,y-1,z+1, i);
+      // checkNext(x-1,y-1,z-1, i);
+
+      // Check in X,Y corners
+      checkNextEdge(x+1,y+1,z, i);
+      checkNextEdge(x+1,y-1,z, i);
+      checkNextEdge(x-1,y+1,z, i);
+      checkNextEdge(x-1,y-1,z, i);
+
+      // Check in X,Z corners
+      checkNextEdge(x+1,y,z+1, i);
+      checkNextEdge(x+1,y,z-1, i);
+      checkNextEdge(x-1,y,z+1, i);
+      checkNextEdge(x-1,y,z-1, i);
+
+      // Check in Y,Z corners
+      checkNextEdge(x,y+1,z+1, i);
+      checkNextEdge(x,y+1,z-1, i);
+      checkNextEdge(x,y-1,z+1, i);
+      checkNextEdge(x,y-1,z-1, i);
+
+      // Check in X,Y,Z corners
+      checkNextCorner(x+1,y+1,z+1, i);
+      checkNextCorner(x+1,y+1,z-1, i);
+      checkNextCorner(x+1,y-1,z+1, i);
+      checkNextCorner(x+1,y-1,z-1, i);
+
+      checkNextCorner(x-1,y+1,z+1, i);
+      checkNextCorner(x-1,y+1,z-1, i);
+      checkNextCorner(x-1,y-1,z+1, i);
+      checkNextCorner(x-1,y-1,z-1, i);
     }
 }
 
