@@ -14,7 +14,7 @@
 void ess_reconstruction_5(TString inFile = "fgd_dig.root", 
 	      TString parFile = "params.root",
 	      TString outFile = "fgd_recon.root",
-              Int_t nStartEvent = 3, Int_t nEvents = 1)
+              Int_t nStartEvent = 1, Int_t nEvents = 1)
 {
   using namespace esbroot;
 
@@ -45,6 +45,8 @@ void ess_reconstruction_5(TString inFile = "fgd_dig.root",
     "Reconstruction Task"             // name of the task
     ,"../../EsbGeometry/EsbSuperFGD/EsbConfig/geometry"  //FIle with detector configuration
     ,"../../geometry/media.geo"       // Media file with defined materials
+    // ,"../../EsbGeometry/EsbSuperFGD/EsbConfig/reconstructionTemplates"       // Reconstruction templates
+    ,"../../EsbGeometry/EsbSuperFGD/EsbConfig/reconTemps"       // Reconstruction templates
     , pos                             // initial position estimation (will be removed later on)
     , mom                             // initial momentum estimation (will be removed later on)
     , 1                               // Verbose level
@@ -56,7 +58,7 @@ void ess_reconstruction_5(TString inFile = "fgd_dig.root",
   // ((reconstruction::superfgd::FgdGenFitRecon*)recon)->SetUseTracker(reconstruction::superfgd::FgdGenFitRecon::TrackFinder::HOUGH_PATHFINDER_ALL);
   // ((reconstruction::superfgd::FgdGenFitRecon*)recon)->SetUseTracker(reconstruction::superfgd::FgdGenFitRecon::TrackFinder::HOUGH_PATHFINDER_ABOVE_BELOW);
   // ((reconstruction::superfgd::FgdGenFitRecon*)recon)->SetUseTracker(reconstruction::superfgd::FgdGenFitRecon::TrackFinder::HOUGH_PATHFINDER_TIME_INTERVALS);
-  ((reconstruction::superfgd::FgdGenFitRecon*)recon)->SetUseTracker(reconstruction::superfgd::FgdGenFitRecon::TrackFinder::LOCAL_SCAN);
+  ((reconstruction::superfgd::FgdGenFitRecon*)recon)->SetUseTracker(reconstruction::superfgd::FgdGenFitRecon::TrackFinder::USE_GRAPH);
   
   fRun->AddTask(recon);   
   fRun->Init(); // initializing
