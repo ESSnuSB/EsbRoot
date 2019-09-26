@@ -34,7 +34,6 @@ Bool_t FgdReconTemplate::IsLeaf(ReconHit* hit, std::vector<ReconHit>& hits)
 
     if(hit->fAllHits.size()==1)
     {
-        cout << "Single leaf " << hit->fLocalId << endl;
         LOG(debug)<< "Single leaf " << hit->fLocalId;
         isHitLeaf = true;
     }
@@ -54,7 +53,6 @@ Bool_t FgdReconTemplate::IsLeaf(ReconHit* hit, std::vector<ReconHit>& hits)
 
         if(isHitLeaf)
         {
-            cout << "Leaf  " << hit->fLocalId << " with local hits " << hit->fAllHits.size() << endl;
             LOG(debug) << "Leaf  " << hit->fLocalId << " with local hits " << hit->fAllHits.size() << endl;
         }
     }
@@ -409,8 +407,8 @@ void FgdReconTemplate::LoadTemplates()
         }
     }
 
-    std::cout << " Leaf templates found " << fLeafVectors.size() << std::endl;
-    std::cout << " Stop node templates found " << fStopVectors.size() << std::endl;
+    LOG(debug) << " Leaf templates found " << fLeafVectors.size();
+    LOG(debug) << " Stop node templates found " << fStopVectors.size();
 }
 
 void FgdReconTemplate::GetHitVectors(ReconHit* hit, std::vector<ReconHit>& hits, std::vector<TVector3>& vecs)
