@@ -752,9 +752,9 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
   {
     LOG(debug) << "i " << i;
     ReconHit* center = &hits[i];
-    for(Int_t j=0; j<hits[i].fLocalHits.size(); ++j)
+    for(Int_t j=0; j<hits[i].fAllHits.size(); ++j)
     {
-      Int_t ind = hits[i].fLocalHits[j];
+      Int_t ind = hits[i].fAllHits[j];
       ReconHit* localHit = &hits[ind];
       TVector3 diff = center->fmppcLoc - localHit->fmppcLoc;
       LOG(debug) << " Local Id " << " \t X " << diff.X() << " \t Y " << diff.Y() << " \t Z " << diff.Z();
@@ -768,95 +768,24 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
   {
     cout << "i " << i << endl;
     ReconHit* c = &hits[i];
-    for(Int_t j=0; j<hits[i].fLocalHits.size(); ++j)
+    for(Int_t j=0; j<hits[i].fAllHits.size(); ++j)
     {
-      Int_t ind = hits[i].fLocalHits[j];
+      Int_t ind = hits[i].fAllHits[j];
       ReconHit* ll = &hits[ind];
       TVector3 diff = c->fmppcLoc - ll->fmppcLoc;
-      cout << " Local Id " << hits[i].fLocalHits[j] << " \tX " << diff.X() << " \tY " << diff.Y() << " \tZ " << diff.Z() << endl;
+      cout << " Local Id " << hits[i].fAllHits[j] << " \tX " << diff.X() << " \tY " << diff.Y() << " \tZ " << diff.Z() << endl;
     }
     cout << "X " << hits[i].fmppcLoc.X() << " Y " << hits[i].fmppcLoc.Y()<< " Z " << hits[i].fmppcLoc.Z() << endl;
 
-
-    // for(Int_t j=0; j<hits[i].fLocalEdges.size(); ++j)
-    // {
-    //   cout << " Edge Id " << hits[i].fLocalEdges[j] << endl;
-    // }
-    // for(Int_t j=0; j<hits[i].fLocalCorner.size(); ++j)
-    // {
-    //   cout << " Corner Id " << hits[i].fLocalCorner[j] << endl;
-    // }
-
-    // if(IsLeaf(i, hits))
-    // {
-    //   cout << "IsLeaf" << endl;
-    // }
     cout << "=====" << endl;
   }
   // // TODO2
-
-  // for(Int_t i=0; i<tracks.size(); ++i)
-  // {
-  //   // Start in the graph from the initial Leaf
-  //   std::vector<Int_t>& track = tracks[i];
-  //   Int_t previousId = track[0];
-  //   // std::cout << "Next Track " << previousId  << std::endl;// TODO2
-  //   ReconHit* currentHit = &hits[previousId];
-
-  //   Int_t nextId(-1);
-  //   Int_t currentId(-1);
-
-  //   // if(currentHit->fIsVisited)
-  //   // {
-  //   //   continue;
-  //   // }
-  //   // currentHit->fIsVisited = true;
-
-  //   if(GetNext(-1 /* Initial hit is a leaf, no previousId*/, previousId, nextId, hits))
-  //   {
-  //     cout << "I am here if condition" << endl;
-  //     cout << "previousId " << previousId << endl;
-  //     cout << "nextId " << nextId << endl;
-  //     currentHit = &hits[nextId];
-  //     currentHit->fIsVisited = true;
-  //   }
-    
-  //   while(GetNext(previousId, currentHit->fLocalId, nextId, hits))
-  //   {
-  //     // cout << "I am here while condition" << endl;
-
-  //     // std::cout << " nextId " << nextId << std::endl; // TODO2
-  //     previousId = currentHit->fLocalId;
-  //     currentHit = &hits[nextId];
-  //     // std::cout << "currentHit.fLocalId " << currentHit->fLocalId  << std::endl;// TODO2
-  //     // currentHit->fIsVisited = true;
-  //     track.push_back(nextId);
-
-  //     // if(IsLeaf(currentHit->fLocalId, hits))
-  //     // {
-  //     //   // std::cout << "currentHit.IsLeaf() "  << std::endl;// TODO2
-  //     //   break;
-  //     // }
-
-  //     cout << "previousId " << previousId << endl;
-  //     cout << "nextId " << nextId << endl;
-  //   }
-  // }
 
 
   FgdReconTemplate reconTemplates(freconFile.c_str());
   reconTemplates.LoadTemplates();
 
   std::vector<std::vector<Int_t>> tracks;
-
-  // for(size_t i=0; i<hits.size(); ++i)
-  // {
-  //   if(reconTemplates.IsLeaf(&hits[i], hits))
-  //   {
-  //     tracks.push_back(std::vector<int>{i});
-  //     hits[i].fIsLeaf = true;
-  //   }
-  // }
 
   ReconHit* currentHit = nullptr;
   ReconHit* nextHit = nullptr;
@@ -891,43 +820,6 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
       tracks.push_back(track);
     }
   }
-  
-
-  // for(Int_t i=0; i<tracks.size(); ++i)
-  // {
-  //   std::vector<Int_t>& track = tracks[i];
-  //   Int_t previousId = track[0];
-
-  //   ReconHit* currentHit = &hits[previousId];
-  //   ReconHit* nextHit = nullptr;
-  //   ReconHit* previousHit = nullptr;
-
-  //   if(currentHit->fIsVisited)
-  //   {
-  //     continue;
-  //   }
-  //   currentHit->fIsVisited = true;
-
-  //   if(reconTemplates.GetNextHit(previousHit, currentHit, nextHit, hits))
-  //   {
-  //     previousHit = currentHit;
-  //     currentHit = nextHit;
-  //     currentHit->fIsVisited = true;
-  //   }
-    
-  //   while(reconTemplates.GetNextHit(previousHit, currentHit, nextHit, hits))
-  //   {
-  //     if(nextHit->fIsLeaf || nextHit->fIsVisited)
-  //     {
-  //       break;
-  //     }
-
-  //     track.push_back(nextHit->fLocalId);
-  //     previousHit = currentHit;
-  //     currentHit = nextHit;
-  //     currentHit->fIsVisited = true; 
-  //   }
-  // }
 
   cout << "Leaves found " << tracks.size() << endl;
 
@@ -993,10 +885,6 @@ void FgdGenFitRecon::BuildGraph(std::vector<ReconHit>& hits)
                                                                   {
                                                                     hits[ind].fLocalHits.push_back(positionToId[key]);
                                                                     hits[ind].fAllHits.push_back(positionToId[key]);
-
-                                                                    // cout << "link " << " x " << x_pos << " y " << y_pos << " z " << z_pos << endl;
-                                                                    // cout << "current key " << key << endl;
-                                                                    // cout  << endl;
                                                                   }
                                                                 };
 
@@ -1006,9 +894,6 @@ void FgdGenFitRecon::BuildGraph(std::vector<ReconHit>& hits)
                                                                   {
                                                                     hits[ind].fLocalEdges.push_back(positionToId[key]);
                                                                     hits[ind].fAllHits.push_back(positionToId[key]);
-                                                                    // cout << "link " << " x " << x_pos << " y " << y_pos << " z " << z_pos << endl;
-                                                                    // cout << "current key " << key << endl;
-                                                                    // cout  << endl;
                                                                   }
                                                                 };
 
@@ -1018,9 +903,6 @@ void FgdGenFitRecon::BuildGraph(std::vector<ReconHit>& hits)
                                                                   {
                                                                     hits[ind].fLocalCorner.push_back(positionToId[key]);
                                                                     hits[ind].fAllHits.push_back(positionToId[key]);
-                                                                    // cout << "link " << " x " << x_pos << " y " << y_pos << " z " << z_pos << endl;
-                                                                    // cout << "current key " << key << endl;
-                                                                    // cout  << endl;
                                                                   }
                                                                 };
 
@@ -1034,10 +916,6 @@ void FgdGenFitRecon::BuildGraph(std::vector<ReconHit>& hits)
       Int_t&& y = hits[i].fmppcLoc.Y();
       Int_t&& z = hits[i].fmppcLoc.Z();
 
-      // cout << "current i " << i << endl;
-      // cout << "current " << " x " << x << " y " << y << " z " << z << endl;
-      // cout  << endl;
-
       // Check in X axis
       checkNext(x+1,y,z, i);
       checkNext(x-1,y,z, i);
@@ -1049,37 +927,6 @@ void FgdGenFitRecon::BuildGraph(std::vector<ReconHit>& hits)
       // Check in Z axis
       checkNext(x,y,z+1, i);
       checkNext(x,y,z-1, i);
-
-      // cout << " ==== " << endl;
-
-      // Check in X,Y corners
-      // checkNext(x+1,y+1,z, i);
-      // checkNext(x+1,y-1,z, i);
-      // checkNext(x-1,y+1,z, i);
-      // checkNext(x-1,y-1,z, i);
-
-      // // Check in X,Z corners
-      // checkNext(x+1,y,z+1, i);
-      // checkNext(x+1,y,z-1, i);
-      // checkNext(x-1,y,z+1, i);
-      // checkNext(x-1,y,z-1, i);
-
-      // // Check in Y,Z corners
-      // checkNext(x,y+1,z+1, i);
-      // checkNext(x,y+1,z-1, i);
-      // checkNext(x,y-1,z+1, i);
-      // checkNext(x,y-1,z-1, i);
-
-      // // Check in X,Y,Z corners
-      // checkNext(x+1,y+1,z+1, i);
-      // checkNext(x+1,y+1,z-1, i);
-      // checkNext(x+1,y-1,z+1, i);
-      // checkNext(x+1,y-1,z-1, i);
-
-      // checkNext(x-1,y+1,z+1, i);
-      // checkNext(x-1,y+1,z-1, i);
-      // checkNext(x-1,y-1,z+1, i);
-      // checkNext(x-1,y-1,z-1, i);
 
       // Check in X,Y corners
       checkNextEdge(x+1,y+1,z, i);

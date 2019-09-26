@@ -35,6 +35,7 @@ Bool_t FgdReconTemplate::IsLeaf(ReconHit* hit, std::vector<ReconHit>& hits)
     if(hit->fAllHits.size()==1)
     {
         cout << "Single leaf " << hit->fLocalId << endl;
+        LOG(debug)<< "Single leaf " << hit->fLocalId;
         isHitLeaf = true;
     }
     else
@@ -54,432 +55,227 @@ Bool_t FgdReconTemplate::IsLeaf(ReconHit* hit, std::vector<ReconHit>& hits)
         if(isHitLeaf)
         {
             cout << "Leaf  " << hit->fLocalId << " with local hits " << hit->fAllHits.size() << endl;
+            LOG(debug) << "Leaf  " << hit->fLocalId << " with local hits " << hit->fAllHits.size() << endl;
         }
     }
     
     return isHitLeaf;
 }
 
-// Bool_t FgdReconTemplate::GetNextHit(ReconHit* previous, ReconHit* current, ReconHit*& next, std::vector<ReconHit>& hits)
-// {
-//     Bool_t nextFound(false);
-
-//     if(current==nullptr)
-//     {
-//         // cout   << endl;
-//         // cout << " previous==nullptr " << (previous==nullptr) << " current->fLocalHits.size() " << current->fLocalHits.size() << endl;
-//         // cout << "======================"  << endl;
-//         throw "Invalid condition";
-//     }
-
-//     if(current->fIsLeaf)
-//     {
-//         // 1. If it has only one near hit, it is the next one
-//         if(current->fLocalHits.size()==1)
-//         {
-//             next = &hits[current->fLocalHits[0]];
-//             nextFound = true;
-//         }
-//         // 2. If more than 1 hit is a neighbour - choose the nearest one (for a leaf)
-//         else
-//         {
-//             if(current->fLocalHits.empty())
-//             {
-//                 return nextFound;
-//             }
-
-//             size_t nearestId(0);
-//             Int_t min_dist = std::numeric_limits<Int_t>::max();
-//             for(size_t nid = 0; nid< current->fLocalHits.size(); ++nid)
-//             {
-//                 ReconHit* toComp = &hits[current->fLocalHits[nid]];
-//                 TVector3 vecPosition = current->fmppcLoc - toComp->fmppcLoc;
-//                 Int_t dist = vecPosition.X()*vecPosition.X() + vecPosition.Y()*vecPosition.Y() + vecPosition.Z()*vecPosition.Z();
-
-//                 if(dist < min_dist)
-//                 {
-//                     min_dist = dist;
-//                     nearestId = nid;
-//                 }
-//             }
-
-//             next = &hits[current->fLocalHits[nearestId]];
-//             nextFound = true;
-//         }
-//     }
-//     // The logic is the following:
-//     //  A) If it has two hits, 1 is the previous return the next one
-//     //  B) If it has more hits, check if it has on opposite to the previous 
-//     //      e.g. if previous vec was (0,0,1) check if there is (0,0,-1)
-//     //      if yes, return it else check for the nearest hit
-//     else if(current->fLocalHits.size()==2)
-//     {
-//         for(size_t nid = 0; nid< current->fLocalHits.size(); ++nid)
-//         {
-//             if(nid!=previous->fLocalId)
-//             {
-//                 nextFound = true;
-//                 next = &hits[current->fLocalHits[nid]];
-//                 break;
-//             }
-//         }
-//     }
-//     else
-//     {
-//         TVector3 prevVec = current->fmppcLoc - previous->fmppcLoc;
-//         TVector3 oppositeVec(-prevVec.X(),-prevVec.Y(),-prevVec.Z());
-
-//         for(size_t nid = 0; nid< current->fLocalHits.size(); ++nid)
-//         {
-//             ReconHit* localHit = &hits[current->fLocalHits[nid]];
-//             TVector3 localDiff = current->fmppcLoc -localHit->fmppcLoc;
-//             if(localDiff==oppositeVec)
-//             {
-//                 nextFound = true;
-//                 next = localHit;
-//                 break;
-//             }
-//         }
-
-//         if(!nextFound)
-//         {
-//             size_t nearestId(0);
-//             Int_t min_dist = std::numeric_limits<Int_t>::max();
-//             for(size_t nid = 0; nid < current->fLocalHits.size(); ++nid)
-//             {
-//                 ReconHit* toComp = &hits[current->fLocalHits[nid]];
-//                 TVector3 vecPosition = current->fmppcLoc - toComp->fmppcLoc;
-//                 Int_t dist = vecPosition.X()*vecPosition.X() + vecPosition.Y()*vecPosition.Y() + vecPosition.Z()*vecPosition.Z();
-
-//                 if(toComp->fLocalId!=previous->fLocalId
-//                     &&  dist < min_dist)
-//                 {
-//                     min_dist = dist;
-//                     nearestId = nid;
-//                 }
-//             }
-
-//             next = &hits[current->fLocalHits[nearestId]];
-//             nextFound = true;
-//         }
-//     }  
-    
-//     return nextFound;
-// }
-
-
-// ==============================================
-// GetNext version 2
-
-
-
-
-
-
-
-
-// Bool_t FgdReconTemplate::GetNextHit(ReconHit* previous, ReconHit* current, ReconHit*& next, std::vector<ReconHit>& hits)
-// {
-//     Bool_t nextFound(false);
-
-//     if(current==nullptr)
-//     {
-//         // cout   << endl;
-//         // cout << " previous==nullptr " << (previous==nullptr) << " current->fLocalHits.size() " << current->fLocalHits.size() << endl;
-//         // cout << "======================"  << endl;
-//         throw "Invalid condition";
-//     }
-
-//     if(current->fIsLeaf)
-//     {
-//         // 1. If it has only one near hit, it is the next one
-//         if(current->fLocalHits.size()==1)
-//         {
-//             next = &hits[current->fLocalHits[0]];
-//             nextFound = true;
-//         }
-//         // 2. If more than 1 hit is a neighbour - choose the nearest one (for a leaf)
-//         else
-//         {
-//             if(current->fLocalHits.empty())
-//             {
-//                 return nextFound;
-//             }
-
-//             size_t nearestId(0);
-//             Int_t min_dist = std::numeric_limits<Int_t>::max();
-//             for(size_t nid = 0; nid< current->fLocalHits.size(); ++nid)
-//             {
-//                 ReconHit* toComp = &hits[current->fLocalHits[nid]];
-//                 TVector3 vecPosition = current->fmppcLoc - toComp->fmppcLoc;
-//                 Int_t dist = vecPosition.X()*vecPosition.X() + vecPosition.Y()*vecPosition.Y() + vecPosition.Z()*vecPosition.Z();
-
-//                 if(dist < min_dist)
-//                 {
-//                     min_dist = dist;
-//                     nearestId = nid;
-//                 }
-//             }
-
-//             next = &hits[current->fLocalHits[nearestId]];
-//             nextFound = true;
-//         }
-//     }
-//     else
-//     {
-//         // cout << " ======================= "<< endl;
-//         // cout << endl;
-//         // cout << endl;
-//         // cout << " TRY TO GET NEXT "<< endl;
-//         // cout << " current->fLocalId " << current->fLocalId << endl;
-
-//         LOG(debug) << " ======================= ";
-//         LOG(debug) << " TRY TO GET NEXT ";
-//         LOG(debug) << " current->fLocalId " << current->fLocalId;
-        
-
-//         std::vector<TVector3> vecs;
-//         GetHitVectors(current, hits, vecs);
-//         for(size_t temp=0; !nextFound && temp < fGetNExtVectors.size(); ++temp)
-//         {
-//             Int_t foundPermut;
-//             if(fGetNExtVectors[temp].hitVectors.size() == current->fLocalHits.size())
-//             {
-//                 std::vector<TVector3>& tempVecs = fGetNExtVectors[temp].hitVectors;
-                
-                
-//                 if(AreVectorsEqual(tempVecs, vecs, foundPermut))
-//                 {
-//                     TVector3 prevVec = current->fmppcLoc - previous->fmppcLoc;
-//                     TVector3& prevVecTem = fGetNExtVectors[temp].previousHit;
-//                     TVector3 tmp =  GetPermutation(prevVecTem, foundPermut);
-//                     nextFound = (tmp == prevVec);
-
-//                     // Print debug information in FairLog
-//                     /* ==================================== */
-//                     /* ========      Start       ========== */
-//                     /* ==================================== */
-//                     LOG(debug) << " temp " << temp;
-//                     LOG(debug) << " foundPermut " << foundPermut;
-//                     LOG(debug) << " nextFound " << nextFound;
-//                     LOG(debug) << " prevVec " << " X " << prevVec.X()<< " Y " << prevVec.Y()<< " Z " << prevVec.Z();
-//                     LOG(debug) << " prevVecTem " << " X " << prevVecTem.X()<< " Y " << prevVecTem.Y()<< " Z " << prevVecTem.Z();
-//                     LOG(debug) << " tmp " << " X " << tmp.X()<< " Y " << tmp.Y()<< " Z " << tmp.Z() << endl;
-                    
-//                     for(size_t jj = 0; jj< tempVecs.size(); ++jj)
-//                     {
-//                         LOG(debug) << " tempVecs " << " X " << tempVecs[jj].X()<< " Y " << tempVecs[jj].Y()<< " Z " << tempVecs[jj].Z();
-//                     }
-//                     for(size_t jj = 0; jj< tempVecs.size(); ++jj)
-//                     {
-//                         TVector3 tt =  GetPermutation(tempVecs[jj], foundPermut);
-//                         LOG(debug) << " tempVecs Permute" << " X " << tt.X()<< " Y " << tt.Y()<< " Z " << tt.Z();
-//                     }
-//                     for(size_t jj = 0; jj< vecs.size(); ++jj)
-//                     {
-//                         LOG(debug) << " vecs " << " X " << vecs[jj].X()<< " Y " << vecs[jj].Y()<< " Z " << vecs[jj].Z();
-//                     }
-//                     /* ==================================== */
-//                     /* ========        End       ========== */
-//                     /* ==================================== */
-
-//                     // if(current->fLocalId == 32)
-//                     // {
-//                         // cout << " temp " << temp << endl;
-//                     //     cout << " foundPermut " << foundPermut << endl;
-//                     //     cout << " nextFound " << nextFound << endl;
-//                     //     cout << " prevVec " << " X " << prevVec.X()<< " Y " << prevVec.Y()<< " Z " << prevVec.Z() << endl;
-//                     //     cout << " prevVecTem " << " X " << prevVecTem.X()<< " Y " << prevVecTem.Y()<< " Z " << prevVecTem.Z() << endl;
-//                     //     cout << " tmp " << " X " << tmp.X()<< " Y " << tmp.Y()<< " Z " << tmp.Z() << endl;
-//                     //     cout << endl;
-                        
-//                     //     for(size_t jj = 0; jj< tempVecs.size(); ++jj)
-//                     //     {
-//                     //         cout << " tempVecs " << " X " << tempVecs[jj].X()<< " Y " << tempVecs[jj].Y()<< " Z " << tempVecs[jj].Z() << endl;
-//                     //     }
-//                     //     cout << endl;
-//                     //     for(size_t jj = 0; jj< tempVecs.size(); ++jj)
-//                     //     {
-//                     //         TVector3 tt =  GetPermutation(tempVecs[jj], foundPermut);
-//                     //         cout << " tempVecs Permute" << " X " << tt.X()<< " Y " << tt.Y()<< " Z " << tt.Z() << endl;
-//                     //     }
-//                     //     cout << endl;
-//                     //     for(size_t jj = 0; jj< vecs.size(); ++jj)
-//                     //     {
-//                     //         cout << " vecs " << " X " << vecs[jj].X()<< " Y " << vecs[jj].Y()<< " Z " << vecs[jj].Z() << endl;
-//                     //     }
-//                     // }
-//                 }
-//             }
-               
-
-//             if(nextFound)
-//             {
-//                 TVector3& nextVecTem = fGetNExtVectors[temp].nextHit;
-//                 TVector3 nextTmp =  GetPermutation(nextVecTem, foundPermut);
-
-//                 // cout << " nextVecTem " << " X " << nextVecTem.X()<< " Y " << nextVecTem.Y()<< " Z " << nextVecTem.Z() << endl;
-//                 // cout << " nextTmp " << " X " << nextTmp.X()<< " Y " << nextTmp.Y()<< " Z " << nextTmp.Z() << endl;
-//                 // cout << endl;
-
-//                 // cout << " temp " << temp << endl;
-//                 LOG(debug) << " nextVecTem " << " X " << nextVecTem.X()<< " Y " << nextVecTem.Y()<< " Z " << nextVecTem.Z();
-//                 LOG(debug) << " nextTmp " << " X " << nextTmp.X()<< " Y " << nextTmp.Y()<< " Z " << nextTmp.Z();
-
-                
-//                 for(size_t nid = 0; nid< current->fLocalHits.size(); ++nid)
-//                 {
-//                     ReconHit* toComp = &hits[current->fLocalHits[nid]];
-//                     TVector3 vecPosition = current->fmppcLoc - toComp->fmppcLoc;
-
-//                     // cout << " vecPosition " << " X " << vecPosition.X()<< " Y " << vecPosition.Y()<< " Z " << vecPosition.Z() << endl;
-
-//                     if(vecPosition == nextTmp)
-//                     {
-//                         // cout << " next = toComp; " << endl;
-//                         // cout << " ReconHit* toComp " << toComp->fLocalId << endl;
-//                         LOG(debug) << " next ReconHit* id " << toComp->fLocalId << endl;
-//                         next = toComp;
-//                         break;
-//                     }
-//                 }
-//             }
-//         }
-
-//         // cout << " ======================= "<< endl;
-//     }
-    
-//     return nextFound;
-// }
-
-
-
-/// Get next version 3
-
-
 Bool_t FgdReconTemplate::GetNextHit(ReconHit* previous, ReconHit* current, ReconHit*& next, std::vector<ReconHit>& hits)
 {
     Bool_t nextFound(false);
+    Bool_t rc(true);
 
     if(current==nullptr)
     {
-        throw "Invalid condition";
+        throw "Invalid current hit";
     }
 
-    if(current->fIsLeaf)
+    // Check for size conditions
+    if(current->fLocalHits.size()>2
+        || current->fLocalEdges.size()>2
+        || current->fLocalCorner.size()>2
+        || current->fAllHits.size()>=6)
     {
-        // 1. If it has only one near hit, it is the next one
-        if(current->fAllHits.size()==1)
-        {
-            next = &hits[current->fAllHits[0]];
-            nextFound = true;
-        }
-        // 2. If more than 1 hit is a neighbour - choose the nearest one (for a leaf)
-        else
-        {
-            if(current->fLocalHits.empty())
-            {
-                return nextFound;
-            }
-
-            size_t nearestId(0);
-            Int_t min_dist = std::numeric_limits<Int_t>::max();
-            for(size_t nid = 0; nid< current->fAllHits.size(); ++nid)
-            {
-                ReconHit* toComp = &hits[current->fLocalHits[nid]];
-                TVector3 vecPosition = current->fmppcLoc - toComp->fmppcLoc;
-                Int_t dist = vecPosition.X()*vecPosition.X() + vecPosition.Y()*vecPosition.Y() + vecPosition.Z()*vecPosition.Z();
-
-                if(dist < min_dist)
-                {
-                    min_dist = dist;
-                    nearestId = nid;
-                }
-            }
-
-            next = &hits[current->fAllHits[nearestId]];
-            nextFound = true;
-        }
-    }
-    else if(current->fLocalHits.size()==2)
-    {
-        for(size_t nid = 0; nid< current->fLocalHits.size(); ++nid)
-        {
-            if(current->fLocalHits[nid]!=previous->fLocalId)
-            {
-                nextFound = true;
-                next = &hits[current->fLocalHits[nid]];
-                break;
-            }
-        }
-    }
-    else if(current->fLocalHits.size()>2)
-    {
-        next = nullptr;
+        rc = false;
         nextFound = false;
+        next = nullptr;
     }
-    else
-    {
-        size_t invalid_val = -1;
-        size_t nearestId(invalid_val);
-        Int_t min_dist = std::numeric_limits<Int_t>::max();
 
-        // Search in edges
-        for(size_t nid = 0; nid < current->fLocalEdges.size(); ++nid)
+    // Check for stop templates
+    Bool_t isStopTemplate(false);
+    Int_t permutation(0);
+    std::vector<TVector3> vecs;
+    GetHitVectors(current, hits, vecs);
+    for(size_t temp=0; !isStopTemplate && temp < fStopVectors.size(); ++temp)
+    {
+        if(fStopVectors[temp].hitVectors.size() == current->fAllHits.size())
         {
-            ReconHit* toComp = &hits[current->fLocalEdges[nid]];
+            std::vector<TVector3>& tempVecs = fStopVectors[temp].hitVectors;
+            isStopTemplate = AreVectorsEqual(tempVecs, vecs, permutation);
+        }
+    }
+
+    if(isStopTemplate)
+    {
+        rc = false;
+        nextFound = false;
+        next = nullptr;
+    }
+
+
+    // 1. If it is  leaf and has only one near hit, it is the next one
+    if(rc 
+        && current->fIsLeaf 
+        && current->fAllHits.size()==1)
+    {
+        next = &hits[current->fAllHits[0]];
+        nextFound = true;  
+    }
+
+    // 2. If it is  leaf and has multiple hits, return the nearest one
+    if(rc 
+        && !nextFound
+        && current->fIsLeaf 
+        && current->fAllHits.size()>1)
+    {
+        size_t nearestId(0);
+        Int_t min_dist = std::numeric_limits<Int_t>::max();
+        for(size_t nid = 0; nid< current->fAllHits.size(); ++nid)
+        {
+            ReconHit* toComp = &hits[current->fAllHits[nid]];
             TVector3 vecPosition = current->fmppcLoc - toComp->fmppcLoc;
             Int_t dist = vecPosition.X()*vecPosition.X() + vecPosition.Y()*vecPosition.Y() + vecPosition.Z()*vecPosition.Z();
 
-            if(toComp->fLocalId!=previous->fLocalId
-                && !toComp->fIsVisited
-                && !toComp->fIsLeaf
-                &&  dist < min_dist)
+            if(dist < min_dist)
             {
                 min_dist = dist;
                 nearestId = nid;
             }
         }
 
-        nextFound = (nearestId!=invalid_val);
-
-        if(nextFound)
-        {
-            next = &hits[current->fLocalEdges[nearestId]];
-        }
-
-
-        // If not found search in conrers
-        if(!nextFound)
-        {
-            nearestId = invalid_val;
-            min_dist = std::numeric_limits<Int_t>::max();
-            for(size_t nid = 0; nid < current->fLocalCorner.size(); ++nid)
-            {
-                ReconHit* toComp = &hits[current->fLocalCorner[nid]];
-                TVector3 vecPosition = current->fmppcLoc - toComp->fmppcLoc;
-                Int_t dist = vecPosition.X()*vecPosition.X() + vecPosition.Y()*vecPosition.Y() + vecPosition.Z()*vecPosition.Z();
-
-                if(toComp->fLocalId!=previous->fLocalId
-                    && !toComp->fIsVisited
-                    && !toComp->fIsLeaf
-                    &&  dist < min_dist)
-                {
-                    min_dist = dist;
-                    nearestId = nid;
-                }
-            }
-
-            nextFound = (nearestId!=invalid_val);
-
-            if(nextFound)
-            {
-                next = &hits[current->fLocalCorner[nearestId]];
-            }
-        }
-
+        next = &hits[current->fAllHits[nearestId]];
+        nextFound = true;
     }
-    
+
+    // 3. If it has 1 local hits (And previous hit is not it) return it
+    if(rc 
+        && !current->fIsLeaf 
+        && !nextFound
+        && current->fLocalHits.size()==1)
+    {
+        ReconHit* candidateHit = &hits[current->fLocalHits[0]];
+        if(!candidateHit->fIsVisited
+            && candidateHit->fLocalId != previous->fLocalId)
+        {
+            next = candidateHit;
+            nextFound = true;
+        }
+    }
+
+    // 4. If it has 2 local hits (And previous hit is one of them) return the other one
+    if(rc 
+        && !current->fIsLeaf 
+        && !nextFound
+        && current->fLocalHits.size()==2)
+    {
+        rc = (std::find(current->fLocalHits.begin(), current->fLocalHits.end(), previous->fLocalId)!= current->fLocalHits.end());
+
+        if(rc)
+        {
+            Int_t nid = (current->fLocalHits[0] == previous->fLocalId ) ? 1 : 0;
+            next = &hits[current->fLocalHits[nid]];
+            nextFound = true;
+        }
+    }
+
+    // 5. Check in edges - if it has only one edge and is not visited or the previous one -> return it
+    if(rc 
+        && !current->fIsLeaf 
+        && !nextFound
+        && current->fLocalEdges.size()==1)
+    {
+        ReconHit* candidateHit = &hits[current->fLocalEdges[0]];
+        if(!candidateHit->fIsVisited
+            && candidateHit->fLocalId != previous->fLocalId)
+        {
+            next = candidateHit;
+            nextFound = true;
+        }
+    }
+
+    // 6. Check in edges - if it has multiple ednges and previous hit is one of them, return the other one
+    if(rc 
+        && !current->fIsLeaf 
+        && !nextFound
+        && current->fLocalEdges.size()==2)
+    {
+        if(std::find(current->fLocalEdges.begin(), current->fLocalEdges.end(), previous->fLocalId)!= current->fLocalEdges.end())
+        {
+            Int_t nid = (current->fLocalEdges[0] == previous->fLocalId ) ? 1 : 0;
+            next = &hits[current->fLocalEdges[nid]];
+            nextFound = true;
+        }
+    }
+
+    // 7.  If one of the edges is visited and the other is not, return the not visited one
+    if(rc 
+        && !current->fIsLeaf 
+        && !nextFound
+        && current->fLocalEdges.size()==2)
+    {
+        Int_t zeroInd = current->fLocalEdges[0];
+        Int_t oneInd = current->fLocalEdges[1];
+        ReconHit* zeroHit = &hits[zeroInd];
+        ReconHit* oneHit = &hits[oneInd];
+        
+        if(!zeroHit->fIsVisited && oneHit->fIsVisited)
+        {
+            next = zeroHit;
+            nextFound = true;
+        }
+
+        if(zeroHit->fIsVisited && !oneHit->fIsVisited)
+        {
+            next = oneHit;
+            nextFound = true;
+        }
+    }
+
+    // 8. Check in corner - if it has only one corner which is not visite or the previous one -> return it
+    if(rc 
+        && !current->fIsLeaf 
+        && !nextFound
+        && current->fLocalCorner.size()==1)
+    {
+        ReconHit* candidateHit = &hits[current->fLocalCorner[0]];
+        if(!candidateHit->fIsVisited
+            && candidateHit->fLocalId != previous->fLocalId)
+        {
+            next = candidateHit;
+            nextFound = true;
+        }
+    }
+
+    // 9. Check in corner - if it has multiple ednges and previous hit is one of them, return the other one
+    if(rc 
+        && !current->fIsLeaf 
+        && !nextFound
+        && current->fLocalCorner.size()==2)
+    {
+        if(std::find(current->fLocalCorner.begin(), current->fLocalCorner.end(), previous->fLocalId)!= current->fLocalCorner.end())
+        {
+            Int_t nid = (current->fLocalCorner[0] == previous->fLocalId ) ? 1 : 0;
+            next = &hits[current->fLocalCorner[nid]];
+            nextFound = true;
+        }
+    }
+
+    // 10. If one of the corners is visited and the other is not, return the not visited one
+    if(rc 
+        && !current->fIsLeaf 
+        && !nextFound
+        && current->fLocalCorner.size()==2)
+    {
+        Int_t zeroInd = current->fLocalCorner[0];
+        Int_t oneInd = current->fLocalCorner[1];
+        ReconHit* zeroHit = &hits[zeroInd];
+        ReconHit* oneHit = &hits[oneInd];
+        
+        if(!zeroHit->fIsVisited && oneHit->fIsVisited)
+        {
+            next = zeroHit;
+            nextFound = true;
+        }
+
+        if(zeroHit->fIsVisited && !oneHit->fIsVisited)
+        {
+            next = oneHit;
+            nextFound = true;
+        }
+    }
+
     return nextFound;
 }
 
@@ -488,7 +284,7 @@ void FgdReconTemplate::LoadTemplates()
     TVector3 center;
     std::vector<TVector3> leaves;
 
-    std::vector<TVector3> nextNodes;
+    std::vector<TVector3> stopNodes;
 
     std::ifstream file(freconFile);
     std::string line;
@@ -551,11 +347,10 @@ void FgdReconTemplate::LoadTemplates()
 
 
         // 2. Check for getnext
-        size_t nextInd = line.find(ReconTemplates::GET_NEXT);
-        if( nextInd==0                       // String starts with The searched pattern
-            && nextInd!=std::string::npos)   // Search found a result
+        size_t stopInd = line.find(ReconTemplates::STOP_NODE);
+        if( stopInd==0                       // String starts with The searched pattern
+            && stopInd!=std::string::npos)   // Search found a result
         {
-            TVector3 nextNode;
             TVector3 previousNode;
             FgdReconTemplate::HitTemplate hitTemp;
             for(Int_t y = 1; y >= -1; --y)
@@ -577,17 +372,12 @@ void FgdReconTemplate::LoadTemplates()
                                         center.SetY(y); 
                                         center.SetZ(z);
                                         break;
-                            case 'X':   nextNodes.emplace_back(x,y,z);
-                                        break;
-                            case 'N':   nextNode.SetX(x); 
-                                        nextNode.SetY(y); 
-                                        nextNode.SetZ(z);
-                                        nextNodes.emplace_back(x,y,z);
+                            case 'X':   stopNodes.emplace_back(x,y,z);
                                         break;
                             case 'P':   previousNode.SetX(x); 
                                         previousNode.SetY(y); 
                                         previousNode.SetZ(z);
-                                        nextNodes.emplace_back(x,y,z);
+                                        stopNodes.emplace_back(x,y,z);
                                         break;
                             default:
                                         break;
@@ -604,24 +394,23 @@ void FgdReconTemplate::LoadTemplates()
                 }
             }
 
-            for(size_t node=0; node<nextNodes.size(); node++)
+            for(size_t node=0; node<stopNodes.size(); node++)
             {
-                hitTemp.hitVectors.emplace_back(center - nextNodes[node]);
+                hitTemp.hitVectors.emplace_back(center - stopNodes[node]);
             }
 
-            if(!nextNodes.empty())
+            if(!stopNodes.empty())
             {
                 hitTemp.previousHit = center - previousNode;
-                hitTemp.nextHit = center - nextNode;
-                fGetNExtVectors.push_back(hitTemp);
+                fStopVectors.push_back(hitTemp);
             }
             
-            nextNodes.clear();
+            stopNodes.clear();
         }
     }
 
     std::cout << " Leaf templates found " << fLeafVectors.size() << std::endl;
-    std::cout << " GetNext templates found " << fGetNExtVectors.size() << std::endl;
+    std::cout << " Stop node templates found " << fStopVectors.size() << std::endl;
 }
 
 void FgdReconTemplate::GetHitVectors(ReconHit* hit, std::vector<ReconHit>& hits, std::vector<TVector3>& vecs)
