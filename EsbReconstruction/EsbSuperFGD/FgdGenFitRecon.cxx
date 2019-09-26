@@ -764,6 +764,10 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
   }
 
   // // TODO2
+  Int_t numOf4(0);
+  Int_t numOf5(0);
+  std::vector<Int_t> fourHits;
+  std::vector<Int_t> fiveHits;
   for(Int_t i=0; i<hits.size(); ++i)
   {
     cout << "i " << i << endl;
@@ -778,7 +782,29 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
     cout << "X " << hits[i].fmppcLoc.X() << " Y " << hits[i].fmppcLoc.Y()<< " Z " << hits[i].fmppcLoc.Z() << endl;
 
     cout << "=====" << endl;
+
+    if(hits[i].fAllHits.size()==4)
+    {
+      fourHits.push_back(i);
+      ++numOf4;
+    }
+
+    if(hits[i].fAllHits.size()==5)
+    {
+      fiveHits.push_back(i);
+      ++numOf5;
+    }
   }
+  for(Int_t j=0; j<fourHits.size(); ++j)
+  {
+    cout << " 4 -> " << fourHits[j] << endl;
+  }
+  for(Int_t j=0; j<fiveHits.size(); ++j)
+  {
+    cout << " 5 -> " << fiveHits[j] << endl;
+  }
+  cout << " 4 hits " << numOf4 << endl;
+  cout << " 5 hits " << numOf5 << endl;
   // // TODO2
 
 
@@ -847,25 +873,15 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
 
 void FgdGenFitRecon::BuildGraph(std::vector<ReconHit>& hits)
 {
-    // cout << " ================================ " << endl;
-    // 1. Create the position to which index in the vector it is poiting
+    // Create the position to which index in the vector it is pointing
     std::map<Long_t, Int_t> positionToId;
     for(Int_t i=0; i<hits.size(); ++i)
     {
-      // Int_t&& x = hits[i].fHitPos.X();
-      // Int_t&& y = hits[i].fHitPos.Y();
-      // Int_t&& z = hits[i].fHitPos.Z();
-
       Int_t&& x = hits[i].fmppcLoc.X();
       Int_t&& y = hits[i].fmppcLoc.Y();
       Int_t&& z = hits[i].fmppcLoc.Z();
 
-      // cout  << endl;
       Int_t&& ind = ArrInd(x,y,z);
-      // cout  << "coordintes" << " x " << x << " y " << y << " z " << z << endl;
-      // cout  << "build index " << ind << " val " << i << endl;
-
-      // cout  << endl;
 
       // GUARD agains double or more hits in the same cube
       if(positionToId.find(ind)==positionToId.end())
@@ -877,7 +893,6 @@ void FgdGenFitRecon::BuildGraph(std::vector<ReconHit>& hits)
       hits[i].fLocalHits.clear(); // Clear previous index positions
       hits[i].fLocalId = i;
     }
-    // cout << " ================================ " << endl;
 
     auto checkNext = [&](Int_t x_pos, Int_t y_pos, Int_t z_pos, Int_t ind){
                                                                   Long_t&& key = ArrInd(x_pos,y_pos,z_pos);

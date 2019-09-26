@@ -1,7 +1,7 @@
 # This holds the tempaltes used to identify leafs and next hit to traverge when using a graph
 #   for track identification.
 #   The syntax is the following:
-#   First row defines whether it is a template for a Leaf or a stop condition - Leaf or StopNode respectively.
+#   First row defines whether it is a template for a Leaf or a stop condition - Leaf or StrangeNode respectively.
 #   We use local hits, this the cubes size is 3x3x3 with the current hit in the middle.
 #   To define the template the first 9 are the cubes at Z-1 coordinates, than at Z and than at Z+1.
 #   'O' (letter O) or '-' is used for no hit, 'X' is for hit, 'P' is used in GetNextNode templates to denote previous node
@@ -113,17 +113,17 @@
 #########################################################
 #######                   Leaves                  #######
 #########################################################
-#Leaf 
+Leaf 
 --- --- ---
 --- -C- -X-
 --- --- ---
 
-#Leaf 
+Leaf 
 --- --- -X-
 --- -C- ---
 --- --- ---
 
-#Leaf 
+Leaf 
 --- --- --X
 --- -C- ---
 --- --- ---
@@ -159,6 +159,486 @@ Leaf
 --- --- ---
 
 #########################################################
-#######          Stop condition Nodes             #######
+#######     Acceptable 4 and 5 hit Nodes          #######
 #########################################################
+
+
+##########           4 hits         ##################
+StrangeNode
+-X- --- ---
+-X- -C- -X-
+--- --- -X-
+
+StrangeNode
+X-- --- ---
+-X- -C- -X-
+--- --- --X
+
+StrangeNode
+-X- --- -X-
+-X- -C- -X-
+--- --- ---
+
+StrangeNode
+-X- --- --X
+-X- -C- -X-
+--- --- ---
+
+StrangeNode
+-X- --- X--
+-X- -C- -X-
+--- --- ---
+
+StrangeNode
+-X- --- ---
+-X- -C- -X-
+--- --- X--
+
+StrangeNode
+-X- --- ---
+-X- -C- -X-
+--- --- --X
+
+StrangeNode
+-X- --- ---
+-X- -C- -XX
+--- --- ---
+
+StrangeNode
+--- --- ---
+-X- -C- -XX
+-X- --- ---
+
+StrangeNode
+-X- --- ---
+-X- -C- XX-
+--- --- ---
+
+StrangeNode
+--- --- ---
+-X- -C- XX-
+-X- --- ---
+
+StrangeNode
+--- XX- X--
+-X- -C- ---
+--- --- ---
+
+StrangeNode
+--- --- ---
+--- XC- X--
+-X- -X- ---
+
+StrangeNode
+--- --- ---
+--- -CX -X-
+--X --X ---
+
+StrangeNode
+--- --- X--
+-X- -C- -X-
+--X --- ---
+
+
+StrangeNode
+--- --- ---
+--- -C- -X-
+--X -XX ---
+
+StrangeNode
+--- --- -X-
+-XX -C- -X-
+--- --- ---
+
+StrangeNode
+--- X-- --X
+--- -CX --X
+--- --- ---
+
+StrangeNode
+--- --- ---
+X-- XCX ---
+--- --- --X
+
+StrangeNode
+XX- --- ---
+--- -CX --X
+--- --- ---
+
+StrangeNode
+X-- --- ---
+--- XC- -XX
+--- --- ---
+
+StrangeNode
+X-- --- ---
+-X- -CX --X
+--- --- ---
+
+StrangeNode
+--- --- ---
+X-- XC- -XX
+--- --- ---
+
+StrangeNode
+--- --- --X
+X-- XC- --X
+--- --- ---
+
+StrangeNode
+--- --- ---
+X-- XC- --X
+--- --- --X
+
+StrangeNode
+X-- X-- ---
+--- -C- XX-
+--- --- ---
+
+StrangeNode
+X-- --- ---
+-X- -CX --X
+--- --- ---
+
+StrangeNode
+--- --- ---
+XX- -C- -XX
+--- --- ---
+
+StrangeNode
+--- --- ---
+-X- -CX --X
+--- --- --X
+
+StrangeNode
+--- --- --X
+-X- -CX --X
+--- --- ---
+
+StrangeNode
+--- --- ---
+X-- XC- -X-
+--- --- -X-
+
+StrangeNode
+--- --- ---
+--X -CX -X-
+--- --- -X-
+
+StrangeNode
+--- --- -X-
+X-- XC- -X-
+--- --- ---
+
+StrangeNode
+--- --- -X-
+--X -CX -X-
+--- --- ---
+
+StrangeNode
+--- --- ---
+-X- -CX --X
+-X- --- ---
+
+StrangeNode
+X-- --- ---
+X-- XC- -X-
+--- --- ---
+
+StrangeNode
+--X --- ---
+--X -CX -X-
+--- --- ---
+
+StrangeNode
+--- --- --X
+-X- -CX --X
+--- --- ---
+
+StrangeNode
+--- --- ---
+X-- XC- -X-
+--- --- -X-
+
+StrangeNode
+--- --- -X-
+X-- XC- -X-
+--- --- ---
+
+StrangeNode
+--- --- ---
+--X -CX -X-
+--- --- -X-
+
+StrangeNode
+--- --- -X-
+--X -CX -X-
+--- --- ---
+
+StrangeNode
+--- --- ---
+XX- -C- ---
+--- -X- -X-
+
+StrangeNode
+--- -X- -X-
+XX- -C- ---
+--- --- ---
+
+StrangeNode
+--- --- ---
+-XX -C- ---
+--- -X- -X-
+
+StrangeNode
+--- -X- -X-
+-XX -C- ---
+--- --- ---
+
+StrangeNode
+XX- -X- ---
+--- -C- -X-
+--- --- ---
+
+StrangeNode
+-X- --- ---
+-X- -C- -XX
+--- --- ---
+
+StrangeNode
+--- -X- -X-
+--X -CX ---
+--- --- ---
+
+StrangeNode
+--- --- ---
+--X -CX ---
+--- -X- -X-
+
+StrangeNode
+--- -X- -X-
+X-- XC- ---
+--- --- ---
+
+StrangeNode
+--- --- ---
+X-- XC- ---
+--- -X- -X-
+
+StrangeNode
+X-- X-- ---
+--- -C- -XX
+--- --- ---
+
+StrangeNode
+X-- X-- ---
+--- -C- XX-
+--- --- ---
+
+StrangeNode
+--X --X ---
+--- -C- -XX
+--- --- ---
+
+StrangeNode
+--X --X ---
+--- -C- XX-
+--- --- ---
+
+
+StrangeNode
+X-- X-- ---
+--- -C- XX-
+--- --- ---
+
+StrangeNode
+X-- X-- ---
+--- -C- XX-
+--- --- ---
+
+StrangeNode
+--X --X ---
+--- -C- XX-
+--- --- ---
+
+StrangeNode
+--X --X ---
+--- -C- XX-
+--- --- ---
+
+
+##########           5 hits         ##################
+
+StrangeNode
+-X- --- ---
+-X- -C- -X-
+--- --- -XX
+
+StrangeNode
+-X- --- ---
+-X- -C- -X-
+--- --- XX-
+
+StrangeNode
+--- --- -XX
+-XX -C- -X-
+--- --- ---
+
+StrangeNode
+--- --- XX-
+-XX -C- -X-
+--- --- ---
+
+StrangeNode
+--- --- -XX
+XX- -C- -X-
+--- --- ---
+
+StrangeNode
+--- --- XX-
+XX- -C- -X-
+--- --- ---
+
+StrangeNode
+--- --- X--
+-XX -C- -X-
+--X --- ---
+
+StrangeNode
+--- --- --X
+-XX -C- -X-
+--X --- ---
+
+StrangeNode
+--- --- X--
+XX- -C- -X-
+X-- --- ---
+
+StrangeNode
+--- --- --X
+XX- -C- -X-
+X-- --- ---
+
+StrangeNode
+--- --- X--
+-X- -C- XX-
+--X --- ---
+
+
+StrangeNode
+--- --- ---
+-X- -C- XX-
+-XX --- ---
+
+StrangeNode
+--- --- ---
+-X- -C- XX-
+XX- --- ---
+
+StrangeNode
+--- --- ---
+-X- -C- -XX
+-XX --- ---
+
+StrangeNode
+--- --- ---
+-X- -C- -XX
+XX- --- ---
+
+StrangeNode
+--- --- ---
+XX- -C- ---
+--- -X- -XX
+
+StrangeNode
+--- --- ---
+XX- -C- ---
+--- -X- XX-
+
+StrangeNode
+--- -X- -XX
+XX- -C- ---
+--- --- ---
+
+StrangeNode
+--- -X- XX-
+XX- -C- ---
+--- --- ---
+
+StrangeNode
+XX- -X- ---
+--- -C- -XX
+--- --- ---
+
+StrangeNode
+--- --- ---
+--- -C- -XX
+XX- -X- ---
+
+StrangeNode
+-XX -X- ---
+--- -C- -XX
+--- --- ---
+
+StrangeNode
+--- --- ---
+--- -C- XX-
+-XX -X- ---
+
+StrangeNode
+XX- -X- ---
+--- -C- XX-
+--- --- ---
+
+StrangeNode
+--- --- ---
+--- -C- XX-
+XX- -X- ---
+
+StrangeNode
+-XX -X- ---
+--- -C- XX-
+--- --- ---
+
+StrangeNode
+--- --- ---
+--- -C- -XX
+-XX -X- ---
+
+#below templates are not used
+
+#########################################################
+#######     Empty templates or to consider         ######
+#########################################################
+
+#template
+--- --- ---
+--- -C- ---
+--- --- ---
+
+#StopNode
+--X --- ---
+-X- -CX X-X
+--- --- ---
+
+#StopNode
+--- --- X--
+-X- XC- ---
+--X --- ---
+
+#StopNode
+--- --- XX-
+--- -C- XX-
+--- --- ---
+
+#StopNode
+--X X-- ---
+-X- XC- ---
+--- --- ---
+
+#StopNode
+--- -X- -X-
+--X XC- ---
+--- --- ---
+
 

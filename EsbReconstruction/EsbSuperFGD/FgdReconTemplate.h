@@ -17,7 +17,7 @@ namespace superfgd {
 namespace ReconTemplates
 {
     static const std::string LEAF = "Leaf";
-    static const std::string STOP_NODE = "StopNode";
+    static const std::string STRANGE_NODE = "StrangeNode";
 
     static const char SEPARATOR = ' ';
     static const char NO_HIT = 'O';
@@ -83,7 +83,7 @@ private:
     TVector3 GetPermutation(TVector3 vec, Int_t numPermutation);
 
     std::vector<FgdReconTemplate::HitTemplate> fLeafVectors;//!<!  
-    std::vector<FgdReconTemplate::HitTemplate> fStopVectors;//!<!  
+    std::vector<FgdReconTemplate::HitTemplate> fStrangeVectors;//!<!  
 
     std::string freconFile;//!<!  
 

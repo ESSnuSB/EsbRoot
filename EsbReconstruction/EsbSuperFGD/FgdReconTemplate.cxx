@@ -81,26 +81,32 @@ Bool_t FgdReconTemplate::GetNextHit(ReconHit* previous, ReconHit* current, Recon
         next = nullptr;
     }
 
-    // Check for stop templates
-    Bool_t isStopTemplate(false);
-    Int_t permutation(0);
-    std::vector<TVector3> vecs;
-    GetHitVectors(current, hits, vecs);
-    for(size_t temp=0; !isStopTemplate && temp < fStopVectors.size(); ++temp)
+    if(current->fLocalId == 50) cout << "befre rc " << rc << endl;
+    // Check for 4 and 5 hits aloud templates
+    if(current->fAllHits.size()==4 || current->fAllHits.size()==5)
     {
-        if(fStopVectors[temp].hitVectors.size() == current->fAllHits.size())
+        Bool_t isTemplateAloud(false);
+        Int_t permutation(0);
+        std::vector<TVector3> vecs;
+        GetHitVectors(current, hits, vecs);
+        for(size_t temp=0; !isTemplateAloud && temp < fStrangeVectors.size(); ++temp)
         {
-            std::vector<TVector3>& tempVecs = fStopVectors[temp].hitVectors;
-            isStopTemplate = AreVectorsEqual(tempVecs, vecs, permutation);
+            if(fStrangeVectors[temp].hitVectors.size() == current->fAllHits.size())
+            {
+                std::vector<TVector3>& tempVecs = fStrangeVectors[temp].hitVectors;
+                isTemplateAloud = AreVectorsEqual(tempVecs, vecs, permutation);
+            }
+        }
+
+        if(!isTemplateAloud)
+        {
+            rc = false;
+            nextFound = false;
+            next = nullptr;
         }
     }
-
-    if(isStopTemplate)
-    {
-        rc = false;
-        nextFound = false;
-        next = nullptr;
-    }
+    if(current->fLocalId == 50) cout << "After rc " << rc << endl;
+    
 
 
     // 1. If it is  leaf and has only one near hit, it is the next one
@@ -158,9 +164,7 @@ Bool_t FgdReconTemplate::GetNextHit(ReconHit* previous, ReconHit* current, Recon
         && !nextFound
         && current->fLocalHits.size()==2)
     {
-        rc = (std::find(current->fLocalHits.begin(), current->fLocalHits.end(), previous->fLocalId)!= current->fLocalHits.end());
-
-        if(rc)
+        if(std::find(current->fLocalHits.begin(), current->fLocalHits.end(), previous->fLocalId)!= current->fLocalHits.end())
         {
             Int_t nid = (current->fLocalHits[0] == previous->fLocalId ) ? 1 : 0;
             next = &hits[current->fLocalHits[nid]];
@@ -281,8 +285,7 @@ void FgdReconTemplate::LoadTemplates()
 {
     TVector3 center;
     std::vector<TVector3> leaves;
-
-    std::vector<TVector3> stopNodes;
+    std::vector<TVector3> strangeNodes;
 
     std::ifstream file(freconFile);
     std::string line;
@@ -345,7 +348,7 @@ void FgdReconTemplate::LoadTemplates()
 
 
         // 2. Check for getnext
-        size_t stopInd = line.find(ReconTemplates::STOP_NODE);
+        size_t stopInd = line.find(ReconTemplates::STRANGE_NODE);
         if( stopInd==0                       // String starts with The searched pattern
             && stopInd!=std::string::npos)   // Search found a result
         {
@@ -370,12 +373,12 @@ void FgdReconTemplate::LoadTemplates()
                                         center.SetY(y); 
                                         center.SetZ(z);
                                         break;
-                            case 'X':   stopNodes.emplace_back(x,y,z);
+                            case 'X':   strangeNodes.emplace_back(x,y,z);
                                         break;
                             case 'P':   previousNode.SetX(x); 
                                         previousNode.SetY(y); 
                                         previousNode.SetZ(z);
-                                        stopNodes.emplace_back(x,y,z);
+                                        strangeNodes.emplace_back(x,y,z);
                                         break;
                             default:
                                         break;
@@ -392,23 +395,26 @@ void FgdReconTemplate::LoadTemplates()
                 }
             }
 
-            for(size_t node=0; node<stopNodes.size(); node++)
+            for(size_t node=0; node<strangeNodes.size(); node++)
             {
-                hitTemp.hitVectors.emplace_back(center - stopNodes[node]);
+                hitTemp.hitVectors.emplace_back(center - strangeNodes[node]);
             }
 
-            if(!stopNodes.empty())
+            if(!strangeNodes.empty())
             {
                 hitTemp.previousHit = center - previousNode;
-                fStopVectors.push_back(hitTemp);
+                fStrangeVectors.push_back(hitTemp);
             }
             
-            stopNodes.clear();
+            strangeNodes.clear();
         }
     }
 
     LOG(debug) << " Leaf templates found " << fLeafVectors.size();
-    LOG(debug) << " Stop node templates found " << fStopVectors.size();
+    LOG(debug) << " Strange node templates found " << fStrangeVectors.size();
+
+    cout << " Leaf templates found " << fLeafVectors.size() << endl;
+    cout << " Strange node templates found " << fStrangeVectors.size() << endl;
 }
 
 void FgdReconTemplate::GetHitVectors(ReconHit* hit, std::vector<ReconHit>& hits, std::vector<TVector3>& vecs)
