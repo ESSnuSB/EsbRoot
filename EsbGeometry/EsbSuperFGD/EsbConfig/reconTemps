@@ -605,6 +605,186 @@ StrangeNode
 --- -C- -XX
 -XX -X- ---
 
+StrangeNode
+--- -XX --X
+--- XC- ---
+--- X-- ---
+
+StrangeNode
+--X -XX ---
+--- XC- ---
+--- X-- ---
+
+StrangeNode
+--- -XX ---
+--- XC- ---
+X-- X-- ---
+
+StrangeNode
+--- -XX ---
+--- XC- ---
+--- X-- X--
+
+StrangeNode
+--- --X ---
+--- -CX ---
+--- -X- -XX
+
+StrangeNode
+--- --X ---
+--- -CX ---
+--- -X- XX-
+
+StrangeNode
+--- X-- ---
+--- XC- ---
+--- -X- -XX
+
+StrangeNode
+--- X-- ---
+--- XC- ---
+--- -X- XX-
+
+StrangeNode
+--- -XX X--
+--- -C- XX-
+--- --- ---
+
+StrangeNode
+--- -XX ---
+--- -C- XX-
+--- --- X--
+
+StrangeNode
+--- -XX ---
+XX- -C- ---
+X-- --- ---
+
+StrangeNode
+--- -XX ---
+--- -C- -X-
+--- --- XX-
+
+StrangeNode
+--- -XX ---
+-X- -C- ---
+XX- --- ---
+
+StrangeNode
+-XX X-- ---
+-X- XC- ---
+--- --- ---
+
+StrangeNode
+--- X-- ---
+-X- XC- ---
+XX- --- ---
+
+StrangeNode
+--- X-- ---
+-X- XC- ---
+-XX --- ---
+
+StrangeNode
+--- --X ---
+-X- -CX ---
+XX- --- ---
+
+StrangeNode
+--- --X ---
+-X- -CX ---
+-XX --- ---
+
+StrangeNode
+--X --- ---
+--X -CX ---
+--- XX- ---
+
+StrangeNode
+--- --- --X
+--- -CX --X
+--- XX- ---
+
+StrangeNode
+X-- --- ---
+X-- XC- ---
+--- -XX ---
+
+StrangeNode
+--- --- X--
+--- XC- X--
+--- -XX ---
+
+StrangeNode
+--X -XX ---
+--- XC- ---
+--- --- X--
+
+StrangeNode
+--X --X ---
+--- -CX ---
+--- --- XX-
+
+StrangeNode
+--- --- XX-
+--- -CX ---
+--X --X ---
+
+StrangeNode
+X-- X-- ---
+--- XC- ---
+--- --- -XX
+
+StrangeNode
+--- --- -XX
+--- XC- ---
+X-- X-- ---
+
+StrangeNode
+-XX -X- ---
+--- XC- ---
+--- --- X--
+
+StrangeNode
+XX- -X- ---
+--- -CX ---
+--- --- --X
+
+StrangeNode
+--X --- ---
+--- -CX -X-
+--- --- XX-
+
+StrangeNode
+X-- --- ---
+--- XC- -X-
+--- --- -XX
+
+StrangeNode
+-XX --- ---
+--- XC- X--
+--- --- X--
+
+StrangeNode
+--- --- X--
+--- XC- X--
+-XX --- ---
+
+StrangeNode
+XX- --- ---
+--- -CX --X
+--- --- --X
+
+StrangeNode
+--- --- --X
+--- -CX --X
+XX- --- ---
+
+StrangeNode
+--X --- ---
+--- -CX ---
+--- XX- X--
+
 #below templates are not used
 
 #########################################################
@@ -619,6 +799,11 @@ StrangeNode
 #StopNode
 --X --- ---
 -X- -CX X-X
+--- --- ---
+
+#StopNode
+--X --- ---
+-X- -CX XX-
 --- --- ---
 
 #StopNode
@@ -640,5 +825,10 @@ StrangeNode
 --- -X- -X-
 --X XC- ---
 --- --- ---
+
+#StopNode
+XX- --- ---
+--- XC- X--
+--- --- X--
 
 

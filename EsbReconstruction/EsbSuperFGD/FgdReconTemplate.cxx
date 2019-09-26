@@ -81,7 +81,6 @@ Bool_t FgdReconTemplate::GetNextHit(ReconHit* previous, ReconHit* current, Recon
         next = nullptr;
     }
 
-    if(current->fLocalId == 50) cout << "befre rc " << rc << endl;
     // Check for 4 and 5 hits aloud templates
     if(current->fAllHits.size()==4 || current->fAllHits.size()==5)
     {
@@ -105,7 +104,6 @@ Bool_t FgdReconTemplate::GetNextHit(ReconHit* previous, ReconHit* current, Recon
             next = nullptr;
         }
     }
-    if(current->fLocalId == 50) cout << "After rc " << rc << endl;
     
 
 

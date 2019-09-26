@@ -764,47 +764,47 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
   }
 
   // // TODO2
-  Int_t numOf4(0);
-  Int_t numOf5(0);
-  std::vector<Int_t> fourHits;
-  std::vector<Int_t> fiveHits;
-  for(Int_t i=0; i<hits.size(); ++i)
-  {
-    cout << "i " << i << endl;
-    ReconHit* c = &hits[i];
-    for(Int_t j=0; j<hits[i].fAllHits.size(); ++j)
-    {
-      Int_t ind = hits[i].fAllHits[j];
-      ReconHit* ll = &hits[ind];
-      TVector3 diff = c->fmppcLoc - ll->fmppcLoc;
-      cout << " Local Id " << hits[i].fAllHits[j] << " \tX " << diff.X() << " \tY " << diff.Y() << " \tZ " << diff.Z() << endl;
-    }
-    cout << "X " << hits[i].fmppcLoc.X() << " Y " << hits[i].fmppcLoc.Y()<< " Z " << hits[i].fmppcLoc.Z() << endl;
+  // Int_t numOf4(0);
+  // Int_t numOf5(0);
+  // std::vector<Int_t> fourHits;
+  // std::vector<Int_t> fiveHits;
+  // for(Int_t i=0; i<hits.size(); ++i)
+  // {
+  //   cout << "i " << i << endl;
+  //   ReconHit* c = &hits[i];
+  //   for(Int_t j=0; j<hits[i].fAllHits.size(); ++j)
+  //   {
+  //     Int_t ind = hits[i].fAllHits[j];
+  //     ReconHit* ll = &hits[ind];
+  //     TVector3 diff = c->fmppcLoc - ll->fmppcLoc;
+  //     cout << " Local Id " << hits[i].fAllHits[j] << " \tX " << diff.X() << " \tY " << diff.Y() << " \tZ " << diff.Z() << endl;
+  //   }
+  //   cout << "X " << hits[i].fmppcLoc.X() << " Y " << hits[i].fmppcLoc.Y()<< " Z " << hits[i].fmppcLoc.Z() << endl;
 
-    cout << "=====" << endl;
+  //   cout << "=====" << endl;
 
-    if(hits[i].fAllHits.size()==4)
-    {
-      fourHits.push_back(i);
-      ++numOf4;
-    }
+  //   if(hits[i].fAllHits.size()==4)
+  //   {
+  //     fourHits.push_back(i);
+  //     ++numOf4;
+  //   }
 
-    if(hits[i].fAllHits.size()==5)
-    {
-      fiveHits.push_back(i);
-      ++numOf5;
-    }
-  }
-  for(Int_t j=0; j<fourHits.size(); ++j)
-  {
-    cout << " 4 -> " << fourHits[j] << endl;
-  }
-  for(Int_t j=0; j<fiveHits.size(); ++j)
-  {
-    cout << " 5 -> " << fiveHits[j] << endl;
-  }
-  cout << " 4 hits " << numOf4 << endl;
-  cout << " 5 hits " << numOf5 << endl;
+  //   if(hits[i].fAllHits.size()==5)
+  //   {
+  //     fiveHits.push_back(i);
+  //     ++numOf5;
+  //   }
+  // }
+  // for(Int_t j=0; j<fourHits.size(); ++j)
+  // {
+  //   cout << " 4 -> " << fourHits[j] << endl;
+  // }
+  // for(Int_t j=0; j<fiveHits.size(); ++j)
+  // {
+  //   cout << " 5 -> " << fiveHits[j] << endl;
+  // }
+  // cout << " 4 hits " << numOf4 << endl;
+  // cout << " 5 hits " << numOf5 << endl;
   // // TODO2
 
 
@@ -848,13 +848,17 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
   }
 
   cout << "Leaves found " << tracks.size() << endl;
+  LOG(debug) <<"Leaves found " << tracks.size();
+  Int_t totalHitsInTracks(0);
 
   for(Int_t i=0; i<tracks.size(); ++i)
   {
     std::vector<Int_t>& track = tracks[i];
     std::vector<pathfinder::basicHit> currentTrack;
     cout << "Track " << i << endl;
+    LOG(debug) << "Track " << i;
     Int_t z_mppc=-1;
+    totalHitsInTracks+=track.size();
     for(Int_t j=0; j<track.size(); ++j)
     {
       Int_t ind = track[j];
@@ -863,10 +867,13 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
                                 , hits[ind].fHitPos.Z());
 
       cout << "Id " << ind << " X " << hits[ind].fmppcLoc.X()<< " Y " << hits[ind].fmppcLoc.Y()<< " Z " << hits[ind].fmppcLoc.Z() << endl;
+      LOG(debug) << "Id " << ind << " X " << hits[ind].fmppcLoc.X()<< " Y " << hits[ind].fmppcLoc.Y()<< " Z " << hits[ind].fmppcLoc.Z();
     }
     pathfinder::TrackFinderTrack tr(pathfinder::TrackParameterFull(0.,0.,0.,0.,0.),std::move(currentTrack));
     foundTracks.emplace_back(tr);
   }
+  cout << "Total hits in tracks " << totalHitsInTracks << endl;
+  LOG(debug) << "Total hits in tracks " << totalHitsInTracks;
 
   return !foundTracks.empty();
 }
