@@ -248,13 +248,18 @@ void FgdGenFitRecon::Exec(Option_t* opt)
 
     if(rc)
     {
-      std::cout<<" Tracks found " << foundTracks.size() << std::endl;
+      // std::cout<<" Tracks found " << foundTracks.size() << std::endl;
       std::cout<<" Hits to fit " << allhits.size() << std::endl;
+      
+      LOG(debug) <<" Tracks found " << foundTracks.size();
+      LOG(debug) <<" Hits to fit " << allhits.size();
       FitTracks(foundTracks);
     }
     else
     {
-      std::cout<<" Could not find clean hits or tracks! " << std::endl;
+      // std::cout <<" Could not find clean hits or tracks! " << std::endl;
+
+      LOG(error) << " Could not find clean hits or tracks! ";
     }
   }
   catch(genfit::Exception& e)
@@ -272,7 +277,9 @@ Bool_t FgdGenFitRecon::GetHits(std::vector<ReconHit>& allHits)
 {
   Double_t errPhotoLimit = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::FGD_ERR_PHOTO_LIMIT);
 
-  std::cout << "fHitArray->GetEntries() " << fHitArray->GetEntries() << std::endl;
+  // std::cout << "fHitArray->GetEntries() " << fHitArray->GetEntries() << std::endl;
+
+  LOG(debug) << "fHitArray->GetEntries() " << fHitArray->GetEntries();
 
   std::map<Long_t, Bool_t> visited;
 
@@ -294,10 +301,6 @@ Bool_t FgdGenFitRecon::GetHits(std::vector<ReconHit>& allHits)
       continue;
     }
     visited[ind] = true;
-    // cout << "numVis " << numVis++ << endl;
-    // cout << "ind " << ind << endl;
-    // cout  << "GetHits" << " x " << x << " y " << y << " z " << z << endl;
-    // cout << endl;
 
     if(photoE.X() >= errPhotoLimit 
         & photoE.Y()>= errPhotoLimit 
@@ -307,8 +310,6 @@ Bool_t FgdGenFitRecon::GetHits(std::vector<ReconHit>& allHits)
       hitPos(0) = -f_total_X/2 + f_step_X*mppcLoc.X()  +f_step_X/2;
       hitPos(1) = -f_total_Y/2 + f_step_Y*mppcLoc.Y()  +f_step_Y/2;
       hitPos(2) = -f_total_Z/2 + f_step_Z*mppcLoc.Z()  +f_step_Z/2;
-
-      // cout  << "ReconHit" << " x " << hitPos(0) << " y " << hitPos(1) << " z " << hitPos(2) << endl;
 
       allHits.emplace_back(ReconHit(
                                 mppcLoc
@@ -325,7 +326,9 @@ Bool_t FgdGenFitRecon::GetHits(std::vector<ReconHit>& allHits)
     }
   }
 
-  std::cout << "allHits.size()" << allHits.size() << std::endl;
+  // std::cout << "allHits.size()" << allHits.size() << std::endl;
+
+  LOG(debug) << "allHits.size()" << allHits.size();
 
   return (allHits.size() > 0);
 }
@@ -562,11 +565,13 @@ Bool_t FgdGenFitRecon::FindAboveBelowTracks(std::vector<ReconHit>& hits
       {
         foundTracks = belowTrackFinder.getTracks();
       }
-      std::cout << "Tracks below limit ["<< timeInterval <<"] " << foundTracks.size() << std::endl;
+      // std::cout << "Tracks below limit ["<< timeInterval <<"] " << foundTracks.size() << std::endl;
+      LOG(debug) << "Tracks below limit ["<< timeInterval <<"] " << foundTracks.size();
     }
     else
     {
-      std::cout << "Hits below limit ["<< timeInterval <<"] are excluded by settings." << std::endl;
+      // std::cout << "Hits below limit ["<< timeInterval <<"] are excluded by settings." << std::endl;
+      LOG(debug) << "Hits below limit ["<< timeInterval <<"] are excluded by settings.";
     }
     
 
@@ -586,7 +591,8 @@ Bool_t FgdGenFitRecon::FindAboveBelowTracks(std::vector<ReconHit>& hits
       if(abovefound)
       {
         const std::vector<pathfinder::TrackFinderTrack>& aboveTracks = aboveTrackFinder.getTracks();
-        std::cout << "Tracks above limit ["<< timeInterval <<"] " << aboveTracks.size() << std::endl;
+        // std::cout << "Tracks above limit ["<< timeInterval <<"] " << aboveTracks.size() << std::endl;
+        LOG(debug)  << "Tracks above limit ["<< timeInterval <<"] " << aboveTracks.size();
         for(Int_t tr = 0; tr < aboveTracks.size(); ++tr)
         {
           foundTracks.push_back(aboveTracks[tr]);
@@ -595,7 +601,8 @@ Bool_t FgdGenFitRecon::FindAboveBelowTracks(std::vector<ReconHit>& hits
     }
     else
     {
-      std::cout << "Hits above limit ["<< timeInterval <<"] are excluded by settings." << std::endl;
+      // std::cout << "Hits above limit ["<< timeInterval <<"] are excluded by settings." << std::endl;
+      LOG(debug)  << "Hits above limit ["<< timeInterval <<"] are excluded by settings.";
     }
 
     found = belowfound || abovefound;
@@ -723,7 +730,8 @@ Bool_t FgdGenFitRecon::FindByIntervalsTracks(std::vector<ReconHit>& hits
     if(foundInInterval)
     {
       const std::vector<pathfinder::TrackFinderTrack>& tracks = newTrackFinder.getTracks();
-      std::cout << "Tracks in time interval from ["<< (interval-1)*timeInterval <<"] " <<  " to ["<< interval*timeInterval <<"] " <<tracks.size() << std::endl;
+      // std::cout << "Tracks in time interval from ["<< (interval-1)*timeInterval <<"] " <<  " to ["<< interval*timeInterval <<"] " <<tracks.size() << std::endl;
+      LOG(debug)  << "Tracks in time interval from ["<< (interval-1)*timeInterval <<"] " <<  " to ["<< interval*timeInterval <<"] " <<tracks.size();
       for(Int_t tr = 0; tr < tracks.size(); ++tr)
       {
         foundTracks.push_back(tracks[tr]);
@@ -847,7 +855,7 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
     }
   }
 
-  cout << "Leaves found " << tracks.size() << endl;
+  // cout << "Leaves found " << tracks.size() << endl;
   LOG(debug) <<"Leaves found " << tracks.size();
   Int_t totalHitsInTracks(0);
 
@@ -855,7 +863,7 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
   {
     std::vector<Int_t>& track = tracks[i];
     std::vector<pathfinder::basicHit> currentTrack;
-    cout << "Track " << i << endl;
+    // cout << "Track " << i << endl;
     LOG(debug) << "Track " << i;
     Int_t z_mppc=-1;
     totalHitsInTracks+=track.size();
@@ -866,13 +874,13 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
                                 , hits[ind].fHitPos.Y()
                                 , hits[ind].fHitPos.Z());
 
-      cout << "Id " << ind << " X " << hits[ind].fmppcLoc.X()<< " Y " << hits[ind].fmppcLoc.Y()<< " Z " << hits[ind].fmppcLoc.Z() << endl;
+      // cout << "Id " << ind << " X " << hits[ind].fmppcLoc.X()<< " Y " << hits[ind].fmppcLoc.Y()<< " Z " << hits[ind].fmppcLoc.Z() << endl;
       LOG(debug) << "Id " << ind << " X " << hits[ind].fmppcLoc.X()<< " Y " << hits[ind].fmppcLoc.Y()<< " Z " << hits[ind].fmppcLoc.Z();
     }
     pathfinder::TrackFinderTrack tr(pathfinder::TrackParameterFull(0.,0.,0.,0.,0.),std::move(currentTrack));
     foundTracks.emplace_back(tr);
   }
-  cout << "Total hits in tracks " << totalHitsInTracks << endl;
+  // cout << "Total hits in tracks " << totalHitsInTracks << endl;
   LOG(debug) << "Total hits in tracks " << totalHitsInTracks;
 
   return !foundTracks.empty();
@@ -1008,6 +1016,7 @@ void FgdGenFitRecon::FitTracks(std::vector<pathfinder::TrackFinderTrack>& foundT
       if(hitsOnTrack.size()<fminHits)
       {
         std::cout << "Track " << i << " below limit, continue with next track (" << hitsOnTrack.size() << " < " << fminHits << ")" << std::endl;
+        LOG(debug) << "Track " << i << " below limit, continue with next track (" << hitsOnTrack.size() << " < " << fminHits << ")";
         continue;
       }
       
@@ -1074,6 +1083,12 @@ void FgdGenFitRecon::FitTracks(std::vector<pathfinder::TrackFinderTrack>& foundT
       std::cout<<"******    Track "<< i << "  ************************"<<std::endl;
       std::cout<<"******************************************* "<<std::endl;
       std::cout<<"hitsOnTrack.size(); "<< hitsOnTrack.size() <<std::endl;
+
+
+      LOG(debug) <<"******************************************* ";
+      LOG(debug) <<"******    Track "<< i << "  ************************";
+      LOG(debug) <<"******************************************* ";
+      LOG(debug) <<"hitsOnTrack.size(); "<< hitsOnTrack.size();
       
       for(Int_t bh = 0; bh < hitsOnTrack.size(); ++bh)
       {
@@ -1103,6 +1118,7 @@ void FgdGenFitRecon::FitTracks(std::vector<pathfinder::TrackFinderTrack>& foundT
 
         PrintFitTrack(*toFitTrack);
         std::cout<<"******************************************* "<<std::endl;
+        LOG(debug) <<"******************************************* ";
         genfit::FitStatus* fiStatuStatus = toFitTrack->getFitStatus();
 
         if(fiStatuStatus->isFitted())
@@ -1112,6 +1128,9 @@ void FgdGenFitRecon::FitTracks(std::vector<pathfinder::TrackFinderTrack>& foundT
       }
       catch(genfit::Exception& e)
       {
+          LOG(error) <<"Exception, when tryng to fit track";
+          LOG(error) << e.what();
+
           std::cerr<<"Exception, when tryng to fit track"<<std::endl;
           std::cerr << e.what();
       }
