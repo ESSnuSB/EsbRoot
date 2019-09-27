@@ -61,18 +61,21 @@ private:
         HitTemplate(const HitTemplate& c)
         {
             this->previousHit = c.previousHit;
+            this->nextHit = c.nextHit;
             this->hitVectors = c.hitVectors;
         }
 
         HitTemplate& operator=(const HitTemplate& c)
         {
             this->previousHit = c.previousHit;
+            this->nextHit = c.nextHit;
             this->hitVectors = c.hitVectors;
             return *this;
         }
 
         size_t Length(){return hitVectors.size();}
     
+        TVector3 nextHit;
         TVector3 previousHit;
         std::vector<TVector3> hitVectors;
     };

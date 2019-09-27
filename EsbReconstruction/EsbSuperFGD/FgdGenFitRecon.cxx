@@ -277,8 +277,6 @@ Bool_t FgdGenFitRecon::GetHits(std::vector<ReconHit>& allHits)
 {
   Double_t errPhotoLimit = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::FGD_ERR_PHOTO_LIMIT);
 
-  // std::cout << "fHitArray->GetEntries() " << fHitArray->GetEntries() << std::endl;
-
   LOG(debug) << "fHitArray->GetEntries() " << fHitArray->GetEntries();
 
   std::map<Long_t, Bool_t> visited;
@@ -302,9 +300,8 @@ Bool_t FgdGenFitRecon::GetHits(std::vector<ReconHit>& allHits)
     }
     visited[ind] = true;
 
-    if(photoE.X() >= errPhotoLimit 
-        & photoE.Y()>= errPhotoLimit 
-        & photoE.Z()>= errPhotoLimit)
+    Double_t totalPhotons = photoE.X() + photoE.Y() + photoE.Z();
+    if(totalPhotons >= errPhotoLimit)
     {
       TVectorD hitPos(3);
       hitPos(0) = -f_total_X/2 + f_step_X*mppcLoc.X()  +f_step_X/2;
@@ -768,52 +765,9 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
       LOG(debug) << " Local Id "<< hits[i].fAllHits[j] << " \t X " << diff.X() << " \t Y " << diff.Y() << " \t Z " << diff.Z();
     }
     LOG(debug) << "X " << hits[i].fmppcLoc.X() << " Y " << hits[i].fmppcLoc.Y()<< " Z " << hits[i].fmppcLoc.Z();
+    LOG(debug) << "Photons "<< " X " << hits[i].fphotons.X() << " Y " << hits[i].fphotons.Y()<< " Z " << hits[i].fphotons.Z();
     LOG(debug) << "=====";
   }
-
-  // // TODO2
-  // Int_t numOf4(0);
-  // Int_t numOf5(0);
-  // std::vector<Int_t> fourHits;
-  // std::vector<Int_t> fiveHits;
-  // for(Int_t i=0; i<hits.size(); ++i)
-  // {
-  //   cout << "i " << i << endl;
-  //   ReconHit* c = &hits[i];
-  //   for(Int_t j=0; j<hits[i].fAllHits.size(); ++j)
-  //   {
-  //     Int_t ind = hits[i].fAllHits[j];
-  //     ReconHit* ll = &hits[ind];
-  //     TVector3 diff = c->fmppcLoc - ll->fmppcLoc;
-  //     cout << " Local Id " << hits[i].fAllHits[j] << " \tX " << diff.X() << " \tY " << diff.Y() << " \tZ " << diff.Z() << endl;
-  //   }
-  //   cout << "X " << hits[i].fmppcLoc.X() << " Y " << hits[i].fmppcLoc.Y()<< " Z " << hits[i].fmppcLoc.Z() << endl;
-
-  //   cout << "=====" << endl;
-
-  //   if(hits[i].fAllHits.size()==4)
-  //   {
-  //     fourHits.push_back(i);
-  //     ++numOf4;
-  //   }
-
-  //   if(hits[i].fAllHits.size()==5)
-  //   {
-  //     fiveHits.push_back(i);
-  //     ++numOf5;
-  //   }
-  // }
-  // for(Int_t j=0; j<fourHits.size(); ++j)
-  // {
-  //   cout << " 4 -> " << fourHits[j] << endl;
-  // }
-  // for(Int_t j=0; j<fiveHits.size(); ++j)
-  // {
-  //   cout << " 5 -> " << fiveHits[j] << endl;
-  // }
-  // cout << " 4 hits " << numOf4 << endl;
-  // cout << " 5 hits " << numOf5 << endl;
-  // // TODO2
 
 
   FgdReconTemplate reconTemplates(freconFile.c_str());
@@ -855,7 +809,6 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
     }
   }
 
-  // cout << "Leaves found " << tracks.size() << endl;
   LOG(debug) <<"Leaves found " << tracks.size();
   Int_t totalHitsInTracks(0);
 
@@ -863,7 +816,6 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
   {
     std::vector<Int_t>& track = tracks[i];
     std::vector<pathfinder::basicHit> currentTrack;
-    // cout << "Track " << i << endl;
     LOG(debug) << "Track " << i;
     Int_t z_mppc=-1;
     totalHitsInTracks+=track.size();
@@ -874,13 +826,12 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
                                 , hits[ind].fHitPos.Y()
                                 , hits[ind].fHitPos.Z());
 
-      // cout << "Id " << ind << " X " << hits[ind].fmppcLoc.X()<< " Y " << hits[ind].fmppcLoc.Y()<< " Z " << hits[ind].fmppcLoc.Z() << endl;
       LOG(debug) << "Id " << ind << " X " << hits[ind].fmppcLoc.X()<< " Y " << hits[ind].fmppcLoc.Y()<< " Z " << hits[ind].fmppcLoc.Z();
     }
     pathfinder::TrackFinderTrack tr(pathfinder::TrackParameterFull(0.,0.,0.,0.,0.),std::move(currentTrack));
     foundTracks.emplace_back(tr);
   }
-  // cout << "Total hits in tracks " << totalHitsInTracks << endl;
+
   LOG(debug) << "Total hits in tracks " << totalHitsInTracks;
 
   return !foundTracks.empty();
@@ -1015,7 +966,6 @@ void FgdGenFitRecon::FitTracks(std::vector<pathfinder::TrackFinderTrack>& foundT
       // Set lower limit on track size
       if(hitsOnTrack.size()<fminHits)
       {
-        std::cout << "Track " << i << " below limit, continue with next track (" << hitsOnTrack.size() << " < " << fminHits << ")" << std::endl;
         LOG(debug) << "Track " << i << " below limit, continue with next track (" << hitsOnTrack.size() << " < " << fminHits << ")";
         continue;
       }
@@ -1079,12 +1029,6 @@ void FgdGenFitRecon::FitTracks(std::vector<pathfinder::TrackFinderTrack>& foundT
   
       genfit::Track* toFitTrack = new genfit::Track(rep, seedState, seedCov);
 
-      std::cout<<"******************************************* "<<std::endl;
-      std::cout<<"******    Track "<< i << "  ************************"<<std::endl;
-      std::cout<<"******************************************* "<<std::endl;
-      std::cout<<"hitsOnTrack.size(); "<< hitsOnTrack.size() <<std::endl;
-
-
       LOG(debug) <<"******************************************* ";
       LOG(debug) <<"******    Track "<< i << "  ************************";
       LOG(debug) <<"******************************************* ";
@@ -1101,8 +1045,6 @@ void FgdGenFitRecon::FitTracks(std::vector<pathfinder::TrackFinderTrack>& foundT
         std::vector<genfit::AbsMeasurement*> measurements{measurement};
 
         toFitTrack->insertPoint(new genfit::TrackPoint(measurements, toFitTrack));
-
-        // std::cout<<"X "<< hitPos(0) <<"Y "<< hitPos(1) <<"Z "<< hitPos(2)  <<std::endl;
       }
 
       try
@@ -1117,7 +1059,7 @@ void FgdGenFitRecon::FitTracks(std::vector<pathfinder::TrackFinderTrack>& foundT
         toFitTrack->checkConsistency();
 
         PrintFitTrack(*toFitTrack);
-        std::cout<<"******************************************* "<<std::endl;
+
         LOG(debug) <<"******************************************* ";
         genfit::FitStatus* fiStatuStatus = toFitTrack->getFitStatus();
 
@@ -1237,9 +1179,6 @@ void FgdGenFitRecon::PrintFitTrack(genfit::Track& fitTrack)
   LOG(debug)<< "Momentum  " << (me.getMom()).Mag();
   LOG(debug)<< " X  " << (me.getMom()).X()<< " Y " << (me.getMom()).Y()<< " Z  " << (me.getMom()).Z();
 
-  std::cout << "Momentum  " << (me.getMom()).Mag() << std::endl;
-  std::cout << " X  " << (me.getMom()).X()<< " Y " << (me.getMom()).Y()<< " Z  " << (me.getMom()).Z() << std::endl;
-
   genfit::FitStatus* fiStatuStatus = fitTrack.getFitStatus();
   fiStatuStatus->Print();
 
@@ -1248,13 +1187,6 @@ void FgdGenFitRecon::PrintFitTrack(genfit::Track& fitTrack)
   LOG(debug)<< "fiStatuStatus->isFitConvergedFully()  " << fiStatuStatus->isFitConvergedFully();
   LOG(debug)<< "fiStatuStatus->isFitConvergedPartially()  " << fiStatuStatus->isFitConvergedPartially();
   LOG(debug)<< "fitTrack.getNumPoints() " << fitTrack.getNumPoints();
-
-  std::cout << "fiStatuStatus->isFitted()  " << fiStatuStatus->isFitted() << std::endl;
-  std::cout << "fiStatuStatus->isFitConverged()  " << fiStatuStatus->isFitConverged() << std::endl;
-  std::cout << "fiStatuStatus->isFitConvergedFully()  " << fiStatuStatus->isFitConvergedFully() << std::endl;
-  std::cout << "fiStatuStatus->isFitConvergedPartially()  " << fiStatuStatus->isFitConvergedPartially() << std::endl;
-  std::cout << "getCharge  " << fiStatuStatus->getCharge() << std::endl;
-  std::cout << "fitTrack.getNumPoints() " << fitTrack.getNumPoints() << std::endl;
 }
 
 Long_t FgdGenFitRecon::ArrInd(int x, int y, int z)

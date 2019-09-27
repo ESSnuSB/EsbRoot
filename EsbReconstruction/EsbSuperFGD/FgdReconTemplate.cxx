@@ -149,7 +149,8 @@ Bool_t FgdReconTemplate::GetNextHit(ReconHit* previous, ReconHit* current, Recon
     {
         ReconHit* candidateHit = &hits[current->fLocalHits[0]];
         if(!candidateHit->fIsVisited
-            && candidateHit->fLocalId != previous->fLocalId)
+            && candidateHit->fLocalId != previous->fLocalId
+            && !candidateHit->fIsLeaf)
         {
             next = candidateHit;
             nextFound = true;
@@ -165,8 +166,12 @@ Bool_t FgdReconTemplate::GetNextHit(ReconHit* previous, ReconHit* current, Recon
         if(std::find(current->fLocalHits.begin(), current->fLocalHits.end(), previous->fLocalId)!= current->fLocalHits.end())
         {
             Int_t nid = (current->fLocalHits[0] == previous->fLocalId ) ? 1 : 0;
-            next = &hits[current->fLocalHits[nid]];
-            nextFound = true;
+            ReconHit* candidateHit = &hits[current->fLocalHits[nid]];
+            if(!candidateHit->fIsLeaf)
+            {
+                next = candidateHit;
+                nextFound = true;
+            }
         }
     }
 
@@ -178,7 +183,8 @@ Bool_t FgdReconTemplate::GetNextHit(ReconHit* previous, ReconHit* current, Recon
     {
         ReconHit* candidateHit = &hits[current->fLocalEdges[0]];
         if(!candidateHit->fIsVisited
-            && candidateHit->fLocalId != previous->fLocalId)
+            && candidateHit->fLocalId != previous->fLocalId
+            && !candidateHit->fIsLeaf)
         {
             next = candidateHit;
             nextFound = true;
@@ -194,8 +200,12 @@ Bool_t FgdReconTemplate::GetNextHit(ReconHit* previous, ReconHit* current, Recon
         if(std::find(current->fLocalEdges.begin(), current->fLocalEdges.end(), previous->fLocalId)!= current->fLocalEdges.end())
         {
             Int_t nid = (current->fLocalEdges[0] == previous->fLocalId ) ? 1 : 0;
-            next = &hits[current->fLocalEdges[nid]];
-            nextFound = true;
+            ReconHit* candidateHit = &hits[current->fLocalEdges[nid]];
+            if(!candidateHit->fIsLeaf)
+            {
+                next = candidateHit;
+                nextFound = true;
+            }
         }
     }
 
@@ -210,13 +220,17 @@ Bool_t FgdReconTemplate::GetNextHit(ReconHit* previous, ReconHit* current, Recon
         ReconHit* zeroHit = &hits[zeroInd];
         ReconHit* oneHit = &hits[oneInd];
         
-        if(!zeroHit->fIsVisited && oneHit->fIsVisited)
+        if(!zeroHit->fIsVisited 
+            && !zeroHit->fIsLeaf
+            && oneHit->fIsVisited)
         {
             next = zeroHit;
             nextFound = true;
         }
 
-        if(zeroHit->fIsVisited && !oneHit->fIsVisited)
+        if(zeroHit->fIsVisited 
+            && !oneHit->fIsVisited
+            && !oneHit->fIsLeaf)
         {
             next = oneHit;
             nextFound = true;
@@ -231,7 +245,8 @@ Bool_t FgdReconTemplate::GetNextHit(ReconHit* previous, ReconHit* current, Recon
     {
         ReconHit* candidateHit = &hits[current->fLocalCorner[0]];
         if(!candidateHit->fIsVisited
-            && candidateHit->fLocalId != previous->fLocalId)
+            && candidateHit->fLocalId != previous->fLocalId
+            && !candidateHit->fIsLeaf)
         {
             next = candidateHit;
             nextFound = true;
@@ -247,8 +262,12 @@ Bool_t FgdReconTemplate::GetNextHit(ReconHit* previous, ReconHit* current, Recon
         if(std::find(current->fLocalCorner.begin(), current->fLocalCorner.end(), previous->fLocalId)!= current->fLocalCorner.end())
         {
             Int_t nid = (current->fLocalCorner[0] == previous->fLocalId ) ? 1 : 0;
-            next = &hits[current->fLocalCorner[nid]];
-            nextFound = true;
+            ReconHit* candidateHit = &hits[current->fLocalCorner[nid]];
+            if(!candidateHit->fIsLeaf)
+            {
+                next = candidateHit;
+                nextFound = true;
+            }
         }
     }
 
@@ -263,13 +282,17 @@ Bool_t FgdReconTemplate::GetNextHit(ReconHit* previous, ReconHit* current, Recon
         ReconHit* zeroHit = &hits[zeroInd];
         ReconHit* oneHit = &hits[oneInd];
         
-        if(!zeroHit->fIsVisited && oneHit->fIsVisited)
+        if(!zeroHit->fIsVisited 
+            && !zeroHit->fIsLeaf
+            && oneHit->fIsVisited)
         {
             next = zeroHit;
             nextFound = true;
         }
 
-        if(zeroHit->fIsVisited && !oneHit->fIsVisited)
+        if(zeroHit->fIsVisited 
+            && !oneHit->fIsVisited
+            && !oneHit->fIsLeaf)
         {
             next = oneHit;
             nextFound = true;
@@ -410,9 +433,6 @@ void FgdReconTemplate::LoadTemplates()
 
     LOG(debug) << " Leaf templates found " << fLeafVectors.size();
     LOG(debug) << " Strange node templates found " << fStrangeVectors.size();
-
-    cout << " Leaf templates found " << fLeafVectors.size() << endl;
-    cout << " Strange node templates found " << fStrangeVectors.size() << endl;
 }
 
 void FgdReconTemplate::GetHitVectors(ReconHit* hit, std::vector<ReconHit>& hits, std::vector<TVector3>& vecs)

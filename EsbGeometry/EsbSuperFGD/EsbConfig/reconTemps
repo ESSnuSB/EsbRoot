@@ -13,6 +13,8 @@
 # This is the initial position, to match 23 permutations of the defined templare are made
 #   in X,Y,Z axis to covered all possibilities
 
+# NOTE: even with the below templates, the combinations are overwhelming ...
+# Use manual template generation only for simple cases
 
 #########################################################
 #######                  Permutations             #######
