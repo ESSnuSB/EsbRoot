@@ -76,6 +76,7 @@ FgdMuonOnlyGenFitRecon::FgdMuonOnlyGenFitRecon() :
   , fpMC_min_pFit(0.), fE_mu(0.), fE_mu_initial(0.), fxy(0.)
   , fzMC_min_zFit(0.)
   , fshouldCOnvergeToExport(false)
+  , fcosTheta(0)
   //, fSortHitsInZ(true)
 { 
   fInitialMomentum.clear();
@@ -122,6 +123,7 @@ FgdMuonOnlyGenFitRecon::FgdMuonOnlyGenFitRecon(const char* name
   , fpMC_min_pFit(0.), fE_mu(0.), fE_mu_initial(0.), fxy(0.)
   , fzMC_min_zFit(0.)
   , fshouldCOnvergeToExport(false)
+  , fcosTheta(0)
   //, fSortHitsInZ(true)
 { 
   fParams.LoadPartParams(geoConfigFile);
@@ -243,8 +245,9 @@ InitStatus FgdMuonOnlyGenFitRecon::Init()
     // Set statistics
     fTtree->Branch("P_monte_carlo_minus_P_genfit", &fpMC_min_pFit);
     fTtree->Branch("E_fit_subtract_nu_momentum", &fE_mu);
-
     
+    // Set cos (Thetha)
+    fTtree->Branch("cos_theta", &fcosTheta);
   }
 
   return kSUCCESS;
@@ -545,6 +548,12 @@ void FgdMuonOnlyGenFitRecon::Exec(Option_t* opt)
                           + fp_fit*fp_fit   /* fitted momentum of muon */
                       )
                   - fE_mu_initial;          /* Initial energy of neutrino */
+
+
+          TVector3 muMom(0,0,fE_mu_initial);
+          Double_t dotProduct = muMom.Dot(me.getMom());
+          Double_t magnitude = muMom.Mag() * me.getMom().Mag();
+          fcosTheta = dotProduct/magnitude;
 
           fTtree->Fill();
         }

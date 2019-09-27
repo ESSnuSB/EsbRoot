@@ -97,19 +97,20 @@ private:
   TFile* fTfile;//!<!
   TTree* fTtree;//!<!
   std::string fMomOutFile;//!<!
-  double fx;//!<!
-  double fy;//!<!
-  double fz;//!<!
-  double fp;//!<!
-  double fx_fit;//!<!
-  double fy_fit;//!<!
-  double fz_fit;//!<!
-  double fp_fit;//!<!
-  double fpMC_min_pFit;//!<!
-  double fE_mu;//!<!
-  double fE_mu_initial;//!<!
-  double fxy;//!<!
-  double fzMC_min_zFit;//!<!
+  Double_t fx;//!<!
+  Double_t fy;//!<!
+  Double_t fz;//!<!
+  Double_t fp;//!<!
+  Double_t fx_fit;//!<!
+  Double_t fy_fit;//!<!
+  Double_t fz_fit;//!<!
+  Double_t fp_fit;//!<!
+  Double_t fpMC_min_pFit;//!<!
+  Double_t fE_mu;//!<!
+  Double_t fE_mu_initial;//!<!
+  Double_t fxy;//!<!
+  Double_t fzMC_min_zFit;//!<!
+  Double_t fcosTheta;//!<!
   bool fshouldCOnvergeToExport;//!<!
   //bool fSortHitsInZ;//!<!
 
