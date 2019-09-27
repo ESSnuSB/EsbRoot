@@ -121,7 +121,7 @@ https://github.com/GenFit/GenFit/blob/master/README.build
 NOTE: the following environmental variables have to be exported
 export ROOTSYS=/** PATH TO FAIRSOFT **/fairsoft
 export GENFIT_INCLUDE=/** PATH TO Downloaded GenFit directory **/
-export GENFIT_LIBRARY=/** PATH TO the bin directory in the used build folder**/
+export GENFIT_LIBRARY=/** PATH TO the build directory in the used build folder**/
 ```
 
 Download PathFinder from 
@@ -133,6 +133,7 @@ The only prerequisite is to have CERN ROOT installed (which should be installed 
 Create a folder and execute 
 ```
 $cmake PATH_TO_PATHFINDERSOURCES
+$make
 ```
 After the build is successdull two enviormental variables have to be defined.
 One to the include directory which is located 'include' folder of the downloaded Pathdinder source 
