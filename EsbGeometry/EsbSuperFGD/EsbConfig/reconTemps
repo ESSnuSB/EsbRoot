@@ -1043,6 +1043,11 @@ StrangeNode
 --- -CX ---
 -X- --- ---
 
+StrangeNode
+--X -X- ---
+--- XC- ---
+--- --- X--
+
 ##########           5 hits         ##################
 
 StrangeNode
@@ -1760,6 +1765,28 @@ StrangeNode
 --- -X- -XX
 X-- -C- ---
 X-- --- ---
+
+##########           6 hits         ##################
+
+StrangeNode
+-XX -X- ---
+--- XC- X--
+--- --- X--
+
+StrangeNode
+--- -X- -XX
+X-- XC- ---
+X-- --- ---
+
+StrangeNode
+XX- -X- ---
+--- -CX --X
+--- --- --X
+
+StrangeNode
+--- -X- XX-
+--X -CX ---
+--X --- ---
 
 #below templates are not used
 
