@@ -136,9 +136,6 @@ void FgdMppcDisplay::FinishEvent()
 void FgdMppcDisplay::FinishTask()
 {
   fevNum = 0;
-  std::cout << " Average number of photons per cube " << (f_photo_ave/f_photo_count) << std::endl;
-  std::cout << " Count of cubes " << f_photo_count << std::endl;
-  
 }
 
 
@@ -154,12 +151,6 @@ void FgdMppcDisplay::Exec(Option_t* opt)
       if(f_xy_hist) f_xy_hist->Fill(mppcLoc.X(), mppcLoc.Y(), photoE.Z());
       if(f_yz_hist) f_yz_hist->Fill(mppcLoc.Y(), mppcLoc.Z(), photoE.X());
       if(f_xz_hist) f_xz_hist->Fill(mppcLoc.X(), mppcLoc.Z(), photoE.Y());
-
-      if(i<7)
-      {
-        f_photo_ave += photoE.Z() + photoE.X() + photoE.Y();
-        ++f_photo_count;
-      }
       
   }
   cout  << endl;
