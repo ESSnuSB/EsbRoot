@@ -41,6 +41,8 @@ void ess_reconstruction_5(TString inFile = "fgd_dig.root",
 
   double debugLvl = 0.0; 
 
+  // fair::Logger::SetConsoleSeverity(fair::Severity::debug);
+
   FairTask* recon = new reconstruction::superfgd::FgdGenFitRecon(
     "Reconstruction Task"             // name of the task
     ,"../../EsbGeometry/EsbSuperFGD/EsbConfig/geometry"  //FIle with detector configuration
