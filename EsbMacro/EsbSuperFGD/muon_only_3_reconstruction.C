@@ -11,7 +11,7 @@
   
 */
 
-void ess_only_muon_reconstruction_5(TString inFile = "fgd_dig_mu_only.root", 
+void muon_only_3_reconstruction(TString inFile = "fgd_dig_mu_only.root", 
 	      TString parFile = "params_mu_only.root",
 	      TString outFile = "fgd_recon_mu_only.root",
               Int_t nStartEvent = 0,

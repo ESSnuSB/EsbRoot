@@ -11,10 +11,10 @@
   
 */
 
-void ess_digitalize_2(TString inFile = "evetest.root", 
-	      TString parFile = "params.root",
-	      TString outFile = "fgd_dig.root",
-              Int_t nStartEvent = 0, Int_t nEvents = 1)
+void muon_only_2_digitize(TString inFile = "evetest_mu_only.root", 
+	      TString parFile = "params_mu_only.root",
+	      TString outFile = "fgd_dig_mu_only.root",
+              Int_t nStartEvent = 0, Int_t nEvents = 500)
 {
   using namespace esbroot;
 
@@ -36,7 +36,7 @@ void ess_digitalize_2(TString inFile = "evetest.root",
   rtdb->saveOutput();
 
   // Set Tasks for Reconstruction
-  FairTask* digitizer = new digitizer::superfgd::FgdDigitizer("Granular Task","../EsbGeometry/EsbSuperFGD/EsbConfig/geometry",0,0,0);
+  FairTask* digitizer = new digitizer::superfgd::FgdDigitizer("Granular Task","../../EsbGeometry/EsbSuperFGD/EsbConfig/geometry",0,0,0);
   fRun->AddTask(digitizer);   
   fRun->Init(); // initializing
   fRun->Run(nStartEvent, nStartEvent + nEvents);

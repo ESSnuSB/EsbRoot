@@ -11,10 +11,10 @@
   
 */
 
-void ess_reconstruction_5(TString inFile = "fgd_dig.root", 
+void simulate_3_reconstruction(TString inFile = "fgd_dig.root", 
 	      TString parFile = "params.root",
 	      TString outFile = "fgd_recon.root",
-              Int_t nStartEvent = 1, Int_t nEvents = 1)
+              Int_t nStartEvent = 4, Int_t nEvents = 1)
 {
   using namespace esbroot;
 
@@ -36,12 +36,12 @@ void ess_reconstruction_5(TString inFile = "fgd_dig.root",
   rtdb->saveOutput();
 
   // Set Tasks for Reconstruction
-  TVector3 mom(0.2,0.2,0.4);
+  TVector3 mom(-0.107,0.211,-0.220);
   TVector3 pos(0.,0.,0.);
 
   double debugLvl = 0.0; 
 
-  // fair::Logger::SetConsoleSeverity(fair::Severity::debug);
+  fair::Logger::SetConsoleSeverity(fair::Severity::debug);
 
   FairTask* recon = new reconstruction::superfgd::FgdGenFitRecon(
     "Reconstruction Task"             // name of the task
@@ -53,14 +53,14 @@ void ess_reconstruction_5(TString inFile = "fgd_dig.root",
     , mom                             // initial momentum estimation (will be removed later on)
     , 1                               // Verbose level
     , debugLvl                        // debug level of genfit (0 - little, 1 - debug info, 2 - detailed)
-    , false                           // To visualize the tracks using genfit::Eventdisplay
+    , true                           // To visualize the tracks using genfit::Eventdisplay
     , "D");                           // Option to be passed for genfit::Eventdisplay if used
 
   ((reconstruction::superfgd::FgdGenFitRecon*)recon)->SetMinHits(10);
-  // ((reconstruction::superfgd::FgdGenFitRecon*)recon)->SetUseTracker(reconstruction::superfgd::FgdGenFitRecon::TrackFinder::HOUGH_PATHFINDER_ALL);
+  ((reconstruction::superfgd::FgdGenFitRecon*)recon)->SetUseTracker(reconstruction::superfgd::FgdGenFitRecon::TrackFinder::HOUGH_PATHFINDER_ALL);
   // ((reconstruction::superfgd::FgdGenFitRecon*)recon)->SetUseTracker(reconstruction::superfgd::FgdGenFitRecon::TrackFinder::HOUGH_PATHFINDER_ABOVE_BELOW);
   // ((reconstruction::superfgd::FgdGenFitRecon*)recon)->SetUseTracker(reconstruction::superfgd::FgdGenFitRecon::TrackFinder::HOUGH_PATHFINDER_TIME_INTERVALS);
-  ((reconstruction::superfgd::FgdGenFitRecon*)recon)->SetUseTracker(reconstruction::superfgd::FgdGenFitRecon::TrackFinder::USE_GRAPH);
+  // ((reconstruction::superfgd::FgdGenFitRecon*)recon)->SetUseTracker(reconstruction::superfgd::FgdGenFitRecon::TrackFinder::USE_GRAPH);
   
   fRun->AddTask(recon);   
   fRun->Init(); // initializing

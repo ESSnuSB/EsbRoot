@@ -4,9 +4,9 @@
 
 */
 
-void ess_simulate_genie_1(TString outFileName = "evetest.root",
+void simulate_1_genie_generator(TString outFileName = "evetest.root",
              Int_t nStartEvent = 0, 
-	     Int_t nEvents = 1)
+	     Int_t nEvents = 25)
 {
   using namespace esbroot;
   
@@ -45,7 +45,6 @@ void ess_simulate_genie_1(TString outFileName = "evetest.root",
   fgdField->SetFieldRegion(xMin, xMax, yMin, yMax, zMin, zMax);
   fRun->SetField(fgdField);
   
-  cout << "test" << endl;
   // Far Detector
   //FairDetector *farWc = new EsbWCDetector("FarWcDetector", 300, 500, kTRUE);
   //fRun->AddModule(farWc);
@@ -65,8 +64,8 @@ void ess_simulate_genie_1(TString outFileName = "evetest.root",
 		1000080160, //Target PDG (O16)
 		14, //Neutrino PDG (nu_mu)
 		0.6, //Neutrino energy (GeV)
-		TVector3(1.0,0.0,0.0), //Neutrino directon (normalization of this vector is not important)
-		TLorentzVector(0.0, 0.0, -525., 0.0) //4-position of the neutrino vertex (x, y, z, t) (cm, s)
+		TVector3(0.0,0.0,1.0), //Neutrino directon (normalization of this vector is not important)
+		TLorentzVector(0.0, 0.0, -550., 0.0) //4-position of the neutrino vertex (x, y, z, t) (cm, s)
   );
 
   //Add to list of generators

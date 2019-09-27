@@ -4,9 +4,9 @@
 
 */
 
-void ess_simulate_only_muons_genie_1(TString outFileName = "evetest.root",
+void muon_only_1_simulate_genie(TString outFileName = "evetest_mu_only.root",
              Int_t nStartEvent = 0, 
-	     Int_t nEvents = 5)
+	     Int_t nEvents = 500)
 {
   using namespace esbroot;
   
@@ -33,7 +33,7 @@ void ess_simulate_only_muons_genie_1(TString outFileName = "evetest.root",
   // FairDetector *nearWc = new geometry::WCDetector("NearWcDetector", 300, 500, kTRUE);
   // fRun->AddModule(nearWc);
 
-  FairDetector* fgd = new geometry::FgdDetector("Granular Detector","../../EsbGeometry/EsbSuperFGD/EsbConfig/geometry",0,0,-550, kTRUE);
+  FairDetector* fgd = new geometry::FgdDetector("Granular Detector","../../EsbGeometry/EsbSuperFGD/EsbConfig/geometry",0,0,0, kTRUE);
   fRun->AddModule(fgd);
 
   double Bx(0), By(0), Bz(0);
@@ -67,7 +67,7 @@ void ess_simulate_only_muons_genie_1(TString outFileName = "evetest.root",
 		14, //Neutrino PDG (nu_mu)
 		0.6, //Neutrino energy (GeV)
 		TVector3(1.0,0.0,0.0), //Neutrino directon (normalization of this vector is not important)
-		TLorentzVector(0.0, 0.0, -525., 0.0) //4-position of the neutrino vertex (x, y, z, t) (cm, s)
+		TLorentzVector(0.0, 0.0, 0.0, 0.0) //4-position of the neutrino vertex (x, y, z, t) (cm, s)
   );
 
   //Add to list of generators
@@ -88,7 +88,7 @@ void ess_simulate_only_muons_genie_1(TString outFileName = "evetest.root",
   FairRuntimeDb *rtdb = fRun->GetRuntimeDb();
   Bool_t kParameterMerged = kTRUE;
   FairParRootFileIo* output = new FairParRootFileIo(kParameterMerged);
-  output->open("params.root");
+  output->open("params_mu_only.root");
   rtdb->setOutput(output);
   rtdb->saveOutput();
   

@@ -6,15 +6,15 @@
   Based on the example in the presentation from
   Konstantin Gertsenberger
   
-  .L ess_dig_fgd.C
-  ess_dig_fgd()
+  .L ess_dig_gen_pics.C
+  ess_dig_gen_pics()
   
 */
 
-void ess_digitalize_2_mu_only(TString inFile = "evetest_mu_only.root", 
-	      TString parFile = "params_mu_only.root",
-	      TString outFile = "fgd_dig_mu_only.root",
-              Int_t nStartEvent = 0, Int_t nEvents = 500)
+void simulate_5_generate_pics(TString inFile = "fgd_dig.root", 
+	      TString parFile = "params.root",
+	      TString outFile = "fgd_dig_gen_pics.root",
+              Int_t nStartEvent = 0, Int_t nEvents = 25)
 {
   using namespace esbroot;
 
@@ -36,7 +36,7 @@ void ess_digitalize_2_mu_only(TString inFile = "evetest_mu_only.root",
   rtdb->saveOutput();
 
   // Set Tasks for Reconstruction
-  FairTask* digitizer = new digitizer::superfgd::FgdDigitizer("Granular Task","../../EsbGeometry/EsbSuperFGD/EsbConfig/geometry",0,0,0);
+  FairTask* digitizer = new digitizer::superfgd::FgdMppcDisplay("Granular Task","../../EsbGeometry/EsbSuperFGD/EsbConfig/geometry",0,0,0);
   fRun->AddTask(digitizer);   
   fRun->Init(); // initializing
   fRun->Run(nStartEvent, nStartEvent + nEvents);

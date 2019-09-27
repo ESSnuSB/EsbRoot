@@ -4,7 +4,7 @@
 
 */
 
-void ess_simulate_1(TString outFileName = "evetest.root",
+void simulate_1_fairgenerator(TString outFileName = "evetest.root",
              Int_t nStartEvent = 0, 
 	     Int_t nEvents = 1)
 {
@@ -33,7 +33,7 @@ void ess_simulate_1(TString outFileName = "evetest.root",
   //FairDetector *nearWc = new geometry::WCDetector("NearWcDetector", 300, 500, kTRUE);
   //fRun->AddModule(nearWc);
 
-  FairDetector* fgd = new geometry::FgdDetector("Granular Detector","../EsbGeometry/EsbSuperFGD/EsbConfig/geometry",0,0,0, kTRUE);
+  FairDetector* fgd = new geometry::FgdDetector("Granular Detector","../../EsbGeometry/EsbSuperFGD/EsbConfig/geometry",0,0,0, kTRUE);
   fRun->AddModule(fgd);
 
   double Bx(0), By(0), Bz(0);
@@ -56,7 +56,8 @@ void ess_simulate_1(TString outFileName = "evetest.root",
   
   //~ FairParticleGenerator* partGen = new FairParticleGenerator(2212, 1, 0, 0, 1, 0, 0, 0);
   //FairParticleGenerator* partGen = new FairParticleGenerator(13, 1, 0, 0, 0.4, 0, 0, 150);
-  FairParticleGenerator* partGen = new FairParticleGenerator(-13, 1, 0, 0, 0.5, 0.5, 0.5, -50);
+  //FairParticleGenerator* partGen = new FairParticleGenerator(2212, 1, 0.1, 0.1, 0.4, 0.5, 0.5, -50); // Initial
+  FairParticleGenerator* partGen = new FairParticleGenerator(2212, 1, 0., 0., 1.606, 0.5, 0.5, -50);
   primGen->AddGenerator(partGen);
 
   fRun->SetOutputFile(outFileName.Data()); // set output file
