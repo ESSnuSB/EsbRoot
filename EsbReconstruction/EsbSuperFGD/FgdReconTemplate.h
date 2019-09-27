@@ -38,13 +38,15 @@ public:
     /** Constructor with argument
         *@param templateConfigFile - path to the template configuration file
     **/ 
-    FgdReconTemplate(const char* templateConfigFile);
+    FgdReconTemplate(const char* templateConfigFile, Bool_t useOnlyLeafTemp = false);
 
     ~FgdReconTemplate();
 
     Bool_t IsLeaf(ReconHit* hit, std::vector<ReconHit>& hits);
 
     Bool_t GetNextHit(ReconHit* previous, ReconHit* current, ReconHit*& next, std::vector<ReconHit>& hits);
+
+    void SetUseOnlyLeaves(Bool_t useOnly){fUseOnlyLeafTemplates = useOnly;}
 
     void LoadTemplates();
 
@@ -89,6 +91,7 @@ private:
     std::vector<FgdReconTemplate::HitTemplate> fStrangeVectors;//!<!  
 
     std::string freconFile;//!<!  
+    Bool_t fUseOnlyLeafTemplates;//!<!
 
     ClassDef(FgdReconTemplate, 2);
 };

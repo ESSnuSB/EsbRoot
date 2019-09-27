@@ -15,12 +15,13 @@ using namespace std;
 
 #define PERMUTATIONS 23
 
-FgdReconTemplate::FgdReconTemplate()
+FgdReconTemplate::FgdReconTemplate() 
+    : freconFile(""), fUseOnlyLeafTemplates(false)
 {
 }
 
-FgdReconTemplate::FgdReconTemplate(const char* templateConfigFile)
-    : freconFile(templateConfigFile)
+FgdReconTemplate::FgdReconTemplate(const char* templateConfigFile, Bool_t useOnlyLeafTemp)
+    : freconFile(templateConfigFile), fUseOnlyLeafTemplates(useOnlyLeafTemp)
 {
 }
 
@@ -71,18 +72,22 @@ Bool_t FgdReconTemplate::GetNextHit(ReconHit* previous, ReconHit* current, Recon
     }
 
     // Check for size conditions
-    if(current->fLocalHits.size()>2
+    if(!fUseOnlyLeafTemplates
+        && (current->fLocalHits.size()>2
         || current->fLocalEdges.size()>2
         || current->fLocalCorner.size()>2
         || current->fAllHits.size()>6)
+        )
     {
         rc = false;
         nextFound = false;
         next = nullptr;
     }
 
-    // Check for 4 and 5 hits allowed templates
-    if(current->fAllHits.size()==4 || current->fAllHits.size()==5 || current->fAllHits.size()==6)
+    // Check for 4 and 5 hits allowed templates - only if fUseOnlyLeafTemplates is false
+    if( !fUseOnlyLeafTemplates && 
+        (current->fAllHits.size()==4 || current->fAllHits.size()==5 || current->fAllHits.size()==6)
+        )
     {
         Bool_t isTemplateAllowed(false);
         Int_t permutation(0);

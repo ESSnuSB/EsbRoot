@@ -237,8 +237,11 @@ void FgdGenFitRecon::Exec(Option_t* opt)
         case TrackFinder::HOUGH_PATHFINDER_TIME_INTERVALS:
                                           rc = FindByIntervalsTracks(allhits, foundTracks, FindTrackType::CURL);
                                           break;
-        case TrackFinder::USE_GRAPH:
+        case TrackFinder::USE_GRAPH_WITH_ALL_TEMPLATES:
                                           rc = FindUsingGraph(allhits, foundTracks);
+                                          break;
+        case TrackFinder::USE_GRAPH_ONLY_LEAF_TEMPLATES:
+                                          rc = FindUsingGraph(allhits, foundTracks, true);
                                           break;
         default: 
                 rc = false;
@@ -248,24 +251,19 @@ void FgdGenFitRecon::Exec(Option_t* opt)
 
     if(rc)
     {
-      // std::cout<<" Tracks found " << foundTracks.size() << std::endl;
-      std::cout<<" Hits to fit " << allhits.size() << std::endl;
-      
       LOG(debug) <<" Tracks found " << foundTracks.size();
       LOG(debug) <<" Hits to fit " << allhits.size();
       FitTracks(foundTracks);
     }
     else
     {
-      // std::cout <<" Could not find clean hits or tracks! " << std::endl;
-
       LOG(error) << " Could not find clean hits or tracks! ";
     }
   }
   catch(genfit::Exception& e)
   {
-      std::cerr<<"Exception, when tryng to fit track"<<std::endl;
-      std::cerr << e.what();
+      LOG(fatal) << "Exception, when tryng to fit track";
+      LOG(fatal) << e.what();
   }
 }
 // -------------------------------------------------------------------------
@@ -296,6 +294,12 @@ Bool_t FgdGenFitRecon::GetHits(std::vector<ReconHit>& allHits)
     Int_t ind = ArrInd(x,y,z);
     if(visited[ind])
     {
+      // If already exists, add the photons
+      ReconHit toFind;
+      toFind.fmppcLoc = mppcLoc;
+      std::vector<ReconHit>::iterator recHit = find(allHits.begin(), allHits.end(), toFind);
+      ReconHit& foundHit = *recHit;
+      foundHit.fphotons = foundHit.fphotons + photoE;
       continue;
     }
     visited[ind] = true;
@@ -727,7 +731,6 @@ Bool_t FgdGenFitRecon::FindByIntervalsTracks(std::vector<ReconHit>& hits
     if(foundInInterval)
     {
       const std::vector<pathfinder::TrackFinderTrack>& tracks = newTrackFinder.getTracks();
-      // std::cout << "Tracks in time interval from ["<< (interval-1)*timeInterval <<"] " <<  " to ["<< interval*timeInterval <<"] " <<tracks.size() << std::endl;
       LOG(debug)  << "Tracks in time interval from ["<< (interval-1)*timeInterval <<"] " <<  " to ["<< interval*timeInterval <<"] " <<tracks.size();
       for(Int_t tr = 0; tr < tracks.size(); ++tr)
       {
@@ -743,7 +746,8 @@ Bool_t FgdGenFitRecon::FindByIntervalsTracks(std::vector<ReconHit>& hits
 }
 
 Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
-                  , std::vector<pathfinder::TrackFinderTrack>& foundTracks)
+                  , std::vector<pathfinder::TrackFinderTrack>& foundTracks
+                  , Bool_t useOnlyLeaves)
 {
   if(hits.empty())
   {
@@ -771,6 +775,7 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
 
 
   FgdReconTemplate reconTemplates(freconFile.c_str());
+  reconTemplates.SetUseOnlyLeaves(useOnlyLeaves);
   reconTemplates.LoadTemplates();
 
   std::vector<std::vector<Int_t>> tracks;
@@ -823,12 +828,33 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
     {
       Int_t ind = track[j];
       currentTrack.emplace_back(hits[ind].fHitPos.X()
-                                , hits[ind].fHitPos.Y()
-                                , hits[ind].fHitPos.Z());
+                              , hits[ind].fHitPos.Y()
+                              , hits[ind].fHitPos.Z());
 
-      LOG(debug) << "Id " << ind << " X " << hits[ind].fmppcLoc.X()<< " Y " << hits[ind].fmppcLoc.Y()<< " Z " << hits[ind].fmppcLoc.Z();
+
+      
+      //TODO 2
+      // Calculate cosine change beween 2 consecutive vectors - gradient
+      TVector3 diffVec(0,0,0);
+      if(j>=1)
+      {
+        ReconHit* one = &hits[track[j-1]];
+        ReconHit* two = &hits[track[j]];
+        diffVec = two->fmppcLoc - one->fmppcLoc;
+      }
+      //TODO 2
+
+      LOG(debug)  << "Id " << ind 
+                  << " \tX " << hits[ind].fmppcLoc.X()
+                  << " \tY " << hits[ind].fmppcLoc.Y()
+                  << " \tZ " << hits[ind].fmppcLoc.Z() 
+                  << " \tChange  " << "(" << diffVec.X() << "," << diffVec.Y() << "," << diffVec.Z() << ")";
+      LOG(debug2) << "Photons " << " X " << hits[ind].fphotons.X()<< " Y " << hits[ind].fphotons.Y()<< " Z " << hits[ind].fphotons.Z();
+      
+      LOG(debug2) << " --------------------------- ";
     }
-    pathfinder::TrackFinderTrack tr(pathfinder::TrackParameterFull(0.,0.,0.,0.,0.),std::move(currentTrack));
+    pathfinder::TrackFinderTrack tr(pathfinder::TrackParameterFull(0.,0.,0.,0.,0.)
+                                    , std::move(currentTrack));
     foundTracks.emplace_back(tr);
   }
 
@@ -961,7 +987,7 @@ void FgdGenFitRecon::FitTracks(std::vector<pathfinder::TrackFinderTrack>& foundT
     for(Int_t i =0; i <  foundTracks.size() ; i++)
     {
       std::vector<pathfinder::basicHit>& hitsOnTrack = const_cast<std::vector<pathfinder::basicHit>&>(foundTracks[i].getHitsOnTrack());
-      std::sort(hitsOnTrack.begin(), hitsOnTrack.end(), [](pathfinder::basicHit bh1, pathfinder::basicHit bh2){return bh1.getZ()<bh2.getZ();});
+      // std::sort(hitsOnTrack.begin(), hitsOnTrack.end(), [](pathfinder::basicHit bh1, pathfinder::basicHit bh2){return bh1.getZ()<bh2.getZ();});
 
       // Set lower limit on track size
       if(hitsOnTrack.size()<fminHits)
@@ -969,13 +995,20 @@ void FgdGenFitRecon::FitTracks(std::vector<pathfinder::TrackFinderTrack>& foundT
         LOG(debug) << "Track " << i << " below limit, continue with next track (" << hitsOnTrack.size() << " < " << fminHits << ")";
         continue;
       }
+
+      LOG(debug2) << "================================ ";
+      LOG(debug2) << "===== Hit positions to fit ===== ";
+      LOG(debug2) << "================================ ";
+      for(size_t j =0; j<hitsOnTrack.size(); ++j)
+      {
+         LOG(debug2) << "\tHit \tX " << hitsOnTrack[j].getX() <<  " \tY " << hitsOnTrack[j].getY() << " \tZ " << hitsOnTrack[j].getZ();
+      }
+      LOG(debug2) << "========================= ";
       
        // TODO2 extrack from finderTrack how to get initial guess for these values
       // =================================
       //const int pdg = 13;
       int pdg = 13;
-
-      // pdg = (i ==0) ? 2212 : 11;
 
       //TVector3 posM(fstartPos);
       TVector3 posM(hitsOnTrack[0].getX(),hitsOnTrack[0].getY(),hitsOnTrack[0].getZ());
@@ -985,8 +1018,21 @@ void FgdGenFitRecon::FitTracks(std::vector<pathfinder::TrackFinderTrack>& foundT
       //TVector3 momM(hitsOnTrack[0].getX(),hitsOnTrack[0].getY(),hitsOnTrack[0].getZ());
       if(i==0)
       {
-        momM.SetXYZ(-0.106, -0.133, 0.663);
+        pdg = 211;
+        momM.SetXYZ(-0.187 ,   0.079 ,   0.150 );
       }
+
+      if(i==1)
+      {
+        pdg = -11;
+        momM.SetXYZ(-0.149, 0.013 , -0.074 );
+      }
+
+      // if(i==2)
+      // {
+      //   pdg = 13;
+      //   momM.SetXYZ(-0.107, 0.211, -0.220 );
+      // }
 
       // if(i==1)
       // {
@@ -1072,9 +1118,6 @@ void FgdGenFitRecon::FitTracks(std::vector<pathfinder::TrackFinderTrack>& foundT
       {
           LOG(error) <<"Exception, when tryng to fit track";
           LOG(error) << e.what();
-
-          std::cerr<<"Exception, when tryng to fit track"<<std::endl;
-          std::cerr << e.what();
       }
     }
   
