@@ -765,7 +765,7 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
       Int_t ind = hits[i].fAllHits[j];
       ReconHit* localHit = &hits[ind];
       TVector3 diff = center->fmppcLoc - localHit->fmppcLoc;
-      LOG(debug) << " Local Id " << " \t X " << diff.X() << " \t Y " << diff.Y() << " \t Z " << diff.Z();
+      LOG(debug) << " Local Id "<< hits[i].fAllHits[j] << " \t X " << diff.X() << " \t Y " << diff.Y() << " \t Z " << diff.Z();
     }
     LOG(debug) << "X " << hits[i].fmppcLoc.X() << " Y " << hits[i].fmppcLoc.Y()<< " Z " << hits[i].fmppcLoc.Z();
     LOG(debug) << "=====";
@@ -1025,7 +1025,7 @@ void FgdGenFitRecon::FitTracks(std::vector<pathfinder::TrackFinderTrack>& foundT
       //const int pdg = 13;
       int pdg = 13;
 
-      pdg = (i ==0) ? 2212 : 11;
+      // pdg = (i ==0) ? 2212 : 11;
 
       //TVector3 posM(fstartPos);
       TVector3 posM(hitsOnTrack[0].getX(),hitsOnTrack[0].getY(),hitsOnTrack[0].getZ());
