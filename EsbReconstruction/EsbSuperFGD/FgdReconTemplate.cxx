@@ -74,7 +74,7 @@ Bool_t FgdReconTemplate::GetNextHit(ReconHit* previous, ReconHit* current, Recon
     if(current->fLocalHits.size()>2
         || current->fLocalEdges.size()>2
         || current->fLocalCorner.size()>2
-        || current->fAllHits.size()>=6)
+        || current->fAllHits.size()>6)
     {
         rc = false;
         nextFound = false;
@@ -82,7 +82,7 @@ Bool_t FgdReconTemplate::GetNextHit(ReconHit* previous, ReconHit* current, Recon
     }
 
     // Check for 4 and 5 hits aloud templates
-    if(current->fAllHits.size()==4 || current->fAllHits.size()==5)
+    if(current->fAllHits.size()==4 || current->fAllHits.size()==5 || current->fAllHits.size()==6)
     {
         Bool_t isTemplateAloud(false);
         Int_t permutation(0);
