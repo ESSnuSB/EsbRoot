@@ -81,23 +81,23 @@ Bool_t FgdReconTemplate::GetNextHit(ReconHit* previous, ReconHit* current, Recon
         next = nullptr;
     }
 
-    // Check for 4 and 5 hits aloud templates
+    // Check for 4 and 5 hits allowed templates
     if(current->fAllHits.size()==4 || current->fAllHits.size()==5 || current->fAllHits.size()==6)
     {
-        Bool_t isTemplateAloud(false);
+        Bool_t isTemplateAllowed(false);
         Int_t permutation(0);
         std::vector<TVector3> vecs;
         GetHitVectors(current, hits, vecs);
-        for(size_t temp=0; !isTemplateAloud && temp < fStrangeVectors.size(); ++temp)
+        for(size_t temp=0; !isTemplateAllowed && temp < fStrangeVectors.size(); ++temp)
         {
             if(fStrangeVectors[temp].hitVectors.size() == current->fAllHits.size())
             {
                 std::vector<TVector3>& tempVecs = fStrangeVectors[temp].hitVectors;
-                isTemplateAloud = AreVectorsEqual(tempVecs, vecs, permutation);
+                isTemplateAllowed = AreVectorsEqual(tempVecs, vecs, permutation);
             }
         }
 
-        if(!isTemplateAloud)
+        if(!isTemplateAllowed)
         {
             rc = false;
             nextFound = false;
