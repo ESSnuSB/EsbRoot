@@ -34,8 +34,7 @@ szthetabins=1000
 szd0bins=1000
 searchneighborhood=0
 
-# settings for noise and near cube search
-#noiseRange=3
+# setting for lower photon limit
 errPhotoLimit=0   
 
 # Time interval for hits to be considered simultaneous
