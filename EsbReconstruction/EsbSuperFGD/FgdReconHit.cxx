@@ -7,6 +7,10 @@ namespace reconstruction {
 namespace superfgd {
 
 ReconHit::ReconHit()
+    :     fIsVisited(false)
+        , fIsLeaf(false)
+        , fZaxisAngle(0.)
+        , fChangeAngle(0.)
 {
 }
 
@@ -32,6 +36,8 @@ ReconHit::ReconHit(TVector3 mppcLoc
         , fmppc2(mppc2)
         , fIsVisited(false)
         , fIsLeaf(false)
+        , fZaxisAngle(0.)
+        , fChangeAngle(0.)
 {
     
 }
@@ -55,6 +61,8 @@ ReconHit::ReconHit(const ReconHit& c)
         , fLocalHits(c.fLocalHits)
         , fIsVisited(c.fIsVisited)
         , fIsLeaf(c.fIsLeaf)
+        , fZaxisAngle(c.fZaxisAngle)
+        , fChangeAngle(c.fChangeAngle)
 {
     
 }
@@ -74,6 +82,7 @@ ReconHit& ReconHit::operator=(const ReconHit& c)
     fLocalHits = c.fLocalHits;
     fIsVisited = c.fIsVisited;
     fIsLeaf = c.fIsLeaf;
+    fZaxisAngle = c.fZaxisAngle;
     return *this;
 }
 
@@ -92,62 +101,6 @@ TVector3 ReconHit::operator-(const ReconHit& c)
     Int_t&& z = this->fmppcLoc.Z()-c.fmppcLoc.Z();
     return TVector3(x,y,z);
 }
-
-// return next if:
-//  a) It is a leaf -> there is only one neightbour cube
-//  b) It is empty -> no hits near it
-//  c) It has more than 2 neightbour hits - it is in a vertex or a complicated interavtion
-//      and the track cannot be extracted.
-// bool ReconHit::GetNext(Int_t& previousId, Int_t& nextId)
-// {
-//     if(fLocalHits.size()==1 && previousId!=fLocalHits[0])
-//     {
-//         nextId = fLocalHits[0];
-//         return true;
-//     }
-
-//     // The previous Id has to be in the LocalHits
-//     // Since there are only two hits, 1 is the previous return teh other one
-//     if(fLocalHits.size()==2 && std::find(fLocalHits.begin(), fLocalHits.end(),previousId)!=fLocalHits.end())
-//     {
-//         nextId = (fLocalHits[0] == previousId) ? fLocalHits[1] : fLocalHits[0];
-//         return true;
-//     }
-
-//     if(fLocalHits.size()<=2
-//         && fLocalEdges.size()==1 
-//         && previousId!=fLocalEdges[0])
-//     {
-//         nextId = fLocalEdges[0];
-//         return true;
-//     }
-
-//     if(fLocalHits.size()<=2 
-//         && fLocalCorner.size()==1 
-//         && previousId!=fLocalCorner[0])
-//     {
-//         nextId = fLocalCorner[0];
-//         return true;
-//     }
-
-//     // if(fLocalHits.size()>2 && std::find(fLocalHits.begin(), fLocalHits.end(),previousId)!=fLocalHits.end())
-//     // {
-//     //     Int_t count(0);
-//     //     for(Int_t n =0; n < fLocalHits.size(); ++n)
-//     //     {
-//     //         if(!hits[fLocalHits[n]].fIsVisited)
-//     //         {
-//     //             ++count;
-//     //             nextId=fLocalHits[n];
-//     //         }
-//     //     }
-//     //     nextId = (fLocalHits[0] == previousId) ? fLocalHits[1] : fLocalHits[0];
-//     //     return (count==1);
-//     // }
-
-//     return false;
-// }
-
 
 } //superfgd
 } //reconstruction

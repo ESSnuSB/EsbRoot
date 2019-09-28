@@ -55,3 +55,4 @@ excludeHitsBelow=0
 #   2nd vector is the vector distance between 2 cubes shifter gradIntervalDist number of cubes from the 1st one
 gradDist=7              # Distance in number of cubes for track to calculate the grad
 gradIntervalDist=4      # Interval between two distance vectors to calculate grad
+gradDiff=25             # Allowable difference between grad to consider a different track

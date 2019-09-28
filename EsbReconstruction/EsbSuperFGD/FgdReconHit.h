@@ -62,6 +62,9 @@ public:
     Int_t ftrackId;
     Bool_t fIsLeaf;
 
+    Double_t fZaxisAngle;
+    Double_t fChangeAngle;
+
     Int_t fLocalId;
     Bool_t fIsVisited;
     std::vector<Int_t> fAllHits;//!<! 

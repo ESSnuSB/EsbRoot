@@ -45,6 +45,7 @@ namespace DP
 
     static const string FGD_GRAD_DIST = "gradDist";
     static const string FGD_GRAD_INTERVAL_DIST = "gradIntervalDist";
+    static const string FGD_GRAD_ALLOWABLE_DIFF = "gradDiff";
 
     //static const string FGD_NOISE_RANGE = "noiseRange";
     static const string FGD_ERR_PHOTO_LIMIT = "errPhotoLimit";

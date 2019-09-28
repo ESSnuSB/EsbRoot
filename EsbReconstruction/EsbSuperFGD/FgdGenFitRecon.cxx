@@ -856,7 +856,7 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
       Int_t intervalToCal = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::FGD_GRAD_INTERVAL_DIST);
 
       Int_t indOne = j - distToCalc + 1;
-      Int_t indTwo = j;
+      Int_t indTwo = j;// current hit index
 
       Int_t indOneP = indOne - intervalToCal;
       Int_t indTwoP = indTwo - intervalToCal;
@@ -864,9 +864,11 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
       if(j>= (distToCalc -1) )
       {
         ReconHit* one = &hits[track[indOne]];
-        ReconHit* two = &hits[track[indTwo]];
+        ReconHit* two = &hits[track[indTwo]]; // current hit
         diffVec1 = two->fmppcLoc - one->fmppcLoc;
         zAxisAngle = radToDeg * zAxisVec.Angle(diffVec1);
+
+        two->fZaxisAngle = zAxisAngle;
       }
 
       if(j>= (distToCalc + intervalToCal -1) )
@@ -877,6 +879,9 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
 
         
         angle = radToDeg * diffVec1.Angle(diffVec2);
+
+        ReconHit* two = &hits[track[indTwo]];// current hit
+        two->fChangeAngle = angle;
       }
 
       LOG(debug2) << "Id " << ind 
