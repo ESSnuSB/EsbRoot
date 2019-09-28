@@ -38,17 +38,13 @@ public:
     /** Constructor with argument
         *@param templateConfigFile - path to the template configuration file
     **/ 
-    FgdReconTemplate(const char* templateConfigFile, Bool_t useOnlyLeafTemp = false);
+    FgdReconTemplate(const char* templateConfigFile);
 
     ~FgdReconTemplate();
 
-    Bool_t IsLeaf(ReconHit* hit, std::vector<ReconHit>& hits);
+    Bool_t IsLeaf(ReconHit* hit);
 
-    Bool_t GetNextHit(ReconHit* previous, ReconHit* current, ReconHit*& next, std::vector<ReconHit>& hits);
-
-    Bool_t GetNextHit2(ReconHit* previous, ReconHit* current, ReconHit*& next, std::vector<ReconHit>& hits);
-
-    void SetUseOnlyLeaves(Bool_t useOnly){fUseOnlyLeafTemplates = useOnly;}
+    Bool_t GetNextHit(ReconHit* previous, ReconHit* current, ReconHit*& next);
 
     void LoadTemplates();
 
@@ -84,16 +80,14 @@ private:
         std::vector<TVector3> hitVectors;
     };
 
-    void GetHitVectors(ReconHit* hit, std::vector<ReconHit>& hits, std::vector<TVector3>& vecs);
+    void GetHitVectors(ReconHit* hit, std::vector<TVector3>& vecs);
 
     Bool_t AreVectorsEqual(const std::vector<TVector3>& tempVecs, const std::vector<TVector3>& vecs, Int_t& foundPermutation );
     TVector3 GetPermutation(TVector3 vec, Int_t numPermutation);
 
     std::vector<FgdReconTemplate::HitTemplate> fLeafVectors;//!<!  
-    std::vector<FgdReconTemplate::HitTemplate> fStrangeVectors;//!<!  
 
     std::string freconFile;//!<!  
-    Bool_t fUseOnlyLeafTemplates;//!<!
 
     ClassDef(FgdReconTemplate, 2);
 };

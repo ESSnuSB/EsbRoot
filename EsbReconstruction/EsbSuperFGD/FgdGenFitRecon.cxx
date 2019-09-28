@@ -81,7 +81,7 @@ FgdGenFitRecon::FgdGenFitRecon() :
   , fminGenFitInterations(2)
   , fmaxGenFitIterations(4)
   , fminHits(25)
-  , ffinder(TrackFinder::HOUGH_PATHFINDER_ALL)
+  , ffinder(TrackFinder::HOUGH_PATHFINDER)
 { 
 }
 // -------------------------------------------------------------------------
@@ -114,7 +114,7 @@ FgdGenFitRecon::FgdGenFitRecon(const char* name
   , fminGenFitInterations(2)
   , fmaxGenFitIterations(4)
   , fminHits(25)
-  , ffinder(TrackFinder::HOUGH_PATHFINDER_ALL)
+  , ffinder(TrackFinder::HOUGH_PATHFINDER)
 { 
   fParams.LoadPartParams(geoConfigFile);
 }
@@ -220,28 +220,19 @@ void FgdGenFitRecon::Exec(Option_t* opt)
   try
   {
     std::vector<ReconHit> allhits;
-    std::vector<pathfinder::TrackFinderTrack> foundTracks;
+    std::vector<std::vector<TVector3>> foundTracks;
 
     bool rc = GetHits(allhits);
-
     if(rc)
     { 
+      LOG(debug) <<" Hits to retrieve tracks from " << allhits.size();
       switch(ffinder)
       {
-        case TrackFinder::HOUGH_PATHFINDER_ALL:
-                                          rc = FindAllTracks(allhits, foundTracks, FindTrackType::CURL);
+        case TrackFinder::HOUGH_PATHFINDER:
+                                          rc = FindUsingHough(allhits, foundTracks, FindTrackType::CURL);
                                           break;
-        case TrackFinder::HOUGH_PATHFINDER_ABOVE_BELOW:
-                                          rc = FindAboveBelowTracks(allhits, foundTracks, FindTrackType::CURL);
-                                          break;
-        case TrackFinder::HOUGH_PATHFINDER_TIME_INTERVALS:
-                                          rc = FindByIntervalsTracks(allhits, foundTracks, FindTrackType::CURL);
-                                          break;
-        case TrackFinder::USE_GRAPH_WITH_ALL_TEMPLATES:
+        case TrackFinder::GRAPH:
                                           rc = FindUsingGraph(allhits, foundTracks);
-                                          break;
-        case TrackFinder::USE_GRAPH_ONLY_LEAF_TEMPLATES:
-                                          rc = FindUsingGraph(allhits, foundTracks, true);
                                           break;
         default: 
                 rc = false;
@@ -252,7 +243,6 @@ void FgdGenFitRecon::Exec(Option_t* opt)
     if(rc)
     {
       LOG(debug) <<" Tracks found " << foundTracks.size();
-      LOG(debug) <<" Hits to fit " << allhits.size();
       FitTracks(foundTracks);
     }
     else
@@ -327,15 +317,13 @@ Bool_t FgdGenFitRecon::GetHits(std::vector<ReconHit>& allHits)
     }
   }
 
-  // std::cout << "allHits.size()" << allHits.size() << std::endl;
-
   LOG(debug) << "allHits.size()" << allHits.size();
 
   return (allHits.size() > 0);
 }
 
-Bool_t FgdGenFitRecon::FindAllTracks(std::vector<ReconHit>& hits
-                                , std::vector<pathfinder::TrackFinderTrack>& foundTracks
+Bool_t FgdGenFitRecon::FindUsingHough(std::vector<ReconHit>& hits
+                                , std::vector<std::vector<TVector3>>& foundTracks
                                 , FindTrackType trackType)
 {
   LOG(debug) << "hits " << hits.size();
@@ -430,324 +418,24 @@ Bool_t FgdGenFitRecon::FindAllTracks(std::vector<ReconHit>& hits
   Bool_t found = newTrackFinder.find();
   if(found)
   {
-    foundTracks = newTrackFinder.getTracks();
-  }
-
-  return found;
-}
-
-Bool_t FgdGenFitRecon::FindAboveBelowTracks(std::vector<ReconHit>& hits
-                                , std::vector<pathfinder::TrackFinderTrack>& foundTracks
-                                , FindTrackType trackType)
-{
-  LOG(debug) << "hits " << hits.size();
-
-  unsigned int use_vertex = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::PF_USE_VERTEX);
-  double vertexX = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::PF_VERTEXX);
-  double vertexY = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::PF_VERTEXY);
-  double maxdistxy = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::PF_MAXDISTXY);
-  double maxdistsz = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::PF_MAXDISTSZ);
-  double maxdistxyfit = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::PF_MAXDISTXYFIT);
-  double maxdistszfit = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::PF_MAXDISTSZFIT);
-  unsigned int minhitnumber = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::PF_MINHITNUMBER);
-  unsigned int xythetabins = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::PF_XYTHETABINS);
-  unsigned int xyd0bins = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::PF_XYD0BINS);
-  unsigned int xyomegabins = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::PF_XYOMEGABINS);
-  unsigned int szthetabins = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::PF_SZTHETABINS);
-  unsigned int szd0bins = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::PF_SZD0BINS);
-  double maxdxy = f_total_X + f_total_Y;
-  double maxdsz = f_total_Z;
-  unsigned int searchneighborhood = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::PF_SEACHINTHENEIGHBORHOOD);
-
-  pathfinder::FinderParameter* newFinderParameter = nullptr;
-  switch(trackType)
-  {
-    case FindTrackType::HELIX:
-        newFinderParameter= new pathfinder::FinderParameter(false, true); 
-        newFinderParameter -> setFindCurler(false);
-        break;
-    case FindTrackType::CURL:
-        newFinderParameter= new pathfinder::FinderParameter(false, true); 
-        newFinderParameter -> setFindCurler(true);
-        break;
-    case FindTrackType::STRAIGHT_LINE:
-    default:
-        newFinderParameter= new pathfinder::FinderParameter(true, false); 
-        newFinderParameter -> setFindCurler(false);
-        break;
-  }
-
-
-  //  if(use_vertex == 0) newFinderParameter -> setUseVertex(false);
-  //  if(use_vertex == 1) newFinderParameter->setUseVertex(true);
-
-  if(use_vertex == 1) 
-  {  
-    std::pair<double, double> vertex(vertexX, vertexY);
-    newFinderParameter -> setVertex(vertex);
-  }
-
-  newFinderParameter -> setMaxXYDistance(maxdistxy);
-  newFinderParameter -> setMaxSZDistance(maxdistsz);
-  newFinderParameter -> setMaxXYDistanceFit(maxdistxyfit);
-  newFinderParameter -> setMaxSZDistanceFit(maxdistszfit);
-  newFinderParameter -> setMinimumHitNumber(minhitnumber);
-  newFinderParameter -> setNumberXYThetaBins(xythetabins);
-  newFinderParameter -> setNumberXYDzeroBins(xyd0bins);
-  newFinderParameter -> setNumberXYOmegaBins(xyomegabins);
-  newFinderParameter -> setNumberSZThetaBins(szthetabins);
-  newFinderParameter -> setNumberSZDzeroBins(szd0bins);
-  newFinderParameter -> setMaxDxy(maxdxy);
-  newFinderParameter -> setMaxDsz(maxdsz);
-  
-  if(searchneighborhood == 0)
-  {
-    newFinderParameter -> setSearchNeighborhood(false);
-  }
-  else
-  {
-    newFinderParameter -> setSearchNeighborhood(true);
-  }
-  newFinderParameter -> setSaveRootFile(false);
-
-  //set the vector of basic hits in which tracks should be found
-  //here: use all hits deliverd by the track generator
-  const Double_t timeInterval = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::FGD_TIME_INTERVAL_HITS);
-  const Bool_t hasTimeInterval = fParams.ParamAsBool(esbroot::geometry::superfgd::DP::FGD_TIME_INTERVAL_HITS);
-
-  bool exCludeBelow = fParams.ParamAsBool(esbroot::geometry::superfgd::DP::FGD_EXCLUDE_HITS_BELOW_TIME_INTERVAL);
-  bool exCludeAbove = fParams.ParamAsBool(esbroot::geometry::superfgd::DP::FGD_EXCLUDE_HITS_ABOVE_TIME_INTERVAL);
-
-  std::vector<pathfinder::basicHit> belowLimit;
-  std::vector<pathfinder::basicHit> aboveLimit;
-
-  for(Int_t i=0; i< hits.size(); ++i)
-  {
-    if(hasTimeInterval && !exCludeBelow && hits[i].ftime<=timeInterval)
+    const std::vector<pathfinder::TrackFinderTrack>& pfTracks = newTrackFinder.getTracks();
+    for(Int_t i =0; i <  pfTracks.size() ; i++)
     {
-      belowLimit.emplace_back(pathfinder::basicHit(   hits[i].fHitPos.X()
-                                                    , hits[i].fHitPos.Y()
-                                                    , hits[i].fHitPos.Z()
-                                                  )
-                              );
-    }
-    
-    if(hasTimeInterval && !exCludeAbove && hits[i].ftime>timeInterval)
-    {
-      aboveLimit.emplace_back(pathfinder::basicHit(   hits[i].fHitPos.X()
-                                                    , hits[i].fHitPos.Y()
-                                                    , hits[i].fHitPos.Z()
-                                                  )
-                              );
-    }
-  }
-  
-  Bool_t found(false);
-
-
-  if(hasTimeInterval)
-  {
-    Bool_t belowfound(false);
-    Bool_t abovefound(false);
-    
-    if(!exCludeBelow)
-    {
-      pathfinder::HoughTrafoTrackFinder belowTrackFinder;
-
-      //setting steering parameter
-      belowTrackFinder.setFinderParameter(*newFinderParameter);
-
-      // 1. Find below limit
-      belowTrackFinder.setInitialHits(belowLimit);
-
-      //do the actual track finding
-      belowfound = belowTrackFinder.find();
-      if(belowfound)
+      const std::vector<pathfinder::basicHit>& hitsOnTrack = pfTracks[i].getHitsOnTrack();
+      std::vector<TVector3> track;
+      for(size_t j =0; j< hitsOnTrack.size(); ++j)
       {
-        foundTracks = belowTrackFinder.getTracks();
+          track.emplace_back(hitsOnTrack[j].getX(),hitsOnTrack[j].getY(),hitsOnTrack[j].getZ());
       }
-      // std::cout << "Tracks below limit ["<< timeInterval <<"] " << foundTracks.size() << std::endl;
-      LOG(debug) << "Tracks below limit ["<< timeInterval <<"] " << foundTracks.size();
+      foundTracks.push_back(track);
     }
-    else
-    {
-      // std::cout << "Hits below limit ["<< timeInterval <<"] are excluded by settings." << std::endl;
-      LOG(debug) << "Hits below limit ["<< timeInterval <<"] are excluded by settings.";
-    }
-    
-
-    if(!exCludeAbove)
-    {
-      pathfinder::HoughTrafoTrackFinder aboveTrackFinder;
-
-      //setting steering parameter
-      aboveTrackFinder.setFinderParameter(*newFinderParameter);
-
-      // 2. Find above limit
-      aboveTrackFinder.setInitialHits(aboveLimit);
-
-      //do the actual track finding
-      abovefound = aboveTrackFinder.find();
-
-      if(abovefound)
-      {
-        const std::vector<pathfinder::TrackFinderTrack>& aboveTracks = aboveTrackFinder.getTracks();
-        // std::cout << "Tracks above limit ["<< timeInterval <<"] " << aboveTracks.size() << std::endl;
-        LOG(debug)  << "Tracks above limit ["<< timeInterval <<"] " << aboveTracks.size();
-        for(Int_t tr = 0; tr < aboveTracks.size(); ++tr)
-        {
-          foundTracks.push_back(aboveTracks[tr]);
-        }
-      }
-    }
-    else
-    {
-      // std::cout << "Hits above limit ["<< timeInterval <<"] are excluded by settings." << std::endl;
-      LOG(debug)  << "Hits above limit ["<< timeInterval <<"] are excluded by settings.";
-    }
-
-    found = belowfound || abovefound;
   }
-
-  return found;
-}
-
-Bool_t FgdGenFitRecon::FindByIntervalsTracks(std::vector<ReconHit>& hits
-                                , std::vector<pathfinder::TrackFinderTrack>& foundTracks
-                                , FindTrackType trackType)
-{
-  LOG(debug) << "hits " << hits.size();
-  cout << "hits " << hits.size();
-
-  unsigned int use_vertex = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::PF_USE_VERTEX);
-  double vertexX = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::PF_VERTEXX);
-  double vertexY = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::PF_VERTEXY);
-  double maxdistxy = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::PF_MAXDISTXY);
-  double maxdistsz = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::PF_MAXDISTSZ);
-  double maxdistxyfit = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::PF_MAXDISTXYFIT);
-  double maxdistszfit = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::PF_MAXDISTSZFIT);
-  unsigned int minhitnumber = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::PF_MINHITNUMBER);
-  unsigned int xythetabins = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::PF_XYTHETABINS);
-  unsigned int xyd0bins = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::PF_XYD0BINS);
-  unsigned int xyomegabins = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::PF_XYOMEGABINS);
-  unsigned int szthetabins = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::PF_SZTHETABINS);
-  unsigned int szd0bins = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::PF_SZD0BINS);
-  double maxdxy = f_total_X + f_total_Y;
-  double maxdsz = f_total_Z;
-  unsigned int searchneighborhood = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::PF_SEACHINTHENEIGHBORHOOD);
-
-  pathfinder::FinderParameter* newFinderParameter = nullptr;
-  switch(trackType)
-  {
-    case FindTrackType::HELIX:
-        newFinderParameter= new pathfinder::FinderParameter(false, true); 
-        newFinderParameter -> setFindCurler(false);
-        break;
-    case FindTrackType::CURL:
-        newFinderParameter= new pathfinder::FinderParameter(false, true); 
-        newFinderParameter -> setFindCurler(true);
-        break;
-    case FindTrackType::STRAIGHT_LINE:
-    default:
-        newFinderParameter= new pathfinder::FinderParameter(true, false); 
-        newFinderParameter -> setFindCurler(false);
-        break;
-  }
-
-
-  //  if(use_vertex == 0) newFinderParameter -> setUseVertex(false);
-  //  if(use_vertex == 1) newFinderParameter->setUseVertex(true);
-
-  if(use_vertex == 1) 
-  {  
-    std::pair<double, double> vertex(vertexX, vertexY);
-    newFinderParameter -> setVertex(vertex);
-  }
-
-  newFinderParameter -> setMaxXYDistance(maxdistxy);
-  newFinderParameter -> setMaxSZDistance(maxdistsz);
-  newFinderParameter -> setMaxXYDistanceFit(maxdistxyfit);
-  newFinderParameter -> setMaxSZDistanceFit(maxdistszfit);
-  newFinderParameter -> setMinimumHitNumber(minhitnumber);
-  newFinderParameter -> setNumberXYThetaBins(xythetabins);
-  newFinderParameter -> setNumberXYDzeroBins(xyd0bins);
-  newFinderParameter -> setNumberXYOmegaBins(xyomegabins);
-  newFinderParameter -> setNumberSZThetaBins(szthetabins);
-  newFinderParameter -> setNumberSZDzeroBins(szd0bins);
-  newFinderParameter -> setMaxDxy(maxdxy);
-  newFinderParameter -> setMaxDsz(maxdsz);
-  
-  if(searchneighborhood == 0)
-  {
-    newFinderParameter -> setSearchNeighborhood(false);
-  }
-  else
-  {
-    newFinderParameter -> setSearchNeighborhood(true);
-  }
-  newFinderParameter -> setSaveRootFile(false);
-
-  //set the vector of basic hits in which tracks should be found
-  //here: use all hits deliverd by the track generator
-  const Double_t timeInterval = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::FGD_TIME_INTERVAL_HITS);
-  const Bool_t hasTimeInterval = fParams.ParamAsBool(esbroot::geometry::superfgd::DP::FGD_TIME_INTERVAL_HITS);
-
-  if(!hasTimeInterval)
-  {
-    std::string errMsg = "This type of track findnig requires time interval, but time interval was 0!";
-    cout << errMsg << endl;
-    LOG(fatal) << errMsg;
-    throw errMsg;
-  }
-
-  std::sort(hits.begin(), hits.end(), [](ReconHit& rh1, ReconHit& rh2)->bool{ return rh1.ftime < rh2.ftime;});
-
-  Bool_t found(false);
-
-  std::vector<pathfinder::basicHit> intervalHits;
-  pathfinder::HoughTrafoTrackFinder newTrackFinder;
-
-  //setting steering parameter
-  newTrackFinder.setFinderParameter(*newFinderParameter);
-
-  Int_t hitsProcessed=0;
-  Int_t interval = 1;
-  while(hitsProcessed<hits.size())
-  {
-    while(hitsProcessed<hits.size() && hits[hitsProcessed].ftime < (interval*timeInterval))
-    {
-      intervalHits.emplace_back(pathfinder::basicHit(  hits[hitsProcessed].fHitPos.X()
-                                              , hits[hitsProcessed].fHitPos.Y()
-                                              , hits[hitsProcessed].fHitPos.Z()
-                                            ));
-      ++hitsProcessed;
-    }
-    // 2. Find tracks in interval
-    newTrackFinder.setInitialHits(intervalHits);
-
-    Bool_t foundInInterval = newTrackFinder.find();
-    found = (found || foundInInterval);
-
-    if(foundInInterval)
-    {
-      const std::vector<pathfinder::TrackFinderTrack>& tracks = newTrackFinder.getTracks();
-      LOG(debug)  << "Tracks in time interval from ["<< (interval-1)*timeInterval <<"] " <<  " to ["<< interval*timeInterval <<"] " <<tracks.size();
-      for(Int_t tr = 0; tr < tracks.size(); ++tr)
-      {
-        foundTracks.push_back(tracks[tr]);
-      }
-    }
-    intervalHits.clear();
-    ++interval;
-  }
-
 
   return found;
 }
 
 Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
-                  , std::vector<pathfinder::TrackFinderTrack>& foundTracks
-                  , Bool_t useOnlyLeaves)
+                  , std::vector<std::vector<TVector3>>& foundTracks)
 {
   if(hits.empty())
   {
@@ -763,10 +451,9 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
     ReconHit* center = &hits[i];
     for(Int_t j=0; j<hits[i].fAllHits.size(); ++j)
     {
-      Int_t ind = hits[i].fAllHits[j];
-      ReconHit* localHit = &hits[ind];
+      ReconHit* localHit = hits[i].fAllHits[j];
       TVector3 diff = center->fmppcLoc - localHit->fmppcLoc;
-      LOG(debug) << " Local Id "<< hits[i].fAllHits[j] << " \t X " << diff.X() << " \t Y " << diff.Y() << " \t Z " << diff.Z();
+      LOG(debug) << " Local Id "<< hits[i].fAllHits[j]->fLocalId << " \t X " << diff.X() << " \t Y " << diff.Y() << " \t Z " << diff.Z();
     }
     LOG(debug) << "X " << hits[i].fmppcLoc.X() << " Y " << hits[i].fmppcLoc.Y()<< " Z " << hits[i].fmppcLoc.Z();
     LOG(debug) << "Photons "<< " X " << hits[i].fphotons.X() << " Y " << hits[i].fphotons.Y()<< " Z " << hits[i].fphotons.Z();
@@ -775,10 +462,9 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
 
 
   FgdReconTemplate reconTemplates(freconFile.c_str());
-  reconTemplates.SetUseOnlyLeaves(useOnlyLeaves);
   reconTemplates.LoadTemplates();
 
-  std::vector<std::vector<Int_t>> tracks;
+  std::vector<std::vector<ReconHit*>> tracks;
 
   ReconHit* currentHit = nullptr;
   ReconHit* nextHit = nullptr;
@@ -790,21 +476,21 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
       continue;
     }
 
-    if(reconTemplates.IsLeaf(&hits[i], hits))
+    if(reconTemplates.IsLeaf(&hits[i]))
     {
-      std::vector<int> track;
-      track.push_back(i);
+      std::vector<ReconHit*> track;
+      track.push_back(&hits[i]);
 
       hits[i].fIsLeaf = true;
       currentHit = &hits[i];
 
-      while(reconTemplates.GetNextHit2(previousHit, currentHit, nextHit, hits)) // TODO2
+      while(reconTemplates.GetNextHit(previousHit, currentHit, nextHit)) 
       {
         if(nextHit->fIsLeaf || nextHit->fIsVisited)
         {
           break;
         }
-        track.push_back(nextHit->fLocalId);
+        track.push_back(nextHit);
         currentHit->fIsVisited = true;
         previousHit = currentHit;
         currentHit = nextHit;
@@ -814,91 +500,33 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
     }
   }
 
-  LOG(debug) <<"Leaves found " << tracks.size();
-  Int_t totalHitsInTracks(0);
+  LOG(debug) <<"Leaves found " << tracks.size(); // Initially leaves are equal to the number of tracks
 
-  for(Int_t i=0; i<tracks.size(); ++i)
+  CalculateGrad(tracks);
+
+  std::vector<std::vector<ReconHit*>> splitTracks;
+
+  SplitTrack(tracks, splitTracks);
+
+  Int_t totalHitsInTracks(0);
+  for(Int_t i=0; i<splitTracks.size(); ++i)
   {
-    std::vector<Int_t>& track = tracks[i];
-    std::vector<pathfinder::basicHit> currentTrack;
+    std::vector<ReconHit*>& track = splitTracks[i];
+    std::vector<TVector3> currentTrack;
     LOG(debug) << "Track " << i;
-    Int_t z_mppc=-1;
+    
     totalHitsInTracks+=track.size();
+
     for(Int_t j=0; j<track.size(); ++j)
     {
-      Int_t ind = track[j];
-      currentTrack.emplace_back(hits[ind].fHitPos.X()
-                              , hits[ind].fHitPos.Y()
-                              , hits[ind].fHitPos.Z());
+      ReconHit* trackHit = track[j];
 
-
-      
-      // Calculate cosine change beween 2 consecutive vectors - gradient
-      TVector3 diffVec(0,0,0);
-      if(j>=1)
-      {
-        ReconHit* one = &hits[track[j-1]];
-        ReconHit* two = &hits[track[j]];
-        diffVec = two->fmppcLoc - one->fmppcLoc;
-      }
-
-
-      Double_t radToDeg = 180/TMath::Pi();
-      Double_t angle(0);
-      Double_t zAxisAngle(0);
-
-      TVector3 zAxisVec(0,0,1);
-
-      TVector3 diffVec1(0,0,0);
-      TVector3 diffVec2(0,0,0);
-
-      Int_t distToCalc = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::FGD_GRAD_DIST);
-      Int_t intervalToCal = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::FGD_GRAD_INTERVAL_DIST);
-
-      Int_t indOne = j - distToCalc + 1;
-      Int_t indTwo = j;// current hit index
-
-      Int_t indOneP = indOne - intervalToCal;
-      Int_t indTwoP = indTwo - intervalToCal;
-
-      if(j>= (distToCalc -1) )
-      {
-        ReconHit* one = &hits[track[indOne]];
-        ReconHit* two = &hits[track[indTwo]]; // current hit
-        diffVec1 = two->fmppcLoc - one->fmppcLoc;
-        zAxisAngle = radToDeg * zAxisVec.Angle(diffVec1);
-
-        two->fZaxisAngle = zAxisAngle;
-      }
-
-      if(j>= (distToCalc + intervalToCal -1) )
-      {
-        ReconHit* oneP = &hits[track[indOneP]];
-        ReconHit* twoP = &hits[track[indTwoP]];
-        diffVec2 = twoP->fmppcLoc - oneP->fmppcLoc;
-
-        
-        angle = radToDeg * diffVec1.Angle(diffVec2);
-
-        ReconHit* two = &hits[track[indTwo]];// current hit
-        two->fChangeAngle = angle;
-      }
-
-      LOG(debug2) << "Id " << ind 
-                  << " \tX " << hits[ind].fmppcLoc.X()
-                  << " \tY " << hits[ind].fmppcLoc.Y()
-                  << " \tZ " << hits[ind].fmppcLoc.Z() 
-                  << " \tPhotons  " << "(" << hits[ind].fphotons.X() << "," << hits[ind].fphotons.Y() << "," << hits[ind].fphotons.Z() << ")"
-                  << " \tChange  " << "(" << diffVec.X() << "," << diffVec.Y() << "," << diffVec.Z() << ")"
-                  // << " \t(" << diffVec1.X() << "," << diffVec1.Y() << "," << diffVec1.Z() << ") "
-                  // << " \t(" << diffVec2.X() << "," << diffVec2.Y() << "," << diffVec2.Z() << ") "
-                  << " \tAngle (dist = " << distToCalc << ", interval =" << intervalToCal << ") " << angle
-                  << " \tZ axis Angle (dist = " << distToCalc << ", interval =" << intervalToCal << ") " << zAxisAngle;
-                  
+      currentTrack.emplace_back(trackHit->fHitPos.X()
+                              , trackHit->fHitPos.Y()
+                              , trackHit->fHitPos.Z());         
     }
-    pathfinder::TrackFinderTrack tr(pathfinder::TrackParameterFull(0.,0.,0.,0.,0.)
-                                    , std::move(currentTrack));
-    foundTracks.emplace_back(tr);
+
+    foundTracks.push_back(currentTrack);
   }
 
   LOG(debug) << "Total hits in tracks " << totalHitsInTracks;
@@ -925,43 +553,22 @@ void FgdGenFitRecon::BuildGraph(std::vector<ReconHit>& hits)
       }
       
 
-      hits[i].fLocalHits.clear(); // Clear previous index positions
+      hits[i].fAllHits.clear(); // Clear previous index positions
       hits[i].fLocalId = i;
     }
+
 
     auto checkNext = [&](Int_t x_pos, Int_t y_pos, Int_t z_pos, Int_t ind){
                                                                   Long_t&& key = ArrInd(x_pos,y_pos,z_pos);
                                                                   if(positionToId.find(key)!=positionToId.end())
                                                                   {
-                                                                    hits[ind].fLocalHits.push_back(positionToId[key]);
-                                                                    hits[ind].fAllHits.push_back(positionToId[key]);
-                                                                  }
-                                                                };
-
-    auto checkNextEdge = [&](Int_t x_pos, Int_t y_pos, Int_t z_pos, Int_t ind){
-                                                                  Long_t&& key = ArrInd(x_pos,y_pos,z_pos);
-                                                                  if(positionToId.find(key)!=positionToId.end())
-                                                                  {
-                                                                    hits[ind].fLocalEdges.push_back(positionToId[key]);
-                                                                    hits[ind].fAllHits.push_back(positionToId[key]);
-                                                                  }
-                                                                };
-
-    auto checkNextCorner = [&](Int_t x_pos, Int_t y_pos, Int_t z_pos, Int_t ind){
-                                                                  Long_t&& key = ArrInd(x_pos,y_pos,z_pos);
-                                                                  if(positionToId.find(key)!=positionToId.end())
-                                                                  {
-                                                                    hits[ind].fLocalCorner.push_back(positionToId[key]);
-                                                                    hits[ind].fAllHits.push_back(positionToId[key]);
+                                                                    ReconHit* toAdd = &hits[positionToId[key]];
+                                                                    hits[ind].fAllHits.push_back(toAdd);
                                                                   }
                                                                 };
 
     for(Int_t i=0; i<hits.size(); ++i)
     {
-      // Int_t&& x = hits[i].fHitPos.X();
-      // Int_t&& y = hits[i].fHitPos.Y();
-      // Int_t&& z = hits[i].fHitPos.Z();
-
       Int_t&& x = hits[i].fmppcLoc.X();
       Int_t&& y = hits[i].fmppcLoc.Y();
       Int_t&& z = hits[i].fmppcLoc.Z();
@@ -979,37 +586,165 @@ void FgdGenFitRecon::BuildGraph(std::vector<ReconHit>& hits)
       checkNext(x,y,z-1, i);
 
       // Check in X,Y corners
-      checkNextEdge(x+1,y+1,z, i);
-      checkNextEdge(x+1,y-1,z, i);
-      checkNextEdge(x-1,y+1,z, i);
-      checkNextEdge(x-1,y-1,z, i);
+      checkNext(x+1,y+1,z, i);
+      checkNext(x+1,y-1,z, i);
+      checkNext(x-1,y+1,z, i);
+      checkNext(x-1,y-1,z, i);
 
       // Check in X,Z corners
-      checkNextEdge(x+1,y,z+1, i);
-      checkNextEdge(x+1,y,z-1, i);
-      checkNextEdge(x-1,y,z+1, i);
-      checkNextEdge(x-1,y,z-1, i);
+      checkNext(x+1,y,z+1, i);
+      checkNext(x+1,y,z-1, i);
+      checkNext(x-1,y,z+1, i);
+      checkNext(x-1,y,z-1, i);
 
       // Check in Y,Z corners
-      checkNextEdge(x,y+1,z+1, i);
-      checkNextEdge(x,y+1,z-1, i);
-      checkNextEdge(x,y-1,z+1, i);
-      checkNextEdge(x,y-1,z-1, i);
+      checkNext(x,y+1,z+1, i);
+      checkNext(x,y+1,z-1, i);
+      checkNext(x,y-1,z+1, i);
+      checkNext(x,y-1,z-1, i);
 
       // Check in X,Y,Z corners
-      checkNextCorner(x+1,y+1,z+1, i);
-      checkNextCorner(x+1,y+1,z-1, i);
-      checkNextCorner(x+1,y-1,z+1, i);
-      checkNextCorner(x+1,y-1,z-1, i);
+      checkNext(x+1,y+1,z+1, i);
+      checkNext(x+1,y+1,z-1, i);
+      checkNext(x+1,y-1,z+1, i);
+      checkNext(x+1,y-1,z-1, i);
 
-      checkNextCorner(x-1,y+1,z+1, i);
-      checkNextCorner(x-1,y+1,z-1, i);
-      checkNextCorner(x-1,y-1,z+1, i);
-      checkNextCorner(x-1,y-1,z-1, i);
+      checkNext(x-1,y+1,z+1, i);
+      checkNext(x-1,y+1,z-1, i);
+      checkNext(x-1,y-1,z+1, i);
+      checkNext(x-1,y-1,z-1, i);
     }
 }
 
-void FgdGenFitRecon::FitTracks(std::vector<pathfinder::TrackFinderTrack>& foundTracks)
+void FgdGenFitRecon::CalculateGrad(std::vector<std::vector<ReconHit*>>& tracks)
+{
+  const Int_t distToCalc = fParams.ParamAsInt(esbroot::geometry::superfgd::DP::FGD_GRAD_DIST);
+  const Int_t intervalToCal = fParams.ParamAsInt(esbroot::geometry::superfgd::DP::FGD_GRAD_INTERVAL_DIST);
+  const Double_t radToDeg = 180/TMath::Pi();
+  TVector3 zAxisVec(0,0,1);
+
+  for(Int_t i=0; i<tracks.size(); ++i)
+  {
+    std::vector<ReconHit*>& track = tracks[i];
+
+    for(Int_t j=0; j<track.size(); ++j)
+    {
+
+      ReconHit* currentHit = track[j];
+
+      // 1. Calculate direction from the previous hit
+      TVector3 diffVec(0,0,0);
+      if(j>=1)
+      {
+        ReconHit* previous = track[j-1];
+        diffVec = currentHit->fmppcLoc - previous->fmppcLoc;
+      }
+
+      // 2.Calculate cosine change beween 2 consecutive vectors - gradient
+      Double_t diffAngle(0);    // Difference angle between two vectors - the vectors are the difference in position (grad (position))
+                                // between two hits distToCalc cubes apart. The angles measures the angle change of the track
+                                // from hit to hit. distToCalc distance is selected to smooth out the change in angle.
+
+      Double_t zAxisAngle(0);   // Vector angle between the z axis and the vector difference between the current hit and the hit distToCalc 
+                                // poisitions back.
+
+      TVector3 diffVec1(0,0,0);
+      TVector3 diffVec2(0,0,0);
+
+      Int_t indOne = j - distToCalc + 1;
+      Int_t indTwo = j; // current hit
+
+      if(j>= (distToCalc -1) )
+      {
+        ReconHit* one = track[indOne];
+        ReconHit* two = track[indTwo]; 
+        diffVec1 = two->fmppcLoc - one->fmppcLoc;
+        zAxisAngle = radToDeg * zAxisVec.Angle(diffVec1);
+
+        // The z angle is calculated for the current hit
+        currentHit->fZaxisAngle = zAxisAngle;
+      }
+
+      Int_t indOneP = indOne - intervalToCal;
+      Int_t indTwoP = indTwo - intervalToCal;
+      if(j>= (distToCalc + intervalToCal -1) )
+      {
+        ReconHit* oneP = track[indOneP];
+        ReconHit* twoP = track[indTwoP];
+        diffVec2 = twoP->fmppcLoc - oneP->fmppcLoc;
+
+        diffAngle = radToDeg * diffVec1.Angle(diffVec2);
+
+        // The angle is calculated for the current hit
+        currentHit->fChangeAngle = diffAngle;
+      }
+
+      LOG(debug2) << "Id " << currentHit->fLocalId
+                  << " \tX " << currentHit->fmppcLoc.X()
+                  << " \tY " << currentHit->fmppcLoc.Y()
+                  << " \tZ " << currentHit->fmppcLoc.Z() 
+                  << " \tPhotons  " << "(" << currentHit->fphotons.X() << "," << currentHit->fphotons.Y() << "," << currentHit->fphotons.Z() << ")"
+                  << " \tChange  " << "(" << diffVec.X() << "," << diffVec.Y() << "," << diffVec.Z() << ")"
+                  // << " \t(" << diffVec1.X() << "," << diffVec1.Y() << "," << diffVec1.Z() << ") "
+                  // << " \t(" << diffVec2.X() << "," << diffVec2.Y() << "," << diffVec2.Z() << ") "
+                  << " \tAngle (dist = " << distToCalc << ", interval =" << intervalToCal << ") " << diffAngle
+                  << " \tZ axis Angle (dist = " << distToCalc << ", interval =" << intervalToCal << ") " << zAxisAngle;
+    }
+  }
+}
+
+void FgdGenFitRecon::SplitTrack(std::vector<std::vector<ReconHit*>>& originalTracks, std::vector<std::vector<ReconHit*>>& splitTracks)
+{
+  const Double_t gradAllowedDiff = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::FGD_GRAD_ALLOWABLE_DIFF);
+  LOG(debug) << "Initial tracks size " << originalTracks.size();
+
+  for(Int_t i=0; i<originalTracks.size(); ++i)
+  {
+    std::vector<ReconHit*>& track = originalTracks[i];
+
+    if(track.empty())
+    {
+      continue;
+    }
+
+    std::vector<ReconHit*> trackToAdd;
+    trackToAdd.push_back(track[0]); // Add the first hit to start the track
+
+    for(Int_t j=1; j<track.size(); ++j)
+    {
+      ReconHit* currentHit = track[j];
+      ReconHit* previousHit = track[j-1];
+
+      if(currentHit->fChangeAngle == 0)
+      {
+        // If there is no change add the track
+        // Also '0' indicates that the track hit is too short to calculate the 
+        // the change.
+        // Only compare if both the current and previous angle is not zero.
+        trackToAdd.push_back(currentHit);
+      }
+      else if(  (currentHit->fChangeAngle != 0) && (previousHit->fChangeAngle != 0)  )
+      {
+        Double_t differenceInAngle = currentHit->fChangeAngle - previousHit->fChangeAngle;
+        Double_t absDiff = std::fabs(differenceInAngle);
+        if(absDiff >= gradAllowedDiff)
+        {
+          // If the difference is not allowed add the current track hit points
+          // and reset it to start a new track.
+          splitTracks.emplace_back(trackToAdd);
+          trackToAdd.clear();
+        }
+        trackToAdd.push_back(currentHit);
+      }
+    }
+
+    splitTracks.emplace_back(trackToAdd);
+  }
+
+  LOG(debug) << "Split tracks size " << splitTracks.size();
+}
+
+void FgdGenFitRecon::FitTracks(std::vector<std::vector<TVector3>>& foundTracks)
 {
     fTracksArray->Delete();
     
@@ -1029,8 +764,7 @@ void FgdGenFitRecon::FitTracks(std::vector<pathfinder::TrackFinderTrack>& foundT
     int detId(1); // Detector id, it is the same, we only have one detector
     for(Int_t i =0; i <  foundTracks.size() ; i++)
     {
-      std::vector<pathfinder::basicHit>& hitsOnTrack = const_cast<std::vector<pathfinder::basicHit>&>(foundTracks[i].getHitsOnTrack());
-      // std::sort(hitsOnTrack.begin(), hitsOnTrack.end(), [](pathfinder::basicHit bh1, pathfinder::basicHit bh2){return bh1.getZ()<bh2.getZ();});
+      std::vector<TVector3>& hitsOnTrack = foundTracks[i];
 
       // Set lower limit on track size
       if(hitsOnTrack.size()<fminHits)
@@ -1045,7 +779,7 @@ void FgdGenFitRecon::FitTracks(std::vector<pathfinder::TrackFinderTrack>& foundT
       int pdg = 13;
 
       //TVector3 posM(fstartPos);
-      TVector3 posM(hitsOnTrack[0].getX(),hitsOnTrack[0].getY(),hitsOnTrack[0].getZ());
+      TVector3 posM(hitsOnTrack[0].X(),hitsOnTrack[0].Y(),hitsOnTrack[0].Z());
       TVector3 momM(fstartMom);
 
       // First point should be the start of the track
@@ -1117,9 +851,9 @@ void FgdGenFitRecon::FitTracks(std::vector<pathfinder::TrackFinderTrack>& foundT
       for(Int_t bh = 0; bh < hitsOnTrack.size(); ++bh)
       {
         TVectorD hitPos(3);
-        hitPos(0) = hitsOnTrack[bh].getX();
-        hitPos(1) = hitsOnTrack[bh].getY();
-        hitPos(2) = hitsOnTrack[bh].getZ();
+        hitPos(0) = hitsOnTrack[bh].X();
+        hitPos(1) = hitsOnTrack[bh].Y();
+        hitPos(2) = hitsOnTrack[bh].Z();
 
         genfit::AbsMeasurement* measurement = new genfit::SpacepointMeasurement(hitPos, hitCov, detId, 0, nullptr);
         std::vector<genfit::AbsMeasurement*> measurements{measurement};

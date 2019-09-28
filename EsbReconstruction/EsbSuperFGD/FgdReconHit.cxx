@@ -58,7 +58,7 @@ ReconHit::ReconHit(const ReconHit& c)
         , ftime(c.ftime)
         , fpdg(c.fpdg)
         , ftrackId(c.ftrackId)
-        , fLocalHits(c.fLocalHits)
+        , fAllHits(c.fAllHits)
         , fIsVisited(c.fIsVisited)
         , fIsLeaf(c.fIsLeaf)
         , fZaxisAngle(c.fZaxisAngle)
@@ -79,7 +79,7 @@ ReconHit& ReconHit::operator=(const ReconHit& c)
     ftime = c.ftime;
     fpdg = c.fpdg;
     ftrackId = c.ftrackId;
-    fLocalHits = c.fLocalHits;
+    fAllHits = c.fAllHits;
     fIsVisited = c.fIsVisited;
     fIsLeaf = c.fIsLeaf;
     fZaxisAngle = c.fZaxisAngle;

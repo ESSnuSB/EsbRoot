@@ -41,13 +41,8 @@ public:
 
     Bool_t IsAlone()
     {
-        return fLocalHits.empty(); 
+        return fAllHits.empty(); 
     } 
-
-    Bool_t HasLocalHit(Int_t hitId)
-    {
-        return (find(fLocalHits.begin(), fLocalHits.end(), hitId)!=fLocalHits.end());
-    }
 
 
     TVector3 fmppcLoc;
@@ -67,10 +62,7 @@ public:
 
     Int_t fLocalId;
     Bool_t fIsVisited;
-    std::vector<Int_t> fAllHits;//!<! 
-    std::vector<Int_t> fLocalHits;//!<! 
-    std::vector<Int_t> fLocalEdges;//!<! 
-    std::vector<Int_t> fLocalCorner;//!<! 
+    std::vector<ReconHit*> fAllHits;//!<! 
 
 private:
 

@@ -27,11 +27,8 @@ class FgdGenFitRecon : public FairTask
  public:
 
   enum TrackFinder{
-    HOUGH_PATHFINDER_ALL,
-    HOUGH_PATHFINDER_ABOVE_BELOW,
-    HOUGH_PATHFINDER_TIME_INTERVALS,
-    USE_GRAPH_WITH_ALL_TEMPLATES,
-    USE_GRAPH_ONLY_LEAF_TEMPLATES
+    HOUGH_PATHFINDER,
+    GRAPH
   };
 
   /** Default constructor **/  
@@ -89,26 +86,19 @@ private:
   Bool_t GetHits(std::vector<ReconHit>& allHits);
 
   /** Extrack tracks from the hit using Hough Transform **/
-  Bool_t FindAllTracks(std::vector<ReconHit>& hits
-                  , std::vector<pathfinder::TrackFinderTrack>& foundTracks
-                  , FindTrackType trackType);
-
-  Bool_t FindAboveBelowTracks(std::vector<ReconHit>& hits
-                  , std::vector<pathfinder::TrackFinderTrack>& foundTracks
-                  , FindTrackType trackType);
-
-  Bool_t FindByIntervalsTracks(std::vector<ReconHit>& hits
-                  , std::vector<pathfinder::TrackFinderTrack>& foundTracks
+  Bool_t FindUsingHough(std::vector<ReconHit>& hits
+                  , std::vector<std::vector<TVector3>>& foundTracks
                   , FindTrackType trackType);
 
   Bool_t FindUsingGraph(std::vector<ReconHit>& hits
-                  , std::vector<pathfinder::TrackFinderTrack>& foundTracks
-                  , Bool_t useOnlyLeaves = false);
+                  , std::vector<std::vector<TVector3>>& foundTracks);
   
   void BuildGraph(std::vector<ReconHit>& hits);
+  void CalculateGrad(std::vector<std::vector<ReconHit*>>& tracks);
+  void SplitTrack(std::vector<std::vector<ReconHit*>>& originalTracks, std::vector<std::vector<ReconHit*>>& splitTracks);
 
   /** Fit the found tracks using genfit **/
-  void FitTracks(std::vector<pathfinder::TrackFinderTrack>& foundTracks);
+  void FitTracks(std::vector<std::vector<TVector3>>& foundTracks);
 
   /** Define materials used in the reconstruction phase **/
   void DefineMaterials();
