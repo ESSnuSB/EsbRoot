@@ -514,7 +514,8 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
   {
     std::vector<ReconHit*>& track = splitTracks[i];
     std::vector<TVector3> currentTrack;
-    LOG(debug) << "Track " << i;
+    LOG(debug2) << "=============================== " << i;
+    LOG(debug2) << "Track " << i;
     
     totalHitsInTracks+=track.size();
 
@@ -524,8 +525,11 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
 
       currentTrack.emplace_back(trackHit->fHitPos.X()
                               , trackHit->fHitPos.Y()
-                              , trackHit->fHitPos.Z());         
+                              , trackHit->fHitPos.Z());   
+
+      LOG(debug2) << " \tX " << trackHit->fmppcLoc.X() << " \tY " << trackHit->fmppcLoc.Y() << " \tZ " << trackHit->fmppcLoc.Z();    
     }
+    LOG(debug2) << "=============================== " << i;
 
     foundTracks.push_back(currentTrack);
   }
@@ -627,6 +631,8 @@ void FgdGenFitRecon::CalculateGrad(std::vector<std::vector<ReconHit*>>& tracks)
   for(Int_t i=0; i<tracks.size(); ++i)
   {
     std::vector<ReconHit*>& track = tracks[i];
+    LOG(debug2) << "=================================== ";
+    LOG(debug2) << "Track " << i;
 
     for(Int_t j=0; j<track.size(); ++j)
     {
@@ -691,6 +697,8 @@ void FgdGenFitRecon::CalculateGrad(std::vector<std::vector<ReconHit*>>& tracks)
                   << " \tAngle (dist = " << distToCalc << ", interval =" << intervalToCal << ") " << diffAngle
                   << " \tZ axis Angle (dist = " << distToCalc << ", interval =" << intervalToCal << ") " << zAxisAngle;
     }
+
+    LOG(debug2) << "=================================== ";
   }
 }
 
