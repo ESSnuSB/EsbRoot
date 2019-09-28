@@ -418,10 +418,11 @@ Bool_t FgdGenFitRecon::FindUsingHough(std::vector<ReconHit>& hits
   Bool_t found = newTrackFinder.find();
   if(found)
   {
-    const std::vector<pathfinder::TrackFinderTrack>& pfTracks = newTrackFinder.getTracks();
+    std::vector<pathfinder::TrackFinderTrack> pfTracks = newTrackFinder.getTracks();
     for(Int_t i =0; i <  pfTracks.size() ; i++)
     {
-      const std::vector<pathfinder::basicHit>& hitsOnTrack = pfTracks[i].getHitsOnTrack();
+      pathfinder::TrackFinderTrack& trFinder = pfTracks[i];
+      const std::vector<pathfinder::basicHit>& hitsOnTrack = trFinder.getHitsOnTrack();
       std::vector<TVector3> track;
       for(size_t j =0; j< hitsOnTrack.size(); ++j)
       {
