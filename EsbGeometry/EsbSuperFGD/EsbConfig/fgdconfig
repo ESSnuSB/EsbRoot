@@ -19,24 +19,24 @@ visdetail=0 #1 is for true
 
 # Settings for PATHFINDER desy package
 # Please refer to the PATHFINDER documentation for more detail explanation of the below settings
-use_vertex=1
+use_vertex=0
 vertexX=0
 vertexY=0
 maxdistxy=2
 maxdistsz=2
 maxdistxyfit=1.5
 maxdistszfit=1.5
-minhitnumber=3
+minhitnumber=15
 xythetabins=1000
 xyd0bins=1000
 xyomegabins=300
 szthetabins=1000
 szd0bins=1000
-searchneighborhood=1
+searchneighborhood=0
 
 # settings for noise and near cube search
 #noiseRange=3
-errPhotoLimit=0     # Set lower limit for generated photons. There are hits generated from (we suppose) delta electrons
+errPhotoLimit=15     # Set lower limit for generated photons. There are hits generated from (we suppose) delta electrons
                     # which generate a few electrons causing a double hit or a hit in a nearby cube which is similar to cross talk
                     # e.g. From investigating digitalization we have
                     #
@@ -79,6 +79,10 @@ timeIntervalHits=1000          #in units used in reconstuction - from FgdDetecto
 excludeHitsAbove=0  
 excludeHitsBelow=0 
 
-# The belog setting sets the endind condition in the graph.
-# That is, how many neighbour nodes does the current node have in order to stop traversing the graph
-maxNeightbourNodes=4;
+# The belog settings for graph traversal
+
+# The grad in angle is calculated as the angle between two vectors.
+#   1st vector is the vector distance between 2 cubes at gradDist apart
+#   2nd vector is the vector distance between 2 cubes shifter gradIntervalDist number of cubes from the 1st one
+gradDist=5              # Distance in number of cubes for track to calculate the grad
+gradIntervalDist=3      # Interval between two distance vectors to calculate grad
