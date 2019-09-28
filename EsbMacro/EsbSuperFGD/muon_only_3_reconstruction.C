@@ -40,7 +40,7 @@ void muon_only_3_reconstruction(TString inFile = "fgd_dig_mu_only.root",
 
   FairTask* recon = new reconstruction::superfgd::FgdMuonOnlyGenFitRecon(
     "Reconstruction Task"             // name of the task
-    ,"../../EsbGeometry/EsbSuperFGD/EsbConfig/geometry"  //FIle with detector configuration
+    ,"../../EsbGeometry/EsbSuperFGD/EsbConfig/fgdconfig"  //File with detector configuration
     ,"../../geometry/media.geo"       // Media file with defined materials
     , 0.,0.,0.                        // x,y,z detector position
     , 1                               // Verbose level

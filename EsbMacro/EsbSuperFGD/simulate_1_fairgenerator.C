@@ -33,7 +33,7 @@ void simulate_1_fairgenerator(TString outFileName = "evetest.root",
   //FairDetector *nearWc = new geometry::WCDetector("NearWcDetector", 300, 500, kTRUE);
   //fRun->AddModule(nearWc);
 
-  FairDetector* fgd = new geometry::FgdDetector("Granular Detector","../../EsbGeometry/EsbSuperFGD/EsbConfig/geometry",0,0,0, kTRUE);
+  FairDetector* fgd = new geometry::FgdDetector("Granular Detector","../../EsbGeometry/EsbSuperFGD/EsbConfig/fgdconfig",0,0,0, kTRUE);
   fRun->AddModule(fgd);
 
   double Bx(0), By(0), Bz(0);

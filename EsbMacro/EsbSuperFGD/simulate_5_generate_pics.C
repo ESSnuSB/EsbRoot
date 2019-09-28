@@ -36,7 +36,7 @@ void simulate_5_generate_pics(TString inFile = "fgd_dig.root",
   rtdb->saveOutput();
 
   // Set Tasks for Reconstruction
-  FairTask* digitizer = new digitizer::superfgd::FgdMppcDisplay("Granular Task","../../EsbGeometry/EsbSuperFGD/EsbConfig/geometry",0,0,0);
+  FairTask* digitizer = new digitizer::superfgd::FgdMppcDisplay("Granular Task","../../EsbGeometry/EsbSuperFGD/EsbConfig/fgdconfig",0,0,0);
   fRun->AddTask(digitizer);   
   fRun->Init(); // initializing
   fRun->Run(nStartEvent, nStartEvent + nEvents);

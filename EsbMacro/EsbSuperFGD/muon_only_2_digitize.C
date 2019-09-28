@@ -36,7 +36,7 @@ void muon_only_2_digitize(TString inFile = "evetest_mu_only.root",
   rtdb->saveOutput();
 
   // Set Tasks for Reconstruction
-  FairTask* digitizer = new digitizer::superfgd::FgdDigitizer("Granular Task","../../EsbGeometry/EsbSuperFGD/EsbConfig/geometry",0,0,0);
+  FairTask* digitizer = new digitizer::superfgd::FgdDigitizer("Granular Task","../../EsbGeometry/EsbSuperFGD/EsbConfig/fgdconfig",0,0,0);
   fRun->AddTask(digitizer);   
   fRun->Init(); // initializing
   fRun->Run(nStartEvent, nStartEvent + nEvents);

@@ -30,10 +30,10 @@ void simulate_1_genie_generator(TString outFileName = "evetest.root",
   fRun->AddModule(cave);
   
   // Add Detectors
-  FairDetector *nearWc = new geometry::WCDetector("NearWcDetector", 300, 500, kTRUE);
-  fRun->AddModule(nearWc);
+  // FairDetector *nearWc = new geometry::WCDetector("NearWcDetector", 300, 500, kTRUE);
+  // fRun->AddModule(nearWc);
 
-  FairDetector* fgd = new geometry::FgdDetector("Granular Detector","../../EsbGeometry/EsbSuperFGD/EsbConfig/geometry",0,0,-550, kTRUE);
+  FairDetector* fgd = new geometry::FgdDetector("Granular Detector","../../EsbGeometry/EsbSuperFGD/EsbConfig/fgdconfig",0,0,-550, kTRUE);
   fRun->AddModule(fgd);
 
   double Bx(0), By(0), Bz(0);
