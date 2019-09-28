@@ -38,7 +38,6 @@ class FgdGenFitRecon : public FairTask
    *@param name       Name of task
    *@param geoConfigFile  - Configuration file detector
    *@param mediaFile  - Configuration file for the used mediums
-   *@param startPos - start position
    *@param startMOm - start momentum
    *@param verbose  - Verbosity level
    *@param debugLlv - debug level for genfit
@@ -48,7 +47,6 @@ class FgdGenFitRecon : public FairTask
   FgdGenFitRecon(const char* name
               , const char* geoConfigFile
               , const char* mediaFile
-              , TVector3 startPos
               , TVector3 startMOm
               , Int_t verbose = 1
               , double debugLlv = 0
@@ -144,8 +142,7 @@ private:
   /** Path to the used media.geo file - containing definitions of materials **/
   std::string fmediaFile;
 
-  /** Start position and momentum **/
-  TVector3 fstartPos;
+  /** Start momentum **/
   TVector3 fstartMom;
 
   Int_t fminGenFitInterations;

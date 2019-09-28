@@ -67,7 +67,6 @@ namespace superfgd {
 FgdGenFitRecon::FgdGenFitRecon() :
   FairTask(), fsuperFgdVol(nullptr)
   , fgdConstructor("")
-  , fstartPos(TVector3(0,0,0))
   , fstartMom(TVector3(0,0,0))
   , fHitArray(nullptr)
   , isDefinedMaterials(false)
@@ -89,7 +88,6 @@ FgdGenFitRecon::FgdGenFitRecon() :
 FgdGenFitRecon::FgdGenFitRecon(const char* name
                           , const char* geoConfigFile
                           , const char* mediaFile
-                          , TVector3 startPos
                           , TVector3 startMom
                           , Int_t verbose
                           , double debugLlv
@@ -98,7 +96,6 @@ FgdGenFitRecon::FgdGenFitRecon(const char* name
   FairTask(name, verbose)
   , fsuperFgdVol(nullptr)
   , fgdConstructor(geoConfigFile)
-  , fstartPos(startPos)
   , fstartMom(startMom)
   , fHitArray(nullptr)
   , isDefinedMaterials(false)

@@ -37,7 +37,6 @@ void simulate_3_reconstruction(TString inFile = "fgd_dig.root",
 
   // Set Tasks for Reconstruction
   TVector3 mom(-0.107,0.211,-0.220);
-  TVector3 pos(0.,0.,0.);
 
   double debugLvl = 0.0; 
 
@@ -49,7 +48,6 @@ void simulate_3_reconstruction(TString inFile = "fgd_dig.root",
     ,"../../EsbGeometry/EsbSuperFGD/EsbConfig/fgdconfig"  //FIle with detector configuration
     ,"../../geometry/media.geo"       // Media file with defined materials
     // ,"../../EsbGeometry/EsbSuperFGD/EsbConfig/reconstructionTemplates"       // Reconstruction templates
-    , pos                             // initial position estimation (will be removed later on)
     , mom                             // initial momentum estimation (will be removed later on)
     , 1                               // Verbose level
     , debugLvl                        // debug level of genfit (0 - little, 1 - debug info, 2 - detailed)
