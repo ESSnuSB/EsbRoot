@@ -16,13 +16,8 @@ using namespace std;
 #define PERMUTATIONS 23
 
 FgdReconTemplate::FgdReconTemplate() 
-    : freconFile("")
 {
-}
-
-FgdReconTemplate::FgdReconTemplate(const char* templateConfigFile)
-    : freconFile(templateConfigFile)
-{
+    LoadTemplates();
 }
 
 FgdReconTemplate::~FgdReconTemplate()
@@ -109,67 +104,124 @@ Bool_t FgdReconTemplate::GetNextHit(ReconHit* previous, ReconHit* current, Recon
 
 void FgdReconTemplate::LoadTemplates()
 {
-    TVector3 center;
-    std::vector<TVector3> leaves;
+    // ==============================
+    // 1. Single leaf templates
+    // ==============================
+    //     Leaf 
+    // --- --- ---
+    // --- -C- -X-
+    // --- --- ---
+    TVector3 leaf1_1(0,0,-1);
+    FgdReconTemplate::HitTemplate leaf1_1_temp;
+    leaf1_1_temp.hitVectors.emplace_back(leaf1_1);
 
-    std::ifstream file(freconFile);
-    std::string line;
-    
-    while(std::getline(file,line))
-    {
-        size_t leafInd = line.find(ReconTemplates::LEAF);
-        if( leafInd==0                       // String starts with The searched pattern
-            && leafInd!=std::string::npos)   // Search found a result
-        {
-            FgdReconTemplate::HitTemplate hitTemp;
-            for(Int_t y = 1; y >= -1; --y)
-            {
-                Int_t x = 1;
-                Int_t z = -1;
-                if(std::getline(file,line))
-                {
-                    for(size_t cube=0; cube<line.size(); ++cube)
-                    {
-                        if(line[cube]==ReconTemplates::SEPARATOR)
-                        {
-                            continue;
-                        }
+    fLeafVectors.push_back(leaf1_1_temp);
 
-                        switch(line[cube])
-                        {
-                            case 'C':   center.SetX(x); 
-                                        center.SetY(y); 
-                                        center.SetZ(z);
-                                        break;
-                            case 'X':   leaves.emplace_back(x,y,z);
-                                        break;
-                            default:
-                                        break;
-                        }
+    // Leaf 
+    // --- --- -X-
+    // --- -C- ---
+    // --- --- ---
+    TVector3 leaf1_2(0,-1,-1);
+    FgdReconTemplate::HitTemplate leaf1_2_temp;
+    leaf1_2_temp.hitVectors.emplace_back(leaf1_2);
 
-                        
-                        --x;
-                        if(x==-2)
-                        {
-                            ++z;
-                            x = 1;
-                        } 
-                    }
-                }
-            }
-            for(size_t leaf=0; leaf<leaves.size(); leaf++)
-            {
-                hitTemp.hitVectors.emplace_back(center - leaves[leaf]);
-            }
+    fLeafVectors.push_back(leaf1_2_temp);
 
-            if(!leaves.empty())
-            {
-                fLeafVectors.push_back(hitTemp);
-            }
-            
-            leaves.clear();
-        } 
-    }
+    // Leaf 
+    // --- --- --X
+    // --- -C- ---
+    // --- --- ---
+    TVector3 leaf1_3(1,-1,-1);
+    FgdReconTemplate::HitTemplate leaf1_3_temp;
+    leaf1_3_temp.hitVectors.emplace_back(leaf1_3);
+
+    fLeafVectors.push_back(leaf1_3_temp);
+
+
+    // ==============================
+    // 2. Two hits leaf templates
+    // ==============================
+
+    // Leaf 
+    // --- --- -X-
+    // --- -C- -X-
+    // --- --- ---
+    TVector3 leaf2_1_1(0,-1,-1);
+    TVector3 leaf2_1_2(0,0,-1);
+    FgdReconTemplate::HitTemplate leaf2_1_temp;
+    leaf2_1_temp.hitVectors.emplace_back(leaf2_1_1);
+    leaf2_1_temp.hitVectors.emplace_back(leaf2_1_2);
+
+    fLeafVectors.push_back(leaf2_1_temp);
+
+    // Leaf 
+    // --- --- --X
+    // --- -C- -X-
+    // --- --- ---
+    TVector3 leaf2_2_1(1,-1,-1);
+    TVector3 leaf2_2_2(0,0,-1);
+    FgdReconTemplate::HitTemplate leaf2_2_temp;
+    leaf2_2_temp.hitVectors.emplace_back(leaf2_2_1);
+    leaf2_2_temp.hitVectors.emplace_back(leaf2_2_2);
+
+    fLeafVectors.push_back(leaf2_2_temp);
+
+    // Leaf 
+    // --- --- X--
+    // --- -C- X--
+    // --- --- ---
+    TVector3 leaf2_3_1(-1,-1,-1);
+    TVector3 leaf2_3_2(-1,0,-1);
+    FgdReconTemplate::HitTemplate leaf2_3_temp;
+    leaf2_3_temp.hitVectors.emplace_back(leaf2_3_1);
+    leaf2_3_temp.hitVectors.emplace_back(leaf2_3_2);
+
+    fLeafVectors.push_back(leaf2_3_temp);
+
+    // Leaf 
+    // --- --- --X
+    // --- -C- --X
+    // --- --- ---
+    TVector3 leaf2_4_1(1,-1,-1);
+    TVector3 leaf2_4_2(1,0,-1);
+    FgdReconTemplate::HitTemplate leaf2_4_temp;
+    leaf2_4_temp.hitVectors.emplace_back(leaf2_4_1);
+    leaf2_4_temp.hitVectors.emplace_back(leaf2_4_2);
+
+    fLeafVectors.push_back(leaf2_4_temp);
+
+    // ==============================
+    // 3. Three hits leaf templates
+    // ==============================
+
+    // Leaf 
+    // --- --- -XX
+    // --- -C- -X-
+    // --- --- ---
+    TVector3 leaf3_1_1(0,-1,-1);
+    TVector3 leaf3_1_2(1,-1,-1);
+    TVector3 leaf3_1_3(0,0,-1);
+    FgdReconTemplate::HitTemplate leaf3_1_temp;
+    leaf3_1_temp.hitVectors.emplace_back(leaf3_1_1);
+    leaf3_1_temp.hitVectors.emplace_back(leaf3_1_2);
+    leaf3_1_temp.hitVectors.emplace_back(leaf3_1_3);
+
+    fLeafVectors.push_back(leaf3_1_temp);
+
+
+    // Leaf 
+    // --- --- XX-
+    // --- -C- -X-
+    // --- --- ---
+    TVector3 leaf3_2_1(-1,-1,-1);
+    TVector3 leaf3_2_2(0,-1,-1);
+    TVector3 leaf3_2_3(0,0,-1);
+    FgdReconTemplate::HitTemplate leaf3_2_temp;
+    leaf3_2_temp.hitVectors.emplace_back(leaf3_2_1);
+    leaf3_2_temp.hitVectors.emplace_back(leaf3_2_2);
+    leaf3_2_temp.hitVectors.emplace_back(leaf3_2_3);
+
+    fLeafVectors.push_back(leaf3_2_temp);
 
     LOG(debug) << " Leaf templates found " << fLeafVectors.size();
 }

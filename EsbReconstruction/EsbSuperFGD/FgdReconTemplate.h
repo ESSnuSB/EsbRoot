@@ -14,19 +14,6 @@ namespace esbroot {
 namespace reconstruction {
 namespace superfgd {
 
-namespace ReconTemplates
-{
-    static const std::string LEAF = "Leaf";
-    static const std::string STRANGE_NODE = "StrangeNode";
-
-    static const char SEPARATOR = ' ';
-    static const char NO_HIT = 'O';
-    static const char HIT = 'X';
-    static const char PREVIOUS_HIT = 'P';
-    static const char NEXT_HIT = 'N';
-    static const char CENTER = 'C';
-}
-
 class FgdReconTemplate : public TObject
 {
 
@@ -35,18 +22,11 @@ public:
     /** Default constructor **/  
     FgdReconTemplate();
 
-    /** Constructor with argument
-        *@param templateConfigFile - path to the template configuration file
-    **/ 
-    FgdReconTemplate(const char* templateConfigFile);
-
     ~FgdReconTemplate();
 
     Bool_t IsLeaf(ReconHit* hit);
 
     Bool_t GetNextHit(ReconHit* previous, ReconHit* current, ReconHit*& next);
-
-    void LoadTemplates();
 
 private:
 
@@ -80,14 +60,13 @@ private:
         std::vector<TVector3> hitVectors;
     };
 
+    void LoadTemplates();
     void GetHitVectors(ReconHit* hit, std::vector<TVector3>& vecs);
 
     Bool_t AreVectorsEqual(const std::vector<TVector3>& tempVecs, const std::vector<TVector3>& vecs, Int_t& foundPermutation );
     TVector3 GetPermutation(TVector3 vec, Int_t numPermutation);
 
     std::vector<FgdReconTemplate::HitTemplate> fLeafVectors;//!<!  
-
-    std::string freconFile;//!<!  
 
     ClassDef(FgdReconTemplate, 2);
 };

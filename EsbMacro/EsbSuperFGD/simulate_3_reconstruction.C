@@ -49,7 +49,6 @@ void simulate_3_reconstruction(TString inFile = "fgd_dig.root",
     ,"../../EsbGeometry/EsbSuperFGD/EsbConfig/fgdconfig"  //FIle with detector configuration
     ,"../../geometry/media.geo"       // Media file with defined materials
     // ,"../../EsbGeometry/EsbSuperFGD/EsbConfig/reconstructionTemplates"       // Reconstruction templates
-    ,"../../EsbGeometry/EsbSuperFGD/EsbConfig/reconTemps"       // Reconstruction templates
     , pos                             // initial position estimation (will be removed later on)
     , mom                             // initial momentum estimation (will be removed later on)
     , 1                               // Verbose level

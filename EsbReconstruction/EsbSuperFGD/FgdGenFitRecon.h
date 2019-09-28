@@ -38,7 +38,6 @@ class FgdGenFitRecon : public FairTask
    *@param name       Name of task
    *@param geoConfigFile  - Configuration file detector
    *@param mediaFile  - Configuration file for the used mediums
-   *@param reconFile  - Configuration of reconstruction templates to be used
    *@param startPos - start position
    *@param startMOm - start momentum
    *@param verbose  - Verbosity level
@@ -49,7 +48,6 @@ class FgdGenFitRecon : public FairTask
   FgdGenFitRecon(const char* name
               , const char* geoConfigFile
               , const char* mediaFile
-              , const char* reconFile
               , TVector3 startPos
               , TVector3 startMOm
               , Int_t verbose = 1
@@ -145,9 +143,6 @@ private:
 
   /** Path to the used media.geo file - containing definitions of materials **/
   std::string fmediaFile;
-
-  /** Path to the used reconstuction templates file **/
-  std::string freconFile;
 
   /** Start position and momentum **/
   TVector3 fstartPos;

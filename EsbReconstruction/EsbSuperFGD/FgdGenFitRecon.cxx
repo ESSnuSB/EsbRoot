@@ -73,7 +73,6 @@ FgdGenFitRecon::FgdGenFitRecon() :
   , isDefinedMaterials(false)
   , fDebuglvl_genfit(0)
   , fmediaFile("")
-  , freconFile("")
   , fTracksArray(nullptr)
   , fdisplay(nullptr)
   , isGenFitVisualization(false)
@@ -90,7 +89,6 @@ FgdGenFitRecon::FgdGenFitRecon() :
 FgdGenFitRecon::FgdGenFitRecon(const char* name
                           , const char* geoConfigFile
                           , const char* mediaFile
-                          , const char* reconFile
                           , TVector3 startPos
                           , TVector3 startMom
                           , Int_t verbose
@@ -106,7 +104,6 @@ FgdGenFitRecon::FgdGenFitRecon(const char* name
   , isDefinedMaterials(false)
   , fDebuglvl_genfit(debugLlv)
   , fmediaFile(mediaFile)
-  , freconFile(reconFile)
   , fTracksArray(nullptr)
   , fdisplay(nullptr)
   , isGenFitVisualization(visualize)
@@ -462,8 +459,7 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
   }
 
 
-  FgdReconTemplate reconTemplates(freconFile.c_str());
-  reconTemplates.LoadTemplates();
+  FgdReconTemplate reconTemplates;
 
   std::vector<std::vector<ReconHit*>> tracks;
 
