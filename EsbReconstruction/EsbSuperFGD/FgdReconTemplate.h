@@ -46,6 +46,8 @@ public:
 
     Bool_t GetNextHit(ReconHit* previous, ReconHit* current, ReconHit*& next, std::vector<ReconHit>& hits);
 
+    Bool_t GetNextHit2(ReconHit* previous, ReconHit* current, ReconHit*& next, std::vector<ReconHit>& hits);
+
     void SetUseOnlyLeaves(Bool_t useOnly){fUseOnlyLeafTemplates = useOnly;}
 
     void LoadTemplates();

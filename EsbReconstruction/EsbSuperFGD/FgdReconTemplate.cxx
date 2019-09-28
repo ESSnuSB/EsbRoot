@@ -307,6 +307,52 @@ Bool_t FgdReconTemplate::GetNextHit(ReconHit* previous, ReconHit* current, Recon
     return nextFound;
 }
 
+
+
+Bool_t FgdReconTemplate::GetNextHit2(ReconHit* previous, ReconHit* current, ReconHit*& next, std::vector<ReconHit>& hits)
+{
+    Bool_t nextFound(false);
+    next = nullptr;
+
+    if(current==nullptr)
+    {
+        throw "Invalid current hit";
+    }
+
+    if(current->fAllHits.empty())
+    {
+        return nextFound;
+    }
+
+    Int_t previousId = (previous==nullptr) ? -1 : previous->fLocalId;
+    size_t nearestId(0);
+    Double_t min_dist = std::numeric_limits<Int_t>::max();
+
+    for(size_t nid = 0; nid< current->fAllHits.size(); ++nid)
+    {
+        ReconHit* candidateHit = &hits[current->fAllHits[nid]];
+
+        if(!candidateHit->fIsVisited
+            && candidateHit->fLocalId != previousId
+            && !candidateHit->fIsLeaf)
+        {
+            TVector3 vecPosition = current->fmppcLoc - candidateHit->fmppcLoc;
+            Double_t dist = vecPosition.X()*vecPosition.X() + vecPosition.Y()*vecPosition.Y() + vecPosition.Z()*vecPosition.Z();
+
+            if(dist < min_dist)
+            {
+                min_dist = dist;
+                nearestId = nid;
+            }
+        }
+    }
+
+    next = &hits[current->fAllHits[nearestId]];
+    nextFound = (min_dist!=std::numeric_limits<Int_t>::max());
+
+    return nextFound;
+}
+
 void FgdReconTemplate::LoadTemplates()
 {
     TVector3 center;

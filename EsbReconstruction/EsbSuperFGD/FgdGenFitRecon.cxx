@@ -798,7 +798,7 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
       hits[i].fIsLeaf = true;
       currentHit = &hits[i];
 
-      while(reconTemplates.GetNextHit(previousHit, currentHit, nextHit, hits))
+      while(reconTemplates.GetNextHit2(previousHit, currentHit, nextHit, hits)) // TODO2
       {
         if(nextHit->fIsLeaf || nextHit->fIsVisited)
         {
@@ -833,7 +833,6 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
 
 
       
-      //TODO 2
       // Calculate cosine change beween 2 consecutive vectors - gradient
       TVector3 diffVec(0,0,0);
       if(j>=1)
@@ -842,16 +841,52 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
         ReconHit* two = &hits[track[j]];
         diffVec = two->fmppcLoc - one->fmppcLoc;
       }
-      //TODO 2
 
-      LOG(debug)  << "Id " << ind 
+
+      Double_t angle(0);
+      Double_t zAxisAngle(0);
+
+      TVector3 zAxisVec(0,0,1);
+
+      TVector3 diffVec1(0,0,0);
+      TVector3 diffVec2(0,0,0);
+
+      Int_t distToCalc = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::FGD_GRAD_DIST);
+      Int_t intervalToCal = fParams.ParamAsDouble(esbroot::geometry::superfgd::DP::FGD_GRAD_INTERVAL_DIST);
+
+      Int_t indOne = j - distToCalc + 1;
+      Int_t indTwo = j;
+
+      Int_t indOneP = indOne - intervalToCal;
+      Int_t indTwoP = indTwo - intervalToCal;
+
+      if(j>= (distToCalc + intervalToCal -1) )
+      {
+        ReconHit* one = &hits[track[indOne]];
+        ReconHit* two = &hits[track[indTwo]];
+        diffVec1 = two->fmppcLoc - one->fmppcLoc;
+
+        ReconHit* oneP = &hits[track[indOneP]];
+        ReconHit* twoP = &hits[track[indTwoP]];
+        diffVec2 = twoP->fmppcLoc - oneP->fmppcLoc;
+
+        Double_t radToDeg = 180/TMath::Pi();
+        angle = radToDeg * diffVec1.Angle(diffVec2);
+        
+        zAxisAngle = radToDeg * zAxisVec.Angle(diffVec1);
+      }
+
+      LOG(debug2) << "Id " << ind 
                   << " \tX " << hits[ind].fmppcLoc.X()
                   << " \tY " << hits[ind].fmppcLoc.Y()
                   << " \tZ " << hits[ind].fmppcLoc.Z() 
-                  << " \tChange  " << "(" << diffVec.X() << "," << diffVec.Y() << "," << diffVec.Z() << ")";
-      LOG(debug2) << "Photons " << " X " << hits[ind].fphotons.X()<< " Y " << hits[ind].fphotons.Y()<< " Z " << hits[ind].fphotons.Z();
-      
-      LOG(debug2) << " --------------------------- ";
+                  << " \tPhotons  " << "(" << hits[ind].fphotons.X() << "," << hits[ind].fphotons.Y() << "," << hits[ind].fphotons.Z() << ")"
+                  << " \tChange  " << "(" << diffVec.X() << "," << diffVec.Y() << "," << diffVec.Z() << ")"
+                  // << " \t(" << diffVec1.X() << "," << diffVec1.Y() << "," << diffVec1.Z() << ") "
+                  // << " \t(" << diffVec2.X() << "," << diffVec2.Y() << "," << diffVec2.Z() << ") "
+                  << " \tAngle (dist = " << distToCalc << ", interval =" << intervalToCal << ") " << angle
+                  << " \tZ axis Angle (dist = " << distToCalc << ", interval =" << intervalToCal << ") " << zAxisAngle;
+                  
     }
     pathfinder::TrackFinderTrack tr(pathfinder::TrackParameterFull(0.,0.,0.,0.,0.)
                                     , std::move(currentTrack));
@@ -995,15 +1030,6 @@ void FgdGenFitRecon::FitTracks(std::vector<pathfinder::TrackFinderTrack>& foundT
         LOG(debug) << "Track " << i << " below limit, continue with next track (" << hitsOnTrack.size() << " < " << fminHits << ")";
         continue;
       }
-
-      LOG(debug2) << "================================ ";
-      LOG(debug2) << "===== Hit positions to fit ===== ";
-      LOG(debug2) << "================================ ";
-      for(size_t j =0; j<hitsOnTrack.size(); ++j)
-      {
-         LOG(debug2) << "\tHit \tX " << hitsOnTrack[j].getX() <<  " \tY " << hitsOnTrack[j].getY() << " \tZ " << hitsOnTrack[j].getZ();
-      }
-      LOG(debug2) << "========================= ";
       
        // TODO2 extrack from finderTrack how to get initial guess for these values
       // =================================
