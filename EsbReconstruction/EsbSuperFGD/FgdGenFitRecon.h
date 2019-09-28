@@ -38,7 +38,6 @@ class FgdGenFitRecon : public FairTask
    *@param name       Name of task
    *@param geoConfigFile  - Configuration file detector
    *@param mediaFile  - Configuration file for the used mediums
-   *@param startMOm - start momentum
    *@param verbose  - Verbosity level
    *@param debugLlv - debug level for genfit
    *@param visualize -  to visualize the event using genfit::EventDisplay
@@ -47,7 +46,6 @@ class FgdGenFitRecon : public FairTask
   FgdGenFitRecon(const char* name
               , const char* geoConfigFile
               , const char* mediaFile
-              , TVector3 startMOm
               , Int_t verbose = 1
               , double debugLlv = 0
               , bool visualize = false
@@ -92,6 +90,8 @@ private:
   void BuildGraph(std::vector<ReconHit>& hits);
   void CalculateGrad(std::vector<std::vector<ReconHit*>>& tracks);
   void SplitTrack(std::vector<std::vector<ReconHit*>>& originalTracks, std::vector<std::vector<ReconHit*>>& splitTracks);
+  void CalculateMomentum(const std::vector<TVector3>& track,const TVector3& magField, TVector3& momentum);
+  Double_t GetRadius(const TVector3& p1, const TVector3& p2, const TVector3& p3);
 
   /** Fit the found tracks using genfit **/
   void FitTracks(std::vector<std::vector<TVector3>>& foundTracks);
@@ -141,9 +141,6 @@ private:
 
   /** Path to the used media.geo file - containing definitions of materials **/
   std::string fmediaFile;
-
-  /** Start momentum **/
-  TVector3 fstartMom;
 
   Int_t fminGenFitInterations;
   Int_t fmaxGenFitIterations;

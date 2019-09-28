@@ -67,7 +67,6 @@ namespace superfgd {
 FgdGenFitRecon::FgdGenFitRecon() :
   FairTask(), fsuperFgdVol(nullptr)
   , fgdConstructor("")
-  , fstartMom(TVector3(0,0,0))
   , fHitArray(nullptr)
   , isDefinedMaterials(false)
   , fDebuglvl_genfit(0)
@@ -88,7 +87,6 @@ FgdGenFitRecon::FgdGenFitRecon() :
 FgdGenFitRecon::FgdGenFitRecon(const char* name
                           , const char* geoConfigFile
                           , const char* mediaFile
-                          , TVector3 startMom
                           , Int_t verbose
                           , double debugLlv
                           , bool visualize
@@ -96,7 +94,6 @@ FgdGenFitRecon::FgdGenFitRecon(const char* name
   FairTask(name, verbose)
   , fsuperFgdVol(nullptr)
   , fgdConstructor(geoConfigFile)
-  , fstartMom(startMom)
   , fHitArray(nullptr)
   , isDefinedMaterials(false)
   , fDebuglvl_genfit(debugLlv)
@@ -746,6 +743,116 @@ void FgdGenFitRecon::SplitTrack(std::vector<std::vector<ReconHit*>>& originalTra
   LOG(debug) << "Split tracks size " << splitTracks.size();
 }
 
+void FgdGenFitRecon::CalculateMomentum(const std::vector<TVector3>& track, const TVector3& magField, TVector3& momentum)
+{
+  if(track.size()<3)
+  {
+      momentum.SetXYZ(0.,0.,0);
+      return;
+  }
+
+  // For calculation charge is taken as 1 unit of 'e'
+  const Double_t charge = 1.;
+
+  // Since there are energy losses the momentum should be lowered
+  // since here it is calculated as a radius without energy losses
+  // this is only an approximation
+  Double_t coeff = 10./track.size();
+  coeff = (coeff > 1 ) ?  1 : coeff; // Do not get increase in momentum
+
+  // Take the 3 points
+  // 1. The begining of the track
+  // 2. The end
+  // 3. The middle
+  Int_t ind_x = 0;
+  Int_t ind_z = track.size() -1;
+  Int_t int_y = ind_z/2;
+
+  TVector3 p1 = track[ind_x];
+  TVector3 p2 = track[int_y];
+  TVector3 p3 = track[ind_z];
+
+  // For each magnetic field plane calculate it for the perpendicular projections
+  if(magField.X()!=0)
+  {
+    TVector3 mag_point1(0,p1.Y(), p1.Z());
+    TVector3 mag_point2(0,p2.Y(), p2.Z());
+    TVector3 mag_point3(0,p3.Y(), p3.Z());
+    Double_t radius = GetRadius(mag_point1,mag_point2,mag_point3); // radius is returned in [cm]
+
+    if(!std::isnan(radius))
+    {
+      Double_t R = radius/100.; // convert in meters
+      Double_t magField_T = magField.X() / 10.; // convert from kGauss to Tesla units
+      Double_t mom = coeff * charge * R * magField_T;
+      momentum.SetY(mom);
+      momentum.SetZ(mom);
+    }
+  }
+
+  if(magField.Y()!=0)
+  {
+    TVector3 mag_point1(p1.X(), 0. , p1.Z());
+    TVector3 mag_point2(p2.X(), 0. , p2.Z());
+    TVector3 mag_point3(p3.X(), 0. , p3.Z());
+    Double_t radius = GetRadius(mag_point1,mag_point2,mag_point3); // radius is returned in [cm]
+
+    if(!std::isnan(radius))
+    {
+      Double_t R = radius/100.; // convert in meters
+      Double_t magField_T = magField.Y() / 10.; // convert from kGauss to Tesla units
+      Double_t mom = coeff * charge * R * magField_T;
+      momentum.SetX(mom);
+      momentum.SetZ(mom);
+    }
+  }
+  
+  if(magField.Z()!=0)
+  {
+    TVector3 mag_point1(p1.X(), p1.Y() , 0.);
+    TVector3 mag_point2(p2.X(), p2.Y() , 0.);
+    TVector3 mag_point3(p3.X(), p3.Y() , 0.);
+    Double_t radius = GetRadius(mag_point1,mag_point2,mag_point3); // radius is returned in [cm]
+
+    if(!std::isnan(radius))
+    {
+      Double_t R = radius/100.; // convert in meters
+      Double_t magField_T = magField.Z() / 10.; // convert from kGauss to Tesla units
+      Double_t mom = coeff * charge * R * magField_T;
+      momentum.SetX(mom);
+      momentum.SetY(mom);
+    }
+  }
+}
+
+
+// Calculate the radius from 3 points using the "Menger curvature" theorem
+Double_t FgdGenFitRecon::GetRadius(const TVector3& p1, const TVector3& p2, const TVector3& p3)
+{
+  //
+  //          p1
+  //          /\\
+  //     y   /  \\  x
+  //        /    \\
+  //       /______\\
+  //      p2        p3
+  //          z
+  //
+  TVector3 x = p3 - p1;
+  TVector3 y = p2 - p1;
+  TVector3 z = p2 - p3;
+
+  Double_t angle = y.Angle(x);
+  Double_t x_z_Mag = z.Mag();
+
+  Double_t c = (2*std::sin(angle))/x_z_Mag;
+  Double_t R = 1./c;
+
+  LOG(debug2) << "Radius is -> " << R;;
+
+  return R;
+}
+
 void FgdGenFitRecon::FitTracks(std::vector<std::vector<TVector3>>& foundTracks)
 {
     fTracksArray->Delete();
@@ -764,7 +871,7 @@ void FgdGenFitRecon::FitTracks(std::vector<std::vector<TVector3>>& foundTracks)
 
     std::vector<genfit::Track*> genTracks;
     int detId(1); // Detector id, it is the same, we only have one detector
-    for(Int_t i =0; i <  foundTracks.size() ; i++)
+    for(size_t i = 0; i <  foundTracks.size() ; i++)
     {
       std::vector<TVector3>& hitsOnTrack = foundTracks[i];
 
@@ -782,41 +889,12 @@ void FgdGenFitRecon::FitTracks(std::vector<std::vector<TVector3>>& foundTracks)
 
       //TVector3 posM(fstartPos);
       TVector3 posM(hitsOnTrack[0].X(),hitsOnTrack[0].Y(),hitsOnTrack[0].Z());
-      TVector3 momM(fstartMom);
+      TVector3 momM(0,0,0);
 
-      // First point should be the start of the track
-      //TVector3 momM(hitsOnTrack[0].getX(),hitsOnTrack[0].getY(),hitsOnTrack[0].getZ());
-      if(i==0)
-      {
-        pdg = 211;
-        momM.SetXYZ(-0.187 ,   0.079 ,   0.150 );
-      }
-
-      if(i==1)
-      {
-        pdg = -11;
-        momM.SetXYZ(-0.149, 0.013 , -0.074 );
-      }
-
-      // if(i==2)
-      // {
-      //   pdg = 13;
-      //   momM.SetXYZ(-0.107, 0.211, -0.220 );
-      // }
-
-      // if(i==1)
-      // {
-      //   momM.SetXYZ(-0.070,-0.197,0.348);
-      // }
-
-      // if(i==1)
-      // {
-      //   pdg=2212;
-      //   momM.SetX(0.343);
-      //   momM.SetY(0.248);
-      //   momM.SetZ(0.524);
-      // }
-      // =================================
+      CalculateMomentum(hitsOnTrack, magField, momM);
+      LOG(debug2) <<"********** Track Momentum " << i << " ******************* ";
+      LOG(debug2) << "(" << momM.X() << "," << momM.Y() << "," << momM.Z() << ")";
+      LOG(debug2) <<"******************************************* ";
 
       // approximate covariance
       double resolution = 0.1;
@@ -895,6 +973,8 @@ void FgdGenFitRecon::FitTracks(std::vector<std::vector<TVector3>>& foundTracks)
     {
       fdisplay->addEvent(genTracks);
     }
+
+    // CalculateCurvature();
 }
 
 void FgdGenFitRecon::DefineMaterials() 

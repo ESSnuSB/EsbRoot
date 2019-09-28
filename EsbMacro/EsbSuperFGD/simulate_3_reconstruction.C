@@ -14,7 +14,7 @@
 void simulate_3_reconstruction(TString inFile = "fgd_dig.root", 
 	      TString parFile = "params.root",
 	      TString outFile = "fgd_recon.root",
-              Int_t nStartEvent = 10, Int_t nEvents = 1)
+              Int_t nStartEvent = 0, Int_t nEvents = 1)
 {
   using namespace esbroot;
 
@@ -35,9 +35,6 @@ void simulate_3_reconstruction(TString inFile = "fgd_dig.root",
   rtdb->setOutput(parIo1); 
   rtdb->saveOutput();
 
-  // Set Tasks for Reconstruction
-  TVector3 mom(-0.107,0.211,-0.220);
-
   double debugLvl = 0.0; 
 
   fair::Logger::SetConsoleSeverity(fair::Severity::debug2);
@@ -47,8 +44,6 @@ void simulate_3_reconstruction(TString inFile = "fgd_dig.root",
     "Reconstruction Task"             // name of the task
     ,"../../EsbGeometry/EsbSuperFGD/EsbConfig/fgdconfig"  //FIle with detector configuration
     ,"../../geometry/media.geo"       // Media file with defined materials
-    // ,"../../EsbGeometry/EsbSuperFGD/EsbConfig/reconstructionTemplates"       // Reconstruction templates
-    , mom                             // initial momentum estimation (will be removed later on)
     , 1                               // Verbose level
     , debugLvl                        // debug level of genfit (0 - little, 1 - debug info, 2 - detailed)
     , false                           // To visualize the tracks using genfit::Eventdisplay
