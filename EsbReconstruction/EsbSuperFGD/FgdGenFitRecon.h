@@ -90,7 +90,7 @@ private:
   void BuildGraph(std::vector<ReconHit>& hits);
   void CalculateGrad(std::vector<std::vector<ReconHit*>>& tracks);
   void SplitTrack(std::vector<std::vector<ReconHit*>>& originalTracks, std::vector<std::vector<ReconHit*>>& splitTracks);
-  void CalculateMomentum(const std::vector<TVector3>& track,const TVector3& magField, TVector3& momentum);
+  Bool_t CalculateMomentum(const std::vector<TVector3>& track,const TVector3& magField, TVector3& momentum);
   Double_t GetRadius(const TVector3& p1, const TVector3& p2, const TVector3& p3);
 
   /** Fit the found tracks using genfit **/

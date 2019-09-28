@@ -500,7 +500,7 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
   SplitTrack(tracks, splitTracks);
 
   Int_t totalHitsInTracks(0);
-  for(Int_t i=0; i<splitTracks.size(); ++i)
+  for(size_t i = 0; i<splitTracks.size(); ++i)
   {
     std::vector<ReconHit*>& track = splitTracks[i];
     std::vector<TVector3> currentTrack;
@@ -509,7 +509,7 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
     
     totalHitsInTracks+=track.size();
 
-    for(Int_t j=0; j<track.size(); ++j)
+    for(size_t j = 0; j<track.size(); ++j)
     {
       ReconHit* trackHit = track[j];
 
@@ -523,6 +523,25 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
 
     foundTracks.push_back(currentTrack);
   }
+
+
+
+  for(Int_t i=0; i<splitTracks.size(); ++i)
+  {
+    std::vector<ReconHit*>& track = splitTracks[i];
+
+    Double_t totalPhotons(0);
+
+    for(Int_t j=0; j<track.size(); ++j)
+    {
+      ReconHit* trackHit = track[j];  
+      totalPhotons+= (trackHit->fphotons.X() + trackHit->fphotons.Y() + trackHit->fphotons.Z());
+    }
+    LOG(info) << "========== Track  ========= " << i << "  ========= ";
+    LOG(info) << "Average photons \t" << totalPhotons / track.size();
+    LOG(info) << "=============================== " << i;
+  }
+
 
   LOG(debug) << "Total hits in tracks " << totalHitsInTracks;
 
@@ -743,13 +762,15 @@ void FgdGenFitRecon::SplitTrack(std::vector<std::vector<ReconHit*>>& originalTra
   LOG(debug) << "Split tracks size " << splitTracks.size();
 }
 
-void FgdGenFitRecon::CalculateMomentum(const std::vector<TVector3>& track, const TVector3& magField, TVector3& momentum)
+Bool_t FgdGenFitRecon::CalculateMomentum(const std::vector<TVector3>& track, const TVector3& magField, TVector3& momentum)
 {
   if(track.size()<3)
   {
       momentum.SetXYZ(0.,0.,0);
-      return;
+      return false;
   }
+
+  Bool_t rc(false);
 
   // For calculation charge is taken as 1 unit of 'e'
   const Double_t charge = 1.;
@@ -787,6 +808,7 @@ void FgdGenFitRecon::CalculateMomentum(const std::vector<TVector3>& track, const
       Double_t mom = coeff * charge * R * magField_T;
       momentum.SetY(mom);
       momentum.SetZ(mom);
+      rc = true;
     }
   }
 
@@ -804,6 +826,7 @@ void FgdGenFitRecon::CalculateMomentum(const std::vector<TVector3>& track, const
       Double_t mom = coeff * charge * R * magField_T;
       momentum.SetX(mom);
       momentum.SetZ(mom);
+      rc = true;
     }
   }
   
@@ -821,8 +844,11 @@ void FgdGenFitRecon::CalculateMomentum(const std::vector<TVector3>& track, const
       Double_t mom = coeff * charge * R * magField_T;
       momentum.SetX(mom);
       momentum.SetY(mom);
+      rc = true;
     }
   }
+
+  return rc;
 }
 
 
@@ -891,7 +917,11 @@ void FgdGenFitRecon::FitTracks(std::vector<std::vector<TVector3>>& foundTracks)
       TVector3 posM(hitsOnTrack[0].X(),hitsOnTrack[0].Y(),hitsOnTrack[0].Z());
       TVector3 momM(0,0,0);
 
-      CalculateMomentum(hitsOnTrack, magField, momM);
+      if(!CalculateMomentum(hitsOnTrack, magField, momM))
+      {
+        LOG(debug) << "Track " << i << " unable to extract momentum. Continue with next track";
+        continue;
+      }
       LOG(debug2) <<"********** Track Momentum " << i << " ******************* ";
       LOG(debug2) << "(" << momM.X() << "," << momM.Y() << "," << momM.Z() << ")";
       LOG(debug2) <<"******************************************* ";
