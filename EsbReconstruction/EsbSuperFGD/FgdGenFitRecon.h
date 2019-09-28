@@ -6,6 +6,7 @@
 #include "EsbGeometry/EsbSuperFGD/EsbFgdDetectorParameters.h"
 #include "EsbGeometry/EsbSuperFGD/EsbSuperFGDDetectorConstruction.h"
 #include "EsbReconstruction/EsbSuperFGD/FgdReconHit.h"
+#include "EsbReconstruction/EsbSuperFGD/PdgFromPhotons.h"
 
 // FairRoot headers
 #include <FairTask.h>
@@ -27,7 +28,9 @@ class FgdGenFitRecon : public FairTask
  public:
 
   enum TrackFinder{
-    HOUGH_PATHFINDER,
+    HOUGH_PATHFINDER_LINE,
+    HOUGH_PATHFINDER_HELIX,
+    HOUGH_PATHFINDER_CURL,
     GRAPH
   };
 
@@ -58,6 +61,7 @@ class FgdGenFitRecon : public FairTask
   void SetMaxInterations(Int_t maxIterations) {fmaxGenFitIterations = maxIterations;}
   void SetMinHits(Int_t minHits) {fminHits = minHits;}
   void SetUseTracker(FgdGenFitRecon::TrackFinder finder){ffinder=finder;}
+  void AddPdgPhotoVal(Int_t pdg, Double_t avgPh, Double_t allowDiff){ fpdgAvgPh.emplace_back(pdg, avgPh, allowDiff);}
 
   /** Virtual method Init **/
   virtual InitStatus Init() override;
@@ -82,19 +86,25 @@ private:
   /** Extrack tracks from the hit using Hough Transform **/
   Bool_t FindUsingHough(std::vector<ReconHit>& hits
                   , std::vector<std::vector<TVector3>>& foundTracks
+                  , std::vector<Int_t>& trackPdgs
                   , FindTrackType trackType);
 
+  /** Extrack tracks using graph traversal and track gradient  **/
   Bool_t FindUsingGraph(std::vector<ReconHit>& hits
-                  , std::vector<std::vector<TVector3>>& foundTracks);
+                  , std::vector<std::vector<TVector3>>& foundTracks
+                  , std::vector<Int_t>& trackPdgs);
   
   void BuildGraph(std::vector<ReconHit>& hits);
   void CalculateGrad(std::vector<std::vector<ReconHit*>>& tracks);
   void SplitTrack(std::vector<std::vector<ReconHit*>>& originalTracks, std::vector<std::vector<ReconHit*>>& splitTracks);
   Bool_t CalculateMomentum(const std::vector<TVector3>& track,const TVector3& magField, TVector3& momentum);
   Double_t GetRadius(const TVector3& p1, const TVector3& p2, const TVector3& p3);
+  void GetPdgCode(std::vector<std::vector<ReconHit*>>& tracks
+                  , std::vector<Int_t>& trackPdgs);
 
   /** Fit the found tracks using genfit **/
-  void FitTracks(std::vector<std::vector<TVector3>>& foundTracks);
+  void FitTracks(std::vector<std::vector<TVector3>>& foundTracks
+                , std::vector<Int_t>& trackPdgs);
 
   /** Define materials used in the reconstruction phase **/
   void DefineMaterials();
@@ -153,6 +163,8 @@ private:
   genfit::EventDisplay* fdisplay;//!<!
   bool isGenFitVisualization;//!<!
   std::string fGenFitVisOption;//!<!
+
+  std::vector<PdgFromPhotons> fpdgAvgPh;//!<!
 
   	   
   ClassDef(FgdGenFitRecon, 2);

@@ -78,7 +78,7 @@ FgdGenFitRecon::FgdGenFitRecon() :
   , fminGenFitInterations(2)
   , fmaxGenFitIterations(4)
   , fminHits(25)
-  , ffinder(TrackFinder::HOUGH_PATHFINDER)
+  , ffinder(TrackFinder::HOUGH_PATHFINDER_CURL)
 { 
 }
 // -------------------------------------------------------------------------
@@ -105,7 +105,7 @@ FgdGenFitRecon::FgdGenFitRecon(const char* name
   , fminGenFitInterations(2)
   , fmaxGenFitIterations(4)
   , fminHits(25)
-  , ffinder(TrackFinder::HOUGH_PATHFINDER)
+  , ffinder(TrackFinder::HOUGH_PATHFINDER_CURL)
 { 
   fParams.LoadPartParams(geoConfigFile);
 }
@@ -212,6 +212,7 @@ void FgdGenFitRecon::Exec(Option_t* opt)
   {
     std::vector<ReconHit> allhits;
     std::vector<std::vector<TVector3>> foundTracks;
+    std::vector<Int_t> trackPdgs;
 
     bool rc = GetHits(allhits);
     if(rc)
@@ -219,11 +220,17 @@ void FgdGenFitRecon::Exec(Option_t* opt)
       LOG(debug) <<" Hits to retrieve tracks from " << allhits.size();
       switch(ffinder)
       {
-        case TrackFinder::HOUGH_PATHFINDER:
-                                          rc = FindUsingHough(allhits, foundTracks, FindTrackType::CURL);
+        case TrackFinder::HOUGH_PATHFINDER_LINE:
+                                          rc = FindUsingHough(allhits, foundTracks, trackPdgs, FindTrackType::STRAIGHT_LINE);
+                                          break;
+        case TrackFinder::HOUGH_PATHFINDER_HELIX:
+                                          rc = FindUsingHough(allhits, foundTracks, trackPdgs, FindTrackType::HELIX);
+                                          break;
+        case TrackFinder::HOUGH_PATHFINDER_CURL:
+                                          rc = FindUsingHough(allhits, foundTracks, trackPdgs, FindTrackType::CURL);
                                           break;
         case TrackFinder::GRAPH:
-                                          rc = FindUsingGraph(allhits, foundTracks);
+                                          rc = FindUsingGraph(allhits, foundTracks, trackPdgs);
                                           break;
         default: 
                 rc = false;
@@ -234,7 +241,7 @@ void FgdGenFitRecon::Exec(Option_t* opt)
     if(rc)
     {
       LOG(debug) <<" Tracks found " << foundTracks.size();
-      FitTracks(foundTracks);
+      FitTracks(foundTracks, trackPdgs);
     }
     else
     {
@@ -315,6 +322,7 @@ Bool_t FgdGenFitRecon::GetHits(std::vector<ReconHit>& allHits)
 
 Bool_t FgdGenFitRecon::FindUsingHough(std::vector<ReconHit>& hits
                                 , std::vector<std::vector<TVector3>>& foundTracks
+                                , std::vector<Int_t>& trackPdgs
                                 , FindTrackType trackType)
 {
   LOG(debug) << "hits " << hits.size();
@@ -388,7 +396,7 @@ Bool_t FgdGenFitRecon::FindUsingHough(std::vector<ReconHit>& hits
   newFinderParameter -> setSaveRootFile(false);
 
   std::vector<pathfinder::basicHit> allHits;
-  for(Int_t i=0; i< hits.size(); ++i)
+  for(size_t i=0; i< hits.size(); ++i)
   {
     allHits.emplace_back(pathfinder::basicHit(  hits[i].fHitPos.X()
                                                   , hits[i].fHitPos.Y()
@@ -421,13 +429,41 @@ Bool_t FgdGenFitRecon::FindUsingHough(std::vector<ReconHit>& hits
       }
       foundTracks.push_back(track);
     }
+
+    std::vector<std::vector<ReconHit*>> forPdgTracks;
+    // Get the pdg codes
+    for(size_t i = 0; i <  foundTracks.size() ; i++)
+    {
+      LOG(debug2) << "=============================== ";
+      LOG(debug2) << "Track " << i;
+
+      std::vector<TVector3>& tr = foundTracks[i];
+      std::vector<ReconHit*> trPdg;
+      for(size_t j = 0; j <  tr.size() ; j++)
+      {
+        ReconHit temp;
+        temp.fHitPos.SetXYZ(tr[j].X(), tr[j].Y(),tr[j].Z());
+
+        std::vector<ReconHit>::iterator iter = find(hits.begin(), hits.end(), temp);
+        if(iter!=hits.end())
+        {
+          ReconHit* hit = &(*iter);
+          trPdg.push_back(hit);
+          LOG(debug2) << " \tX " << iter->fmppcLoc.X() << " \tY " << iter->fmppcLoc.Y() << " \tZ " << iter->fmppcLoc.Z();
+        }
+      }
+      LOG(debug2) << "=============================== ";
+      forPdgTracks.push_back(trPdg);
+    }
+    GetPdgCode(forPdgTracks, trackPdgs);
   }
 
   return found;
 }
 
 Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
-                  , std::vector<std::vector<TVector3>>& foundTracks)
+                  , std::vector<std::vector<TVector3>>& foundTracks
+                  , std::vector<Int_t>& trackPdgs)
 {
   if(hits.empty())
   {
@@ -504,7 +540,7 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
   {
     std::vector<ReconHit*>& track = splitTracks[i];
     std::vector<TVector3> currentTrack;
-    LOG(debug2) << "=============================== " << i;
+    LOG(debug2) << "=============================== ";
     LOG(debug2) << "Track " << i;
     
     totalHitsInTracks+=track.size();
@@ -519,29 +555,12 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
 
       LOG(debug2) << " \tX " << trackHit->fmppcLoc.X() << " \tY " << trackHit->fmppcLoc.Y() << " \tZ " << trackHit->fmppcLoc.Z();    
     }
-    LOG(debug2) << "=============================== " << i;
+    LOG(debug2) << "=============================== ";
 
     foundTracks.push_back(currentTrack);
   }
 
-
-
-  for(Int_t i=0; i<splitTracks.size(); ++i)
-  {
-    std::vector<ReconHit*>& track = splitTracks[i];
-
-    Double_t totalPhotons(0);
-
-    for(Int_t j=0; j<track.size(); ++j)
-    {
-      ReconHit* trackHit = track[j];  
-      totalPhotons+= (trackHit->fphotons.X() + trackHit->fphotons.Y() + trackHit->fphotons.Z());
-    }
-    LOG(info) << "========== Track  ========= " << i << "  ========= ";
-    LOG(info) << "Average photons \t" << totalPhotons / track.size();
-    LOG(info) << "=============================== " << i;
-  }
-
+  GetPdgCode(splitTracks, trackPdgs);
 
   LOG(debug) << "Total hits in tracks " << totalHitsInTracks;
 
@@ -778,8 +797,7 @@ Bool_t FgdGenFitRecon::CalculateMomentum(const std::vector<TVector3>& track, con
   // Since there are energy losses the momentum should be lowered
   // since here it is calculated as a radius without energy losses
   // this is only an approximation
-  Double_t coeff = 10./track.size();
-  coeff = (coeff > 1 ) ?  1 : coeff; // Do not get increase in momentum
+  Double_t coeff = 1; //TODO approximate from pdg
 
   // Take the 3 points
   // 1. The begining of the track
@@ -806,8 +824,9 @@ Bool_t FgdGenFitRecon::CalculateMomentum(const std::vector<TVector3>& track, con
       Double_t R = radius/100.; // convert in meters
       Double_t magField_T = magField.X() / 10.; // convert from kGauss to Tesla units
       Double_t mom = coeff * charge * R * magField_T;
-      momentum.SetY(mom);
-      momentum.SetZ(mom);
+      // momentum.SetX(mom/3);
+      momentum.SetY(mom/3);
+      momentum.SetZ(mom/3);
       rc = true;
     }
   }
@@ -824,8 +843,9 @@ Bool_t FgdGenFitRecon::CalculateMomentum(const std::vector<TVector3>& track, con
       Double_t R = radius/100.; // convert in meters
       Double_t magField_T = magField.Y() / 10.; // convert from kGauss to Tesla units
       Double_t mom = coeff * charge * R * magField_T;
-      momentum.SetX(mom);
-      momentum.SetZ(mom);
+      momentum.SetX(mom/3);
+      // momentum.SetY(mom/3);
+      momentum.SetZ(mom/3);
       rc = true;
     }
   }
@@ -842,8 +862,9 @@ Bool_t FgdGenFitRecon::CalculateMomentum(const std::vector<TVector3>& track, con
       Double_t R = radius/100.; // convert in meters
       Double_t magField_T = magField.Z() / 10.; // convert from kGauss to Tesla units
       Double_t mom = coeff * charge * R * magField_T;
-      momentum.SetX(mom);
-      momentum.SetY(mom);
+      momentum.SetX(mom/3);
+      momentum.SetY(mom/3);
+      // momentum.SetZ(mom/3);
       rc = true;
     }
   }
@@ -879,8 +900,50 @@ Double_t FgdGenFitRecon::GetRadius(const TVector3& p1, const TVector3& p2, const
   return R;
 }
 
-void FgdGenFitRecon::FitTracks(std::vector<std::vector<TVector3>>& foundTracks)
+void FgdGenFitRecon::GetPdgCode(std::vector<std::vector<ReconHit*>>& tracks
+                  , std::vector<Int_t>& trackPdgs)
 {
+  const Int_t defaultPdg = 13; // Muon pdg code
+
+  for(size_t i=0; i<tracks.size(); ++i)
+  {
+    std::vector<ReconHit*>& track = tracks[i];
+
+    Double_t totalPhotons(0);
+
+    for(size_t j=0; j<track.size(); ++j)
+    {
+      ReconHit* trackHit = track[j];  
+      totalPhotons+= (trackHit->fphotons.X() + trackHit->fphotons.Y() + trackHit->fphotons.Z());
+    }
+
+    Double_t avgPhoto = totalPhotons / track.size();
+    LOG(debug2) << "========== Track  ========= " << i << "  ========= ";
+    LOG(debug2) << "Average photons \t" << avgPhoto;
+    LOG(debug2) << "=============================== " << i;
+
+    Int_t pdg(defaultPdg);
+    for(size_t k=0; k<fpdgAvgPh.size(); ++k)
+    {
+      PdgFromPhotons& p = fpdgAvgPh[k];
+      if(p.GetPdg(avgPhoto, pdg))
+      {
+        break;
+      }
+    }
+
+    trackPdgs.push_back(pdg);
+  }
+}
+
+void FgdGenFitRecon::FitTracks(std::vector<std::vector<TVector3>>& foundTracks, std::vector<Int_t>& trackPdgs)
+{
+    if(foundTracks.size()!=trackPdgs.size())
+    {
+      LOG(fatal) << "PdgCodes are not equal to the number of found tracks!";
+      return;
+    }
+
     fTracksArray->Delete();
     
     // init geometry and mag. field
@@ -908,12 +971,8 @@ void FgdGenFitRecon::FitTracks(std::vector<std::vector<TVector3>>& foundTracks)
         continue;
       }
       
-       // TODO2 extrack from finderTrack how to get initial guess for these values
-      // =================================
-      //const int pdg = 13;
-      int pdg = 13;
+      int pdg = trackPdgs[i];
 
-      //TVector3 posM(fstartPos);
       TVector3 posM(hitsOnTrack[0].X(),hitsOnTrack[0].Y(),hitsOnTrack[0].Z());
       TVector3 momM(0,0,0);
 
@@ -922,9 +981,6 @@ void FgdGenFitRecon::FitTracks(std::vector<std::vector<TVector3>>& foundTracks)
         LOG(debug) << "Track " << i << " unable to extract momentum. Continue with next track";
         continue;
       }
-      LOG(debug2) <<"********** Track Momentum " << i << " ******************* ";
-      LOG(debug2) << "(" << momM.X() << "," << momM.Y() << "," << momM.Z() << ")";
-      LOG(debug2) <<"******************************************* ";
 
       // approximate covariance
       double resolution = 0.1;
@@ -953,10 +1009,12 @@ void FgdGenFitRecon::FitTracks(std::vector<std::vector<TVector3>>& foundTracks)
   
       genfit::Track* toFitTrack = new genfit::Track(rep, seedState, seedCov);
 
-      LOG(debug) <<"******************************************* ";
-      LOG(debug) <<"******    Track "<< i << "  ************************";
-      LOG(debug) <<"******************************************* ";
-      LOG(debug) <<"hitsOnTrack.size(); "<< hitsOnTrack.size();
+      LOG(debug) << "******************************************* ";
+      LOG(debug) << "******    Track "<< i << "  ************************";
+      LOG(debug) << "******************************************* ";
+      LOG(debug) << " \tPdg code " << pdg;
+      LOG(debug) << " \tHits in track "<< hitsOnTrack.size();
+      LOG(debug) << " \tTrack Momentum " << "(" << momM.X() << "," << momM.Y() << "," << momM.Z() << ")";
       
       for(Int_t bh = 0; bh < hitsOnTrack.size(); ++bh)
       {

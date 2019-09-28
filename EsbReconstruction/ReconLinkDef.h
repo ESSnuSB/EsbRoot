@@ -21,5 +21,6 @@
 #pragma link C++ class esbroot::reconstruction::superfgd::FgdMuonOnlyGenFitRecon+;
 #pragma link C++ class esbroot::reconstruction::superfgd::ReconHit+;
 #pragma link C++ class esbroot::reconstruction::superfgd::FgdReconTemplate+;
+#pragma link C++ class esbroot::reconstruction::superfgd::PdgFromPhotons+;
 
 #endif
