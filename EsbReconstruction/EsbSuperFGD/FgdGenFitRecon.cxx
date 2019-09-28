@@ -843,6 +843,7 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
       }
 
 
+      Double_t radToDeg = 180/TMath::Pi();
       Double_t angle(0);
       Double_t zAxisAngle(0);
 
@@ -860,20 +861,22 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
       Int_t indOneP = indOne - intervalToCal;
       Int_t indTwoP = indTwo - intervalToCal;
 
-      if(j>= (distToCalc + intervalToCal -1) )
+      if(j>= (distToCalc -1) )
       {
         ReconHit* one = &hits[track[indOne]];
         ReconHit* two = &hits[track[indTwo]];
         diffVec1 = two->fmppcLoc - one->fmppcLoc;
+        zAxisAngle = radToDeg * zAxisVec.Angle(diffVec1);
+      }
 
+      if(j>= (distToCalc + intervalToCal -1) )
+      {
         ReconHit* oneP = &hits[track[indOneP]];
         ReconHit* twoP = &hits[track[indTwoP]];
         diffVec2 = twoP->fmppcLoc - oneP->fmppcLoc;
 
-        Double_t radToDeg = 180/TMath::Pi();
-        angle = radToDeg * diffVec1.Angle(diffVec2);
         
-        zAxisAngle = radToDeg * zAxisVec.Angle(diffVec1);
+        angle = radToDeg * diffVec1.Angle(diffVec2);
       }
 
       LOG(debug2) << "Id " << ind 
