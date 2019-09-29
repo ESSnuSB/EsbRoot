@@ -783,6 +783,11 @@ void FgdGenFitRecon::SplitTrack(std::vector<std::vector<ReconHit*>>& originalTra
 
 Bool_t FgdGenFitRecon::CalculateMomentum(const std::vector<TVector3>& track, const TVector3& magField, TVector3& momentum)
 {
+  //
+  //  p [Gev/c] = 0.3 * B [T] * R [m]
+  //
+
+
   if(track.size()<3)
   {
       momentum.SetXYZ(0.,0.,0);
@@ -794,10 +799,12 @@ Bool_t FgdGenFitRecon::CalculateMomentum(const std::vector<TVector3>& track, con
   // For calculation charge is taken as 1 unit of 'e'
   const Double_t charge = 1.;
 
+  Double_t inf = std::numeric_limits<Double_t>::infinity();
+
   // Since there are energy losses the momentum should be lowered
   // since here it is calculated as a radius without energy losses
   // this is only an approximation
-  Double_t coeff = 1; //TODO approximate from pdg
+  Double_t coeff = 0.3; 
 
   // Take the 3 points
   // 1. The begining of the track
@@ -811,6 +818,15 @@ Bool_t FgdGenFitRecon::CalculateMomentum(const std::vector<TVector3>& track, con
   TVector3 p2 = track[int_y];
   TVector3 p3 = track[ind_z];
 
+  TVector3 x_axis(1,0,0);
+  TVector3 y_axis(0,1,0);
+  TVector3 z_axis(0,0,1);
+
+  TVector3 length = p3 - p1;
+  Double_t x_angle = x_axis.Angle(length);
+  Double_t y_angle = y_axis.Angle(length);
+  Double_t z_angle = z_axis.Angle(length);
+
   // For each magnetic field plane calculate it for the perpendicular projections
   if(magField.X()!=0)
   {
@@ -819,14 +835,19 @@ Bool_t FgdGenFitRecon::CalculateMomentum(const std::vector<TVector3>& track, con
     TVector3 mag_point3(0,p3.Y(), p3.Z());
     Double_t radius = GetRadius(mag_point1,mag_point2,mag_point3); // radius is returned in [cm]
 
-    if(!std::isnan(radius))
+    if(!std::isnan(radius) && radius!=inf)
     {
       Double_t R = radius/100.; // convert in meters
       Double_t magField_T = magField.X() / 10.; // convert from kGauss to Tesla units
       Double_t mom = coeff * charge * R * magField_T;
-      // momentum.SetX(mom/3);
-      momentum.SetY(mom/3);
-      momentum.SetZ(mom/3);
+
+      Double_t mom_x = std::cos(x_angle) * mom;
+      Double_t mom_y = std::cos(y_angle) * mom;
+      Double_t mom_z = std::cos(z_angle) * mom;
+
+      momentum.SetX(mom_x);
+      momentum.SetY(mom_y);
+      momentum.SetZ(mom_z);
       rc = true;
     }
   }
@@ -838,14 +859,19 @@ Bool_t FgdGenFitRecon::CalculateMomentum(const std::vector<TVector3>& track, con
     TVector3 mag_point3(p3.X(), 0. , p3.Z());
     Double_t radius = GetRadius(mag_point1,mag_point2,mag_point3); // radius is returned in [cm]
 
-    if(!std::isnan(radius))
+    if(!std::isnan(radius) && radius!=inf)
     {
       Double_t R = radius/100.; // convert in meters
       Double_t magField_T = magField.Y() / 10.; // convert from kGauss to Tesla units
       Double_t mom = coeff * charge * R * magField_T;
-      momentum.SetX(mom/3);
-      // momentum.SetY(mom/3);
-      momentum.SetZ(mom/3);
+
+      Double_t mom_x = std::cos(x_angle) * mom + momentum.X();
+      Double_t mom_y = std::cos(y_angle) * mom + momentum.Y();
+      Double_t mom_z = std::cos(z_angle) * mom + momentum.Z();
+
+      momentum.SetX(mom_x);
+      momentum.SetY(mom_y);
+      momentum.SetZ(mom_z);
       rc = true;
     }
   }
@@ -857,14 +883,19 @@ Bool_t FgdGenFitRecon::CalculateMomentum(const std::vector<TVector3>& track, con
     TVector3 mag_point3(p3.X(), p3.Y() , 0.);
     Double_t radius = GetRadius(mag_point1,mag_point2,mag_point3); // radius is returned in [cm]
 
-    if(!std::isnan(radius))
+    if(!std::isnan(radius) && radius!=inf)
     {
       Double_t R = radius/100.; // convert in meters
       Double_t magField_T = magField.Z() / 10.; // convert from kGauss to Tesla units
       Double_t mom = coeff * charge * R * magField_T;
-      momentum.SetX(mom/3);
-      momentum.SetY(mom/3);
-      // momentum.SetZ(mom/3);
+
+      Double_t mom_x = std::cos(x_angle) * mom + momentum.X();
+      Double_t mom_y = std::cos(y_angle) * mom + momentum.Y();
+      Double_t mom_z = std::cos(z_angle) * mom + momentum.Z();
+
+      momentum.SetX(mom_x);
+      momentum.SetY(mom_y);
+      momentum.SetZ(mom_z);
       rc = true;
     }
   }
@@ -895,7 +926,7 @@ Double_t FgdGenFitRecon::GetRadius(const TVector3& p1, const TVector3& p2, const
   Double_t c = (2*std::sin(angle))/x_z_Mag;
   Double_t R = 1./c;
 
-  LOG(debug2) << "Radius is -> " << R;;
+  LOG(debug2) << "Radius is -> " << R << " [cm]";
 
   return R;
 }
