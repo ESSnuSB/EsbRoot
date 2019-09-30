@@ -37,16 +37,6 @@ searchneighborhood=0
 # setting for lower photon limit
 errPhotoLimit=0   
 
-# Time interval for hits to be considered simultaneous
-timeIntervalHits=1000          #in units used in reconstuction - from FgdDetector time is extracted in 1e-9 [s]
-                            # 0 or negative number indicates that there is no time splitting
-
-# If the 'timeIntervalHits' is bigger than 0, you can exlude the hits below or above the selected time interval
-#1 indicates true
-#0 indicates false
-excludeHitsAbove=0  
-excludeHitsBelow=0 
-
 # The belog settings for graph traversal
 
 # The grad in angle is calculated as the angle between two vectors.
@@ -55,3 +45,9 @@ excludeHitsBelow=0
 gradDist=7              # Distance in number of cubes for track to calculate the grad
 gradIntervalDist=4      # Interval between two distance vectors to calculate grad
 gradDiff=25             # Allowable difference between grad to consider a different track
+
+# Calculate momentum from the segment with length 'momTrackSegment' by averaging the calculated momentum from 3 points (the 1st of the segment,
+# the second and for each point in between). Since the are energy losses and the momentum decreases, take the particle momentum from as the average from the 
+# first'avgTrackMomentum' points
+momTrackSegment=11
+avgTrackMomentum=3

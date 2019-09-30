@@ -46,14 +46,14 @@ void simulate_3_reconstruction(TString inFile = "fgd_dig.root",
     ,"../../geometry/media.geo"       // Media file with defined materials
     , 1                               // Verbose level
     , debugLvl                        // debug level of genfit (0 - little, 1 - debug info, 2 - detailed)
-    , true                           // To visualize the tracks using genfit::Eventdisplay
+    , false                           // To visualize the tracks using genfit::Eventdisplay
     , "D");                           // Option to be passed for genfit::Eventdisplay if used
 
   ((reconstruction::superfgd::FgdGenFitRecon*)recon)->SetMinHits(3);
-  ((reconstruction::superfgd::FgdGenFitRecon*)recon)->SetUseTracker(reconstruction::superfgd::FgdGenFitRecon::TrackFinder::HOUGH_PATHFINDER_LINE);
+  // ((reconstruction::superfgd::FgdGenFitRecon*)recon)->SetUseTracker(reconstruction::superfgd::FgdGenFitRecon::TrackFinder::HOUGH_PATHFINDER_LINE);
   // ((reconstruction::superfgd::FgdGenFitRecon*)recon)->SetUseTracker(reconstruction::superfgd::FgdGenFitRecon::TrackFinder::HOUGH_PATHFINDER_HELIX);
   // ((reconstruction::superfgd::FgdGenFitRecon*)recon)->SetUseTracker(reconstruction::superfgd::FgdGenFitRecon::TrackFinder::HOUGH_PATHFINDER_CURL);
-  // ((reconstruction::superfgd::FgdGenFitRecon*)recon)->SetUseTracker(reconstruction::superfgd::FgdGenFitRecon::TrackFinder::GRAPH);
+  ((reconstruction::superfgd::FgdGenFitRecon*)recon)->SetUseTracker(reconstruction::superfgd::FgdGenFitRecon::TrackFinder::GRAPH);
 
   ((reconstruction::superfgd::FgdGenFitRecon*)recon)->AddPdgPhotoVal(13, 60. , 15.);
   ((reconstruction::superfgd::FgdGenFitRecon*)recon)->AddPdgPhotoVal(2212, 148. , 63.);

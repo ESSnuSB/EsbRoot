@@ -97,7 +97,8 @@ private:
   void BuildGraph(std::vector<ReconHit>& hits);
   void CalculateGrad(std::vector<std::vector<ReconHit*>>& tracks);
   void SplitTrack(std::vector<std::vector<ReconHit*>>& originalTracks, std::vector<std::vector<ReconHit*>>& splitTracks);
-  Bool_t CalculateMomentum(const std::vector<TVector3>& track,const TVector3& magField, TVector3& momentum);
+  Bool_t CalculateInitialMomentum(const std::vector<TVector3>& track,const TVector3& magField, TVector3& momentum, TVector3& momentumLoss);
+  Bool_t CalculateMomentum(const TVector3& p1, const TVector3& p2, const TVector3& p3 , const TVector3& magField, TVector3& momentum);
   Double_t GetRadius(const TVector3& p1, const TVector3& p2, const TVector3& p3);
   void GetPdgCode(std::vector<std::vector<ReconHit*>>& tracks
                   , std::vector<Int_t>& trackPdgs);
