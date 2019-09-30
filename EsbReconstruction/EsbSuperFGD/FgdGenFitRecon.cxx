@@ -1355,6 +1355,9 @@ void FgdGenFitRecon::FitTracks(std::vector<std::vector<TVector3>>& foundTracks, 
         {
           genTracks.push_back(toFitTrack);
         }
+        
+        isMomentumLow = fiStatuStatus->isFitted() && !fiStatuStatus->isFitConverged();
+        
       }
       catch(genfit::Exception& e)
       {
