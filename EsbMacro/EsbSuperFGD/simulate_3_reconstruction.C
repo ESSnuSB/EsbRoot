@@ -14,7 +14,7 @@
 void simulate_3_reconstruction(TString inFile = "fgd_dig.root", 
 	      TString parFile = "params.root",
 	      TString outFile = "fgd_recon.root",
-              Int_t nStartEvent = 4, Int_t nEvents = 1)
+              Int_t nStartEvent = 19, Int_t nEvents = 1)
 {
   using namespace esbroot;
 
@@ -37,7 +37,7 @@ void simulate_3_reconstruction(TString inFile = "fgd_dig.root",
 
   double debugLvl = 0.0; 
 
-  fair::Logger::SetConsoleSeverity(fair::Severity::debug2);
+  fair::Logger::SetConsoleSeverity(fair::Severity::debug);
   fair::Logger::SetConsoleColor(true);
 
   FairTask* recon = new reconstruction::superfgd::FgdGenFitRecon(
@@ -53,7 +53,9 @@ void simulate_3_reconstruction(TString inFile = "fgd_dig.root",
   // ((reconstruction::superfgd::FgdGenFitRecon*)recon)->SetUseTracker(reconstruction::superfgd::FgdGenFitRecon::TrackFinder::HOUGH_PATHFINDER_LINE);
   // ((reconstruction::superfgd::FgdGenFitRecon*)recon)->SetUseTracker(reconstruction::superfgd::FgdGenFitRecon::TrackFinder::HOUGH_PATHFINDER_HELIX);
   // ((reconstruction::superfgd::FgdGenFitRecon*)recon)->SetUseTracker(reconstruction::superfgd::FgdGenFitRecon::TrackFinder::HOUGH_PATHFINDER_CURL);
-  ((reconstruction::superfgd::FgdGenFitRecon*)recon)->SetUseTracker(reconstruction::superfgd::FgdGenFitRecon::TrackFinder::GRAPH);
+  // ((reconstruction::superfgd::FgdGenFitRecon*)recon)->SetUseTracker(reconstruction::superfgd::FgdGenFitRecon::TrackFinder::GRAPH);
+  ((reconstruction::superfgd::FgdGenFitRecon*)recon)->SetUseTracker(reconstruction::superfgd::FgdGenFitRecon::TrackFinder::GRAPH_HOUGH_PATHFINDER);
+  
 
   ((reconstruction::superfgd::FgdGenFitRecon*)recon)->AddPdgPhotoVal(13, 60. , 15.);
   ((reconstruction::superfgd::FgdGenFitRecon*)recon)->AddPdgPhotoVal(2212, 148. , 63.);

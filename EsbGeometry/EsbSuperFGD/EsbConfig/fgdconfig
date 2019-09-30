@@ -49,5 +49,5 @@ gradDiff=25             # Allowable difference between grad to consider a differ
 # Calculate momentum from the segment with length 'momTrackSegment' by averaging the calculated momentum from 3 points (the 1st of the segment,
 # the second and for each point in between). Since the are energy losses and the momentum decreases, take the particle momentum from as the average from the 
 # first'avgTrackMomentum' points
-momTrackSegment=11
+momTrackSegment=15
 avgTrackMomentum=3

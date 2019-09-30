@@ -31,7 +31,8 @@ class FgdGenFitRecon : public FairTask
     HOUGH_PATHFINDER_LINE,
     HOUGH_PATHFINDER_HELIX,
     HOUGH_PATHFINDER_CURL,
-    GRAPH
+    GRAPH,
+    GRAPH_HOUGH_PATHFINDER
   };
 
   /** Default constructor **/  
@@ -84,13 +85,19 @@ private:
   Bool_t GetHits(std::vector<ReconHit>& allHits);
 
   /** Extrack tracks from the hit using Hough Transform **/
-  Bool_t FindUsingHough(std::vector<ReconHit>& hits
+  Bool_t FindUsingHough(std::vector<TVector3>& points
+                  , std::vector<ReconHit>& hits
                   , std::vector<std::vector<TVector3>>& foundTracks
                   , std::vector<Int_t>& trackPdgs
                   , FindTrackType trackType);
 
   /** Extrack tracks using graph traversal and track gradient  **/
   Bool_t FindUsingGraph(std::vector<ReconHit>& hits
+                  , std::vector<std::vector<TVector3>>& foundTracks
+                  , std::vector<Int_t>& trackPdgs);
+
+  /** Extrack tracks using graph traversal and track gradient and then apply Hough transform for each track **/
+  Bool_t FindUsingGraphHough(std::vector<ReconHit>& hits
                   , std::vector<std::vector<TVector3>>& foundTracks
                   , std::vector<Int_t>& trackPdgs);
   
@@ -102,6 +109,7 @@ private:
   Double_t GetRadius(const TVector3& p1, const TVector3& p2, const TVector3& p3);
   void GetPdgCode(std::vector<std::vector<ReconHit*>>& tracks
                   , std::vector<Int_t>& trackPdgs);
+  void ConvertHitToVec(std::vector<TVector3>& points, std::vector<ReconHit>& hits);
 
   /** Fit the found tracks using genfit **/
   void FitTracks(std::vector<std::vector<TVector3>>& foundTracks
