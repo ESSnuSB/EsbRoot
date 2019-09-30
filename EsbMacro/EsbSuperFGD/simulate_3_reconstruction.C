@@ -14,7 +14,7 @@
 void simulate_3_reconstruction(TString inFile = "fgd_dig.root", 
 	      TString parFile = "params.root",
 	      TString outFile = "fgd_recon.root",
-              Int_t nStartEvent = 19, Int_t nEvents = 1)
+              Int_t nStartEvent = 9, Int_t nEvents = 1)
 {
   using namespace esbroot;
 
@@ -37,7 +37,7 @@ void simulate_3_reconstruction(TString inFile = "fgd_dig.root",
 
   double debugLvl = 0.0; 
 
-  fair::Logger::SetConsoleSeverity(fair::Severity::debug);
+  fair::Logger::SetConsoleSeverity(fair::Severity::debug2);
   fair::Logger::SetConsoleColor(true);
 
   FairTask* recon = new reconstruction::superfgd::FgdGenFitRecon(
@@ -46,15 +46,15 @@ void simulate_3_reconstruction(TString inFile = "fgd_dig.root",
     ,"../../geometry/media.geo"       // Media file with defined materials
     , 1                               // Verbose level
     , debugLvl                        // debug level of genfit (0 - little, 1 - debug info, 2 - detailed)
-    , false                           // To visualize the tracks using genfit::Eventdisplay
+    , true                           // To visualize the tracks using genfit::Eventdisplay
     , "D");                           // Option to be passed for genfit::Eventdisplay if used
 
   ((reconstruction::superfgd::FgdGenFitRecon*)recon)->SetMinHits(3);
   // ((reconstruction::superfgd::FgdGenFitRecon*)recon)->SetUseTracker(reconstruction::superfgd::FgdGenFitRecon::TrackFinder::HOUGH_PATHFINDER_LINE);
   // ((reconstruction::superfgd::FgdGenFitRecon*)recon)->SetUseTracker(reconstruction::superfgd::FgdGenFitRecon::TrackFinder::HOUGH_PATHFINDER_HELIX);
   // ((reconstruction::superfgd::FgdGenFitRecon*)recon)->SetUseTracker(reconstruction::superfgd::FgdGenFitRecon::TrackFinder::HOUGH_PATHFINDER_CURL);
-  // ((reconstruction::superfgd::FgdGenFitRecon*)recon)->SetUseTracker(reconstruction::superfgd::FgdGenFitRecon::TrackFinder::GRAPH);
-  ((reconstruction::superfgd::FgdGenFitRecon*)recon)->SetUseTracker(reconstruction::superfgd::FgdGenFitRecon::TrackFinder::GRAPH_HOUGH_PATHFINDER);
+  ((reconstruction::superfgd::FgdGenFitRecon*)recon)->SetUseTracker(reconstruction::superfgd::FgdGenFitRecon::TrackFinder::GRAPH);
+  // ((reconstruction::superfgd::FgdGenFitRecon*)recon)->SetUseTracker(reconstruction::superfgd::FgdGenFitRecon::TrackFinder::GRAPH_HOUGH_PATHFINDER);
   
 
   ((reconstruction::superfgd::FgdGenFitRecon*)recon)->AddPdgPhotoVal(13, 60. , 15.);

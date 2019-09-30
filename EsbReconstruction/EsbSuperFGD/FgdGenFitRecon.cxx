@@ -1039,7 +1039,7 @@ Bool_t FgdGenFitRecon::CalculateInitialMomentum(const std::vector<TVector3>& tra
 Bool_t FgdGenFitRecon::CalculateMomentum(const TVector3& p1, const TVector3& p2, const TVector3& p3 , const TVector3& magField, TVector3& momentum)
 {
   //
-  //  p [Gev/c] = 0.3 * e [1.6 x 10^-19 coulumb] * B [T] * R [m]
+  //  p [Gev/c] = e [1.6 x 10^-19 coulumb] * B [T] * R [m]
   //
 
   Bool_t rc(false);
@@ -1048,11 +1048,6 @@ Bool_t FgdGenFitRecon::CalculateMomentum(const TVector3& p1, const TVector3& p2,
   const Double_t charge = 1.;
 
   Double_t inf = std::numeric_limits<Double_t>::infinity();
-
-  // Since there are energy losses the momentum should be lowered
-  // since here it is calculated as a radius without energy losses
-  // this is only an approximation
-  Double_t coeff = 1; 
 
   TVector3 x_axis(1,0,0);
   TVector3 y_axis(0,1,0);
@@ -1075,7 +1070,7 @@ Bool_t FgdGenFitRecon::CalculateMomentum(const TVector3& p1, const TVector3& p2,
     {
       Double_t R = radius/100.; // convert in meters
       Double_t magField_T = magField.X() / 10.; // convert from kGauss to Tesla units
-      Double_t mom = coeff * charge * R * magField_T;
+      Double_t mom = charge * R * magField_T;
 
       Double_t mom_x = std::cos(x_angle) * mom;
       Double_t mom_y = std::cos(y_angle) * mom;
@@ -1099,7 +1094,7 @@ Bool_t FgdGenFitRecon::CalculateMomentum(const TVector3& p1, const TVector3& p2,
     {
       Double_t R = radius/100.; // convert in meters
       Double_t magField_T = magField.Y() / 10.; // convert from kGauss to Tesla units
-      Double_t mom = coeff * charge * R * magField_T;
+      Double_t mom = charge * R * magField_T;
 
       Double_t mom_x = std::cos(x_angle) * mom + momentum.X();
       Double_t mom_y = std::cos(y_angle) * mom + momentum.Y();
@@ -1123,7 +1118,7 @@ Bool_t FgdGenFitRecon::CalculateMomentum(const TVector3& p1, const TVector3& p2,
     {
       Double_t R = radius/100.; // convert in meters
       Double_t magField_T = magField.Z() / 10.; // convert from kGauss to Tesla units
-      Double_t mom = coeff * charge * R * magField_T;
+      Double_t mom = charge * R * magField_T;
 
       Double_t mom_x = std::cos(x_angle) * mom + momentum.X();
       Double_t mom_y = std::cos(y_angle) * mom + momentum.Y();
@@ -1244,8 +1239,29 @@ void FgdGenFitRecon::FitTracks(std::vector<std::vector<TVector3>>& foundTracks, 
 
     std::vector<genfit::Track*> genTracks;
     int detId(1); // Detector id, it is the same, we only have one detector
-    for(size_t i = 0; i <  foundTracks.size() ; i++)
+
+    // If the track could not be fitted because of Bette-bloch calculations
+    // try to double the momentum
+    Bool_t isMomentumLow(false);
+    Int_t momCoef = 1;
+    Int_t limitCoeff = 4;
+
+
+    for(size_t i = 0; i <  foundTracks.size() ; ++i)
     {
+      if(momCoef>=limitCoeff)
+      {
+        isMomentumLow = false;
+        momCoef = 1;
+      }
+
+      if(isMomentumLow)
+      {
+        momCoef = momCoef * 2;
+        --i;
+        isMomentumLow = false;
+        LOG(debug) << "Momentum too low, doubling momentum estimate";
+      }
       std::vector<TVector3>& hitsOnTrack = foundTracks[i];
 
       // Set lower limit on track size
@@ -1267,6 +1283,8 @@ void FgdGenFitRecon::FitTracks(std::vector<std::vector<TVector3>>& foundTracks, 
         LOG(debug) << "Track " << i << " unable to extract momentum. Continue with next track";
         continue;
       }
+
+      momM = momM * momCoef;
 
       // approximate covariance
       double resolution = 0.1;
@@ -1342,6 +1360,9 @@ void FgdGenFitRecon::FitTracks(std::vector<std::vector<TVector3>>& foundTracks, 
       {
           LOG(error) <<"Exception, when tryng to fit track";
           LOG(error) << e.what();
+          LOG(error) << e.getExcString();
+          e.info();
+          isMomentumLow = (e.getExcString().find("KalmanFitterInfo::getFittedState") != std::string::npos);
       }
     }
   
