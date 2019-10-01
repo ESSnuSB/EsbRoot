@@ -8,7 +8,11 @@ https://essnusb.irb.hr/doxygen/
 This guide is heavily based on this talk: \
 http://essnusb.eu/docdbprivate/ShowDocument?docid=186 \
 
-## 0. Prepare the directory
+## 0.1 Install prerequisites
+Debian-based distributions (e.g. Linux Mint): \
+sudo apt-get install cmake cmake-data g++ gcc gfortran debianutils build-essential make patch sed libx11-dev libxft-dev libxext-dev libxpm-dev libxmu-dev libglu1-mesa-dev libgl1-mesa-dev libncurses5-dev curl libcurl4-openssl-dev bzip2 libbz2-dev gzip unzip tar subversion git xutils-dev flex bison lsb-release python-dev libc6-dev-i386 libxml2-dev wget libssl-dev libkrb5-dev automake autoconf libtool
+
+## 0.2 Prepare the directory
 For example, we will install everything in ~/ESSnuSB/soft/ . Change the INSTALL_PATH variable if you want to put it somewhere else.
 ```
 export INSTALL_PATH=~/ESSnuSB/soft/
