@@ -212,7 +212,6 @@ void FgdGenFitRecon::Exec(Option_t* opt)
   {
     std::vector<ReconHit> allhits;
     std::vector<std::vector<TVector3>> foundTracks;
-    std::vector<Int_t> trackPdgs;
     std::vector<TVector3> points;
 
     bool rc = GetHits(allhits);
@@ -223,22 +222,22 @@ void FgdGenFitRecon::Exec(Option_t* opt)
       {
         case TrackFinder::HOUGH_PATHFINDER_LINE:
                                           ConvertHitToVec(points, allhits);
-                                          rc = FindUsingHough(points, allhits, foundTracks, trackPdgs, FindTrackType::STRAIGHT_LINE);
+                                          rc = FindUsingHough(points, allhits, foundTracks, FindTrackType::STRAIGHT_LINE);
                                           break;
         case TrackFinder::HOUGH_PATHFINDER_HELIX:
                                           ConvertHitToVec(points, allhits);
-                                          rc = FindUsingHough(points, allhits, foundTracks, trackPdgs, FindTrackType::HELIX);
+                                          rc = FindUsingHough(points, allhits, foundTracks, FindTrackType::HELIX);
                                           break;
         case TrackFinder::HOUGH_PATHFINDER_CURL:
                                           ConvertHitToVec(points, allhits);
-                                          rc = FindUsingHough(points, allhits, foundTracks, trackPdgs, FindTrackType::CURL);
+                                          rc = FindUsingHough(points, allhits, foundTracks, FindTrackType::CURL);
                                           break;
         case TrackFinder::GRAPH:
-                                          rc = FindUsingGraph(allhits, foundTracks, trackPdgs);
+                                          rc = FindUsingGraph(allhits, foundTracks);
                                           break;
 
         case TrackFinder::GRAPH_HOUGH_PATHFINDER:
-                                          rc = FindUsingGraphHough(allhits, foundTracks, trackPdgs);
+                                          rc = FindUsingGraphHough(allhits, foundTracks);
                                           break;
         default: 
                 rc = false;
@@ -249,7 +248,7 @@ void FgdGenFitRecon::Exec(Option_t* opt)
     if(rc)
     {
       LOG(debug) <<" Tracks found " << foundTracks.size();
-      FitTracks(foundTracks, trackPdgs);
+      FitTracks(foundTracks);
     }
     else
     {
@@ -331,7 +330,6 @@ Bool_t FgdGenFitRecon::GetHits(std::vector<ReconHit>& allHits)
 Bool_t FgdGenFitRecon::FindUsingHough(std::vector<TVector3>& points
                                 , std::vector<ReconHit>& hits
                                 , std::vector<std::vector<TVector3>>& foundTracks
-                                , std::vector<Int_t>& trackPdgs
                                 , FindTrackType trackType)
 {
   LOG(debug) << "hits " << hits.size();
@@ -438,41 +436,13 @@ Bool_t FgdGenFitRecon::FindUsingHough(std::vector<TVector3>& points
       }
       foundTracks.push_back(track);
     }
-
-    std::vector<std::vector<ReconHit*>> forPdgTracks;
-    // Get the pdg codes
-    for(size_t i = 0; i <  foundTracks.size() ; i++)
-    {
-      LOG(debug2) << "=============================== ";
-      LOG(debug2) << "Track " << i;
-
-      std::vector<TVector3>& tr = foundTracks[i];
-      std::vector<ReconHit*> trPdg;
-      for(size_t j = 0; j <  tr.size() ; j++)
-      {
-        ReconHit temp;
-        temp.fHitPos.SetXYZ(tr[j].X(), tr[j].Y(),tr[j].Z());
-
-        std::vector<ReconHit>::iterator iter = find(hits.begin(), hits.end(), temp);
-        if(iter!=hits.end())
-        {
-          ReconHit* hit = &(*iter);
-          trPdg.push_back(hit);
-          LOG(debug2) << " \tX " << iter->fmppcLoc.X() << " \tY " << iter->fmppcLoc.Y() << " \tZ " << iter->fmppcLoc.Z();
-        }
-      }
-      LOG(debug2) << "=============================== ";
-      forPdgTracks.push_back(trPdg);
-    }
-    GetPdgCode(forPdgTracks, trackPdgs);
   }
 
   return found;
 }
 
 Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
-                  , std::vector<std::vector<TVector3>>& foundTracks
-                  , std::vector<Int_t>& trackPdgs)
+                  , std::vector<std::vector<TVector3>>& foundTracks)
 {
   if(hits.empty())
   {
@@ -569,23 +539,19 @@ Bool_t FgdGenFitRecon::FindUsingGraph(std::vector<ReconHit>& hits
     foundTracks.push_back(currentTrack);
   }
 
-  GetPdgCode(splitTracks, trackPdgs);
-
   LOG(debug) << "Total hits in tracks " << totalHitsInTracks;
 
   return !foundTracks.empty();
 }
 
 Bool_t FgdGenFitRecon::FindUsingGraphHough(std::vector<ReconHit>& hits
-                  , std::vector<std::vector<TVector3>>& foundTracks
-                  , std::vector<Int_t>& trackPdgs)
+                  , std::vector<std::vector<TVector3>>& foundTracks)
 {
   
   Bool_t rc(false);
 
   std::vector<std::vector<TVector3>> graphTracks;
-  std::vector<Int_t> graphPdgs;
-  rc = FindUsingGraph(hits, graphTracks, graphPdgs);
+  rc = FindUsingGraph(hits, graphTracks);
 
   if(rc)
   {
@@ -593,13 +559,12 @@ Bool_t FgdGenFitRecon::FindUsingGraphHough(std::vector<ReconHit>& hits
     // add the found hough track with the biggest number of found hits
     for(size_t i = 0; i < graphTracks.size(); ++i)
     {
-      std::vector<Int_t> dummyPdgs;
       size_t biggestSize(0);
       std::vector<TVector3>* trackToAdd = nullptr;
 
       // 1. Line hough ========================
       std::vector<std::vector<TVector3>> hough_Line;
-      if(FindUsingHough(graphTracks[i], hits, hough_Line, dummyPdgs, FindTrackType::STRAIGHT_LINE)
+      if(FindUsingHough(graphTracks[i], hits, hough_Line, FindTrackType::STRAIGHT_LINE)
           && !hough_Line.empty())
       {
         size_t localBiggest(0);
@@ -621,12 +586,12 @@ Bool_t FgdGenFitRecon::FindUsingGraphHough(std::vector<ReconHit>& hits
         }
       }
       LOG(debug)<< "Hough transform [line] " << hough_Line.size();
-      dummyPdgs.clear();
+
       // ======================================
 
       // 2. Helix hough ========================
       std::vector<std::vector<TVector3>> hough_Helix;
-      if(FindUsingHough(graphTracks[i], hits, hough_Helix, dummyPdgs, FindTrackType::HELIX)
+      if(FindUsingHough(graphTracks[i], hits, hough_Helix, FindTrackType::HELIX)
         && !hough_Line.empty()) 
       {
         size_t localBiggest(0);
@@ -648,12 +613,12 @@ Bool_t FgdGenFitRecon::FindUsingGraphHough(std::vector<ReconHit>& hits
         }
       }
       LOG(debug)<< "Hough transform [helix] " << hough_Helix.size();
-      dummyPdgs.clear();
+
       // ======================================
 
       // 3. Curl hough ========================
       std::vector<std::vector<TVector3>> hough_Curl;
-      if(FindUsingHough(graphTracks[i], hits, hough_Curl, dummyPdgs, FindTrackType::CURL)
+      if(FindUsingHough(graphTracks[i], hits, hough_Curl, FindTrackType::CURL)
         && !hough_Line.empty()) 
       {
         size_t localBiggest(0);
@@ -675,18 +640,16 @@ Bool_t FgdGenFitRecon::FindUsingGraphHough(std::vector<ReconHit>& hits
         }
       }
       LOG(debug)<< "Hough transform [curl] " << hough_Curl.size();
-      dummyPdgs.clear();
+
       // ======================================
 
       if(trackToAdd!=nullptr)
       {
         foundTracks.emplace_back(*trackToAdd);
-        trackPdgs.push_back(graphPdgs[i]);
       }
       else
       {
         foundTracks.push_back(graphTracks[i]);
-        trackPdgs.push_back(graphPdgs[i]);
         LOG(debug)<< "Hough transform could not find track, adding initial graph track. ";
       }
       
@@ -1169,40 +1132,21 @@ Double_t FgdGenFitRecon::GetRadius(const TVector3& p1, const TVector3& p2, const
   return R;
 }
 
-void FgdGenFitRecon::GetPdgCode(std::vector<std::vector<ReconHit*>>& tracks
-                  , std::vector<Int_t>& trackPdgs)
+Int_t FgdGenFitRecon::GetPdgCode(const TVector3& momentum, const TVector3& momentumLoss)
 {
-  const Int_t defaultPdg = 13; // Muon pdg code
+  Int_t pdgCode = 13; // Muon pdg code
 
-  for(size_t i=0; i<tracks.size(); ++i)
+  for(size_t k=0; k<fpdgFromMomLoss.size(); ++k)
   {
-    std::vector<ReconHit*>& track = tracks[i];
-
-    Double_t totalPhotons(0);
-
-    for(size_t j=0; j<track.size(); ++j)
+    PdgFromMomentumLoss& p = fpdgFromMomLoss[k];
+    Double_t momtoLoss = momentum.Mag()/ momentumLoss.Mag();
+    if(p.GetPdg(momtoLoss, pdgCode))
     {
-      ReconHit* trackHit = track[j];  
-      totalPhotons+= (trackHit->fphotons.X() + trackHit->fphotons.Y() + trackHit->fphotons.Z());
+      break;
     }
-
-    Double_t avgPhoto = totalPhotons / track.size();
-    LOG(debug2) << "========== Track  ========= " << i << "  ========= ";
-    LOG(debug2) << "Average photons \t" << avgPhoto;
-    LOG(debug2) << "=============================== " << i;
-
-    Int_t pdg(defaultPdg);
-    for(size_t k=0; k<fpdgAvgPh.size(); ++k)
-    {
-      PdgFromPhotons& p = fpdgAvgPh[k];
-      if(p.GetPdg(avgPhoto, pdg))
-      {
-        break;
-      }
-    }
-
-    trackPdgs.push_back(pdg);
   }
+
+  return pdgCode;
 }
 
 void FgdGenFitRecon::ConvertHitToVec(std::vector<TVector3>& points, std::vector<ReconHit>& hits)
@@ -1215,14 +1159,8 @@ void FgdGenFitRecon::ConvertHitToVec(std::vector<TVector3>& points, std::vector<
   }
 }
 
-void FgdGenFitRecon::FitTracks(std::vector<std::vector<TVector3>>& foundTracks, std::vector<Int_t>& trackPdgs)
+void FgdGenFitRecon::FitTracks(std::vector<std::vector<TVector3>>& foundTracks)
 {
-    if(foundTracks.size()!=trackPdgs.size())
-    {
-      LOG(fatal) << "PdgCodes are not equal to the number of found tracks!";
-      return;
-    }
-
     fTracksArray->Delete();
     
     // init geometry and mag. field
@@ -1271,8 +1209,7 @@ void FgdGenFitRecon::FitTracks(std::vector<std::vector<TVector3>>& foundTracks, 
         continue;
       }
       
-      int pdg = trackPdgs[i];
-
+    
       TVector3 posM(hitsOnTrack[0].X(),hitsOnTrack[0].Y(),hitsOnTrack[0].Z());
       TVector3 momM(0,0,0);
 
@@ -1283,6 +1220,8 @@ void FgdGenFitRecon::FitTracks(std::vector<std::vector<TVector3>>& foundTracks, 
         LOG(debug) << "Track " << i << " unable to extract momentum. Continue with next track";
         continue;
       }
+
+      int pdg = GetPdgCode(momM, momLoss);
 
       momM = momM * momCoef;
 

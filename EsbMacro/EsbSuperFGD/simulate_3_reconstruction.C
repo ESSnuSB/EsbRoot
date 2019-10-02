@@ -14,7 +14,7 @@
 void simulate_3_reconstruction(TString inFile = "fgd_dig.root", 
 	      TString parFile = "params.root",
 	      TString outFile = "fgd_recon.root",
-              Int_t nStartEvent = 9, Int_t nEvents = 1)
+              Int_t nStartEvent = 0, Int_t nEvents = 1)
 {
   using namespace esbroot;
 
@@ -46,7 +46,7 @@ void simulate_3_reconstruction(TString inFile = "fgd_dig.root",
     ,"../../geometry/media.geo"       // Media file with defined materials
     , 1                               // Verbose level
     , debugLvl                        // debug level of genfit (0 - little, 1 - debug info, 2 - detailed)
-    , true                           // To visualize the tracks using genfit::Eventdisplay
+    , false                           // To visualize the tracks using genfit::Eventdisplay
     , "D");                           // Option to be passed for genfit::Eventdisplay if used
 
   ((reconstruction::superfgd::FgdGenFitRecon*)recon)->SetMinHits(3);
@@ -57,8 +57,10 @@ void simulate_3_reconstruction(TString inFile = "fgd_dig.root",
   // ((reconstruction::superfgd::FgdGenFitRecon*)recon)->SetUseTracker(reconstruction::superfgd::FgdGenFitRecon::TrackFinder::GRAPH_HOUGH_PATHFINDER);
   
 
-  ((reconstruction::superfgd::FgdGenFitRecon*)recon)->AddPdgPhotoVal(13, 60. , 15.);
-  ((reconstruction::superfgd::FgdGenFitRecon*)recon)->AddPdgPhotoVal(2212, 148. , 63.);
+  ((reconstruction::superfgd::FgdGenFitRecon*)recon)->AddPdgMomLoss(11, 9. , 6.);
+  ((reconstruction::superfgd::FgdGenFitRecon*)recon)->AddPdgMomLoss(13, 21. , 5.);
+  ((reconstruction::superfgd::FgdGenFitRecon*)recon)->AddPdgMomLoss(211, 28. , 1.);
+  ((reconstruction::superfgd::FgdGenFitRecon*)recon)->AddPdgMomLoss(2212, 148. , 63.);
   
   fRun->AddTask(recon);   
   fRun->Init(); // initializing
