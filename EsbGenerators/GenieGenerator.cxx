@@ -100,15 +100,35 @@ GenieGenerator::GenieGenerator(genie::GFluxI *fluxI, genie::GeomAnalyzerI *geomI
 		// particles to be tracked by the detector-level MC
 		if ((p->Status() == genie::EGHepStatus::kIStStableFinalState)) 
 		{
-				//Workaround for GENIE bug (or "feature") that treats nuclear energy as trackable particle
-				if(p->Pdg() >= 2000000000) continue;
+			if(IsPdgAllowed(p->Pdg()))
+			{
 				primGen->AddTrack(p->Pdg(), p->Px(), p->Py(), p->Pz(), v->X(), v->Y(), v->Z());
+			}
 		}
 	}
 		
 	delete event;
     
     return true;
+}
+
+
+Bool_t GenieGenerator::IsPdgAllowed(int pdg)
+{
+	// Workaround for GENIE bug (or "feature") that treats nuclear energy as trackable particle
+	if(pdg >= 2000000000)
+	{
+		return false;
+	}
+
+	// If there are no codes to filter any valid pdg is allowed to be tracked
+	if(fpdgCodesAllowed.empty())
+	{
+		return true;
+	}
+
+	Bool_t isAllowed = std::find(fpdgCodesAllowed.begin(), fpdgCodesAllowed.end(), pdg) != fpdgCodesAllowed.end();
+	return isAllowed;
 }
 
 FairGenerator* GenieGenerator::CloneGenerator() const

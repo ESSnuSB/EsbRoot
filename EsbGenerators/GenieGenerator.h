@@ -93,6 +93,11 @@ public:
   	/** Clone this object (used in MT mode only) */
   	virtual FairGenerator* CloneGenerator() const;
 
+	
+	void AddPdgCode(int pdg){fpdgCodesAllowed.push_back(pdg);}
+	void AddPdgCode(std::vector<int> pdgCodes){fpdgCodesAllowed.insert(fpdgCodesAllowed.end(), pdgCodes.begin(), pdgCodes.end());}
+	void ClearPfgCodes(){fpdgCodesAllowed.clear();}
+
 
 private:
 
@@ -119,8 +124,15 @@ private:
 	//! written to a root file!
   	std::shared_ptr<genie::GeomAnalyzerI> fGeomI;//!<!
 
+	//! During simulation some particles may be exluded from the analysis
+	//! for Monte Carlo analysis add the particle pdg code which is inluded 
+	//! from the neutrino event interactions
+	std::vector<int> fpdgCodesAllowed;//!<!
+
   	//! Tracks if object has been configured
   	Bool_t fIsConfigured = false;
+
+	Bool_t IsPdgAllowed(int pdg);
 
   	ClassDef(GenieGenerator,6)
 };
