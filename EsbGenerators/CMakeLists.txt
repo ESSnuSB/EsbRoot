@@ -7,12 +7,14 @@ set(INCLUDE_DIRECTORIES
     ${SIMPATH}/include
     ${BASE_INCLUDE_DIRECTORIES} 
     ${CMAKE_SOURCE_DIR}
+	${CLHEP_INCLUDE_DIR}
 )
 
 set(LINK_DIRECTORIES
     ${ROOT_LIBRARY_DIR}
     ${FAIRROOT_LIBRARY_DIR}
     ${SIMPATH}/lib
+	${CLHEP_LIB_DIR}
 )
  
 set(SRCS
@@ -29,6 +31,7 @@ if(WITH_GENIE)
 		GenieOnlyMuonGenerator.cxx
 		SimpleGenieGenerator.cxx
 		SimpleGenieOnlyMuonGenerator.cxx
+		EsbSuperFGD/FgdGeomAnalyzer.cxx
 	)	
 
 	list(APPEND HEADERS
@@ -36,6 +39,7 @@ if(WITH_GENIE)
 		${CMAKE_SOURCE_DIR}/EsbGenerators/GenieOnlyMuonGenerator.h
     	${CMAKE_SOURCE_DIR}/EsbGenerators/SimpleGenieGenerator.h	
 		${CMAKE_SOURCE_DIR}/EsbGenerators/SimpleGenieOnlyMuonGenerator.h
+		${CMAKE_SOURCE_DIR}/EsbGenerators/EsbSuperFGD/FgdGeomAnalyzer.h
 	)
 	
 	#~ message(FATAL_ERROR "Genie include directory "${GENIE_INC_DIR})

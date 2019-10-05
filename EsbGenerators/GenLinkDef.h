@@ -26,6 +26,8 @@
 	#pragma link C++ class  esbroot::generators::GenieGenerator::GlobalState_t+;
 	#pragma link C++ class  esbroot::generators::SimpleGenieGenerator+;
 	#pragma link C++ class  esbroot::generators::SimpleGenieOnlyMuonGenerator+;
+	
+	#pragma link C++ class  esbroot::generators::superfgd::FgdGeomAnalyzer+;
 #endif
 
 #endif
