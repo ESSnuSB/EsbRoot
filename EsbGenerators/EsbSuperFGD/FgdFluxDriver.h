@@ -41,10 +41,10 @@ public:
     double                  Weight        (void) { return  1.0;/* No idea what this is */} ///< returns the flux neutrino weight (if any)
     const TLorentzVector&   Momentum      (void) { return  f4momentum;}  ///< returns the flux neutrino 4-momentum
     const TLorentzVector&   Position      (void) { return  f4position;}  ///< returns the flux neutrino 4-position (note: expect SI rather than physical units)
-    virtual bool            End           (void) { return  fcurrentEvent >=fnumEvents;} ///< true if no more flux nu's can be thrown (eg reaching end of beam sim ntuples)
+    virtual bool            End           (void) { return  false;}       ///< true if no more flux nu's can be thrown (eg reaching end of beam sim ntuples)
     virtual long int        Index         (void){return fcurrentEvent;}  ///< returns corresponding index for current flux neutrino (e.g. for a flux ntuple returns the current entry number)
-    virtual void            Clear            (Option_t * opt   ) {}       ///< reset state variables based on opt
-    virtual void            GenerateWeighted (bool gen_weighted) {}       ///< set whether to generate weighted or unweighted neutrinos
+    virtual void            Clear            (Option_t * opt   ) {}      ///< reset state variables based on opt
+    virtual void            GenerateWeighted (bool gen_weighted) {}      ///< set whether to generate weighted or unweighted neutrinos
 
 
 
@@ -58,9 +58,6 @@ public:
     void                  addPDGCodeParticle(int pdgCode) { ffPdgCList.push_back(pdgCode); }
 
     void                  setMaxEnergy     (double maxEv) { fMaxEv=maxEv; }
-
-    Int_t                 getNumEvents     (void) { return fnumEvents; }
-    void                  setNumEvents     (int numEvents) { fnumEvents = numEvents; }
     void                  resetLastEvent()  {fcurrentEvent--;}
 
     void                  setCurrentIndex(int& ind) {fcurrentEvent =  ind;}
@@ -83,7 +80,6 @@ private:
     int fpdgCode;
     
     double fMaxEv; // in [GeV]
-    int fnumEvents; // number of events to generate
     int fcurrentEvent;
 
     Double_t f_total_X;
