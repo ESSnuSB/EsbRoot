@@ -1,6 +1,4 @@
 #include "EsbGenerators/EsbSuperFGD/FgdGeomAnalyzer.h"
-
-#include "EsbGeometry/EsbSuperFGD/EsbFgdDetectorParameters.h"
 #include "EsbGeometry/EsbSuperFGD/Names.h"
 
 #include <TGeoNode.h>
@@ -9,18 +7,11 @@ namespace esbroot {
 namespace generators {
 namespace superfgd {
 
-FgdGeomAnalyzer::FgdGeomAnalyzer(const char* geoConfigFile , TGeoManager* gm)
-                : ROOTGeomAnalyzer(gm) 
+FgdGeomAnalyzer::FgdGeomAnalyzer(const char* geoConfigFile , TGeoManager* gm, TGeoVolume* geoVol)
+                : ROOTGeomAnalyzer(gm) , fGeo(geoVol)
 {
-    // Set defaults
-    //SetLengthUnits(genie::units::meter/CLHEP::meter);
-    //SetDensityUnits(genie::units::kg_m3/(CLHEP::kg/CLHEP::m3));
-    //SetNearestSourcePoint(TVector3(0, 0, -100*CLHEP::meter));
-
-    esbroot::geometry::superfgd::FgdDetectorParameters detectorParams;
-    detectorParams.LoadPartParams(geoConfigFile);
-    
-    SetLengthUnits(detectorParams.GetLenghtUnit());
+    fdetectorParams.LoadPartParams(geoConfigFile);
+    SetLengthUnits(fdetectorParams.GetLenghtUnit());
 }
 
 const genie::PathLengthList& FgdGeomAnalyzer::ComputeMaxPathLengths()
@@ -34,12 +25,39 @@ const genie::PathLengthList& FgdGeomAnalyzer::ComputeMaxPathLengths()
 
     const TGeoNode* node = topVolume->GetNode(esbroot::geometry::superfgd::fgdnames::superFGDName );
 
-    const TGeoVolume* det = node->GetVolume();
+    if(node!=nullptr)
+    {
+        const TGeoVolume* det = node->GetVolume();
 
-    // Get bounding box of detector volume (in detector units)
-    det->GetShape()->GetAxisRange(1, xmin, xmax);
-    det->GetShape()->GetAxisRange(2, ymin, ymax);
-    det->GetShape()->GetAxisRange(3, zmin, zmax);
+        // Get bounding box of detector volume (in detector units)
+        det->GetShape()->GetAxisRange(1, xmin, xmax);
+        det->GetShape()->GetAxisRange(2, ymin, ymax);
+        det->GetShape()->GetAxisRange(3, zmin, zmax);
+    }
+    else if(fGeo!=nullptr)
+    {
+        // Get bounding box of detector volume (in detector units)
+        fGeo->GetShape()->GetAxisRange(1, xmin, xmax);
+        fGeo->GetShape()->GetAxisRange(2, ymin, ymax);
+        fGeo->GetShape()->GetAxisRange(3, zmin, zmax);
+    }
+    else
+    {
+        Double_t lunit = fdetectorParams.GetLenghtUnit(); // [cm]
+
+        Double_t step_X  = fdetectorParams.ParamAsDouble(esbroot::geometry::superfgd::DP::length_X) * lunit;
+        Double_t step_Y  = fdetectorParams.ParamAsDouble(esbroot::geometry::superfgd::DP::length_Y) * lunit;
+        Double_t step_Z  = fdetectorParams.ParamAsDouble(esbroot::geometry::superfgd::DP::length_Z) * lunit;
+
+        Int_t bin_X = fdetectorParams.ParamAsInt(esbroot::geometry::superfgd::DP::number_cubes_X);
+        Int_t bin_Y = fdetectorParams.ParamAsInt(esbroot::geometry::superfgd::DP::number_cubes_Y);
+        Int_t bin_Z = fdetectorParams.ParamAsInt(esbroot::geometry::superfgd::DP::number_cubes_Z);
+
+        xmax = bin_X * step_X;
+        ymax = bin_Y * step_Y;
+        zmax = bin_Z * step_Z;
+    }
+    
 
     // Create farthest point
     TVector3 farthestDetectorPoint(xmax, ymax, zmax);

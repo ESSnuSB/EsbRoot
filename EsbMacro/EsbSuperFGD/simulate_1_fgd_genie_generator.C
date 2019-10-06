@@ -61,11 +61,16 @@ void simulate_1_fgd_genie_generator(TString outFileName = "evetest.root",
 
   unsigned int seed = 42;
 
+  fair::Logger::SetConsoleSeverity(fair::Severity::debug2);
+  fair::Logger::SetConsoleColor(true);
+
   auto partGen = new generators::superfgd::FgdGenieGenerator(
 		"../../EsbGeometry/EsbSuperFGD/EsbConfig/fgdconfig"  //File with detector configuration
 		,"../../EsbMacro/tests/nuFlux/nuFlux100km_250kAm.txt"  //File with neutrino flux
 		, seed // uniform random number generator seed
 		, TLorentzVector(0.0, 0.0, -550., 0.0) //4-position of the neutrino vertex (x, y, z, t) (cm, s)
+    , nullptr
+    , ((geometry::FgdDetector*)fgd)->GetVolume()
   );
   
 

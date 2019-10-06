@@ -93,6 +93,8 @@ namespace geometry {
 		virtual void   PreTrack() {;}
 		virtual void   BeginEvent() {;}
 
+		TGeoVolume* GetVolume(){return fsuperFgdVol;}
+
 
 	  private:
 
@@ -120,6 +122,8 @@ namespace geometry {
 		double fposZ;
 
 		std::set<Int_t> fpdgCodes;//!<!
+
+		TGeoVolume* fsuperFgdVol;//!<!
 
 		esbroot::geometry::superfgd::SuperFGDDetectorConstruction    fgdConstructor;	   //! SuperFgd Detector Constructor
 		/** container for data points */

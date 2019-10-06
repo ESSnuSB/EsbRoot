@@ -59,7 +59,8 @@ FgdDetector::FgdDetector()
     fposY(0),
     fposZ(0),
     isDefinedMaterials(false),
-    fFgdDetectorPointCollection(new TClonesArray(data::superfgd::FgdDetectorPoint::Class()))
+    fFgdDetectorPointCollection(new TClonesArray(data::superfgd::FgdDetectorPoint::Class())),
+    fsuperFgdVol(nullptr)
 {
 }
 
@@ -77,7 +78,8 @@ FgdDetector::FgdDetector(const char* geoConfigFile, double posX, double posY, do
     fposY(posY),
     fposZ(posZ),
     isDefinedMaterials(false),
-    fFgdDetectorPointCollection(new TClonesArray(data::superfgd::FgdDetectorPoint::Class()))
+    fFgdDetectorPointCollection(new TClonesArray(data::superfgd::FgdDetectorPoint::Class())),
+    fsuperFgdVol(nullptr)
 {
 }
 
@@ -209,6 +211,7 @@ void FgdDetector::ConstructGeometry()
   DefineMaterials();
   // Create the real Fgd geometry
   TGeoVolume* superFgdVol = fgdConstructor.Construct();
+  fsuperFgdVol = superFgdVol;
   // Retrieve the sensitive volume
   TGeoVolume* cubeScnintilatorVol = fgdConstructor.GetSensitiveVolume();
 

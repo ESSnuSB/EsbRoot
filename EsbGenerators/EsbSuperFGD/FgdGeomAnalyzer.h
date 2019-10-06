@@ -13,6 +13,8 @@
 #include <TVector3.h>
 #include <TLorentzVector.h>
 
+#include "EsbGeometry/EsbSuperFGD/EsbFgdDetectorParameters.h"
+
 namespace esbroot {
 namespace generators {
 namespace superfgd {
@@ -26,13 +28,15 @@ class FgdGeomAnalyzer : public genie::geometry::ROOTGeomAnalyzer
 
 public:
 
-    FgdGeomAnalyzer(const char* geoConfigFile , TGeoManager* gm);
+    FgdGeomAnalyzer(const char* geoConfigFile , TGeoManager* gm, TGeoVolume* geoVol);
 
     virtual const genie::PathLengthList& ComputeMaxPathLengths();
     void SetNearestSourcePoint(const TVector3& point) { fNearestSourcePoint = point; };
 
 private:
     TVector3 fNearestSourcePoint;//!<!
+    TGeoVolume* fGeo;//!<!
+    esbroot::geometry::superfgd::FgdDetectorParameters fdetectorParams;//!<!
 
     ClassDef(FgdGeomAnalyzer,6)
 };

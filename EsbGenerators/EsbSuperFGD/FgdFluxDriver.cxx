@@ -10,8 +10,9 @@ namespace superfgd {
 
 FgdFluxDriver::FgdFluxDriver(const char* geoConfigFile
                             , const char* nuFluxFile
-                            , unsigned int seed)
-    : fnuFluXFile(nuFluxFile), fseed(seed) , fdis(0.0, 1.0), fpdgCode(0) , fMaxEv(0.), fcurrentEvent(0)
+                            , unsigned int seed
+                            , Double_t maxEnergy)
+    : fnuFluXFile(nuFluxFile), fseed(seed) , fdis(0.0, 1.0), fpdgCode(0) , fMaxEv(maxEnergy), fcurrentEvent(0)
 { 
     InitDetectorParams(geoConfigFile);
     InitPDGList();
@@ -32,13 +33,14 @@ bool FgdFluxDriver::GenerateNext(void)
     {
         FgdFluxDriver::FLuxNeutrino& neutrino = fFlux[i];
         
-        if(neutrino.GetNeutrino(rndVal, nuPdg, nuEnergy ))
+        if(neutrino.GetNeutrino(rndVal, nuPdg, nuEnergy))
         {
             CalculateNext4position(rndVal);
             CalculateNext4Momentum(nuEnergy);
             fpdgCode = nuPdg;
             
             fcurrentEvent++;
+
             return true;
         }
     }
@@ -99,9 +101,9 @@ void FgdFluxDriver::InitDetectorParams(const char* configFile)
     Double_t step_Y  = fdetectorParams.ParamAsDouble(esbroot::geometry::superfgd::DP::length_Y) * lunit;
     Double_t step_Z  = fdetectorParams.ParamAsDouble(esbroot::geometry::superfgd::DP::length_Z) * lunit;
 
-    Double_t bin_X = fdetectorParams.ParamAsInt(esbroot::geometry::superfgd::DP::number_cubes_X);
-    Double_t bin_Y = fdetectorParams.ParamAsInt(esbroot::geometry::superfgd::DP::number_cubes_Y);
-    Double_t bin_Z = fdetectorParams.ParamAsInt(esbroot::geometry::superfgd::DP::number_cubes_Z);
+    Int_t bin_X = fdetectorParams.ParamAsInt(esbroot::geometry::superfgd::DP::number_cubes_X);
+    Int_t bin_Y = fdetectorParams.ParamAsInt(esbroot::geometry::superfgd::DP::number_cubes_Y);
+    Int_t bin_Z = fdetectorParams.ParamAsInt(esbroot::geometry::superfgd::DP::number_cubes_Z);
 
     f_total_X = step_X * bin_X;
     f_total_Y = step_Y * bin_Y;
@@ -127,8 +129,10 @@ void FgdFluxDriver::Init4Position(void)
 void FgdFluxDriver::ReadNuFluxFile(const char* fluxFile)
 {
     std::string nufluxFile(fluxFile);
+
     if(!nufluxFile.empty())
     {
+        const char spaceChar(' ');
         std::ifstream fluxFileStream;
 
         try
@@ -140,28 +144,18 @@ void FgdFluxDriver::ReadNuFluxFile(const char* fluxFile)
                 std::string line;
                 while(std::getline(fluxFileStream,line))
                 {
-                    LOG(debug2) << "line " << line;
-
-                    int b(0);
-                    int ind(0); // Holds the index of the last digit in the parsed digit
-                    Double_t arr[7];
+                    Double_t arr[] = {0,0,0,0,0,0,0};
                     int arrInd(0);
 
-
-                    while(ind < line.length() && ind<7)
+                    std::istringstream ss(line);
+                    std::string token;
+                    while( (arrInd<7) && std::getline(ss, token, spaceChar))
                     {
-                        if(line[ind]==' ' || (ind==line.length()-1))
+                        if(!token.empty())
                         {
-                            LOG(debug2) << line.substr(b,ind);
-                            Double_t parsedVal = std::stod(line.substr(b,ind));
-                            LOG(debug2) << "Parsed value " << parsedVal;
+                            Double_t parsedVal = std::stod(token);
                             arr[arrInd++] = parsedVal;
-
-                            LOG(debug2) << "arrInd " << arrInd;
-                            LOG(debug2) << "============= ";
-                            b=ind;
                         }
-                        ++ind;
                     }
 
                     /* The first value is the energy value for all neutrinos on the line */
@@ -195,8 +189,8 @@ void FgdFluxDriver::CalculateProbability()
     Double_t totalFlux(0.);
     for(size_t i = 0; i < fFlux.size(); ++i)
     {
-        FgdFluxDriver::FLuxNeutrino& neutrino = fFlux[i];
-        totalFlux+= neutrino.GetFlux();
+        FgdFluxDriver::FLuxNeutrino* neutrino = &fFlux[i];
+        totalFlux+= neutrino->GetFlux();
     }
 
     Double_t currentLowerFluxVal(0.);

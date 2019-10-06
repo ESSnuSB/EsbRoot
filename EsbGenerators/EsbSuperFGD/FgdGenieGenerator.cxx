@@ -2,6 +2,7 @@
 #include "EsbGenerators/EsbSuperFGD/FgdFluxDriver.h"
 #include "EsbGenerators/EsbSuperFGD/FgdGeomAnalyzer.h"
 
+#include "FairLogger.h"
 
 namespace esbroot {
 namespace generators {
@@ -20,13 +21,15 @@ FgdGenieGenerator::FgdGenieGenerator(const char* geoConfigFile
 									, const char* nuFluxFile
 									, unsigned int seed
 									, TLorentzVector const& x4_nu
-									, TGeoManager* gm)
+									, TGeoManager* gm
+									, TGeoVolume* geoVol)
 	 : GenieGenerator()
 	 	, fgeoConfigFile(geoConfigFile)
 		, fnuFluxFile(nuFluxFile)
 		, fseed(seed)
 		, fVertexX4(x4_nu)
 		, fgm(gm)
+		, fGeo(geoVol)
 {
 }
 
@@ -48,7 +51,7 @@ Bool_t FgdGenieGenerator::Configure()
 	}
 
 	SetFluxI(std::make_shared<FgdFluxDriver>(fgeoConfigFile.c_str(), fnuFluxFile.c_str(), fseed));
-	SetGeomI(std::make_shared<FgdGeomAnalyzer>(fgeoConfigFile.c_str(), fgm));
+	SetGeomI(std::make_shared<FgdGeomAnalyzer>(fgeoConfigFile.c_str(), fgm, fGeo));
 
 	GenieGenerator::Configure();
 }

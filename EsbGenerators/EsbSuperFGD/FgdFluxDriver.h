@@ -43,7 +43,8 @@ public:
     // ~ctor
     FgdFluxDriver(const char* geoConfigFile
                   , const char* nuFluxFile
-                  , unsigned int seed);
+                  , unsigned int seed
+                  , Double_t maxEnergy = 2. /* GeV */);
 
     class FLuxNeutrino
     {
@@ -60,8 +61,8 @@ public:
         Bool_t GetNeutrino(Double_t val, int& pdg, Double_t& energy);
 
         int GetPdg(){return fpdg;}
-        int GetEnergy(){return fEnergy;}
-        int GetFlux(){return fFluxValue;}
+        Double_t GetEnergy(){return fEnergy;}
+        Double_t GetFlux(){return fFluxValue;}
 
     private:
         int fpdg;
@@ -87,6 +88,8 @@ public:
     virtual void            Clear            (Option_t * opt   ) {}      ///< reset state variables based on opt
     virtual void            GenerateWeighted (bool gen_weighted) {}      ///< set whether to generate weighted or unweighted neutrinos
 
+    void                    SetMaxEnergy  (Double_t eMax) {fMaxEv = eMax;}
+
 private:
 
     /* Detector parameters */
@@ -104,7 +107,7 @@ private:
     TLorentzVector f4position;
     int fpdgCode;
     
-    double fMaxEv; // in [GeV]
+    Double_t fMaxEv; // in [GeV]
     int fcurrentEvent;
 
     Double_t f_total_X;
