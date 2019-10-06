@@ -1,8 +1,19 @@
 #ifndef ESBROOT_GENERATOR_FGD_FLUX_DRIVER_H
 #define ESBROOT_GENERATOR_FGD_FLUX_DRIVER_H 1 
 
-#include <stdio.h>
-#include <iostream>
+#include <fstream>
+#include <random>
+#include <vector>
+
+// #include <stdio.h>
+// #include <iostream>
+// 
+
+// #include <iostream>
+
+// #include <sstream>
+// #include <memory>
+// #include <math.h>
 
 #include "Framework/EventGen/GFluxI.h"
 #include "Framework/ParticleData/PDGCodeList.h"
@@ -29,10 +40,39 @@ class FgdFluxDriver : public GFluxI
 {
 public:
     // ~ctor
-    FgdFluxDriver(const char* geoConfigFile, unsigned int seed);
+    FgdFluxDriver(const char* geoConfigFile
+                  , const char* nuFluxFile
+                  , unsigned int seed);
+
+    class FLuxNeutrino
+    {
+      public:
+        FLuxNeutrino(int pdg , Double_t energy, Double_t flux);
+        ~FLuxNeutrino();
+
+        FLuxNeutrino(const FLuxNeutrino& fn);
+        FLuxNeutrino& operator=(const FLuxNeutrino& fn);
+
+        void SetLowerVal(Double_t lv){fLowerVal = lv;}
+        void SetUpperVal(Double_t uv){fUpperVal = uv;}
+
+        Bool_t GetNeutrino(Double_t val, int& pdg, Double_t& energy);
+
+        int GetPdg(){return fpdg;}
+        int GetEnergy(){return fEnergy;}
+        int GetFlux(){return fFluxValue;}
+
+    private:
+        int fpdg;
+        Double_t fEnergy;
+        Double_t fFluxValue;
+        
+        Double_t fLowerVal;
+        Double_t fUpperVal;
+    };
 
     // Methods implementing the GENIE GFluxI interface
-    const PDGCodeList &     FluxParticles (void) { return ffPdgCList;} ///< declare list of flux neutrinos that can be generated (for init. purposes)
+    const PDGCodeList &     FluxParticles (void) { return fPdgCList;} ///< declare list of flux neutrinos that can be generated (for init. purposes)
     double                  MaxEnergy     (void) { return  fMaxEv;}   ///< declare the max flux neutrino energy that can be generated (for init. purposes)
 
 
@@ -46,33 +86,17 @@ public:
     virtual void            Clear            (Option_t * opt   ) {}      ///< reset state variables based on opt
     virtual void            GenerateWeighted (bool gen_weighted) {}      ///< set whether to generate weighted or unweighted neutrinos
 
-
-
-
-
-
-
-
-    // Class method
-    void                  initDefaultPDGList(void) { ffPdgCList.push_back(genie::kPdgNuMu); }
-    void                  addPDGCodeParticle(int pdgCode) { ffPdgCList.push_back(pdgCode); }
-
-    void                  setMaxEnergy     (double maxEv) { fMaxEv=maxEv; }
-    void                  resetLastEvent()  {fcurrentEvent--;}
-
-    void                  setCurrentIndex(int& ind) {fcurrentEvent =  ind;}
-    void                  getCurrentIndex(int& ind) {ind = fcurrentEvent;}
-
-    void                  reset(void) {fcurrentEvent=0;}
-    void                  setPdgCode(int newPdgCode){fpdgCode=newPdgCode;}
-
 private:
 
     /* Detector parameters */
     esbroot::geometry::superfgd::FgdDetectorParameters fdetectorParams;
 
-    unsigned int fseed;
-    PDGCodeList ffPdgCList;
+    /* Uniform random number generators for neutrino flux calculations */
+    std::mt19937 fseed;
+    std::uniform_real_distribution<Double_t> fdis;
+
+
+    PDGCodeList fPdgCList;
 
     // Temp values to store the data from the last interaction
     TLorentzVector f4momentum;
@@ -86,9 +110,19 @@ private:
     Double_t f_total_Y;
     Double_t f_total_Z;
 
-    void calculateNext4Momentum(void);
-    void calculateNext4position(void);
-    void calculateNextPdgCode(void);
+    std::string fnuFluXFile;
+    std::vector<FLuxNeutrino> fFlux;//!<!
+
+    void CalculateNext4Momentum(Double_t energyOfNeutrino);
+    void CalculateNext4position(Double_t rndVal);
+
+    void InitPDGList(void);
+    void InitDetectorParams(const char* configFile);
+    void Init4Momentum(void);
+    void Init4Position(void);
+
+    void ReadNuFLuxFile(const char* fluxFile);
+    void CalculateProbability();
 
     ClassDef(FgdFluxDriver,6)
   };
