@@ -33,6 +33,7 @@ if(WITH_GENIE)
 		SimpleGenieOnlyMuonGenerator.cxx
 		EsbSuperFGD/FgdGeomAnalyzer.cxx
 		EsbSuperFGD/FgdFluxDriver.cxx
+		EsbSuperFGD/FgdGenieGenerator.cxx
 	)	
 
 	list(APPEND HEADERS
@@ -42,6 +43,7 @@ if(WITH_GENIE)
 		${CMAKE_SOURCE_DIR}/EsbGenerators/SimpleGenieOnlyMuonGenerator.h
 		${CMAKE_SOURCE_DIR}/EsbGenerators/EsbSuperFGD/FgdGeomAnalyzer.h
 		${CMAKE_SOURCE_DIR}/EsbGenerators/EsbSuperFGD/FgdFluxDriver.h
+		${CMAKE_SOURCE_DIR}/EsbGenerators/EsbSuperFGD/FgdGenieGenerator.h
 	)
 	
 	#~ message(FATAL_ERROR "Genie include directory "${GENIE_INC_DIR})
