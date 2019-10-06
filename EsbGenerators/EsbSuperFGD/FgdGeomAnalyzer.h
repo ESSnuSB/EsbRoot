@@ -8,6 +8,7 @@
 #include <Framework/EventGen/PathLengthList.h>
 #include <Framework/Conventions/Units.h>
 
+#include "TGeoManager.h"
 #include <TGeoVolume.h>
 #include <TVector3.h>
 #include <TLorentzVector.h>
@@ -25,7 +26,7 @@ class FgdGeomAnalyzer : public genie::geometry::ROOTGeomAnalyzer
 
 public:
 
-    FgdGeomAnalyzer(TGeoManager* gm, const char* geoConfigFile);
+    FgdGeomAnalyzer(const char* geoConfigFile , TGeoManager* gm);
 
     virtual const genie::PathLengthList& ComputeMaxPathLengths();
     void SetNearestSourcePoint(const TVector3& point) { fNearestSourcePoint = point; };

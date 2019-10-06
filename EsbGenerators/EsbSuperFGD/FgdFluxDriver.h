@@ -92,8 +92,8 @@ private:
     esbroot::geometry::superfgd::FgdDetectorParameters fdetectorParams;
 
     /* Uniform random number generators for neutrino flux calculations */
-    std::mt19937 fseed;
-    std::uniform_real_distribution<Double_t> fdis;
+    std::mt19937 fseed;//!<!
+    std::uniform_real_distribution<Double_t> fdis;//!<!
 
 
     PDGCodeList fPdgCList;

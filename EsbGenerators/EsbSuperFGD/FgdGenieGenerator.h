@@ -5,6 +5,8 @@
 
 #include <cmath>
 
+#include <FairRootManager.h>
+#include "TGeoManager.h"
 #include <TGeoVolume.h>
 
 class TVector3;
@@ -19,14 +21,17 @@ class FgdGenieGenerator : public GenieGenerator
 {
 public:
 	//! Default constructor
-	FgdGenieGenerator(): GenieGenerator() {};
+	FgdGenieGenerator();
 	
-	//! Basic constructor
-	FgdGenieGenerator(TGeoManager* gm
-						, const char* geoConfigFile
-						, const char* nuFluxFile
-						, unsigned int seed
-						, TLorentzVector const& x4_nu);
+	// ! Basic constructor
+	FgdGenieGenerator(const char* geoConfigFile
+									, const char* nuFluxFile
+									, unsigned int seed
+									, TLorentzVector const& x4_nu
+									, TGeoManager* gm = nullptr);
+
+	//! Destructor
+	~FgdGenieGenerator();
 	
 	//! Implementation of GenieGenerator::Init() which calls the Configure() function.
 	virtual Bool_t Init() {return(Configure());};
@@ -34,9 +39,16 @@ public:
 	//! Post processes Genie events to choose vertex position
 	virtual void PostProcessEvent(/*IN OUT*/ genie::GHepRecord* event);
 
+	virtual Bool_t Configure() override; 
+
 private:
 	//! 4-position of neutrino interaction vertex
 	TLorentzVector fVertexX4 = {std::nan("ni"), std::nan("ni"), std::nan("ni"), std::nan("ni")};
+
+	TGeoManager* fgm;//!<!
+	std::string fgeoConfigFile;//!<!
+	std::string fnuFluxFile;//!<!
+	unsigned int fseed;//!<!
 	
 	ClassDef(FgdGenieGenerator,2)
 };

@@ -9,8 +9,8 @@ namespace esbroot {
 namespace generators {
 namespace superfgd {
 
-FgdGeomAnalyzer::FgdGeomAnalyzer(TGeoManager* gm, const char* geoConfigFile)
-                :ROOTGeomAnalyzer(gm) 
+FgdGeomAnalyzer::FgdGeomAnalyzer(const char* geoConfigFile , TGeoManager* gm)
+                : ROOTGeomAnalyzer(gm) 
 {
     // Set defaults
     //SetLengthUnits(genie::units::meter/CLHEP::meter);

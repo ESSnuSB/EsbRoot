@@ -7,16 +7,27 @@ namespace esbroot {
 namespace generators {
 namespace superfgd {
 
+FgdGenieGenerator::FgdGenieGenerator()
+	: GenieGenerator()
+{
+}
 
-FgdGenieGenerator::FgdGenieGenerator(TGeoManager* gm
-									, const char* geoConfigFile
+FgdGenieGenerator::~FgdGenieGenerator()
+{
+}
+
+FgdGenieGenerator::FgdGenieGenerator(const char* geoConfigFile
 									, const char* nuFluxFile
 									, unsigned int seed
-									, TLorentzVector const& x4_nu)
-	 : GenieGenerator(), fVertexX4(x4_nu)
+									, TLorentzVector const& x4_nu
+									, TGeoManager* gm)
+	 : GenieGenerator()
+	 	, fgeoConfigFile(geoConfigFile)
+		, fnuFluxFile(nuFluxFile)
+		, fseed(seed)
+		, fVertexX4(x4_nu)
+		, fgm(gm)
 {
-	SetFluxI(std::make_shared<FgdFluxDriver>(geoConfigFile, nuFluxFile, seed));
-	SetGeomI(std::make_shared<FgdGeomAnalyzer>(gm, geoConfigFile));
 }
 
 
@@ -27,6 +38,19 @@ void FgdGenieGenerator::PostProcessEvent(/*IN OUT*/ genie::GHepRecord* event)
 	
 	*v += fVertexX4;		
 	event->SetVertex(*v);
+}
+
+Bool_t FgdGenieGenerator::Configure()
+{
+	if(fgm==nullptr)
+	{
+		fgm = gGeoManager;
+	}
+
+	SetFluxI(std::make_shared<FgdFluxDriver>(fgeoConfigFile.c_str(), fnuFluxFile.c_str(), fseed));
+	SetGeomI(std::make_shared<FgdGeomAnalyzer>(fgeoConfigFile.c_str(), fgm));
+
+	GenieGenerator::Configure();
 }
 
 } //namespace superfgd 
