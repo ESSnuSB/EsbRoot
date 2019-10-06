@@ -4,6 +4,7 @@
 #include <fstream>
 #include <random>
 #include <vector>
+#include <sstream>
 
 // #include <stdio.h>
 // #include <iostream>
@@ -11,7 +12,7 @@
 
 // #include <iostream>
 
-// #include <sstream>
+// 
 // #include <memory>
 // #include <math.h>
 
@@ -121,7 +122,7 @@ private:
     void Init4Momentum(void);
     void Init4Position(void);
 
-    void ReadNuFLuxFile(const char* fluxFile);
+    void ReadNuFluxFile(const char* fluxFile);
     void CalculateProbability();
 
     ClassDef(FgdFluxDriver,6)

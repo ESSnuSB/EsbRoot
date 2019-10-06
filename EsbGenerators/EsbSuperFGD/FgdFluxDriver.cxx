@@ -1,5 +1,7 @@
 #include "EsbGenerators/EsbSuperFGD/FgdFluxDriver.h"
 
+#include "FairLogger.h"
+
 using namespace std;
 
 namespace esbroot {
@@ -15,6 +17,9 @@ FgdFluxDriver::FgdFluxDriver(const char* geoConfigFile
     InitPDGList();
     Init4Momentum();
     Init4Position();
+
+    ReadNuFluxFile(fnuFluXFile.c_str());
+    CalculateProbability();
 }
 
 bool FgdFluxDriver::GenerateNext(void)
@@ -119,46 +124,68 @@ void FgdFluxDriver::Init4Position(void)
     f4position.SetT(0);
 }
 
-void FgdFluxDriver::ReadNuFLuxFile(const char* fluxFile)
+void FgdFluxDriver::ReadNuFluxFile(const char* fluxFile)
 {
     std::string nufluxFile(fluxFile);
     if(!nufluxFile.empty())
     {
         std::ifstream fluxFileStream;
-        fluxFileStream.open(nufluxFile.c_str(), std::ios::in);
 
-        if(fluxFileStream.is_open())
+        try
         {
-            std::string line;
-            while(std::getline(fluxFileStream,line))
+            fluxFileStream.open(nufluxFile.c_str(), std::ios::in);
+
+            if(fluxFileStream.is_open())
             {
-                int b(0);
-                int ind(0); // Holds the index of the last digit in the parsed digit
-                Double_t arr[7];
-                int arrInd(0);
-
-                while(ind < line.length())
+                std::string line;
+                while(std::getline(fluxFileStream,line))
                 {
-                    if(line[ind]==' ' || (ind==line.length()-1))
+                    LOG(debug2) << "line " << line;
+
+                    int b(0);
+                    int ind(0); // Holds the index of the last digit in the parsed digit
+                    Double_t arr[7];
+                    int arrInd(0);
+
+
+                    while(ind < line.length() && ind<7)
                     {
-                        arr[arrInd++] = std::stod(line.substr(b,ind));
-                        b=ind;
+                        if(line[ind]==' ' || (ind==line.length()-1))
+                        {
+                            LOG(debug2) << line.substr(b,ind);
+                            Double_t parsedVal = std::stod(line.substr(b,ind));
+                            LOG(debug2) << "Parsed value " << parsedVal;
+                            arr[arrInd++] = parsedVal;
+
+                            LOG(debug2) << "arrInd " << arrInd;
+                            LOG(debug2) << "============= ";
+                            b=ind;
+                        }
+                        ++ind;
                     }
-                    ++ind;
-                }
 
-                /* The first value is the energy value for all neutrinos on the line */
-                Double_t energy = arr[0];
+                    /* The first value is the energy value for all neutrinos on the line */
+                    Double_t energy = arr[0];
 
-                /* The neutrinos are added in the list in the order in which they are expected to appear in the flux file*/
-                for(size_t i = 1; i < 7; ++i)
-                {
-                    if(arr[i] != 0)
+                    /* The neutrinos are added in the list in the order in which they are expected to appear in the flux file*/
+                    for(size_t i = 1; i < 7; ++i)
                     {
-                        fFlux.emplace_back(energy, fPdgCList[i-1], arr[i]);
+                        if(arr[i] != 0)
+                        {
+                            fFlux.emplace_back(energy, fPdgCList[i-1], arr[i]);
+                        }
                     }
                 }
             }
+        }
+        catch(const std::exception& e)
+        {
+            LOG(fatal) << e.what();
+        }
+
+        if(fluxFileStream.is_open())
+        {
+            fluxFileStream.close();
         }
     }
 }
