@@ -1,5 +1,7 @@
 #include "EsbGenerators/EsbSuperFGD/FgdFluxDriver.h"
 
+#include "Framework/ParticleData/PDGCodes.h"
+
 #include "FairLogger.h"
 
 using namespace std;
@@ -11,8 +13,15 @@ namespace superfgd {
 FgdFluxDriver::FgdFluxDriver(const char* geoConfigFile
                             , const char* nuFluxFile
                             , unsigned int seed
+                            , TVector3 detPos
                             , Double_t maxEnergy)
-    : fnuFluXFile(nuFluxFile), fseed(seed) , fdis(0.0, 1.0), fpdgCode(0) , fMaxEv(maxEnergy), fcurrentEvent(0)
+    :   fnuFluXFile(nuFluxFile)
+        , fdetPos(detPos)
+        , fseed(seed)
+        , fdis(0.0, 1.0)
+        , fpdgCode(0)
+        , fMaxEv(maxEnergy)
+        , fcurrentEvent(0)
 { 
     InitDetectorParams(geoConfigFile);
     InitPDGList();
@@ -25,7 +34,12 @@ FgdFluxDriver::FgdFluxDriver(const char* geoConfigFile
 
 bool FgdFluxDriver::GenerateNext(void)
 {
+    static int count = 0;
+    count++;
+    if(count>=3) throw "stop";
+
     Double_t rndVal = fdis(fseed);
+    LOG(debug) << "rndVal " << rndVal;
     int nuPdg(0);
     Double_t nuEnergy(0.);
 
@@ -54,9 +68,9 @@ bool FgdFluxDriver::GenerateNext(void)
 void FgdFluxDriver::CalculateNext4position(Double_t rndVal)
 {
     // Set the Position of the event
-    Double_t rndm_X = (f_total_X * rndVal - f_total_X/2);//*m_lunits; // X range from -X/2 to X/2
-    Double_t rndm_Y = (f_total_Y * rndVal - f_total_Y/2);//*m_lunits; // Y range from -Y/2 to Y/2
-    Double_t rndm_Z = -f_total_Z/2; // Particle should start at beginning of the detector (z direction)
+    Double_t rndm_X = fdetPos.X() + (f_total_X * rndVal - f_total_X/2);//*m_lunits; // X range from -X/2 to X/2
+    Double_t rndm_Y = fdetPos.Y() + (f_total_Y * rndVal - f_total_Y/2);//*m_lunits; // Y range from -Y/2 to Y/2
+    Double_t rndm_Z = fdetPos.Z() - f_total_Z/2; // Particle should start at beginning of the detector (z direction)
 
     f4position.SetX(rndm_X);
     f4position.SetY(rndm_Y);
@@ -166,7 +180,7 @@ void FgdFluxDriver::ReadNuFluxFile(const char* fluxFile)
                     {
                         if(arr[i] != 0)
                         {
-                            fFlux.emplace_back(energy, fPdgCList[i-1], arr[i]);
+                            fFlux.emplace_back(fPdgCList[i-1], energy, arr[i]);
                         }
                     }
                 }

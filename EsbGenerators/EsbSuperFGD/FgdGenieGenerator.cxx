@@ -21,15 +21,15 @@ FgdGenieGenerator::FgdGenieGenerator(const char* geoConfigFile
 									, const char* nuFluxFile
 									, unsigned int seed
 									, TLorentzVector const& x4_nu
-									, TGeoManager* gm
-									, TGeoVolume* geoVol)
+									, TVector3 detPos
+									, TGeoManager* gm)
 	 : GenieGenerator()
 	 	, fgeoConfigFile(geoConfigFile)
 		, fnuFluxFile(nuFluxFile)
 		, fseed(seed)
 		, fVertexX4(x4_nu)
+		, fdetPos(detPos)
 		, fgm(gm)
-		, fGeo(geoVol)
 {
 }
 
@@ -50,8 +50,15 @@ Bool_t FgdGenieGenerator::Configure()
 		fgm = gGeoManager;
 	}
 
-	SetFluxI(std::make_shared<FgdFluxDriver>(fgeoConfigFile.c_str(), fnuFluxFile.c_str(), fseed));
-	SetGeomI(std::make_shared<FgdGeomAnalyzer>(fgeoConfigFile.c_str(), fgm, fGeo));
+	SetFluxI(std::make_shared<FgdFluxDriver>(fgeoConfigFile.c_str(), fnuFluxFile.c_str(), fseed, fdetPos));
+	// auto mono_flux = std::make_shared<genie::flux::GMonoEnergeticFlux>(1, 14);
+	// mono_flux->SetDirectionCos(0, 0, 1);
+	// SetFluxI(std::move(mono_flux));
+
+
+
+	SetGeomI(std::make_shared<FgdGeomAnalyzer>(fgeoConfigFile.c_str(), fgm));
+	// SetGeomI(std::make_shared<genie::geometry::PointGeomAnalyzer>(1000080160));
 
 	GenieGenerator::Configure();
 }

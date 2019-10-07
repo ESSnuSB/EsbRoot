@@ -28,8 +28,8 @@ public:
 									, const char* nuFluxFile
 									, unsigned int seed
 									, TLorentzVector const& x4_nu
-									, TGeoManager* gm = nullptr
-									, TGeoVolume* geoVol = nullptr);
+									, TVector3 detPos
+									, TGeoManager* gm = nullptr);
 
 	//! Destructor
 	~FgdGenieGenerator();
@@ -47,10 +47,10 @@ private:
 	TLorentzVector fVertexX4 = {std::nan("ni"), std::nan("ni"), std::nan("ni"), std::nan("ni")};
 
 	TGeoManager* fgm;//!<!
-	TGeoVolume* fGeo;//!<!
 	std::string fgeoConfigFile;//!<!
 	std::string fnuFluxFile;//!<!
 	unsigned int fseed;//!<!
+	TVector3 fdetPos;//!<!
 	
 	ClassDef(FgdGenieGenerator,2)
 };

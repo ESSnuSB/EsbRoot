@@ -69,8 +69,7 @@ void simulate_1_fgd_genie_generator(TString outFileName = "evetest.root",
 		,"../../EsbMacro/tests/nuFlux/nuFlux100km_250kAm.txt"  //File with neutrino flux
 		, seed // uniform random number generator seed
 		, TLorentzVector(0.0, 0.0, -550., 0.0) //4-position of the neutrino vertex (x, y, z, t) (cm, s)
-    , nullptr
-    , ((geometry::FgdDetector*)fgd)->GetVolume()
+    , TVector3(0,0,-550)
   );
   
 

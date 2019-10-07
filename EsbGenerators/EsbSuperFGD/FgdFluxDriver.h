@@ -6,25 +6,15 @@
 #include <vector>
 #include <sstream>
 
-// #include <stdio.h>
-// #include <iostream>
-// 
-
-// #include <iostream>
-
-// 
-// #include <memory>
-// #include <math.h>
-
 #include "Framework/EventGen/GFluxI.h"
 #include "Framework/ParticleData/PDGCodeList.h"
-#include "Framework/ParticleData/PDGCodes.h"
 
 #include "CLHEP/Units/SystemOfUnits.h"
 #include "CLHEP/Units/PhysicalConstants.h"
 
 #include "TLorentzVector.h"
 #include "TRandom3.h"
+#include "TVector3.h"
 
 #include "EsbGeometry/EsbSuperFGD/EsbFgdDetectorParameters.h"
 
@@ -44,6 +34,7 @@ public:
     FgdFluxDriver(const char* geoConfigFile
                   , const char* nuFluxFile
                   , unsigned int seed
+                  , TVector3 detPos
                   , Double_t maxEnergy = 2. /* GeV */);
 
     class FLuxNeutrino
@@ -98,6 +89,7 @@ private:
     /* Uniform random number generators for neutrino flux calculations */
     std::mt19937 fseed;//!<!
     std::uniform_real_distribution<Double_t> fdis;//!<!
+    TVector3 fdetPos;
 
 
     PDGCodeList fPdgCList;
