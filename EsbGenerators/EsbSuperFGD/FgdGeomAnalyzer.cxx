@@ -12,8 +12,8 @@ namespace esbroot {
 namespace generators {
 namespace superfgd {
 
-FgdGeomAnalyzer::FgdGeomAnalyzer(const char* geoConfigFile , TGeoManager* gm)
-                : ROOTGeomAnalyzer(gm)
+FgdGeomAnalyzer::FgdGeomAnalyzer(const char* geoConfigFile , TVector3 detPos, TGeoManager* gm)
+                : ROOTGeomAnalyzer(gm) ,fdetPos(detPos) , fNearestSourcePoint(0,0,0)
 {
     fdetectorParams.LoadPartParams(geoConfigFile);
     SetLengthUnits(fdetectorParams.GetLenghtUnit());
@@ -48,12 +48,14 @@ const genie::PathLengthList& FgdGeomAnalyzer::ComputeMaxPathLengths()
     det->GetShape()->GetAxisRange(2, ymin, ymax);
     det->GetShape()->GetAxisRange(3, zmin, zmax);
     
+    xmin = fdetPos.X() + xmin;
+    xmax = fdetPos.X() + xmax;
 
-    LOG(info) << "xmin "  << xmin << "  xmax " << xmax;
-    LOG(info) << "ymin "  << ymin << "  ymax " << ymax;
-    LOG(info) << "zmin "  << zmin << "  zmax " << zmax;
+    ymin = fdetPos.Y() + ymin;
+    ymax = fdetPos.Y() + ymax;
 
-    throw "stop!";
+    zmin = fdetPos.Z() + zmin;
+    zmax = fdetPos.Z() + zmax;;
 
     // Create farthest point
     TVector3 farthestDetectorPoint(xmax, ymax, zmax);

@@ -28,7 +28,7 @@ class FgdGeomAnalyzer : public genie::geometry::ROOTGeomAnalyzer
 
 public:
 
-    FgdGeomAnalyzer(const char* geoConfigFile , TGeoManager* gm);
+    FgdGeomAnalyzer(const char* geoConfigFile , TVector3 detPos, TGeoManager* gm);
 
     virtual const genie::PathLengthList& ComputeMaxPathLengths();
     void SetNearestSourcePoint(const TVector3& point) { fNearestSourcePoint = point; };
@@ -36,6 +36,7 @@ public:
 private:
     TVector3 fNearestSourcePoint;//!<!
     esbroot::geometry::superfgd::FgdDetectorParameters fdetectorParams;//!<!
+    TVector3 fdetPos;
 
     ClassDef(FgdGeomAnalyzer,6)
 };
