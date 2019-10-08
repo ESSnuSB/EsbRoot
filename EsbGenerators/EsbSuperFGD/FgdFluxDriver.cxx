@@ -1,8 +1,10 @@
 #include "EsbGenerators/EsbSuperFGD/FgdFluxDriver.h"
 
 #include "Framework/ParticleData/PDGCodes.h"
+#include <Framework/Conventions/Units.h>
 
 #include "FairLogger.h"
+
 
 using namespace std;
 
@@ -34,9 +36,10 @@ FgdFluxDriver::FgdFluxDriver(const char* geoConfigFile
 
 bool FgdFluxDriver::GenerateNext(void)
 {
-    static int count = 0;
-    count++;
-    if(count>=3) throw "stop";
+    // static int count =0;
+    // count++;
+    // if(count==3)
+    //     throw "stop";
 
     Double_t rndVal = fdis(fseed);
     LOG(debug) << "rndVal " << rndVal;
@@ -72,9 +75,17 @@ void FgdFluxDriver::CalculateNext4position(Double_t rndVal)
     Double_t rndm_Y = fdetPos.Y() + (f_total_Y * rndVal - f_total_Y/2);//*m_lunits; // Y range from -Y/2 to Y/2
     Double_t rndm_Z = fdetPos.Z() - f_total_Z/2; // Particle should start at beginning of the detector (z direction)
 
-    f4position.SetX(rndm_X);
-    f4position.SetY(rndm_Y);
-    f4position.SetZ(rndm_Z);
+    Double_t genie_m = genie::units::meter;
+    Double_t genie_cm = genie_m/100.;
+
+    // f4position.SetX(rndm_X * genie_cm);
+    // f4position.SetY(rndm_Y * genie_cm);
+    // f4position.SetZ(rndm_Z * genie_cm);
+    // f4position.SetT(0);
+
+    f4position.SetX(0.);
+    f4position.SetY(0.);
+    f4position.SetZ(-550 * genie_cm);
     f4position.SetT(0);
 }
 

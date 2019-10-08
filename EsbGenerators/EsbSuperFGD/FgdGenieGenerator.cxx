@@ -56,8 +56,12 @@ Bool_t FgdGenieGenerator::Configure()
 	// SetFluxI(std::move(mono_flux));
 
 
-	auto geomAnalyzer = std::make_shared<FgdGeomAnalyzer>(fgeoConfigFile.c_str(), fdetPos, fgm);
-	geomAnalyzer->SetNearestSourcePoint(TVector3( 0, 0, fdetPos.Z() ) );
+	// auto geomAnalyzer = std::make_shared<FgdGeomAnalyzer>(fgeoConfigFile.c_str(), fdetPos, fgm);
+	// geomAnalyzer->SetFluxDirection(TVector3( 0, 0, 1 ) );
+	// SetGeomI(geomAnalyzer);
+
+	
+	auto geomAnalyzer = std::make_shared<genie::geometry::ROOTGeomAnalyzer>(fgm);
 	SetGeomI(geomAnalyzer);
 	// SetGeomI(std::make_shared<genie::geometry::PointGeomAnalyzer>(1000080160));
 

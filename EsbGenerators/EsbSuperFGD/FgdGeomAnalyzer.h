@@ -30,11 +30,11 @@ public:
 
     FgdGeomAnalyzer(const char* geoConfigFile , TVector3 detPos, TGeoManager* gm);
 
-    virtual const genie::PathLengthList& ComputeMaxPathLengths();
-    void SetNearestSourcePoint(const TVector3& point) { fNearestSourcePoint = point; };
+    // virtual const genie::PathLengthList& ComputeMaxPathLengths() override;
+    void SetFluxDirection(const TVector3& fluxDir) { fFluxDirection = fluxDir; };
 
 private:
-    TVector3 fNearestSourcePoint;//!<!
+    TVector3 fFluxDirection;//!<!
     esbroot::geometry::superfgd::FgdDetectorParameters fdetectorParams;//!<!
     TVector3 fdetPos;
 
