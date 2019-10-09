@@ -20,6 +20,7 @@ namespace superfgd {
 class FgdGenieGenerator : public GenieGenerator
 {
 public:
+
 	//! Default constructor
 	FgdGenieGenerator();
 	
@@ -27,7 +28,6 @@ public:
 	FgdGenieGenerator(const char* geoConfigFile
 									, const char* nuFluxFile
 									, unsigned int seed
-									, TLorentzVector const& x4_nu
 									, TVector3 detPos
 									, TGeoManager* gm = nullptr);
 
@@ -38,14 +38,11 @@ public:
 	virtual Bool_t Init() {return(Configure());};
 	
 	//! Post processes Genie events to choose vertex position
-	virtual void PostProcessEvent(/*IN OUT*/ genie::GHepRecord* event);
+	virtual void PostProcessEvent(/*IN OUT*/ genie::GHepRecord* event) override;
 
 	virtual Bool_t Configure() override; 
 
 private:
-	//! 4-position of neutrino interaction vertex
-	TLorentzVector fVertexX4 = {std::nan("ni"), std::nan("ni"), std::nan("ni"), std::nan("ni")};
-
 	TGeoManager* fgm;//!<!
 	std::string fgeoConfigFile;//!<!
 	std::string fnuFluxFile;//!<!

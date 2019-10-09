@@ -80,6 +80,7 @@ public:
     virtual void            GenerateWeighted (bool gen_weighted) {}      ///< set whether to generate weighted or unweighted neutrinos
 
     void                    SetMaxEnergy  (Double_t eMax) {fMaxEv = eMax;}
+    const TLorentzVector&   AbsPosition      (void) { return  f4AbsPos;}
 
 private:
 
@@ -97,6 +98,7 @@ private:
     // Temp values to store the data from the last interaction
     TLorentzVector f4momentum;
     TLorentzVector f4position;
+    TLorentzVector f4AbsPos;
     int fpdgCode;
     
     Double_t fMaxEv; // in [GeV]

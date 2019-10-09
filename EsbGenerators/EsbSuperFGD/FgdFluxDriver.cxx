@@ -36,13 +36,7 @@ FgdFluxDriver::FgdFluxDriver(const char* geoConfigFile
 
 bool FgdFluxDriver::GenerateNext(void)
 {
-    // static int count =0;
-    // count++;
-    // if(count==3)
-    //     throw "stop";
-
     Double_t rndVal = fdis(fseed);
-    LOG(debug) << "rndVal " << rndVal;
     int nuPdg(0);
     Double_t nuEnergy(0.);
 
@@ -71,21 +65,19 @@ bool FgdFluxDriver::GenerateNext(void)
 void FgdFluxDriver::CalculateNext4position(Double_t rndVal)
 {
     // Set the Position of the event
-    Double_t rndm_X = fdetPos.X() + (f_total_X * rndVal - f_total_X/2);//*m_lunits; // X range from -X/2 to X/2
-    Double_t rndm_Y = fdetPos.Y() + (f_total_Y * rndVal - f_total_Y/2);//*m_lunits; // Y range from -Y/2 to Y/2
-    Double_t rndm_Z = fdetPos.Z() - f_total_Z/2; // Particle should start at beginning of the detector (z direction)
+    Double_t rndm_X = fdetPos.X() + (f_total_X * rndVal - f_total_X/2);
+    Double_t rndm_Y = fdetPos.Y() + (f_total_Y * rndVal - f_total_Y/2);
+    Double_t rndm_Z = fdetPos.Z() + (f_total_Z * rndVal - f_total_Z/2);
 
-    Double_t genie_m = genie::units::meter;
-    Double_t genie_cm = genie_m/100.;
+    f4AbsPos.SetX(rndm_X);
+    f4AbsPos.SetY(rndm_Y);
+    f4AbsPos.SetZ(rndm_Z);
+    f4AbsPos.SetT(0);
 
-    // f4position.SetX(rndm_X * genie_cm);
-    // f4position.SetY(rndm_Y * genie_cm);
-    // f4position.SetZ(rndm_Z * genie_cm);
-    // f4position.SetT(0);
-
-    f4position.SetX(0.);
-    f4position.SetY(0.);
-    f4position.SetZ(-550 * genie_cm);
+    /* For the moment the 4position is all zeros, till we know how to convert from genie units to ours? */
+    f4position.SetX(0);
+    f4position.SetY(0);
+    f4position.SetZ(0);
     f4position.SetT(0);
 }
 
@@ -149,6 +141,11 @@ void FgdFluxDriver::Init4Position(void)
     f4position.SetY(0.);
     f4position.SetZ(0.);
     f4position.SetT(0);
+
+    f4AbsPos.SetX(0.);
+    f4AbsPos.SetY(0.);
+    f4AbsPos.SetZ(0.);
+    f4AbsPos.SetT(0);
 }
 
 void FgdFluxDriver::ReadNuFluxFile(const char* fluxFile)

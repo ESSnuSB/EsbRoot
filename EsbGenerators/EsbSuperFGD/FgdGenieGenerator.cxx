@@ -1,8 +1,9 @@
 #include "EsbGenerators/EsbSuperFGD/FgdGenieGenerator.h"
 #include "EsbGenerators/EsbSuperFGD/FgdFluxDriver.h"
-#include "EsbGenerators/EsbSuperFGD/FgdGeomAnalyzer.h"
+#include "EsbGeometry/EsbSuperFGD/Names.h"
 
 #include "FairLogger.h"
+#include <Framework/Conventions/Units.h>
 
 namespace esbroot {
 namespace generators {
@@ -20,14 +21,12 @@ FgdGenieGenerator::~FgdGenieGenerator()
 FgdGenieGenerator::FgdGenieGenerator(const char* geoConfigFile
 									, const char* nuFluxFile
 									, unsigned int seed
-									, TLorentzVector const& x4_nu
 									, TVector3 detPos
 									, TGeoManager* gm)
 	 : GenieGenerator()
 	 	, fgeoConfigFile(geoConfigFile)
 		, fnuFluxFile(nuFluxFile)
 		, fseed(seed)
-		, fVertexX4(x4_nu)
 		, fdetPos(detPos)
 		, fgm(gm)
 {
@@ -39,9 +38,14 @@ void FgdGenieGenerator::PostProcessEvent(/*IN OUT*/ genie::GHepRecord* event)
 	// Move each vertex to the global geometry coordinate system
 	TLorentzVector* v = event->Vertex();
 	
-	*v += fVertexX4;		
-	event->SetVertex(*v);
+	FgdFluxDriver* fluxD = dynamic_cast<FgdFluxDriver*>(GetFluxI().get());
+	if(fluxD!=nullptr)
+	{	
+		*v += fluxD->AbsPosition();	
+		event->SetVertex(*v);
+	}
 }
+
 
 Bool_t FgdGenieGenerator::Configure()
 {
@@ -51,19 +55,11 @@ Bool_t FgdGenieGenerator::Configure()
 	}
 
 	SetFluxI(std::make_shared<FgdFluxDriver>(fgeoConfigFile.c_str(), fnuFluxFile.c_str(), fseed, fdetPos));
-	// auto mono_flux = std::make_shared<genie::flux::GMonoEnergeticFlux>(1, 14);
-	// mono_flux->SetDirectionCos(0, 0, 1);
-	// SetFluxI(std::move(mono_flux));
-
-
-	// auto geomAnalyzer = std::make_shared<FgdGeomAnalyzer>(fgeoConfigFile.c_str(), fdetPos, fgm);
-	// geomAnalyzer->SetFluxDirection(TVector3( 0, 0, 1 ) );
-	// SetGeomI(geomAnalyzer);
-
 	
 	auto geomAnalyzer = std::make_shared<genie::geometry::ROOTGeomAnalyzer>(fgm);
+	geomAnalyzer->SetLengthUnits(genie::units::centimeter);
+	// geomAnalyzer->SetTopVolName((esbroot::geometry::superfgd::fgdnames::superFGDName));
 	SetGeomI(geomAnalyzer);
-	// SetGeomI(std::make_shared<genie::geometry::PointGeomAnalyzer>(1000080160));
 
 	GenieGenerator::Configure();
 }

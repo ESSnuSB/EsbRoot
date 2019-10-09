@@ -32,8 +32,13 @@ void simulate_1_fgd_genie_generator(TString outFileName = "evetest.root",
   // Add Detectors
   // FairDetector *nearWc = new geometry::WCDetector("NearWcDetector", 300, 500, kTRUE);
   // fRun->AddModule(nearWc);
+  TVector3 fgdPosition(0,0,0);
 
-  FairDetector* fgd = new geometry::FgdDetector("Granular Detector","../../EsbGeometry/EsbSuperFGD/EsbConfig/fgdconfig",0,0,-550, kTRUE);
+  FairDetector* fgd = new geometry::FgdDetector("Granular Detector","../../EsbGeometry/EsbSuperFGD/EsbConfig/fgdconfig"
+                                                ,fgdPosition.X()
+                                                ,fgdPosition.Y()
+                                                ,fgdPosition.Z()
+                                                , kTRUE);
   fRun->AddModule(fgd);
 
   double Bx(0), By(0), Bz(0);
@@ -61,15 +66,14 @@ void simulate_1_fgd_genie_generator(TString outFileName = "evetest.root",
 
   unsigned int seed = 42;
 
-  fair::Logger::SetConsoleSeverity(fair::Severity::debug2);
+  fair::Logger::SetConsoleSeverity(fair::Severity::info);
   fair::Logger::SetConsoleColor(true);
 
   auto partGen = new generators::superfgd::FgdGenieGenerator(
 		"../../EsbGeometry/EsbSuperFGD/EsbConfig/fgdconfig"  //File with detector configuration
 		,"../../EsbMacro/tests/nuFlux/nuFlux100km_250kAm.txt"  //File with neutrino flux
 		, seed // uniform random number generator seed
-		, TLorentzVector(0.0, 0.0, -550., 0.0) //4-position of the neutrino vertex (x, y, z, t) (cm, s)
-    , TVector3(0,0,-550)
+    , fgdPosition
   );
   
 
