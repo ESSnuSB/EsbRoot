@@ -30,9 +30,10 @@ void simulate_1_fgd_genie_generator(TString outFileName = "evetest.root",
   fRun->AddModule(cave);
   
   // Add Detectors
-  // FairDetector *nearWc = new geometry::WCDetector("NearWcDetector", 300, 500, kTRUE);
-  // fRun->AddModule(nearWc);
-  TVector3 fgdPosition(0,0,0);
+  FairDetector *nearWc = new geometry::WCDetector("NearWcDetector", 300, 500, kTRUE);
+  fRun->AddModule(nearWc);
+
+  TVector3 fgdPosition(0,0,-550);
 
   FairDetector* fgd = new geometry::FgdDetector("Granular Detector","../../EsbGeometry/EsbSuperFGD/EsbConfig/fgdconfig"
                                                 ,fgdPosition.X()
@@ -74,6 +75,7 @@ void simulate_1_fgd_genie_generator(TString outFileName = "evetest.root",
 		,"../../EsbMacro/tests/nuFlux/nuFlux100km_250kAm.txt"  //File with neutrino flux
 		, seed // uniform random number generator seed
     , fgdPosition
+    , nEvents
   );
   
 

@@ -29,6 +29,7 @@ public:
 									, const char* nuFluxFile
 									, unsigned int seed
 									, TVector3 detPos
+									, Int_t numEvents
 									, TGeoManager* gm = nullptr);
 
 	//! Destructor
@@ -40,6 +41,9 @@ public:
 	//! Post processes Genie events to choose vertex position
 	virtual void PostProcessEvent(/*IN OUT*/ genie::GHepRecord* event) override;
 
+	//! Overrides initial implementation, reads from pregenerated events
+	virtual Bool_t ReadEvent(FairPrimaryGenerator* primGen) override;
+
 	virtual Bool_t Configure() override; 
 
 private:
@@ -48,6 +52,11 @@ private:
 	std::string fnuFluxFile;//!<!
 	unsigned int fseed;//!<!
 	TVector3 fdetPos;//!<!
+	Int_t fnumEvents;
+	Int_t fCurrentEvent;
+
+	std::vector<genie::EventRecord> fGenieEvents;
+	void GenerateEvents();
 	
 	ClassDef(FgdGenieGenerator,2)
 };

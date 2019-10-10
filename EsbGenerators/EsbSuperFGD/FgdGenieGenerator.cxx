@@ -1,9 +1,11 @@
 #include "EsbGenerators/EsbSuperFGD/FgdGenieGenerator.h"
 #include "EsbGenerators/EsbSuperFGD/FgdFluxDriver.h"
+#include "EsbGenerators/EsbSuperFGD/FgdGeomAnalyzer.h"
 #include "EsbGeometry/EsbSuperFGD/Names.h"
 
 #include "FairLogger.h"
 #include <Framework/Conventions/Units.h>
+#include "Framework/GHEP/GHepParticle.h"
 
 namespace esbroot {
 namespace generators {
@@ -22,13 +24,16 @@ FgdGenieGenerator::FgdGenieGenerator(const char* geoConfigFile
 									, const char* nuFluxFile
 									, unsigned int seed
 									, TVector3 detPos
+									, Int_t numEvents
 									, TGeoManager* gm)
 	 : GenieGenerator()
 	 	, fgeoConfigFile(geoConfigFile)
 		, fnuFluxFile(nuFluxFile)
 		, fseed(seed)
 		, fdetPos(detPos)
+		, fnumEvents(numEvents)
 		, fgm(gm)
+		, fCurrentEvent(0)
 {
 }
 
@@ -55,15 +60,60 @@ Bool_t FgdGenieGenerator::Configure()
 	}
 
 	SetFluxI(std::make_shared<FgdFluxDriver>(fgeoConfigFile.c_str(), fnuFluxFile.c_str(), fseed, fdetPos));
-	
-	// auto geomAnalyzer = std::make_shared<genie::geometry::ROOTGeomAnalyzer>(fgm);
-	// geomAnalyzer->SetLengthUnits(genie::units::centimeter);
-	// // geomAnalyzer->SetTopVolName((esbroot::geometry::superfgd::fgdnames::superFGDName));
-	// SetGeomI(geomAnalyzer);
 
-	SetGeomI(std::make_shared<genie::geometry::PointGeomAnalyzer>(1000080160));
+	SetGeomI(std::make_shared<FgdGeomAnalyzer>(fgeoConfigFile.c_str(), fdetPos, fgm));
+	FgdGeomAnalyzer* geomAnalyzer = dynamic_cast<FgdGeomAnalyzer*>(GetGeomI().get());
+	geomAnalyzer->SetScannerFlux(GetFluxI().get());
 
 	GenieGenerator::Configure();
+
+	GenerateEvents();
+	
+	geomAnalyzer->Reset();	// Revert initial Top Volume Geometry
+}
+
+Bool_t FgdGenieGenerator::ReadEvent(FairPrimaryGenerator* primGen)
+{
+	if(fCurrentEvent>=fnumEvents) return false;
+
+	genie::EventRecord& event = fGenieEvents[fCurrentEvent++];
+	
+	event.Print(std::cout);
+	TLorentzVector* v = event.Vertex();
+		
+	// Fire other final state particles
+	int nParticles = event.GetEntries();
+	for (int i = 0; i < nParticles; i++) 
+	{
+		genie::GHepParticle *p = event.Particle(i);
+		// kIStStableFinalState - Genie documentation: generator-level final state
+		// particles to be tracked by the detector-level MC
+		if ((p->Status() == genie::EGHepStatus::kIStStableFinalState)) 
+		{
+			if(IsPdgAllowed(p->Pdg()))
+			{
+				primGen->AddTrack(p->Pdg(), p->Px(), p->Py(), p->Pz(), v->X(), v->Y(), v->Z());
+			}
+		}
+	}
+		
+    return true;
+}
+
+
+void FgdGenieGenerator::GenerateEvents()
+{
+	for(Int_t eventId = 0; eventId < fnumEvents; ++eventId)
+	{
+		genie::EventRecord* event = fmcj_driver->GenerateEvent();
+		if(event != nullptr)
+		{
+			PostProcessEvent(event);
+			fGenieEvents.emplace_back(*event);
+			delete event;
+		}
+	}
+	
 }
 
 } //namespace superfgd 

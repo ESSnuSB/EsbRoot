@@ -99,7 +99,7 @@ public:
 	void ClearPfgCodes(){fpdgCodesAllowed.clear();}
 
 
-private:
+protected:
 
 	//These static members are initialized in the .cxx file so that
 	//RootCint does not complain

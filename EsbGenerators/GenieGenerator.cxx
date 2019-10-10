@@ -79,9 +79,6 @@ GenieGenerator::GenieGenerator(genie::GFluxI *fluxI, genie::GeomAnalyzerI *geomI
     //!to FairRoot's "vertex coordinate (0,0,0)", so in the end simulation works as required.
     //!This is due to limitations of FairRoot. We can live with this for now,
     //!but it definitely needs to be fixed in the future.
-    
-    //flag indicates that an event has been generated
-    Bool_t rc(false);
 
     genie::EventRecord* event = fmcj_driver->GenerateEvent();
     if(event == nullptr) return false;

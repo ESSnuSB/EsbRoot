@@ -19,7 +19,7 @@ FgdFluxDriver::FgdFluxDriver(const char* geoConfigFile
                             , Double_t maxEnergy)
     :   fnuFluXFile(nuFluxFile)
         , fdetPos(detPos)
-        , fseed(seed)
+        , frndGen(seed)
         , fdis(0.0, 1.0)
         , fpdgCode(0)
         , fMaxEv(maxEnergy)
@@ -36,7 +36,6 @@ FgdFluxDriver::FgdFluxDriver(const char* geoConfigFile
 
 bool FgdFluxDriver::GenerateNext(void)
 {
-    Double_t rndVal = fdis(fseed);
     int nuPdg(0);
     Double_t nuEnergy(0.);
 
@@ -44,9 +43,9 @@ bool FgdFluxDriver::GenerateNext(void)
     {
         FgdFluxDriver::FLuxNeutrino& neutrino = fFlux[i];
         
-        if(neutrino.GetNeutrino(rndVal, nuPdg, nuEnergy))
+        if(neutrino.GetNeutrino(fdis(frndGen), nuPdg, nuEnergy))
         {
-            CalculateNext4position(rndVal);
+            CalculateNext4position();
             CalculateNext4Momentum(nuEnergy);
             fpdgCode = nuPdg;
             
@@ -62,12 +61,12 @@ bool FgdFluxDriver::GenerateNext(void)
 //-------------------------------------------------------
 //                  Private methods
 //-------------------------------------------------------
-void FgdFluxDriver::CalculateNext4position(Double_t rndVal)
+void FgdFluxDriver::CalculateNext4position()
 {
     // Set the Position of the event
-    Double_t rndm_X = fdetPos.X() + (f_total_X * rndVal - f_total_X/2);
-    Double_t rndm_Y = fdetPos.Y() + (f_total_Y * rndVal - f_total_Y/2);
-    Double_t rndm_Z = fdetPos.Z() + (f_total_Z * rndVal - f_total_Z/2);
+    Double_t rndm_X = fdetPos.X() + (f_total_X * fdis(frndGen) - f_total_X/2);
+    Double_t rndm_Y = fdetPos.Y() + (f_total_Y * fdis(frndGen) - f_total_Y/2);
+    Double_t rndm_Z = fdetPos.Z() + (f_total_Z * fdis(frndGen) - f_total_Z/2);
 
     f4AbsPos.SetX(rndm_X);
     f4AbsPos.SetY(rndm_Y);
@@ -75,10 +74,10 @@ void FgdFluxDriver::CalculateNext4position(Double_t rndVal)
     f4AbsPos.SetT(0);
 
     /* For the moment the 4position is all zeros, till we know how to convert from genie units to ours? */
-    f4position.SetX(0);
-    f4position.SetY(0);
-    f4position.SetZ(0);
-    f4position.SetT(0);
+    f4position.SetX(0.);
+    f4position.SetY(0.);
+    f4position.SetZ(0.);
+    f4position.SetT(0.);
 }
 
 void FgdFluxDriver::CalculateNext4Momentum(Double_t energyOfNeutrino)

@@ -88,7 +88,7 @@ private:
     esbroot::geometry::superfgd::FgdDetectorParameters fdetectorParams;
 
     /* Uniform random number generators for neutrino flux calculations */
-    std::mt19937 fseed;//!<!
+    std::mt19937 frndGen;//!<!
     std::uniform_real_distribution<Double_t> fdis;//!<!
     TVector3 fdetPos;
 
@@ -112,7 +112,7 @@ private:
     std::vector<FLuxNeutrino> fFlux;//!<!
 
     void CalculateNext4Momentum(Double_t energyOfNeutrino);
-    void CalculateNext4position(Double_t rndVal);
+    void CalculateNext4position();
 
     void InitPDGList(void);
     void InitDetectorParams(const char* configFile);
