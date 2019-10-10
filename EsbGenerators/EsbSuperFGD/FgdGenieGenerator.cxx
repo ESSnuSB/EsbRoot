@@ -56,10 +56,12 @@ Bool_t FgdGenieGenerator::Configure()
 
 	SetFluxI(std::make_shared<FgdFluxDriver>(fgeoConfigFile.c_str(), fnuFluxFile.c_str(), fseed, fdetPos));
 	
-	auto geomAnalyzer = std::make_shared<genie::geometry::ROOTGeomAnalyzer>(fgm);
-	geomAnalyzer->SetLengthUnits(genie::units::centimeter);
-	// geomAnalyzer->SetTopVolName((esbroot::geometry::superfgd::fgdnames::superFGDName));
-	SetGeomI(geomAnalyzer);
+	// auto geomAnalyzer = std::make_shared<genie::geometry::ROOTGeomAnalyzer>(fgm);
+	// geomAnalyzer->SetLengthUnits(genie::units::centimeter);
+	// // geomAnalyzer->SetTopVolName((esbroot::geometry::superfgd::fgdnames::superFGDName));
+	// SetGeomI(geomAnalyzer);
+
+	SetGeomI(std::make_shared<genie::geometry::PointGeomAnalyzer>(1000080160));
 
 	GenieGenerator::Configure();
 }

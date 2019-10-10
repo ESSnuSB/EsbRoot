@@ -115,6 +115,7 @@ GenieGenerator::GenieGenerator(genie::GFluxI *fluxI, genie::GeomAnalyzerI *geomI
 
 Bool_t GenieGenerator::IsPdgAllowed(int pdg)
 {
+	
 	// Workaround for GENIE bug (or "feature") that treats nuclear energy as trackable particle
 	if(pdg >= 2000000000)
 	{
