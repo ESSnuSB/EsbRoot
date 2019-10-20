@@ -80,31 +80,42 @@ GenieGenerator::GenieGenerator(genie::GFluxI *fluxI, genie::GeomAnalyzerI *geomI
     //!This is due to limitations of FairRoot. We can live with this for now,
     //!but it definitely needs to be fixed in the future.
 
-    genie::EventRecord* event = fmcj_driver->GenerateEvent();
-    if(event == nullptr) return false;
+	Bool_t flaGkeepThrowing(true); // Flag to indicate when to stop generating events if there is a condition for the generated particles
 
-    PostProcessEvent(event);
-    
-    event->Print(std::cout);
-	TLorentzVector* v = event->Vertex();
-		
-	// Fire other final state particles
-	int nParticles = event->GetEntries();
-	for (int i = 0; i < nParticles; i++) 
+	while(flaGkeepThrowing)
 	{
-		genie::GHepParticle *p = event->Particle(i);
-		// kIStStableFinalState - Genie documentation: generator-level final state
-		// particles to be tracked by the detector-level MC
-		if ((p->Status() == genie::EGHepStatus::kIStStableFinalState)) 
+		genie::EventRecord* event = fmcj_driver->GenerateEvent();
+		if(event == nullptr) return false;
+
+		PostProcessEvent(event);
+
+		std::vector<genie::GHepParticle*> eventParticles;
+		
+		event->Print(std::cout);
+		TLorentzVector* v = event->Vertex();
+			
+		// Fire other final state particles
+		int nParticles = event->GetEntries();
+		for (int i = 0; i < nParticles; i++) 
 		{
-			if(IsPdgAllowed(p->Pdg()))
+			genie::GHepParticle *p = event->Particle(i);
+			// kIStStableFinalState - Genie documentation: generator-level final state
+			// particles to be tracked by the detector-level MC
+			if ((p->Status() == genie::EGHepStatus::kIStStableFinalState)) 
 			{
-				primGen->AddTrack(p->Pdg(), p->Px(), p->Py(), p->Pz(), v->X(), v->Y(), v->Z());
+				if(IsPdgAllowed(p->Pdg()))
+				{
+					primGen->AddTrack(p->Pdg(), p->Px(), p->Py(), p->Pz(), v->X(), v->Y(), v->Z());
+					eventParticles.push_back(p);
+				}
 			}
 		}
+
+		flaGkeepThrowing = KeepThrowing(eventParticles);
+
+		delete event;
 	}
-		
-	delete event;
+	
     
     return true;
 }
@@ -127,6 +138,12 @@ Bool_t GenieGenerator::IsPdgAllowed(int pdg)
 
 	Bool_t isAllowed = std::find(fpdgCodesAllowed.begin(), fpdgCodesAllowed.end(), pdg) != fpdgCodesAllowed.end();
 	return isAllowed;
+}
+
+Bool_t GenieGenerator::KeepThrowing(std::vector<genie::GHepParticle*>& eventParticles )
+{
+	// No implementation - decendent should decide
+	return false;
 }
 
 FairGenerator* GenieGenerator::CloneGenerator() const

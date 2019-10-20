@@ -132,7 +132,12 @@ protected:
   	//! Tracks if object has been configured
   	Bool_t fIsConfigured = false;
 
-	Bool_t IsPdgAllowed(int pdg);
+	//! Check if the event particle is allowed by the chosen criteria fo the generator
+	virtual Bool_t IsPdgAllowed(int pdg);
+
+	//!These methods checks if to try to generate a new event
+	//!if the particles in the have certain criteria
+	virtual Bool_t KeepThrowing(std::vector<genie::GHepParticle*>& eventParticles );
 
   	ClassDef(GenieGenerator,6)
 };

@@ -113,15 +113,61 @@ void FgdGenieGenerator::GenerateEvents()
 {
 	for(Int_t eventId = 0; eventId < fnumEvents; ++eventId)
 	{
-		genie::EventRecord* event = fmcj_driver->GenerateEvent();
-		if(event != nullptr)
+		while(true)
 		{
-			PostProcessEvent(event);
-			fGenieEvents.emplace_back(*event);
+			genie::EventRecord* event = fmcj_driver->GenerateEvent();
+			if(event != nullptr)
+			{
+				PostProcessEvent(event);
+				int nParticles = event->GetEntries();
+				std::vector<genie::GHepParticle*> eventParticles(nParticles);
+				for (int i = 0; i < nParticles; i++) 
+				{
+					genie::GHepParticle *p = event->Particle(i);
+					// kIStStableFinalState - Genie documentation: generator-level final state
+					// particles to be tracked by the detector-level MC
+					if ((p->Status() == genie::EGHepStatus::kIStStableFinalState)) 
+					{
+						if(IsPdgAllowed(p->Pdg()))
+						{
+							eventParticles.push_back(p);
+						}
+					}
+				}
+				if(!KeepThrowing(eventParticles))
+				{
+					fGenieEvents.emplace_back(*event);
+					break;
+				}
+			}
+			else
+			{
+				break;
+			}
+			
 			delete event;
 		}
+		
+	}
+}
+
+Bool_t FgdGenieGenerator::KeepThrowing(std::vector<genie::GHepParticle*>& eventParticles )
+{
+	static int count = 0;
+	Bool_t throwAgain(false);
+
+	if(eventParticles.empty() && count <5 /* try only 5 times */)
+	{
+		++count;
+		throwAgain = true;
+	}
+	else
+	{
+		count = 0;
 	}
 	
+
+	return throwAgain;
 }
 
 } //namespace superfgd 

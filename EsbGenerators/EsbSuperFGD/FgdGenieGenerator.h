@@ -48,6 +48,9 @@ public:
 
 	void SetRandomVertex(Bool_t rndVertex) {fUseRandomVertex = rndVertex;}
 
+protected:
+	virtual Bool_t KeepThrowing(std::vector<genie::GHepParticle*>& eventParticles ) override;
+
 private:
 	TGeoManager* fgm;//!<!
 	std::string fgeoConfigFile;//!<!
