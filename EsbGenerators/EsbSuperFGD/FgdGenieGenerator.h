@@ -50,6 +50,7 @@ public:
 
 protected:
 	virtual Bool_t KeepThrowing(std::vector<genie::GHepParticle*>& eventParticles ) override;
+	virtual void WriteToOutputFile(const genie::EventRecord* event, Bool_t flaGkeepThrowing ) override;
 
 private:
 	TGeoManager* fgm;//!<!

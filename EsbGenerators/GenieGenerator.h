@@ -45,6 +45,7 @@ public:
 	static struct GlobalState_t {
 		std::string fGenieTune = ""; //!< Genie tune to be used
 		std::string fXsecSplineFileName = ""; //!< Path to XML file with GENIE cross sections
+		std::string fOutputFileName = ""; //!< Path to file used by genie generators if they want to write data output
 		long int fRandomSeed = -1; //!< Random seed for GENIE (NOT IMPLEMENTED YET)
 	} GlobalState; //!< Global state of Genie generator
 	
@@ -135,9 +136,14 @@ protected:
 	//! Check if the event particle is allowed by the chosen criteria fo the generator
 	virtual Bool_t IsPdgAllowed(int pdg);
 
-	//!These methods checks if to try to generate a new event
-	//!if the particles in the have certain criteria
+	//!This method checks if to try to generate a new event
+	//!if the particles in the event have certain criteria
 	virtual Bool_t KeepThrowing(std::vector<genie::GHepParticle*>& eventParticles );
+
+	//!Write data from the event for further analysis if required
+	//! *@param event    generated event
+	//! *@param flaGkeepThrowing    flag indicating if this event is rejected and a new one will be generated
+	virtual void WriteToOutputFile(const genie::EventRecord* event, Bool_t flaGkeepThrowing );
 
   	ClassDef(GenieGenerator,6)
 };

@@ -30,8 +30,8 @@ void simulate_1_fgd_genie_generator(TString outFileName = "evetest.root",
   fRun->AddModule(cave);
   
   // Add Detectors
-  FairDetector *nearWc = new geometry::WCDetector("NearWcDetector", 300, 500, kTRUE);
-  fRun->AddModule(nearWc);
+  // FairDetector *nearWc = new geometry::WCDetector("NearWcDetector", 300, 500, kTRUE);
+  // fRun->AddModule(nearWc);
 
   TVector3 fgdPosition(0,0,-550);
 
@@ -64,6 +64,8 @@ void simulate_1_fgd_genie_generator(TString outFileName = "evetest.root",
   generators::GenieGenerator::GlobalState.fGenieTune = "G18_10a_00_000";
   //File with cross-section splines (see: http://scisoft.fnal.gov/scisoft/packages/genie_xsec/)
   generators::GenieGenerator::GlobalState.fXsecSplineFileName = "../../EsbGenerators/xsec/xsec_essnusb.xml"; 
+  // File containing interaction data
+  generators::GenieGenerator::GlobalState.fOutputFileName = "../../EsbMacro/tests/eventsData.dat";
 
   unsigned int seed = 42;
 

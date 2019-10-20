@@ -113,6 +113,11 @@ GenieGenerator::GenieGenerator(genie::GFluxI *fluxI, genie::GeomAnalyzerI *geomI
 
 		flaGkeepThrowing = KeepThrowing(eventParticles);
 
+		if(!GlobalState.fOutputFileName.empty())
+		{
+			WriteToOutputFile(event, flaGkeepThrowing);
+		}
+
 		delete event;
 	}
 	
@@ -144,6 +149,11 @@ Bool_t GenieGenerator::KeepThrowing(std::vector<genie::GHepParticle*>& eventPart
 {
 	// No implementation - decendent should decide
 	return false;
+}
+
+void GenieGenerator::WriteToOutputFile(const genie::EventRecord* event, Bool_t flaGkeepThrowing )
+{
+	// No implementation required in base class
 }
 
 FairGenerator* GenieGenerator::CloneGenerator() const

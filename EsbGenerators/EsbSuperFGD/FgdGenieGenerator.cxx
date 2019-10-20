@@ -6,6 +6,9 @@
 #include "FairLogger.h"
 #include <Framework/Conventions/Units.h>
 #include "Framework/GHEP/GHepParticle.h"
+#include "Framework/Interaction/ProcessInfo.h"
+#include "Framework/Interaction/Interaction.h"
+#include "Framework/Interaction/InitialState.h"
 
 namespace esbroot {
 namespace generators {
@@ -104,6 +107,11 @@ Bool_t FgdGenieGenerator::ReadEvent(FairPrimaryGenerator* primGen)
 			}
 		}
 	}
+
+	if(!GlobalState.fOutputFileName.empty())
+	{
+		WriteToOutputFile(&event, false /* flaGkeepThrowing - check made in GenerateEvents*/);
+	}
 		
     return true;
 }
@@ -168,6 +176,22 @@ Bool_t FgdGenieGenerator::KeepThrowing(std::vector<genie::GHepParticle*>& eventP
 	
 
 	return throwAgain;
+}
+
+void FgdGenieGenerator::WriteToOutputFile(const genie::EventRecord* event, Bool_t flaGkeepThrowing ) 
+{
+	std::ofstream outputFile(GlobalState.fOutputFileName, std::ios::app);
+	if(outputFile.is_open())
+	{
+		const Interaction* inter = event->Summary();
+		const ProcessInfo& procInfo = inter->ProcInfo();
+		LOG(debug) << "IsWeakCC " << procInfo.IsWeakCC() << "; IsWeakNC " << procInfo.IsWeakNC();
+
+		const InitialState& initSt = inter->InitState();
+
+		outputFile << initSt.ProbePdg() << " " << initSt.ProbeE(kRfLab) << endl;;
+	}
+	outputFile.close();
 }
 
 } //namespace superfgd 
