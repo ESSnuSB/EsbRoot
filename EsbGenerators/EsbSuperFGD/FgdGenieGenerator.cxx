@@ -1,5 +1,5 @@
 #include "EsbGenerators/EsbSuperFGD/FgdGenieGenerator.h"
-#include "EsbGenerators/EsbSuperFGD/FgdFluxDriver.h"
+#include "EsbGenerators/EsbSuperFGD/GenieFluxDriver.h"
 #include "EsbGenerators/EsbSuperFGD/FgdGeomAnalyzer.h"
 #include "EsbGeometry/EsbSuperFGD/Names.h"
 
@@ -34,6 +34,7 @@ FgdGenieGenerator::FgdGenieGenerator(const char* geoConfigFile
 		, fnumEvents(numEvents)
 		, fgm(gm)
 		, fCurrentEvent(0)
+		, fUseRandomVertex(false)
 {
 }
 
@@ -43,12 +44,19 @@ void FgdGenieGenerator::PostProcessEvent(/*IN OUT*/ genie::GHepRecord* event)
 	// Move each vertex to the global geometry coordinate system
 	TLorentzVector* v = event->Vertex();
 	
-	FgdFluxDriver* fluxD = dynamic_cast<FgdFluxDriver*>(GetFluxI().get());
-	if(fluxD!=nullptr)
+
+	GenieFluxDriver* fluxD = dynamic_cast<GenieFluxDriver*>(GetFluxI().get());
+	if(fUseRandomVertex && fluxD!=nullptr)
 	{	
 		*v += fluxD->AbsPosition();	
 		event->SetVertex(*v);
 	}
+	else
+	{
+		*v += TLorentzVector(fdetPos,0);	
+		event->SetVertex(*v);
+	}
+	
 }
 
 
@@ -59,7 +67,7 @@ Bool_t FgdGenieGenerator::Configure()
 		fgm = gGeoManager;
 	}
 
-	SetFluxI(std::make_shared<FgdFluxDriver>(fgeoConfigFile.c_str(), fnuFluxFile.c_str(), fseed, fdetPos));
+	SetFluxI(std::make_shared<GenieFluxDriver>(fgeoConfigFile.c_str(), fnuFluxFile.c_str(), fseed, fdetPos));
 
 	SetGeomI(std::make_shared<FgdGeomAnalyzer>(fgeoConfigFile.c_str(), fdetPos, fgm));
 	FgdGeomAnalyzer* geomAnalyzer = dynamic_cast<FgdGeomAnalyzer*>(GetGeomI().get());

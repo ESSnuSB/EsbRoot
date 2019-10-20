@@ -25,13 +25,13 @@ namespace superfgd {
 
 using namespace genie;
 
-class FgdFluxDriver : public GFluxI
+class GenieFluxDriver : public GFluxI
                     , public TObject 
 
 {
 public:
     // ~ctor
-    FgdFluxDriver(const char* geoConfigFile
+    GenieFluxDriver(const char* geoConfigFile
                   , const char* nuFluxFile
                   , unsigned int seed
                   , TVector3 detPos
@@ -82,7 +82,17 @@ public:
     void                    SetMaxEnergy  (Double_t eMax) {fMaxEv = eMax;}
     const TLorentzVector&   AbsPosition      (void) { return  f4AbsPos;}
 
-private:
+protected:
+    virtual void CalculateNext4Momentum(Double_t energyOfNeutrino);
+    virtual void CalculateNext4position();
+
+    virtual void InitPDGList(void);
+    virtual void InitDetectorParams(const char* configFile);
+    virtual void Init4Momentum(void);
+    virtual void Init4Position(void);
+
+    virtual void ReadNuFluxFile(const char* fluxFile);
+    virtual void CalculateProbability();
 
     /* Detector parameters */
     esbroot::geometry::superfgd::FgdDetectorParameters fdetectorParams;
@@ -111,18 +121,7 @@ private:
     std::string fnuFluXFile;
     std::vector<FLuxNeutrino> fFlux;//!<!
 
-    void CalculateNext4Momentum(Double_t energyOfNeutrino);
-    void CalculateNext4position();
-
-    void InitPDGList(void);
-    void InitDetectorParams(const char* configFile);
-    void Init4Momentum(void);
-    void Init4Position(void);
-
-    void ReadNuFluxFile(const char* fluxFile);
-    void CalculateProbability();
-
-    ClassDef(FgdFluxDriver,6)
+    ClassDef(GenieFluxDriver,6)
   };
 
 } //namespace superfgd 

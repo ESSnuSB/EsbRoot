@@ -31,7 +31,7 @@ if(WITH_GENIE)
 		GenieOnlyMuonGenerator.cxx
 		SimpleGenieGenerator.cxx
 		SimpleGenieOnlyMuonGenerator.cxx
-		EsbSuperFGD/FgdFluxDriver.cxx
+		EsbSuperFGD/GenieFluxDriver.cxx
 		EsbSuperFGD/FgdGeomAnalyzer.cxx
 		EsbSuperFGD/FgdGenieGenerator.cxx
 	)	
@@ -41,7 +41,7 @@ if(WITH_GENIE)
 		${CMAKE_SOURCE_DIR}/EsbGenerators/GenieOnlyMuonGenerator.h
     	${CMAKE_SOURCE_DIR}/EsbGenerators/SimpleGenieGenerator.h	
 		${CMAKE_SOURCE_DIR}/EsbGenerators/SimpleGenieOnlyMuonGenerator.h
-		${CMAKE_SOURCE_DIR}/EsbGenerators/EsbSuperFGD/FgdFluxDriver.h
+		${CMAKE_SOURCE_DIR}/EsbGenerators/EsbSuperFGD/GenieFluxDriver.h
 		${CMAKE_SOURCE_DIR}/EsbGenerators/EsbSuperFGD/FgdGeomAnalyzer.h
 		${CMAKE_SOURCE_DIR}/EsbGenerators/EsbSuperFGD/FgdGenieGenerator.h
 	)

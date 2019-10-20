@@ -1,4 +1,4 @@
-#include "EsbGenerators/EsbSuperFGD/FgdFluxDriver.h"
+#include "EsbGenerators/EsbSuperFGD/GenieFluxDriver.h"
 
 #include "Framework/ParticleData/PDGCodes.h"
 #include <Framework/Conventions/Units.h>
@@ -12,7 +12,7 @@ namespace esbroot {
 namespace generators {
 namespace superfgd {
 
-FgdFluxDriver::FgdFluxDriver(const char* geoConfigFile
+GenieFluxDriver::GenieFluxDriver(const char* geoConfigFile
                             , const char* nuFluxFile
                             , unsigned int seed
                             , TVector3 detPos
@@ -34,14 +34,14 @@ FgdFluxDriver::FgdFluxDriver(const char* geoConfigFile
     CalculateProbability();
 }
 
-bool FgdFluxDriver::GenerateNext(void)
+bool GenieFluxDriver::GenerateNext(void)
 {
     int nuPdg(0);
     Double_t nuEnergy(0.);
 
     for(size_t i = 0; i < fFlux.size(); ++i)
     {
-        FgdFluxDriver::FLuxNeutrino& neutrino = fFlux[i];
+        GenieFluxDriver::FLuxNeutrino& neutrino = fFlux[i];
         
         if(neutrino.GetNeutrino(fdis(frndGen), nuPdg, nuEnergy))
         {
@@ -61,7 +61,7 @@ bool FgdFluxDriver::GenerateNext(void)
 //-------------------------------------------------------
 //                  Private methods
 //-------------------------------------------------------
-void FgdFluxDriver::CalculateNext4position()
+void GenieFluxDriver::CalculateNext4position()
 {
     // Set the Position of the event
     Double_t rndm_X = fdetPos.X() + (f_total_X * fdis(frndGen) - f_total_X/2);
@@ -80,7 +80,7 @@ void FgdFluxDriver::CalculateNext4position()
     f4position.SetT(0.);
 }
 
-void FgdFluxDriver::CalculateNext4Momentum(Double_t energyOfNeutrino)
+void GenieFluxDriver::CalculateNext4Momentum(Double_t energyOfNeutrino)
 {
     // calculate only pZ since beam is parallel to Z axis
     // neutrino is massless so p=E/c
@@ -91,7 +91,7 @@ void FgdFluxDriver::CalculateNext4Momentum(Double_t energyOfNeutrino)
     f4momentum.SetPxPyPzE(pX,pY,pZ,energyOfNeutrino);
 }
 
-void FgdFluxDriver::InitPDGList(void)
+void GenieFluxDriver::InitPDGList(void)
 {
     /* The neutrinos are added in the list in the order in which they are expected to appear in the flux file*/
 
@@ -107,7 +107,7 @@ void FgdFluxDriver::InitPDGList(void)
     fPdgCList.push_back(genie::kPdgAntiNuTau);  // Tau antineutrino pdgCode = -16
 }
 
-void FgdFluxDriver::InitDetectorParams(const char* configFile)
+void GenieFluxDriver::InitDetectorParams(const char* configFile)
 {
     fdetectorParams.LoadPartParams(configFile);
 
@@ -126,7 +126,7 @@ void FgdFluxDriver::InitDetectorParams(const char* configFile)
     f_total_Z = step_Z * bin_Z;
 }
 
-void FgdFluxDriver::Init4Momentum(void)
+void GenieFluxDriver::Init4Momentum(void)
 {
     f4momentum.SetX(0.);
     f4momentum.SetY(0.);
@@ -134,7 +134,7 @@ void FgdFluxDriver::Init4Momentum(void)
     f4momentum.SetT(0);
 }
 
-void FgdFluxDriver::Init4Position(void)
+void GenieFluxDriver::Init4Position(void)
 {
     f4position.SetX(0.);
     f4position.SetY(0.);
@@ -147,7 +147,7 @@ void FgdFluxDriver::Init4Position(void)
     f4AbsPos.SetT(0);
 }
 
-void FgdFluxDriver::ReadNuFluxFile(const char* fluxFile)
+void GenieFluxDriver::ReadNuFluxFile(const char* fluxFile)
 {
     std::string nufluxFile(fluxFile);
 
@@ -205,19 +205,19 @@ void FgdFluxDriver::ReadNuFluxFile(const char* fluxFile)
     }
 }
 
-void FgdFluxDriver::CalculateProbability()
+void GenieFluxDriver::CalculateProbability()
 {
     Double_t totalFlux(0.);
     for(size_t i = 0; i < fFlux.size(); ++i)
     {
-        FgdFluxDriver::FLuxNeutrino* neutrino = &fFlux[i];
+        GenieFluxDriver::FLuxNeutrino* neutrino = &fFlux[i];
         totalFlux+= neutrino->GetFlux();
     }
 
     Double_t currentLowerFluxVal(0.);
     for(size_t i = 0; i < fFlux.size(); ++i)
     {
-        FgdFluxDriver::FLuxNeutrino& neutrino = fFlux[i];
+        GenieFluxDriver::FLuxNeutrino& neutrino = fFlux[i];
         neutrino.SetLowerVal(currentLowerFluxVal);
         Double_t uppVal = currentLowerFluxVal + neutrino.GetFlux()/totalFlux;
         neutrino.SetUpperVal(uppVal);
@@ -226,16 +226,16 @@ void FgdFluxDriver::CalculateProbability()
 }
 
 
-FgdFluxDriver::FLuxNeutrino::FLuxNeutrino(int pdg , Double_t energy, Double_t flux)
+GenieFluxDriver::FLuxNeutrino::FLuxNeutrino(int pdg , Double_t energy, Double_t flux)
     : fpdg(pdg), fEnergy(energy), fFluxValue(flux), fLowerVal(0.) , fUpperVal(0.)
 {
 }
 
-FgdFluxDriver::FLuxNeutrino::~FLuxNeutrino()
+GenieFluxDriver::FLuxNeutrino::~FLuxNeutrino()
 {
 }
 
-FgdFluxDriver::FLuxNeutrino::FLuxNeutrino(const FLuxNeutrino& fn)
+GenieFluxDriver::FLuxNeutrino::FLuxNeutrino(const FLuxNeutrino& fn)
 {
     fpdg = fn.fpdg;
     fEnergy = fn.fEnergy;
@@ -245,7 +245,7 @@ FgdFluxDriver::FLuxNeutrino::FLuxNeutrino(const FLuxNeutrino& fn)
     fUpperVal = fn.fUpperVal;
 }
 
-FgdFluxDriver::FLuxNeutrino& FgdFluxDriver::FLuxNeutrino::operator=(const FLuxNeutrino& fn)
+GenieFluxDriver::FLuxNeutrino& GenieFluxDriver::FLuxNeutrino::operator=(const FLuxNeutrino& fn)
 {
     fpdg = fn.fpdg;
     fEnergy = fn.fEnergy;
@@ -257,7 +257,7 @@ FgdFluxDriver::FLuxNeutrino& FgdFluxDriver::FLuxNeutrino::operator=(const FLuxNe
     return *this;
 }
 
-Bool_t FgdFluxDriver::FLuxNeutrino::GetNeutrino(Double_t val, int& pdg, Double_t& energy)
+Bool_t GenieFluxDriver::FLuxNeutrino::GetNeutrino(Double_t val, int& pdg, Double_t& energy)
 {
     if(val>=fLowerVal && val <fUpperVal)
     {

@@ -46,16 +46,19 @@ public:
 
 	virtual Bool_t Configure() override; 
 
+	void SetRandomVertex(Bool_t rndVertex) {fUseRandomVertex = rndVertex;}
+
 private:
 	TGeoManager* fgm;//!<!
 	std::string fgeoConfigFile;//!<!
 	std::string fnuFluxFile;//!<!
 	unsigned int fseed;//!<!
 	TVector3 fdetPos;//!<!
-	Int_t fnumEvents;
-	Int_t fCurrentEvent;
+	Int_t fnumEvents;//!<!
+	Int_t fCurrentEvent;//!<!
+	Bool_t fUseRandomVertex;//!<!
 
-	std::vector<genie::EventRecord> fGenieEvents;
+	std::vector<genie::EventRecord> fGenieEvents;//!<!
 	void GenerateEvents();
 	
 	ClassDef(FgdGenieGenerator,2)
