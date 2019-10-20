@@ -14,7 +14,7 @@
 void muon_only_2_digitize(TString inFile = "evetest_mu_only.root", 
 	      TString parFile = "params_mu_only.root",
 	      TString outFile = "fgd_dig_mu_only.root",
-              Int_t nStartEvent = 0, Int_t nEvents = 500)
+              Int_t nStartEvent = 0, Int_t nEvents = 25)
 {
   using namespace esbroot;
 

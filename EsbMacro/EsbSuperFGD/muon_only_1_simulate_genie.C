@@ -4,9 +4,9 @@
 
 */
 
-void muon_only_1_simulate_genie(TString outFileName = "evetest_mu_only.root",
+void simulate_1_fgd_genie_generator(TString outFileName = "evetest_mu_only.root",
              Int_t nStartEvent = 0, 
-	     Int_t nEvents = 500)
+	     Int_t nEvents = 25)
 {
   using namespace esbroot;
   
@@ -33,7 +33,13 @@ void muon_only_1_simulate_genie(TString outFileName = "evetest_mu_only.root",
   // FairDetector *nearWc = new geometry::WCDetector("NearWcDetector", 300, 500, kTRUE);
   // fRun->AddModule(nearWc);
 
-  FairDetector* fgd = new geometry::FgdDetector("Granular Detector","../../EsbGeometry/EsbSuperFGD/EsbConfig/fgdconfig",0,0,0, kTRUE);
+  TVector3 fgdPosition(0,0,-550);
+
+  FairDetector* fgd = new geometry::FgdDetector("Granular Detector","../../EsbGeometry/EsbSuperFGD/EsbConfig/fgdconfig"
+                                                ,fgdPosition.X()
+                                                ,fgdPosition.Y()
+                                                ,fgdPosition.Z()
+                                                , kTRUE);
   fRun->AddModule(fgd);
 
   double Bx(0), By(0), Bz(0);
@@ -55,20 +61,28 @@ void muon_only_1_simulate_genie(TString outFileName = "evetest_mu_only.root",
 
   // *** Set global genie parameters ***
 	//Genie tune, this is the recommended one
-  generators::GenieOnlyMuonGenerator::GlobalState.fGenieTune = "G18_10a_00_000";
+  generators::GenieGenerator::GlobalState.fGenieTune = "G18_10a_00_000";
   //File with cross-section splines (see: http://scisoft.fnal.gov/scisoft/packages/genie_xsec/)
-  generators::GenieOnlyMuonGenerator::GlobalState.fXsecSplineFileName = "../../EsbGenerators/xsec/xsec_essnusb.xml"; 
-  // File containing the vertex muons
-  generators::GenieOnlyMuonGenerator::GlobalState.fOutputMuonFileName = "../../EsbMacro/tests/genie_muons.dat"; 
- 
-	//Create simple genie generator
-	auto partGen = new generators::SimpleGenieOnlyMuonGenerator(
-		1000080160, //Target PDG (O16)
-		14, //Neutrino PDG (nu_mu)
-		0.6, //Neutrino energy (GeV)
-		TVector3(1.0,0.0,0.0), //Neutrino directon (normalization of this vector is not important)
-		TLorentzVector(0.0, 0.0, 0.0, 0.0) //4-position of the neutrino vertex (x, y, z, t) (cm, s)
+  generators::GenieGenerator::GlobalState.fXsecSplineFileName = "../../EsbGenerators/xsec/xsec_essnusb.xml"; 
+  // File containing interaction data
+  generators::GenieGenerator::GlobalState.fOutputFileName = "../../EsbMacro/tests/eventsData.dat";
+
+  unsigned int seed = 42;
+
+  fair::Logger::SetConsoleSeverity(fair::Severity::info);
+  fair::Logger::SetConsoleColor(true);
+
+  auto partGen = new generators::superfgd::FgdGenieGenerator(
+		"../../EsbGeometry/EsbSuperFGD/EsbConfig/fgdconfig"  //File with detector configuration
+		,"../../EsbMacro/tests/nuFlux/nuFlux100km_250kAm.txt"  //File with neutrino flux
+		, seed // uniform random number generator seed
+    , fgdPosition
+    , nEvents
   );
+
+  partGen->AddPdgCode(13);
+  partGen->AddPdgCode(-13);
+  
 
   //Add to list of generators
   primGen->AddGenerator(partGen);
@@ -88,7 +102,7 @@ void muon_only_1_simulate_genie(TString outFileName = "evetest_mu_only.root",
   FairRuntimeDb *rtdb = fRun->GetRuntimeDb();
   Bool_t kParameterMerged = kTRUE;
   FairParRootFileIo* output = new FairParRootFileIo(kParameterMerged);
-  output->open("params_mu_only.root");
+  output->open("params.root");
   rtdb->setOutput(output);
   rtdb->saveOutput();
   

@@ -1312,8 +1312,6 @@ void FgdGenFitRecon::FitTracks(std::vector<std::vector<TVector3>>& foundTracks)
     {
       fdisplay->addEvent(genTracks);
     }
-
-    // CalculateCurvature();
 }
 
 void FgdGenFitRecon::DefineMaterials() 
