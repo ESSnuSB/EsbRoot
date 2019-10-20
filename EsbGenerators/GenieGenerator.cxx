@@ -13,6 +13,7 @@
 #include "Framework/Utils/AppInit.h" //For Random Seed
 
 #include <iostream>
+#include <fstream>
 #include <cstdlib>
 #include <cassert>
 
@@ -43,6 +44,17 @@ GenieGenerator::GenieGenerator(genie::GFluxI *fluxI, genie::GeomAnalyzerI *geomI
 	
 	genie::RunOpt::Instance()->SetTuneName(GlobalState.fGenieTune);
 	genie::RunOpt::Instance()->BuildTune();
+
+	// Clear content of previous file
+	if(!GlobalState.fOutputFileName.empty())
+	{
+		std::ofstream outFile;
+  		outFile.open(GlobalState.fOutputFileName, std::ios::trunc);
+		if(outFile.is_open())
+		{
+			outFile.close();
+		}
+	}
 	
 	fGlobalStateInit = true;
 }
