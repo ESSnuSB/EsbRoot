@@ -4,7 +4,7 @@
 
 */
 
-void simulate_1_fgd_genie_generator(TString outFileName = "evetest_mu_only.root",
+void muon_only_1_simulate_genie(TString outFileName = "evetest_mu_only.root",
              Int_t nStartEvent = 0, 
 	     Int_t nEvents = 25)
 {

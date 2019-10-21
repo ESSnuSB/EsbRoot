@@ -15,7 +15,7 @@ void muon_only_3_reconstruction(TString inFile = "fgd_dig_mu_only.root",
 	      TString parFile = "params_mu_only.root",
 	      TString outFile = "fgd_recon_mu_only.root",
               Int_t nStartEvent = 0,
-              Int_t nEvents = 500)
+              Int_t nEvents = 25)
 {
   using namespace esbroot;
 
@@ -38,21 +38,19 @@ void muon_only_3_reconstruction(TString inFile = "fgd_dig_mu_only.root",
 
   double debugLvl = 0.0; 
 
-  FairTask* recon = new reconstruction::superfgd::FgdMuonOnlyGenFitRecon(
-    "Reconstruction Task"             // name of the task
+  fair::Logger::SetConsoleSeverity(fair::Severity::debug2);
+  fair::Logger::SetConsoleColor(true);
+
+  FairTask* recon = new reconstruction::superfgd::FgdMCGenFitRecon(
+    "Reconstruction MC Task"             // name of the task
     ,"../../EsbGeometry/EsbSuperFGD/EsbConfig/fgdconfig"  //File with detector configuration
     ,"../../geometry/media.geo"       // Media file with defined materials
-    , 0.,0.,0.                        // x,y,z detector position
     , 1                               // Verbose level
     , debugLvl                        // debug level of genfit (0 - little, 1 - debug info, 2 - detailed)
-    , "../../EsbMacro/tests/muon_mom.dat"  // output file with Monte Carlo and genfit momentum
-    , "../../EsbMacro/tests/genie_muons.dat"  // input file with initial starting condistions
-    , false                           // To visualize the tracks using genfit::Eventdisplay
-    , "D"                             // Option to be passed for genfit::Eventdisplay if used
-    ,"../../EsbMacro/tests/MC_Fit_momentum.root"); // root file containing the monte carlo and fitter momentums
+    , true                            // To visualize the tracks using genfit::Eventdisplay
+    , "D");                           // Option to be passed for genfit::Eventdisplay if used
 
-  ((reconstruction::superfgd::FgdMuonOnlyGenFitRecon*)recon)->SetInitialEmu(0.6); 
-  ((reconstruction::superfgd::FgdMuonOnlyGenFitRecon*)recon)->SetConvergeFit(false);                   
+  ((reconstruction::superfgd::FgdMCGenFitRecon*)recon)->SetMinHits(3);
   
   fRun->AddTask(recon);   
   fRun->Init(); // initializing
