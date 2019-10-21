@@ -180,6 +180,7 @@ Bool_t FgdGenieGenerator::KeepThrowing(std::vector<genie::GHepParticle*>& eventP
 
 void FgdGenieGenerator::WriteToOutputFile(const genie::EventRecord* event, Bool_t flaGkeepThrowing ) 
 {
+	static int eventCounter = 0;
 	std::ofstream outputFile(GlobalState.fOutputFileName, std::ios::app);
 	if(outputFile.is_open())
 	{
@@ -189,7 +190,23 @@ void FgdGenieGenerator::WriteToOutputFile(const genie::EventRecord* event, Bool_
 
 		const InitialState& initSt = inter->InitState();
 
-		outputFile << initSt.ProbePdg() << " " << initSt.ProbeE(kRfLab) << endl;;
+		outputFile << initSt.ProbePdg() << " " << initSt.ProbeE(kRfLab) << endl;
+
+		int nParticles = event->GetEntries();
+		for (int i = 0; i < nParticles; i++) 
+		{
+			genie::GHepParticle *p = event->Particle(i);
+			// kIStStableFinalState - Genie documentation: generator-level final state
+			// particles to be tracked by the detector-level MC
+			if ((p->Status() == genie::EGHepStatus::kIStStableFinalState)) 
+			{
+				if(IsPdgAllowed(p->Pdg()))
+				{
+					outputFile << p->Pdg() << " " <<  p->Px() << " " << p->Py() << " " << p->Pz() << endl;
+				}
+			}
+		}
+		outputFile << "EndEvent " << eventCounter++ << "=====================" << endl;
 	}
 	outputFile.close();
 }

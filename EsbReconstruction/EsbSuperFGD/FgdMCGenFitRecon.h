@@ -53,7 +53,6 @@ class FgdMCGenFitRecon : public FairTask
   void SetMinInterations(Int_t minIterations) {fminGenFitInterations = minIterations;}
   void SetMaxInterations(Int_t maxIterations) {fmaxGenFitIterations = maxIterations;}
   void SetMinHits(Int_t minHits) {fminHits = minHits;}
-  void AddPdgMomLoss(Int_t pdg, Double_t momLoss, Double_t allowDiff){ fpdgFromMomLoss.emplace_back(pdg, momLoss, allowDiff);}
 
   /** Virtual method Init **/
   virtual InitStatus Init() override;
@@ -80,16 +79,17 @@ private:
   /** Print information for fitted grack **/
   void PrintFitTrack(genfit::Track& track);
 
+
   Long_t ArrInd(int i, int j, int k);
 
   /** Class to hold the Detector parameters read from external file **/
-  esbroot::geometry::superfgd::FgdDetectorParameters fParams;
+  esbroot::geometry::superfgd::FgdDetectorParameters fParams;//!<!
 
   /** Class containing the TGeometry for reconstruction of the tracks **/
-  esbroot::geometry::superfgd::SuperFGDDetectorConstruction    fgdConstructor;	   //! SuperFgd Detector Constructor
+  esbroot::geometry::superfgd::SuperFGDDetectorConstruction    fgdConstructor;//!<!	   //! SuperFgd Detector Constructor
 
   /** Detector geometry pointer**/
-  TGeoVolume* fsuperFgdVol;
+  TGeoVolume* fsuperFgdVol;//!<!
 
   /** Input array of FgdDetectorPoint(s)**/
   TClonesArray* fHitArray;     //! 
@@ -98,25 +98,28 @@ private:
   TClonesArray* fTracksArray;        //!
 
    /** Detector dimentions **/
-  Double_t flunit;
-  double f_step_X;
-  double f_step_Y;
-  double f_step_Z;
-  int f_bin_X;
-  int f_bin_Y;
-  int f_bin_Z;
-  double f_total_X;
-  double f_total_Y;
-  double f_total_Z;
+  Double_t flunit;//!<!
+  double f_step_X;//!<!
+  double f_step_Y;//!<!
+  double f_step_Z;//!<!
+  int f_bin_X;//!<!
+  int f_bin_Y;//!<!
+  int f_bin_Z;//!<!
+  double f_total_X;//!<!
+  double f_total_Y;//!<!
+  double f_total_Z;//!<!
 
   /** Start position and momentum **/
   //  0 - no additional info
   //  1 - debug info
   //  2- detail info
-  double fDebuglvl_genfit;
+  double fDebuglvl_genfit;//!<!
 
   /** Path to the used media.geo file - containing definitions of materials **/
-  std::string fmediaFile;
+  std::string fmediaFile;//!<!
+
+  /** Path to the events file containing Monte carlo simulation data - pdg codes, momentums etc. **/
+  std::string feventFile;//!<!
 
   Int_t fminGenFitInterations;
   Int_t fmaxGenFitIterations;
@@ -129,8 +132,6 @@ private:
   genfit::EventDisplay* fdisplay;//!<!
   bool isGenFitVisualization;//!<!
   std::string fGenFitVisOption;//!<!
-
-  std::vector<PdgFromMomentumLoss> fpdgFromMomLoss;//!<!
 
   	   
   ClassDef(FgdMCGenFitRecon, 2);

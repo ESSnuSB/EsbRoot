@@ -22,6 +22,7 @@ public:
             , TVector3 hitPosition
             , TVector3 photons
             , Double_t time
+            , TVector3 mom
             , Int_t pdg
             , Int_t trackId
             , TVector3 ph1
@@ -53,6 +54,7 @@ public:
     TVector3 fph2;
     TVector3 fmppc2;
     Double_t ftime;
+    TVector3 fmom;
     Int_t fpdg;
     Int_t ftrackId;
     Bool_t fIsLeaf;

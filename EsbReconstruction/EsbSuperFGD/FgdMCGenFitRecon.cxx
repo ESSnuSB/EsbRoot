@@ -213,6 +213,7 @@ void FgdMCGenFitRecon::Exec(Option_t* opt)
     std::vector<TVector3> points;
 
     bool rc = GetHits(allhits);
+
     if(rc)
     { 
       LOG(debug) <<" Hits to retrieve tracks from " << allhits.size();
@@ -221,7 +222,7 @@ void FgdMCGenFitRecon::Exec(Option_t* opt)
 
     if(rc)
     {
-      LOG(debug) <<" Tracks found " << foundTracks.size();
+      LOG(debug) <<" Found tracks to fit " << foundTracks.size();
       FitTracks(foundTracks);
     }
     else
@@ -286,6 +287,7 @@ Bool_t FgdMCGenFitRecon::GetHits(std::vector<ReconHit>& allHits)
                               , TVector3(hitPos(0),hitPos(1),hitPos(2))
                               , photoE
                               , hit->GetTime()
+                              , hit->GetMomentum()
                               , hit->GetPgd()
                               , hit->GetTrackId()
                               , hit->GetPhotoDist1()
@@ -304,7 +306,6 @@ Bool_t FgdMCGenFitRecon::GetHits(std::vector<ReconHit>& allHits)
 
 void FgdMCGenFitRecon::SplitTrack(std::vector<ReconHit>& allHits, std::vector<std::vector<ReconHit>>& foundTracks)
 {
-  // TODO impl split based on track ID
   std::map<Int_t, std::vector<ReconHit>> tracks;
   for(size_t i = 0; i < allHits.size(); ++i)
   {
@@ -317,151 +318,139 @@ void FgdMCGenFitRecon::SplitTrack(std::vector<ReconHit>& allHits, std::vector<st
       else
       {
           tracks[rh.ftrackId] = std::vector<ReconHit> {rh};
+          LOG(debug2) << rh.ftrackId << " " << rh.fpdg << "[pdg]";
       }
   }
 
   for(auto iter = tracks.begin(); iter!=tracks.end(); ++iter)
   {
+      LOG(debug2) << iter->first << " track size " << (iter->second).size();
       foundTracks.push_back(iter->second);
   }
 
-  LOG(error) << "Found tracks " << foundTracks.size();
+  LOG(info) << "Found tracks " << foundTracks.size();
 }
 
 
 void FgdMCGenFitRecon::FitTracks(std::vector<std::vector<ReconHit>>& foundTracks)
 {
-    // fTracksArray->Delete();
+    fTracksArray->Delete();
     
-    // // init geometry and mag. field
-    // TVector3 magField = fgdConstructor.GetMagneticField(); // values are in kGauss
-    // genfit::FieldManager::getInstance()->init(new genfit::ConstField(magField.X(),magField.Y(), magField.Z())); 
-    // genfit::MaterialEffects::getInstance()->init(new genfit::TGeoMaterialInterface());
-    // genfit::MaterialEffects::getInstance()->setDebugLvl(fDebuglvl_genfit);
+    // init geometry and mag. field
+    TVector3 magField = fgdConstructor.GetMagneticField(); // values are in kGauss
+    genfit::FieldManager::getInstance()->init(new genfit::ConstField(magField.X(),magField.Y(), magField.Z())); 
+    genfit::MaterialEffects::getInstance()->init(new genfit::TGeoMaterialInterface());
+    genfit::MaterialEffects::getInstance()->setDebugLvl(fDebuglvl_genfit);
 
-    // // init fitter
-    // std::shared_ptr<genfit::AbsKalmanFitter> fitter = make_shared<genfit::KalmanFitterRefTrack>();
-    // fitter->setMinIterations(fminGenFitInterations);
-    // fitter->setMaxIterations(fmaxGenFitIterations);
-    // fitter->setDebugLvl(fDebuglvl_genfit);
+    // init fitter
+    std::shared_ptr<genfit::AbsKalmanFitter> fitter = make_shared<genfit::KalmanFitterRefTrack>();
+    fitter->setMinIterations(fminGenFitInterations);
+    fitter->setMaxIterations(fmaxGenFitIterations);
+    fitter->setDebugLvl(fDebuglvl_genfit);
 
-    // std::vector<genfit::Track*> genTracks;
-    // int detId(1); // Detector id, it is the same, we only have one detector
+    std::vector<genfit::Track*> genTracks;
+    int detId(1); // Detector id, it is the same, we only have one detector
 
-    // for(size_t i = 0; i <  foundTracks.size() ; ++i)
-    // {
-    //   std::vector<TVector3>& hitsOnTrack = foundTracks[i];
+    for(size_t i = 0; i <  foundTracks.size() ; ++i)
+    {
+      std::vector<ReconHit>& hitsOnTrack = foundTracks[i];
 
-    //   // Set lower limit on track size
-    //   if(hitsOnTrack.size()<fminHits)
-    //   {
-    //     LOG(debug) << "Track " << i << " below limit, continue with next track (" << hitsOnTrack.size() << " < " << fminHits << ")";
-    //     continue;
-    //   }
+      // Set lower limit on track size
+      if(hitsOnTrack.size()<fminHits)
+      {
+        LOG(debug) << "Track " << i << " below limit, continue with next track (" << hitsOnTrack.size() << " < " << fminHits << ")";
+        continue;
+      }
+
+      // Sort by time, the 1st hit in time is the start of the track
+      std::sort(hitsOnTrack.begin(), hitsOnTrack.end(), [](ReconHit& bh1, ReconHit& bh2){return bh1.ftime<bh2.ftime;});
       
-    
-    //   TVector3 posM(hitsOnTrack[0].X(),hitsOnTrack[0].Y(),hitsOnTrack[0].Z());
-    //   TVector3 momM(0,0,0);
-
-    //   TVector3 momLoss(0,0,0);
-
-    //   if(!CalculateInitialMomentum(hitsOnTrack, magField, momM, momLoss))
-    //   {
-    //     LOG(debug) << "Track " << i << " unable to extract momentum. Continue with next track";
-    //     continue;
-    //   }
-
-    //   int pdg = GetPdgCode(momM, momLoss);
-
-    //   momM = momM * momCoef;
-
-    //   // approximate covariance
-    //   double resolution = 0.1;
-    //   TMatrixDSym hitCov(3);
-    //   hitCov(0,0) = resolution*resolution;
-    //   hitCov(1,1) = resolution*resolution;
-    //   hitCov(2,2) = resolution*resolution;
-
-    //   TMatrixDSym covM(6);
-    //   for (int ci = 0; ci < 3; ++ci)
-    //       covM(ci,ci) = resolution*resolution;
-    //   for (int ci = 3; ci < 6; ++ci)
-    //       covM(ci,ci) = covM(ci,ci) = pow(  ((resolution / hitsOnTrack.size()) / sqrt(3)), 2); 
-
-    //   // trackrep
-    //   genfit::AbsTrackRep* rep = new genfit::RKTrackRep(pdg);
-
-    //   // smeared start state
-    //   genfit::MeasuredStateOnPlane stateSmeared(rep);
-    //   stateSmeared.setPosMomCov(posM, momM, covM);
-
-    //   // create track
-    //   TVectorD seedState(6);
-    //   TMatrixDSym seedCov(6);
-    //   stateSmeared.get6DStateCov(seedState, seedCov);
-  
-    //   genfit::Track* toFitTrack = new genfit::Track(rep, seedState, seedCov);
-
-    //   LOG(debug) << "******************************************* ";
-    //   LOG(debug) << "******    Track "<< i << "  ************************";
-    //   LOG(debug) << "******************************************* ";
-    //   LOG(debug) << " \tPdg code " << pdg;
-    //   LOG(debug) << " \tHits in track "<< hitsOnTrack.size();
-    //   LOG(debug) << " \tTrack Momentum [" << momM.Mag() << "]" << "(" << momM.X() << "," << momM.Y() << "," << momM.Z() << ")";
-    //   LOG(debug) << " \tTrack Momentum Loss [" << momLoss.Mag() << "]" << "(" << momLoss.X() << "," << momLoss.Y() << "," << momLoss.Z() << ")";
-    //   LOG(debug) << " \tMomentum / Momentum Loss [" << momM.Mag()/momLoss.Mag() << "]";
+      int pdg = hitsOnTrack[0].fpdg;
+      TVector3 posM(hitsOnTrack[0].fmppcLoc);
+      TVector3 momM(hitsOnTrack[0].fmom);
       
-    //   for(Int_t bh = 0; bh < hitsOnTrack.size(); ++bh)
-    //   {
-    //     TVectorD hitPos(3);
-    //     hitPos(0) = hitsOnTrack[bh].X();
-    //     hitPos(1) = hitsOnTrack[bh].Y();
-    //     hitPos(2) = hitsOnTrack[bh].Z();
 
-    //     genfit::AbsMeasurement* measurement = new genfit::SpacepointMeasurement(hitPos, hitCov, detId, 0, nullptr);
-    //     std::vector<genfit::AbsMeasurement*> measurements{measurement};
+      // approximate covariance
+      double resolution = 0.1;
+      TMatrixDSym hitCov(3);
+      hitCov(0,0) = resolution*resolution;
+      hitCov(1,1) = resolution*resolution;
+      hitCov(2,2) = resolution*resolution;
 
-    //     toFitTrack->insertPoint(new genfit::TrackPoint(measurements, toFitTrack));
-    //   }
+      TMatrixDSym covM(6);
+      for (int ci = 0; ci < 3; ++ci)
+          covM(ci,ci) = resolution*resolution;
+      for (int ci = 3; ci < 6; ++ci)
+          covM(ci,ci) = covM(ci,ci) = pow(  ((resolution / hitsOnTrack.size()) / sqrt(3)), 2); 
 
-    //   try
-    //   {
-    //     //check
-    //     toFitTrack->checkConsistency();
+      // trackrep
+      genfit::AbsTrackRep* rep = new genfit::RKTrackRep(pdg);
 
-    //     // do the fit
-    //     fitter->processTrack(toFitTrack, true);
+      // smeared start state
+      genfit::MeasuredStateOnPlane stateSmeared(rep);
+      stateSmeared.setPosMomCov(posM, momM, covM);
 
-    //     //check
-    //     toFitTrack->checkConsistency();
-
-    //     PrintFitTrack(*toFitTrack);
-
-    //     LOG(debug) <<"******************************************* ";
-    //     genfit::FitStatus* fiStatuStatus = toFitTrack->getFitStatus();
-
-    //     if(fiStatuStatus->isFitted())
-    //     {
-    //       genTracks.push_back(toFitTrack);
-    //     }
-        
-    //     isMomentumLow = fiStatuStatus->isFitted() && !fiStatuStatus->isFitConverged();
-        
-    //   }
-    //   catch(genfit::Exception& e)
-    //   {
-    //       LOG(error) <<"Exception, when tryng to fit track";
-    //       LOG(error) << e.what();
-    //       LOG(error) << e.getExcString();
-    //       e.info();
-    //       isMomentumLow = (e.getExcString().find("KalmanFitterInfo::getFittedState") != std::string::npos);
-    //   }
-    // }
+      // create track
+      TVectorD seedState(6);
+      TMatrixDSym seedCov(6);
+      stateSmeared.get6DStateCov(seedState, seedCov);
   
-    // if(isGenFitVisualization)
-    // {
-    //   fdisplay->addEvent(genTracks);
-    // }
+      genfit::Track* toFitTrack = new genfit::Track(rep, seedState, seedCov);
+
+      LOG(debug) << "******************************************* ";
+      LOG(debug) << "******    Track "<< i << "  ************************";
+      LOG(debug) << "******************************************* ";
+      LOG(debug) << " \tPdg code " << pdg;
+      LOG(debug) << " \tHits in track "<< hitsOnTrack.size();
+      LOG(debug) << " \tTrack Momentum [" << momM.Mag() << "]" << "(" << momM.X() << "," << momM.Y() << "," << momM.Z() << ")";
+      
+      for(Int_t bh = 0; bh < hitsOnTrack.size(); ++bh)
+      {
+        TVectorD hitPos(3);
+        hitPos(0) = hitsOnTrack[bh].fmppcLoc.X();
+        hitPos(1) = hitsOnTrack[bh].fmppcLoc.Y();
+        hitPos(2) = hitsOnTrack[bh].fmppcLoc.Z();
+
+        genfit::AbsMeasurement* measurement = new genfit::SpacepointMeasurement(hitPos, hitCov, detId, 0, nullptr);
+        std::vector<genfit::AbsMeasurement*> measurements{measurement};
+
+        toFitTrack->insertPoint(new genfit::TrackPoint(measurements, toFitTrack));
+      }
+
+      try
+      {
+        //check
+        toFitTrack->checkConsistency();
+
+        // do the fit
+        fitter->processTrack(toFitTrack, true);
+
+        //check
+        toFitTrack->checkConsistency();
+
+        PrintFitTrack(*toFitTrack);
+
+        LOG(debug) <<"******************************************* ";
+        genfit::FitStatus* fiStatuStatus = toFitTrack->getFitStatus();
+
+        if(fiStatuStatus->isFitted())
+        {
+          genTracks.push_back(toFitTrack);
+        }
+      }
+      catch(genfit::Exception& e)
+      {
+          LOG(error) <<"Exception, when tryng to fit track";
+          LOG(error) << e.what();
+          LOG(error) << e.getExcString();
+          e.info();
+      }
+    }
+  
+    if(isGenFitVisualization)
+    {
+      fdisplay->addEvent(genTracks);
+    }
 }
 
 void FgdMCGenFitRecon::DefineMaterials() 

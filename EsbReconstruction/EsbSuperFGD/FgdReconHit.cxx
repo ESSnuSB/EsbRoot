@@ -18,6 +18,7 @@ ReconHit::ReconHit(TVector3 mppcLoc
             , TVector3 hitPosition
             , TVector3 photons
             , Double_t time
+            , TVector3 mom
             , Int_t pdg
             , Int_t trackId
             , TVector3 ph1
@@ -28,6 +29,7 @@ ReconHit::ReconHit(TVector3 mppcLoc
         , fHitPos(hitPosition)
         , fphotons(photons)
         , ftime(time)
+        , fmom(mom)
         , fpdg(pdg)
         , ftrackId(trackId)
         , fph1(ph1)
@@ -56,6 +58,7 @@ ReconHit::ReconHit(const ReconHit& c)
         , fph2(c.fph2)
         , fmppc2(c.fmppc2)
         , ftime(c.ftime)
+        , fmom(c.fmom)
         , fpdg(c.fpdg)
         , ftrackId(c.ftrackId)
         , fAllHits(c.fAllHits)
@@ -77,6 +80,7 @@ ReconHit& ReconHit::operator=(const ReconHit& c)
     fph2 = c.fph2;
     fmppc2 = c.fmppc2;
     ftime = c.ftime;
+    fmom = c.fmom;
     fpdg = c.fpdg;
     ftrackId = c.ftrackId;
     fAllHits = c.fAllHits;

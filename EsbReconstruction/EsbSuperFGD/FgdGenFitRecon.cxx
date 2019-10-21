@@ -312,6 +312,7 @@ Bool_t FgdGenFitRecon::GetHits(std::vector<ReconHit>& allHits)
                               , TVector3(hitPos(0),hitPos(1),hitPos(2))
                               , photoE
                               , hit->GetTime()
+                              , hit->GetMomentum()
                               , hit->GetPgd()
                               , hit->GetTrackId()
                               , hit->GetPhotoDist1()
