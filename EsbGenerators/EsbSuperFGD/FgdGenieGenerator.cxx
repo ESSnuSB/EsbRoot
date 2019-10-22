@@ -116,7 +116,6 @@ Bool_t FgdGenieGenerator::ReadEvent(FairPrimaryGenerator* primGen)
     return true;
 }
 
-
 void FgdGenieGenerator::GenerateEvents()
 {
 	for(Int_t eventId = 0; eventId < fnumEvents; ++eventId)
@@ -128,7 +127,7 @@ void FgdGenieGenerator::GenerateEvents()
 			{
 				PostProcessEvent(event);
 				int nParticles = event->GetEntries();
-				std::vector<genie::GHepParticle*> eventParticles(nParticles);
+				std::vector<genie::GHepParticle*> eventParticles;
 				for (int i = 0; i < nParticles; i++) 
 				{
 					genie::GHepParticle *p = event->Particle(i);
@@ -142,14 +141,16 @@ void FgdGenieGenerator::GenerateEvents()
 						}
 					}
 				}
-				if(!KeepThrowing(eventParticles))
+				if(!KeepThrowing(eventParticles) && !eventParticles.empty())
 				{
 					fGenieEvents.emplace_back(*event);
+					delete event;
 					break;
 				}
 			}
 			else
 			{
+				--eventId; // try again
 				break;
 			}
 			
