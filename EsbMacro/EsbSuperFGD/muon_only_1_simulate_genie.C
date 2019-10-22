@@ -74,7 +74,7 @@ void muon_only_1_simulate_genie(TString outFileName = "evetest_mu_only.root",
 
   auto partGen = new generators::superfgd::FgdGenieGenerator(
 		"../../EsbGeometry/EsbSuperFGD/EsbConfig/fgdconfig"  //File with detector configuration
-		,"../../EsbMacro/tests/nuFlux/nuFlux100km_250kAm.txt"  //File with neutrino flux
+		,"../../EsbMacro/tests/nuFlux/muOnly.txt"  //File with neutrino flux
 		, seed // uniform random number generator seed
     , fgdPosition
     , nEvents
@@ -82,6 +82,7 @@ void muon_only_1_simulate_genie(TString outFileName = "evetest_mu_only.root",
 
   partGen->AddPdgCode(13);
   partGen->AddPdgCode(-13);
+  partGen->SetRandomVertex(true);
   
 
   //Add to list of generators
