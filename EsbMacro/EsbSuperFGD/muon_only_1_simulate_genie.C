@@ -103,11 +103,11 @@ void muon_only_1_simulate_genie(TString outFileName = "evetest_mu_only.root",
   FairRuntimeDb *rtdb = fRun->GetRuntimeDb();
   Bool_t kParameterMerged = kTRUE;
   FairParRootFileIo* output = new FairParRootFileIo(kParameterMerged);
-  output->open("params.root");
+  output->open("params_mu_only.root");
   rtdb->setOutput(output);
   rtdb->saveOutput();
   
   fRun->Run(nEvents);
   
-  fRun->CreateGeometryFile("geo_full.root");  // for additional full geometry file
+  fRun->CreateGeometryFile("geo_full_mu_only.root");  // for additional full geometry file
 }

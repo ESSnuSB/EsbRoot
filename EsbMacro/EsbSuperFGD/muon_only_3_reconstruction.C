@@ -41,16 +41,18 @@ void muon_only_3_reconstruction(TString inFile = "fgd_dig_mu_only.root",
   fair::Logger::SetConsoleSeverity(fair::Severity::debug2);
   fair::Logger::SetConsoleColor(true);
 
-  FairTask* recon = new reconstruction::superfgd::FgdMCGenFitRecon(
+  FairTask* recon = new reconstruction::superfgd::FgdMuonRecon(
     "Reconstruction MC Task"             // name of the task
     ,"../../EsbGeometry/EsbSuperFGD/EsbConfig/fgdconfig"  //File with detector configuration
     ,"../../geometry/media.geo"       // Media file with defined materials
+    ,"muOnlyMC.root"       // path to output root file
+    ,"eventsData.dat"       // Media file with defined materials
     , 1                               // Verbose level
     , debugLvl                        // debug level of genfit (0 - little, 1 - debug info, 2 - detailed)
-    , true                            // To visualize the tracks using genfit::Eventdisplay
+    , false                            // To visualize the tracks using genfit::Eventdisplay
     , "D");                           // Option to be passed for genfit::Eventdisplay if used
 
-  ((reconstruction::superfgd::FgdMCGenFitRecon*)recon)->SetMinHits(3);
+  ((reconstruction::superfgd::FgdMuonRecon*)recon)->SetMinHits(3);
   
   fRun->AddTask(recon);   
   fRun->Init(); // initializing
