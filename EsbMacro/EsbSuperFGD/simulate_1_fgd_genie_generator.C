@@ -79,7 +79,7 @@ void simulate_1_fgd_genie_generator(TString outFileName = "evetest.root",
     , fgdPosition
     , nEvents
   );
-  
+  partGen->SetRandomVertex(false);
 
   //Add to list of generators
   primGen->AddGenerator(partGen);
