@@ -193,7 +193,11 @@ InitStatus FgdMCGenFitRecon::Init()
 // -----   Public methods   --------------------------------------------
 void FgdMCGenFitRecon::FinishEvent()
 {
-  
+  if(isGenFitVisualization && !fgenTracks.empty())
+  {
+    fdisplay->addEvent(fgenTracks);
+    fgenTracks.clear();
+  }
 }
 
 void FgdMCGenFitRecon::FinishTask()
@@ -210,7 +214,6 @@ void FgdMCGenFitRecon::Exec(Option_t* opt)
   {
     std::vector<ReconHit> allhits;
     std::vector<std::vector<ReconHit>> foundTracks;
-    std::vector<TVector3> points;
 
     bool rc = GetHits(allhits);
 
@@ -239,7 +242,7 @@ void FgdMCGenFitRecon::Exec(Option_t* opt)
 // -------------------------------------------------------------------------
 
 
-// -----   Private methods   --------------------------------------------
+// -----   Protected methods   --------------------------------------------
 
 Bool_t FgdMCGenFitRecon::GetHits(std::vector<ReconHit>& allHits)
 {
@@ -348,7 +351,7 @@ void FgdMCGenFitRecon::FitTracks(std::vector<std::vector<ReconHit>>& foundTracks
     fitter->setMaxIterations(fmaxGenFitIterations);
     fitter->setDebugLvl(fDebuglvl_genfit);
 
-    std::vector<genfit::Track*> genTracks;
+    fgenTracks.clear();
     int detId(1); // Detector id, it is the same, we only have one detector
 
     for(size_t i = 0; i <  foundTracks.size() ; ++i)
@@ -365,7 +368,7 @@ void FgdMCGenFitRecon::FitTracks(std::vector<std::vector<ReconHit>>& foundTracks
       // Sort by time, the 1st hit in time is the start of the track
       std::sort(hitsOnTrack.begin(), hitsOnTrack.end(), [](ReconHit& bh1, ReconHit& bh2){return bh1.ftime<bh2.ftime;});
       
-      int pdg = hitsOnTrack[0].fpdg;
+      const int pdg = hitsOnTrack[0].fpdg;
       TVector3 posM(hitsOnTrack[0].fmppcLoc);
       TVector3 momM(hitsOnTrack[0].fmom);
       
@@ -429,30 +432,26 @@ void FgdMCGenFitRecon::FitTracks(std::vector<std::vector<ReconHit>>& foundTracks
         toFitTrack->checkConsistency();
 
         PrintFitTrack(*toFitTrack);
-        WriteOutput((*toFitTrack).getFittedState().getMom()
-                    , momM
-                    , *toFitTrack);
-
-        LOG(debug) <<"******************************************* ";
         genfit::FitStatus* fiStatuStatus = toFitTrack->getFitStatus();
+
+        WriteOutput(  pdg
+                    , (*toFitTrack).getFittedState().getMom()
+                    , momM
+                    , *toFitTrack
+                    , fiStatuStatus);
 
         if(fiStatuStatus->isFitted())
         {
-          genTracks.push_back(toFitTrack);
+          fgenTracks.push_back(toFitTrack);
         }
+        LOG(debug) <<"******************************************* ";
       }
       catch(genfit::Exception& e)
       {
           LOG(error) <<"Exception, when tryng to fit track";
           LOG(error) << e.what();
           LOG(error) << e.getExcString();
-          e.info();
       }
-    }
-  
-    if(isGenFitVisualization)
-    {
-      fdisplay->addEvent(genTracks);
     }
 }
 
@@ -561,9 +560,11 @@ void FgdMCGenFitRecon::PrintFitTrack(genfit::Track& fitTrack)
   LOG(debug)<< "fitTrack.getNumPoints() " << fitTrack.getNumPoints();
 }
 
-void FgdMCGenFitRecon::WriteOutput(const TVector3& fitMom
+void FgdMCGenFitRecon::WriteOutput( Int_t pdg
+                          , const TVector3& fitMom
                           , const TVector3& mcMom
-                          , const genfit::Track& fitTrack)
+                          , const genfit::Track& fitTrack
+                          , genfit::FitStatus*& fiStatuStatus)
 {
   // TODO nothing to do in base class
 }

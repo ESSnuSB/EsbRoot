@@ -48,7 +48,7 @@ class FgdMCGenFitRecon : public FairTask
               , std::string visOption ="D");
 
   /** Destructor **/
-  ~FgdMCGenFitRecon();
+  virtual ~FgdMCGenFitRecon();
 
   void SetMinInterations(Int_t minIterations) {fminGenFitInterations = minIterations;}
   void SetMaxInterations(Int_t maxIterations) {fmaxGenFitIterations = maxIterations;}
@@ -62,6 +62,13 @@ class FgdMCGenFitRecon : public FairTask
 
   /** Virtual method Exec **/
   virtual void Exec(Option_t* opt) override;
+
+  /** For decendents who want to write some data to output file */
+  virtual void WriteOutput( Int_t pdg
+                          , const TVector3& fitMom
+                          , const TVector3& mcMom
+                          , const genfit::Track& fitTrack
+                          , genfit::FitStatus*& fiStatuStatus);
 
 protected:
 
@@ -78,11 +85,6 @@ protected:
 
   /** Print information for fitted grack **/
   void PrintFitTrack(genfit::Track& track);
-
-  /** For decendents who want to write some data to output file */
-  virtual void WriteOutput(const TVector3& fitMom
-                          , const TVector3& mcMom
-                          , const genfit::Track& fitTrack);
 
 
   Long_t ArrInd(int i, int j, int k);
@@ -137,6 +139,7 @@ protected:
   genfit::EventDisplay* fdisplay;//!<!
   bool isGenFitVisualization;//!<!
   std::string fGenFitVisOption;//!<!
+  std::vector<genfit::Track*> fgenTracks;//!<!
 
   	   
   ClassDef(FgdMCGenFitRecon, 2);
