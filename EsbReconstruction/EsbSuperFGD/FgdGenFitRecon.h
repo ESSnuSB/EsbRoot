@@ -56,7 +56,7 @@ class FgdGenFitRecon : public FairTask
               , std::string visOption ="D");
 
   /** Destructor **/
-  ~FgdGenFitRecon();
+  virtual ~FgdGenFitRecon();
 
   void SetMinInterations(Int_t minIterations) {fminGenFitInterations = minIterations;}
   void SetMaxInterations(Int_t maxIterations) {fmaxGenFitIterations = maxIterations;}
