@@ -547,8 +547,8 @@ void FgdMCGenFitRecon::DefineMaterials()
 void FgdMCGenFitRecon::PrintFitTrack(genfit::Track& fitTrack)
 {
   const genfit::MeasuredStateOnPlane& me = fitTrack.getFittedState();
-  LOG(debug)<< "Momentum  " << (me.getMom()).Mag();
-  LOG(debug)<< " X  " << (me.getMom()).X()<< " Y " << (me.getMom()).Y()<< " Z  " << (me.getMom()).Z();
+  LOG(debug)<< "\tFitted Momentum  [" << (me.getMom()).Mag() <<"]" << "(" << (me.getMom()).X() << "," << (me.getMom()).Y() << "," << (me.getMom()).Z() << ")";
+  //LOG(debug)<< " X  " << (me.getMom()).X()<< " Y " << (me.getMom()).Y()<< " Z  " << (me.getMom()).Z();
 
   genfit::FitStatus* fiStatuStatus = fitTrack.getFitStatus();
   fiStatuStatus->Print();
