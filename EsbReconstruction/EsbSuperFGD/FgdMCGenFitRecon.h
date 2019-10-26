@@ -63,7 +63,7 @@ class FgdMCGenFitRecon : public FairTask
   /** Virtual method Exec **/
   virtual void Exec(Option_t* opt) override;
 
-private:
+protected:
 
   /** Get all hits **/
   Bool_t GetHits(std::vector<ReconHit>& allHits);
@@ -78,6 +78,11 @@ private:
 
   /** Print information for fitted grack **/
   void PrintFitTrack(genfit::Track& track);
+
+  /** For decendents who want to write some data to output file */
+  virtual void WriteOutput(const TVector3& fitMom
+                          , const TVector3& mcMom
+                          , const genfit::Track& fitTrack);
 
 
   Long_t ArrInd(int i, int j, int k);

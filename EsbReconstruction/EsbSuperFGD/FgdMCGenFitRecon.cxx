@@ -429,6 +429,9 @@ void FgdMCGenFitRecon::FitTracks(std::vector<std::vector<ReconHit>>& foundTracks
         toFitTrack->checkConsistency();
 
         PrintFitTrack(*toFitTrack);
+        WriteOutput((*toFitTrack).getFittedState().getMom()
+                    , momM
+                    , *toFitTrack);
 
         LOG(debug) <<"******************************************* ";
         genfit::FitStatus* fiStatuStatus = toFitTrack->getFitStatus();
@@ -556,6 +559,13 @@ void FgdMCGenFitRecon::PrintFitTrack(genfit::Track& fitTrack)
   LOG(debug)<< "fiStatuStatus->isFitConvergedFully()  " << fiStatuStatus->isFitConvergedFully();
   LOG(debug)<< "fiStatuStatus->isFitConvergedPartially()  " << fiStatuStatus->isFitConvergedPartially();
   LOG(debug)<< "fitTrack.getNumPoints() " << fitTrack.getNumPoints();
+}
+
+void FgdMCGenFitRecon::WriteOutput(const TVector3& fitMom
+                          , const TVector3& mcMom
+                          , const genfit::Track& fitTrack)
+{
+  // TODO nothing to do in base class
 }
 
 Long_t FgdMCGenFitRecon::ArrInd(int x, int y, int z)

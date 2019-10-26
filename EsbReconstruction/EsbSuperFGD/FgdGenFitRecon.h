@@ -73,7 +73,7 @@ class FgdGenFitRecon : public FairTask
   /** Virtual method Exec **/
   virtual void Exec(Option_t* opt) override;
 
-private:
+protected:
 
   enum FindTrackType{
     STRAIGHT_LINE,
