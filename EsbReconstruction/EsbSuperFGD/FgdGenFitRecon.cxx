@@ -264,7 +264,7 @@ void FgdGenFitRecon::Exec(Option_t* opt)
 // -------------------------------------------------------------------------
 
 
-// -----   Private methods   --------------------------------------------
+// -----   Protected methods   --------------------------------------------
 
 Bool_t FgdGenFitRecon::GetHits(std::vector<ReconHit>& allHits)
 {
@@ -1304,7 +1304,7 @@ void FgdGenFitRecon::FitTracks(std::vector<std::vector<TVector3>>& foundTracks)
           LOG(error) <<"Exception, when tryng to fit track";
           LOG(error) << e.what();
           LOG(error) << e.getExcString();
-          e.info();
+          
           isMomentumLow = (e.getExcString().find("KalmanFitterInfo::getFittedState") != std::string::npos);
       }
     }
