@@ -17,7 +17,6 @@
 #include <TEveManager.h>
 #include <TGeoElement.h>
 #include <TGeoManager.h>
-#include <TFile.h>
 
 // Genie headers
 #include "Framework/ParticleData/PDGCodes.h"
@@ -360,6 +359,13 @@ void FgdMCGenFitRecon::FitTracks(std::vector<std::vector<ReconHit>>& foundTracks
     for(size_t i = 0; i <  foundTracks.size() ; ++i)
     {
       std::vector<ReconHit>& hitsOnTrack = foundTracks[i];
+      // Sort by time, the 1st hit in time is the start of the track
+      std::sort(hitsOnTrack.begin(), hitsOnTrack.end(), [](ReconHit& bh1, ReconHit& bh2){return bh1.ftime<bh2.ftime;});
+    }
+
+    for(size_t i = 0; i <  foundTracks.size() ; ++i)
+    {
+      std::vector<ReconHit>& hitsOnTrack = foundTracks[i];
 
       // Set lower limit on track size
       if(hitsOnTrack.size()<fminHits)
@@ -369,7 +375,7 @@ void FgdMCGenFitRecon::FitTracks(std::vector<std::vector<ReconHit>>& foundTracks
       }
 
       // Sort by time, the 1st hit in time is the start of the track
-      std::sort(hitsOnTrack.begin(), hitsOnTrack.end(), [](ReconHit& bh1, ReconHit& bh2){return bh1.ftime<bh2.ftime;});
+      //std::sort(hitsOnTrack.begin(), hitsOnTrack.end(), [](ReconHit& bh1, ReconHit& bh2){return bh1.ftime<bh2.ftime;});
       
       const int pdg = hitsOnTrack[0].fpdg;
       TVector3 posM(hitsOnTrack[0].fmppcLoc);
