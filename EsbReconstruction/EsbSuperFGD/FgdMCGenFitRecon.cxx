@@ -19,6 +19,9 @@
 #include <TGeoManager.h>
 #include <TFile.h>
 
+// Genie headers
+#include "Framework/ParticleData/PDGCodes.h"
+#include "Framework/ParticleData/PDGUtils.h"
 
 // Genfit headers
 #include "AbsBField.h"
@@ -371,6 +374,12 @@ void FgdMCGenFitRecon::FitTracks(std::vector<std::vector<ReconHit>>& foundTracks
       const int pdg = hitsOnTrack[0].fpdg;
       TVector3 posM(hitsOnTrack[0].fmppcLoc);
       TVector3 momM(hitsOnTrack[0].fmom);
+
+      if(isParticleNeutral(pdg))
+      {
+        LOG(debug) << "Track " << i << " is of neutral particle ["<< pdg << "] continue with next track.";
+        continue;
+      }
       
 
       // approximate covariance
@@ -567,6 +576,16 @@ void FgdMCGenFitRecon::WriteOutput( Int_t pdg
                           , genfit::FitStatus*& fiStatuStatus)
 {
   // TODO nothing to do in base class
+}
+
+Bool_t FgdMCGenFitRecon::isParticleNeutral(Int_t pdg)
+{
+  Bool_t isNeutral =  (pdg ==  genie::kPdgNeutron) ||
+                      (pdg ==  genie::kPdgPi0) ||
+                      (pdg ==  genie::kPdgGamma) ||
+                      genie::pdg::IsNeutralLepton(pdg);
+
+  return isNeutral;
 }
 
 Long_t FgdMCGenFitRecon::ArrInd(int x, int y, int z)

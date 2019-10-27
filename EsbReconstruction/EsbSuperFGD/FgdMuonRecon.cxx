@@ -184,7 +184,6 @@ void FgdMuonRecon::WriteOutput( Int_t pdg
                     )
                 - fEnu[fEventCount];          /* Initial energy of neutrino */
 
-
         TVector3 muMom(0,0,1);
         fcosTheta = radToDeg * muMom.Angle(muMom);
 

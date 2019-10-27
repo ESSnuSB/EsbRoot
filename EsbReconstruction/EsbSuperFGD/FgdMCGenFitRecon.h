@@ -86,8 +86,9 @@ protected:
   /** Print information for fitted grack **/
   void PrintFitTrack(genfit::Track& track);
 
-
   Long_t ArrInd(int i, int j, int k);
+
+  Bool_t isParticleNeutral(Int_t pdg);
 
   /** Class to hold the Detector parameters read from external file **/
   esbroot::geometry::superfgd::FgdDetectorParameters fParams;//!<!
