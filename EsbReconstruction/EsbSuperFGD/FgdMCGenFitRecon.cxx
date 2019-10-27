@@ -200,6 +200,7 @@ void FgdMCGenFitRecon::FinishEvent()
     fdisplay->addEvent(fgenTracks);
     fgenTracks.clear();
   }
+  fTracksArray->Delete();
 }
 
 void FgdMCGenFitRecon::FinishTask()
@@ -330,7 +331,7 @@ void FgdMCGenFitRecon::SplitTrack(std::vector<ReconHit>& allHits, std::vector<st
   for(auto iter = tracks.begin(); iter!=tracks.end(); ++iter)
   {
       LOG(debug2) << iter->first << " track size " << (iter->second).size();
-      foundTracks.push_back(iter->second);
+      foundTracks.emplace_back(iter->second);
   }
 
   LOG(info) << "Found tracks " << foundTracks.size();
@@ -339,8 +340,6 @@ void FgdMCGenFitRecon::SplitTrack(std::vector<ReconHit>& allHits, std::vector<st
 
 void FgdMCGenFitRecon::FitTracks(std::vector<std::vector<ReconHit>>& foundTracks)
 {
-    fTracksArray->Delete();
-    
     // init geometry and mag. field
     TVector3 magField = fgdConstructor.GetMagneticField(); // values are in kGauss
     genfit::FieldManager::getInstance()->init(new genfit::ConstField(magField.X(),magField.Y(), magField.Z())); 
@@ -353,7 +352,6 @@ void FgdMCGenFitRecon::FitTracks(std::vector<std::vector<ReconHit>>& foundTracks
     fitter->setMaxIterations(fmaxGenFitIterations);
     fitter->setDebugLvl(fDebuglvl_genfit);
 
-    fgenTracks.clear();
     int detId(1); // Detector id, it is the same, we only have one detector
 
     for(size_t i = 0; i <  foundTracks.size() ; ++i)
@@ -386,7 +384,6 @@ void FgdMCGenFitRecon::FitTracks(std::vector<std::vector<ReconHit>>& foundTracks
         LOG(debug) << "Track " << i << " is of neutral particle ["<< pdg << "] continue with next track.";
         continue;
       }
-      
 
       // approximate covariance
       double resolution = 0.1;
