@@ -192,7 +192,8 @@ void FgdGenieGenerator::WriteToOutputFile(const genie::EventRecord* event, Bool_
 		const InitialState& initSt = inter->InitState();
 
 		// Write the Neutrino energy to be used in the reconstruction for analysis
-		outputFile << initSt.ProbePdg() << " " << initSt.ProbeE(kRfLab) << endl;
+		// outputFile << initSt.ProbePdg() << " " << initSt.ProbeE(kRfLab) << " IsWeakCC " << procInfo.IsWeakCC() << " IsWeakNC " << procInfo.IsWeakNC() << endl;
+		outputFile << initSt.ProbePdg() << " " << initSt.ProbeE(kRfLab) << " " <<  procInfo.IsWeakCC() << " " <<  procInfo.IsWeakNC() << endl;
 
 		// int nParticles = event->GetEntries();
 		// for (int i = 0; i < nParticles; i++) 
