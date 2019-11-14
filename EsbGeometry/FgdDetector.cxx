@@ -71,6 +71,7 @@ FgdDetector::FgdDetector(const char* geoConfigFile, double posX, double posY, do
     fVolumeID(-1),
     fPos(),
     fMom(),
+    fMomExit(),
     fTime(-1.),
     fLength(-1.),
     fELoss(-1),
@@ -91,6 +92,7 @@ FgdDetector::FgdDetector(const char* geoConfigFile, double posX, double posY, do
     fVolumeID(-1),
     fPos(),
     fMom(),
+    fMomExit(),
     fTime(-1.),
     fLength(-1.),
     fELoss(-1),
@@ -143,6 +145,7 @@ Bool_t  FgdDetector::ProcessHits(FairVolume* vol)
 
     //~ if (fELoss == 0. ) { return kFALSE; }
     TVirtualMC::GetMC()->TrackPosition(fPosExit);
+    TVirtualMC::GetMC()->TrackMomentum(fMomExit);
 
     LOG(debug) << "  TrackPid " << TVirtualMC::GetMC()->TrackPid();
     LOG(debug) << "  TrackCharge " << TVirtualMC::GetMC()->TrackCharge();
@@ -162,6 +165,7 @@ Bool_t  FgdDetector::ProcessHits(FairVolume* vol)
           ,TVector3(fPos.X(),       fPos.Y(),       fPos.Z())
           ,TVector3(fPosExit.X(),   fPosExit.Y(),   fPosExit.Z())
           ,TVector3(fMom.Px(),      fMom.Py(),      fMom.Pz())
+          ,TVector3(fMomExit.Px(),      fMomExit.Py(),      fMomExit.Pz())
           ,fTime, fELoss, fLength, TVirtualMC::GetMC()->TrackPid()); 
 
     fpdgCodes.clear();
@@ -230,7 +234,7 @@ void FgdDetector::ConstructGeometry()
 //___________________________________________________________________
 data::superfgd::FgdDetectorPoint* FgdDetector::AddHit(Int_t trackID, Int_t detID, 
 					  TVector3 detectorPos, TVector3 pos , TVector3 posExit, TVector3 mom,
-					  Double32_t time, Double32_t edep, Double32_t trackLength, Int_t pdg)
+					  TVector3 momExit , Double32_t time, Double32_t edep, Double32_t trackLength, Int_t pdg)
 {
     LOG(debug) << "FgdDetector::AddHit";
     LOG(debug) << "trackID " << trackID;
@@ -245,7 +249,7 @@ data::superfgd::FgdDetectorPoint* FgdDetector::AddHit(Int_t trackID, Int_t detID
   Int_t size = clref.GetEntriesFast();
 
   return new(clref[size]) data::superfgd::FgdDetectorPoint(trackID, detID, detectorPos, pos, posExit, mom, 
-					     time, edep, trackLength, pdg);
+					     momExit, time, edep, trackLength, pdg);
 }
 
 void  FgdDetector::SetSpecialPhysicsCuts()
