@@ -23,6 +23,8 @@ public:
             , TVector3 photons
             , Double_t time
             , TVector3 mom
+            , TVector3 momExit
+            , Double_t trackLength
             , Int_t pdg
             , Int_t trackId
             , TVector3 ph1
@@ -55,6 +57,8 @@ public:
     TVector3 fmppc2;
     Double_t ftime;
     TVector3 fmom;
+    TVector3 fmomExit;
+    Double_t ftrackLength;
     Int_t fpdg;
     Int_t ftrackId;
     Bool_t fIsLeaf;
