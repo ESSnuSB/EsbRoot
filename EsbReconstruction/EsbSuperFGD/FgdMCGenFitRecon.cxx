@@ -295,6 +295,8 @@ Bool_t FgdMCGenFitRecon::GetHits(std::vector<ReconHit>& allHits)
                               , photoE
                               , hit->GetTime()
                               , hit->GetMomentum()
+                              , hit->GetExitMomentum()
+                              , hit->GetTrackLenght()
                               , hit->GetPgd()
                               , hit->GetTrackId()
                               , hit->GetPhotoDist1()
