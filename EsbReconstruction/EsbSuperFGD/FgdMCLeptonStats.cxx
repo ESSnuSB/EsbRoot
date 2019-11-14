@@ -76,9 +76,7 @@ InitStatus FgdMCLeptonStats::Init()
 
     std::ifstream eventFileStream;
     try
-    {
-        const char spaceChar(' ');
-        
+    {        
         eventFileStream.open(feventData.c_str(), std::ios::in);
 
         if(eventFileStream.is_open())
@@ -86,51 +84,7 @@ InitStatus FgdMCLeptonStats::Init()
             std::string line;
             while(std::getline(eventFileStream,line))
             {
-                // 1st value is the pdg of the neutrino
-                // 2nd value is the neutrino energy
-                // 3th value is IsWeakCC - charge current
-                // 4th value is IsWeakNC - neutral current
-                int counter(0);
-                FgdMCEventRecord eventRec;
-
-                std::istringstream ss(line);
-                std::string token;
-                while( (counter<4) && std::getline(ss, token, spaceChar))
-                {
-                    // 1st value is the pdg of the neutrino
-                    if(!token.empty() && counter == 0)
-                    {
-                        Int_t parsedVal = std::stoi(token);
-                        eventRec.SetNuPdg(parsedVal);
-                    }
-
-                    // 2nd value is the neutrino energy
-                    if(!token.empty() && counter == 1)
-                    {
-                        Double_t parsedVal = std::stod(token);
-                        eventRec.SetNuE(parsedVal);
-                    }
-
-                    // 3th value is IsWeakCC - charge current
-                    if(!token.empty() && counter == 2)
-                    {
-                        Int_t parsedVal = std::stoi(token);
-                        eventRec.SetWeakCC(parsedVal);
-                    }
-
-                    // 4th value is IsWeakNC - neutral current
-                    if(!token.empty() && counter == 3)
-                    {
-                        Int_t parsedVal = std::stoi(token);
-                        eventRec.SetWeakNC(parsedVal);
-                    }
-
-                    counter++;
-                }
-
-                feventRecords.emplace_back(eventRec);
-
-                LOG(debug) << eventRec.GetNuPdg() << " " << eventRec.GetNuE() << " " << eventRec.GetWeakCC() << " " << eventRec.GetWeakNC();
+                feventRecords.emplace_back(FgdMCEventRecord(line));
             }
         }
     }
@@ -143,6 +97,24 @@ InitStatus FgdMCLeptonStats::Init()
     {
         eventFileStream.close();
     }
+
+    // for(size_t i =0 ; i < feventRecords.size(); i++)
+    // {
+    //     LOG(info) << " ===========  event " << i <<  " =========== ";
+    //     LOG(info) << feventRecords[i].GetNuPdg() 
+    //                 << " " << feventRecords[i].GetNuE()
+    //                 << " " << feventRecords[i].IsWeakCC()
+    //                 << " " << feventRecords[i].IsWeakNC()
+    //                 << " " << feventRecords[i].IsQuasiElastic();
+        
+    //     auto par = feventRecords[i].GetPrimaryParticles();
+    //     for(size_t j = 0; j < par.size(); ++j)
+    //     {
+    //         LOG(info) << par[j].first << " " << par[j].second.X() << " " << par[j].second.Y()<< " " << par[j].second.Z(); 
+    //     }
+    //     LOG(info) << " ====================== ";
+    // }
+    
 
     return kSUCCESS;
 }
