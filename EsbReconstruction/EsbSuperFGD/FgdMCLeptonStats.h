@@ -41,6 +41,7 @@ class FgdMCLeptonStats : public FgdMCGenFitRecon
 
   /** Virtual method Init **/
   virtual InitStatus Init() override;
+  virtual void OutputFileInit(FairRootManager* manager) override;
 
   /** Virtual method Exec **/
   virtual void Exec(Option_t* opt) override;

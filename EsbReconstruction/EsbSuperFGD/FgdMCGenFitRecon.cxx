@@ -167,11 +167,7 @@ InitStatus FgdMCGenFitRecon::Init()
       return kFATAL;
   }
 
-  // Create and register output array
-  fTracksArray = new TClonesArray(genfit::Track::Class(), 1000);
-  manager->Register(geometry::superfgd::DP::FGD_FIT_TRACK.c_str()
-                    , geometry::superfgd::DP::FGD_BRANCH_FIT.c_str()
-                    , fTracksArray, kTRUE);
+  OutputFileInit(manager);
 
   if(isGenFitVisualization)
   {
@@ -185,6 +181,15 @@ InitStatus FgdMCGenFitRecon::Init()
   
 
   return kSUCCESS;
+}
+
+void FgdMCGenFitRecon::OutputFileInit(FairRootManager* manager)
+{
+  // Create and register output array
+  fTracksArray = new TClonesArray(genfit::Track::Class(), 1000);
+  manager->Register(geometry::superfgd::DP::FGD_FIT_TRACK.c_str()
+                    , geometry::superfgd::DP::FGD_BRANCH_FIT.c_str()
+                    , fTracksArray, kTRUE);
 }
 
 

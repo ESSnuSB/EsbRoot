@@ -119,6 +119,14 @@ InitStatus FgdMCLeptonStats::Init()
     return kSUCCESS;
 }
 
+void FgdMCLeptonStats::OutputFileInit(FairRootManager* manager)
+{
+  // Create and register output array
+  fTracksArray = new TClonesArray(genfit::Track::Class(), 1000);
+  manager->Register(geometry::superfgd::DP::FGD_FIT_TRACK.c_str()
+                    , geometry::superfgd::DP::FGD_BRANCH_FIT.c_str()
+                    , fTracksArray, kTRUE);
+}
 
 // -------------------------------------------------------------------------
 

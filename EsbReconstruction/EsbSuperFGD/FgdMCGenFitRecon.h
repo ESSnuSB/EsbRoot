@@ -56,6 +56,7 @@ class FgdMCGenFitRecon : public FairTask
 
   /** Virtual method Init **/
   virtual InitStatus Init() override;
+  virtual void OutputFileInit(FairRootManager* manager); // Create virtual method for output file creation
   virtual void FinishEvent() override;
   virtual void FinishTask() override;
 
