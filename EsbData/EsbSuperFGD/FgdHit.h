@@ -36,6 +36,8 @@ class FgdHit : public FairHit
    *@param dpos      coordinate of the hit relative to the detector
    *@param time      time of entering of the particle inside the cube
    *@param mom      particle momentum
+   *@param momExit      particle exit momentum
+   *@param trackLength      tracklength till this moment
    *@param photoE_direction1      generated photons on +x,+y,+z direction
    *@param distance_to_mppcLoc1      distance to mppc to +x,+y,+z direction
    *@param photoE_direction2      generated photons on -x,-y, z direction
@@ -44,8 +46,8 @@ class FgdHit : public FairHit
    *@param trackId      trackId
    **/
   FgdHit(Double_t x, Double_t y, Double_t z, TVector3 mppcLoc
-        , TVector3 photoE, TVector3 dpos, Double_t time, TVector3 mom
-        , TVector3 photoE_direction1, TVector3 distance_to_mppcLoc1
+        , TVector3 photoE, TVector3 dpos, Double_t time, TVector3 mom, TVector3 momExit
+        , Double_t trackLength , TVector3 photoE_direction1, TVector3 distance_to_mppcLoc1
         , TVector3 photoE_direction2, TVector3 distance_to_mppcLoc2
         , Int_t pdg, Int_t trackId);
   
@@ -58,6 +60,7 @@ class FgdHit : public FairHit
   TVector3 GetDpos(){return fdpos;}
   Double_t GetTime(){return ftime;}
   TVector3 GetMomentum(){return fmom;}
+  TVector3 GetExitMomentum(){return fmomExit;}
 
   TVector3 GetPhotoDist1(){return fphotoE_dist1;}
   TVector3 GetMppcDist1(){return fmppcLoc_dist1;}
@@ -65,6 +68,7 @@ class FgdHit : public FairHit
   TVector3 GetMppcDist2(){return fmppcLoc_dist2;}
   Int_t GetPgd(){return fpdg;}
   Int_t GetTrackId(){return ftrackId;}
+  Double_t GetTrackLenght(){return ftrackLength;}
 
   /** Modifiers **/
   void SetMppcLoc(TVector3 mppcLoc){fmppcLoc = mppcLoc;}
@@ -90,6 +94,8 @@ class FgdHit : public FairHit
   TVector3 fdpos;
   Double_t ftime;
   TVector3 fmom;
+  TVector3 fmomExit;
+  Double_t ftrackLength;
 
   TVector3 fphotoE_dist1;
   TVector3 fmppcLoc_dist1;
