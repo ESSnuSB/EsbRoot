@@ -193,23 +193,29 @@ void FgdGenieGenerator::WriteToOutputFile(const genie::EventRecord* event, Bool_
 
 		// Write the Neutrino energy to be used in the reconstruction for analysis
 		// outputFile << initSt.ProbePdg() << " " << initSt.ProbeE(kRfLab) << " IsWeakCC " << procInfo.IsWeakCC() << " IsWeakNC " << procInfo.IsWeakNC() << endl;
-		outputFile << initSt.ProbePdg() << " " << initSt.ProbeE(kRfLab) << " " <<  procInfo.IsWeakCC() << " " <<  procInfo.IsWeakNC() << endl;
+		outputFile << initSt.ProbePdg() << " " << initSt.ProbeE(kRfLab) << " " <<  procInfo.IsWeakCC() 
+					<< " " <<  procInfo.IsWeakNC() << " " << procInfo.IsQuasiElastic();
 
-		// int nParticles = event->GetEntries();
-		// for (int i = 0; i < nParticles; i++) 
-		// {
-		// 	genie::GHepParticle *p = event->Particle(i);
-		// 	// kIStStableFinalState - Genie documentation: generator-level final state
-		// 	// particles to be tracked by the detector-level MC
-		// 	if ((p->Status() == genie::EGHepStatus::kIStStableFinalState)) 
-		// 	{
-		// 		if(IsPdgAllowed(p->Pdg()))
-		// 		{
-		// 			outputFile << p->Pdg() << " " <<  p->Px() << " " << p->Py() << " " << p->Pz() << endl;
-		// 		}
-		// 	}
-		// }
-		// outputFile << "EndEvent " << eventCounter++ << "=====================" << endl;
+		TLorentzVector* v = event->Vertex();
+
+		outputFile << " " << v->X() << " " << v->Y()<< " " << v->Z();
+
+		int nParticles = event->GetEntries();
+		for (int i = 0; i < nParticles; i++) 
+		{
+			genie::GHepParticle *p = event->Particle(i);
+			// kIStStableFinalState - Genie documentation: generator-level final state
+			// particles to be tracked by the detector-level MC
+			if ((p->Status() == genie::EGHepStatus::kIStStableFinalState)) 
+			{
+				if(IsPdgAllowed(p->Pdg()))
+				{
+					outputFile << " " << p->Pdg() << " " <<  p->Px() << " " << p->Py() << " " << p->Pz();
+				}
+			}
+		}
+		//outputFile << "EndEvent " << eventCounter++ << "=====================" << endl;
+		outputFile << endl;
 	}
 	outputFile.close();
 }
