@@ -195,6 +195,8 @@ void FgdDigitizer::Exec(Option_t* opt)
                                                             , cubeCoordinatesRelToDetector
                                                             , point->GetTime()
                                                             , mom
+                                                            , point->GetMomExit()
+                                                            , point->GetTrackLenght()
                                                             , TVector3(peX1, peY1, peZ1), TVector3(mppcX, mppcY, mppcZ)
                                                             , TVector3(peX2, peY2, peZ2), TVector3(mppcX_2ndSide, mppcY_2ndSide, mppcZ_2ndSide)
                                                             , point->GetPdg(), point->GetTrackID());
