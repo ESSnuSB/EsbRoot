@@ -336,6 +336,11 @@ void FgdDigitizer::ApplyMPPCResponse(double& npe)
     npe =  npe_passed;
     return;
 }
+
+void FgdDigitizer::RevertyMPPCResponse(double& npe)
+{
+  npe = (npe/MPPCEff_SuperFGD);
+}
 // -------------------------------------------------------------------------
 
 } //superfgd
