@@ -141,7 +141,7 @@ void FgdDigitizer::Exec(Option_t* opt)
     //=============================================
     //====    Scintilation Response        ========
     //=============================================
-    double pe = ApplyScintiResponse(point->GetEnergyLoss()*1e3 // EnergyLoss is returned in [GeV], we use [eV]
+    double pe = ApplyScintiResponse(point->GetEnergyLoss()*1e3 // EnergyLoss is returned in [GeV], we use [MeV]
                                     ,point->GetTrackLenght() // TrackLength
                                     ,1.0                // Charge, for the moment it is not used
                                     );
@@ -337,9 +337,9 @@ void FgdDigitizer::ApplyMPPCResponse(double& npe)
     return;
 }
 
-void FgdDigitizer::RevertyMPPCResponse(double& npe)
+double FgdDigitizer::RevertyMPPCResponse(double npe)
 {
-  npe = (npe/MPPCEff_SuperFGD);
+  return (npe/MPPCEff_SuperFGD);
 }
 // -------------------------------------------------------------------------
 
