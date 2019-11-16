@@ -53,6 +53,10 @@ class FgdMCLeptonStats : public FgdMCGenFitRecon
 protected:
 
   Bool_t ProcessStats(std::vector<std::vector<ReconHit>>& foundTracks);
+
+  Bool_t IsHitExiting(ReconHit& hit);
+  Bool_t IsChargedHadron(ReconHit& hit);
+  Bool_t IsChargedParticle(ReconHit& hit);
   
   std::string feventData;//!<!
   std::string foutputRootFile;//!<!
@@ -60,6 +64,8 @@ protected:
   std::vector<FgdMCEventRecord> feventRecords;//!<!
 
   TClonesArray* fEventsArray;     //! 
+
+  std::shared_ptr<TDatabasePDG> fpdgDB;//!<!
   	   
   ClassDef(FgdMCLeptonStats, 2);
 

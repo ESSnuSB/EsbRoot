@@ -19,6 +19,8 @@
 #include <TGeoManager.h>
 #include <TFile.h>
 #include <TTree.h>
+#include <TDatabasePDG.h>
+#include <TParticlePDG.h>
 
 // Genie headers
 #include "Framework/ParticleData/PDGCodes.h"
@@ -59,6 +61,7 @@ FgdMCLeptonStats::FgdMCLeptonStats(const char* name
                     debugLlv, visualize, visOption)
     , feventData(eventData), foutputRootFile(outputRootFile)
 { 
+    fpdgDB = make_shared<TDatabasePDG>();
 }
 // -------------------------------------------------------------------------
 
@@ -195,40 +198,127 @@ Bool_t FgdMCLeptonStats::ProcessStats(std::vector<std::vector<ReconHit>>& foundT
         std::sort(hitsOnTrack.begin(), hitsOnTrack.end(), [](ReconHit& bh1, ReconHit& bh2){return bh1.ftime<bh2.ftime;});
     }
 
-    for(size_t i = 0; i <  foundTracks.size() ; ++i)
+    // 1. Determine the muon track length
+    if(mcEventRecord.IsPrimaryLeptonMuon())
     {
-        std::vector<ReconHit>& hitsOnTrack = foundTracks[i];
-
-        if(hitsOnTrack.empty()) continue;
-
-        if(hitsOnTrack[0].fpdg == genie::kPdgMuon || hitsOnTrack[0].fpdg == genie::kPdgAntiMuon)
+        for(size_t i = 0; i <  foundTracks.size() ; ++i)
         {
-            Double_t sumTrackLenght = 0;
+            std::vector<ReconHit>& hitsOnTrack = foundTracks[i];
+            if(hitsOnTrack.empty()) continue;
+            if(hitsOnTrack[0].fpdg == genie::kPdgMuon || hitsOnTrack[0].fpdg == genie::kPdgAntiMuon)
+            {
+                Double_t sumTrackLenght = 0;
+                for(size_t j = 0; j < hitsOnTrack.size(); ++j)
+                {   
+                    ReconHit& hit = hitsOnTrack[j];
+                    sumTrackLenght += hit.ftrackLength;
+                }
+                mcEventRecord.SetMuonTrackLength(sumTrackLenght);
+                break;
+            }
+        }
+    }
+
+    // 2. Determine if the muon is exiting the detector
+    if(mcEventRecord.IsPrimaryLeptonMuon())
+    {
+        for(size_t i = 0; i <  foundTracks.size() ; ++i)
+        {
+            std::vector<ReconHit>& hitsOnTrack = foundTracks[i];
+            if(hitsOnTrack.empty()) continue;
+            if(hitsOnTrack[0].fpdg == genie::kPdgMuon || hitsOnTrack[0].fpdg == genie::kPdgAntiMuon)
+            {
+                ReconHit& lastHit = hitsOnTrack[hitsOnTrack.size() -1 ];
+                // LOG(info) << "Muon is exiting " << lastHit.fmppcLoc.Z() << " f_bin_Z " << f_bin_Z << " lastHit.fmomExit.Mag() " << lastHit.fmomExit.Mag();
+                if(IsHitExiting(lastHit) && lastHit.fmomExit.Mag()!=0)
+                {
+                    LOG(debug2) << "Muon is exiting";
+                    mcEventRecord.SetMuonExiting(true);
+                    mcEventRecord.SetMuonExitMom(lastHit.fmomExit);
+                }
+                break;
+            }
+        }
+    }
+
+
+    // 3. Sum the total energy deposited by hadrons if is a muon event
+    if(mcEventRecord.IsPrimaryLeptonMuon())
+    {
+        Double_t totalEdepInChargedHadrons = 0;
+        for(size_t i = 0; i <  foundTracks.size() ; ++i)
+        {
+            std::vector<ReconHit>& hitsOnTrack = foundTracks[i];
+            if(hitsOnTrack.empty()) continue;
+
+            Bool_t isChargedHadronInTrack = IsChargedHadron(hitsOnTrack[0]);
+            if(!isChargedHadronInTrack) continue;
+
             for(size_t j = 0; j < hitsOnTrack.size(); ++j)
             {   
                 ReconHit& hit = hitsOnTrack[j];
-                sumTrackLenght += hit.ftrackLength;
+                totalEdepInChargedHadrons += hit.fEdep;
             }
-            mcEventRecord.SetMuonTrackLength(sumTrackLenght);
         }
+        mcEventRecord.SetHadronEdep(totalEdepInChargedHadrons);
+    }
 
-        if(hitsOnTrack[0].fpdg == genie::kPdgMuon || hitsOnTrack[0].fpdg == genie::kPdgAntiMuon)
+    //4. Is it is an electron, count the total charge particles exiting the detector
+    if(mcEventRecord.IsPrimaryLeptonElectron())
+    {
+        Int_t numOfExitingChargedParticles = 0;
+        std::vector<Int_t> pdgCodes;
+        for(size_t i = 0; i <  foundTracks.size() ; ++i)
         {
-            ReconHit& lastHit = hitsOnTrack[hitsOnTrack.size() -1 ];
-            // LOG(info) << "Muon is exiting " << lastHit.fmppcLoc.Z() << " f_bin_Z " << f_bin_Z << " lastHit.fmomExit.Mag() " << lastHit.fmomExit.Mag();
-            Int_t lastMppc = f_bin_Z - 1;
-            if(lastHit.fmppcLoc.Z() ==  lastMppc && lastHit.fmomExit.Mag()!=0)
+            std::vector<ReconHit>& hitsOnTrack = foundTracks[i];
+            if(hitsOnTrack.empty()) continue;
+
+            Bool_t isChargedParticleInTrack = IsChargedParticle(hitsOnTrack[0]);
+            if(!isChargedParticleInTrack) continue;
+
+            Bool_t isParExiting = IsHitExiting(hitsOnTrack[hitsOnTrack.size() - 1]);
+            if(isParExiting)
             {
-                LOG(debug2) << "Muon is exiting";
-                mcEventRecord.SetMuonExiting(true);
-                mcEventRecord.SetMuonExitMom(lastHit.fmomExit);
+                ++numOfExitingChargedParticles;
+                pdgCodes.push_back(hitsOnTrack[0].fpdg);
             }
         }
-        
+        mcEventRecord.SetNumOfExitingPar(numOfExitingChargedParticles);
+        mcEventRecord.SetPdgOfExitingPars(pdgCodes);
     }
 
     ++eventNum;
 }
+
+Bool_t FgdMCLeptonStats::IsHitExiting(ReconHit& hit)
+{
+    Int_t lastMppc = f_bin_Z - 1;
+    return (hit.fmppcLoc.Z() ==  lastMppc);
+}
+
+Bool_t FgdMCLeptonStats::IsChargedHadron(ReconHit& hit)
+{
+    bool rc(false);
+
+    if(genie::pdg::IsHadron(hit.fpdg))
+    {
+        TParticlePDG* tPdg = fpdgDB->GetParticle(hit.fpdg);
+        rc = (tPdg!=nullptr) && (tPdg->Charge()!=0);
+    }
+
+    return rc;
+}
+
+Bool_t FgdMCLeptonStats::IsChargedParticle(ReconHit& hit)
+{
+    bool rc(false);
+
+    TParticlePDG* tPdg = fpdgDB->GetParticle(hit.fpdg);
+    rc = (tPdg!=nullptr) && (tPdg->Charge()!=0);
+
+    return rc;
+}
+
 
 void FgdMCLeptonStats::FinishTask()
 {

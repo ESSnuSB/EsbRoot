@@ -25,7 +25,7 @@ FgdMCEventRecord::FgdMCEventRecord(std::string eventData)
         , fIsPrimaryElectron(false), fPrimaryMuonMom(TVector3(0,0,0))
         , fPrimaryElectronMom(TVector3(0,0,0)), fMuonTrackLength(0.)
         , fIsMuonExiting(false), fMuonExitMomentum(TVector3(0,0,0))
-        , fMuonPolarAngle(0.), fMuonAzumAngle(0.)
+        , fMuonPolarAngle(0.), fMuonAzumAngle(0.), fElectronNumOfExitingParticles(0)
 {
     Init();
 }

@@ -42,6 +42,9 @@ public:
     void SetMuonExiting(Bool_t muonExit) {fIsMuonExiting = muonExit;}
     TVector3 GetMuonExitMom() {return fMuonExitMomentum;}
     void SetMuonExitMom(TVector3 exitMom);
+    Double_t GetHadronEdep() {return fHadronEdep;}
+    void SetHadronEdep(Double_t edep) {fHadronEdep = edep;}
+    
     Double_t GetMuonPolarAngle();
     Double_t GetMuonAzumuteAngle();
 
@@ -51,6 +54,10 @@ public:
 
     Bool_t IsPrimaryLeptonElectron();
     TVector3 GetElectronMom();
+    Int_t GetNumOfExitingPar(){return fElectronNumOfExitingParticles;}
+    void SetNumOfExitingPar(Int_t numPar){fElectronNumOfExitingParticles = numPar;}
+    const std::vector<Int_t>  GetPdgOfExitingPars(){return fElectronExitingPdg;}
+    void  SetPdgOfExitingPars(const std::vector<Int_t> pars){fElectronExitingPdg = pars;}
 
     std::string GetEventData(){return feventData; }
 
@@ -89,9 +96,12 @@ protected:
     TVector3 fMuonExitMomentum;
     Double_t fMuonPolarAngle;
     Double_t fMuonAzumAngle;
+    Double_t fHadronEdep;
 
 
     Bool_t fIsPrimaryElectron;
+    std::vector<Int_t> fElectronExitingPdg;//!<!
+    Int_t fElectronNumOfExitingParticles;
 
     TVector3 fPrimaryMuonMom;
     TVector3 fPrimaryElectronMom;
