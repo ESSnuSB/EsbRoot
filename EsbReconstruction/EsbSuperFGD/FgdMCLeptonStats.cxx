@@ -177,17 +177,57 @@ void FgdMCLeptonStats::Exec(Option_t* opt)
 
 Bool_t FgdMCLeptonStats::ProcessStats(std::vector<std::vector<ReconHit>>& foundTracks)
 {
+    static int eventNum = 0;
+    
+    if(eventNum >= feventRecords.size())
+    {
+        LOG(fatal) << "EventData reconrds are less than the passed events!";
+        throw "EventData reconrds are less than the passed events!";
+    }
+
+    FgdMCEventRecord& mcEventRecord = feventRecords[eventNum];
+
+
     for(size_t i = 0; i <  foundTracks.size() ; ++i)
     {
-      std::vector<ReconHit>& hitsOnTrack = foundTracks[i];
-      // Sort by time, the 1st hit in time is the start of the track
-      std::sort(hitsOnTrack.begin(), hitsOnTrack.end(), [](ReconHit& bh1, ReconHit& bh2){return bh1.ftime<bh2.ftime;});
+        std::vector<ReconHit>& hitsOnTrack = foundTracks[i];
+        // Sort by time, the 1st hit in time is the start of the track
+        std::sort(hitsOnTrack.begin(), hitsOnTrack.end(), [](ReconHit& bh1, ReconHit& bh2){return bh1.ftime<bh2.ftime;});
     }
 
     for(size_t i = 0; i <  foundTracks.size() ; ++i)
     {
-      std::vector<ReconHit>& hitsOnTrack = foundTracks[i];
+        std::vector<ReconHit>& hitsOnTrack = foundTracks[i];
+
+        if(hitsOnTrack.empty()) continue;
+
+        if(hitsOnTrack[0].fpdg == genie::kPdgMuon || hitsOnTrack[0].fpdg == genie::kPdgAntiMuon)
+        {
+            Double_t sumTrackLenght = 0;
+            for(size_t j = 0; j < hitsOnTrack.size(); ++j)
+            {   
+                ReconHit& hit = hitsOnTrack[j];
+                sumTrackLenght += hit.ftrackLength;
+            }
+            mcEventRecord.SetMuonTrackLength(sumTrackLenght);
+        }
+
+        if(hitsOnTrack[0].fpdg == genie::kPdgMuon || hitsOnTrack[0].fpdg == genie::kPdgAntiMuon)
+        {
+            ReconHit& lastHit = hitsOnTrack[hitsOnTrack.size() -1 ];
+            // LOG(info) << "Muon is exiting " << lastHit.fmppcLoc.Z() << " f_bin_Z " << f_bin_Z << " lastHit.fmomExit.Mag() " << lastHit.fmomExit.Mag();
+            Int_t lastMppc = f_bin_Z - 1;
+            if(lastHit.fmppcLoc.Z() ==  lastMppc && lastHit.fmomExit.Mag()!=0)
+            {
+                LOG(debug2) << "Muon is exiting";
+                mcEventRecord.SetMuonExiting(true);
+                mcEventRecord.SetMuonExitMom(lastHit.fmomExit);
+            }
+        }
+        
     }
+
+    ++eventNum;
 }
 
 void FgdMCLeptonStats::FinishTask()

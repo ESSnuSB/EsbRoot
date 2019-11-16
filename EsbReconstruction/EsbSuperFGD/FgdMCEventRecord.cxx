@@ -23,7 +23,9 @@ FgdMCEventRecord::FgdMCEventRecord(std::string eventData)
         , fNuEnergy(0.), fvertex(TVector3(0,0,0)), fIsWeakCC(false)
         , fIsWeakNC(false), fIsQuasiElastic(false), fIsPrimaryMuon(false)
         , fIsPrimaryElectron(false), fPrimaryMuonMom(TVector3(0,0,0))
-        , fPrimaryElectronMom(TVector3(0,0,0))
+        , fPrimaryElectronMom(TVector3(0,0,0)), fMuonTrackLength(0.)
+        , fIsMuonExiting(false), fMuonExitMomentum(TVector3(0,0,0))
+        , fMuonPolarAngle(0.), fMuonAzumAngle(0.)
 {
     Init();
 }
@@ -93,6 +95,11 @@ TVector3 FgdMCEventRecord::GetMuonMom()
     return fPrimaryMuonMom;
 }
 
+Double_t FgdMCEventRecord::GetMuonTrackLength()
+{
+    return fMuonTrackLength;
+}
+
 Bool_t FgdMCEventRecord::IsPrimaryLeptonElectron()
 {
     return fIsPrimaryElectron;
@@ -102,6 +109,26 @@ TVector3 FgdMCEventRecord::GetElectronMom()
 {
     return fPrimaryElectronMom;
 }
+
+Double_t FgdMCEventRecord::GetMuonPolarAngle()
+{
+    return fMuonPolarAngle;
+}
+
+Double_t FgdMCEventRecord::GetMuonAzumuteAngle()
+{
+    return fMuonAzumAngle;
+}
+
+void FgdMCEventRecord::SetMuonExitMom(TVector3 exitMom)
+{
+    fMuonExitMomentum = exitMom;
+
+    Double_t radToAngle = 180/TMath::Pi();
+    fMuonPolarAngle = fMuonExitMomentum.Theta() * radToAngle;
+    fMuonAzumAngle = fMuonExitMomentum.Phi() * radToAngle;
+}
+
 
 FgdMCEventRecord& FgdMCEventRecord::operator=(const FgdMCEventRecord& c)
 {

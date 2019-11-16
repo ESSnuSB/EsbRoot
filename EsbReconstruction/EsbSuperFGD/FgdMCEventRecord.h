@@ -38,7 +38,17 @@ public:
     const std::vector<std::pair<Int_t, TVector3>>& GetPrimaryParticles();
 
     Bool_t IsPrimaryLeptonMuon();
+    Bool_t IsMuonExiting();
+    void SetMuonExiting(Bool_t muonExit) {fIsMuonExiting = muonExit;}
+    TVector3 GetMuonExitMom() {return fMuonExitMomentum;}
+    void SetMuonExitMom(TVector3 exitMom);
+    Double_t GetMuonPolarAngle();
+    Double_t GetMuonAzumuteAngle();
+
     TVector3 GetMuonMom();
+    Double_t SetMuonTrackLength(Double_t ml) {fMuonTrackLength = ml;}
+    Double_t GetMuonTrackLength();
+
     Bool_t IsPrimaryLeptonElectron();
     TVector3 GetElectronMom();
 
@@ -75,10 +85,18 @@ protected:
     Bool_t fIsQuasiElastic;
 
     Bool_t fIsPrimaryMuon;
+    Bool_t fIsMuonExiting;
+    TVector3 fMuonExitMomentum;
+    Double_t fMuonPolarAngle;
+    Double_t fMuonAzumAngle;
+
+
     Bool_t fIsPrimaryElectron;
 
     TVector3 fPrimaryMuonMom;
     TVector3 fPrimaryElectronMom;
+
+    Double_t fMuonTrackLength;
 
     
     std::vector<std::string> fDataTokens;
