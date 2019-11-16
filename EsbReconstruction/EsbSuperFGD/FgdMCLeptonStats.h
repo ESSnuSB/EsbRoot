@@ -54,6 +54,7 @@ protected:
   Bool_t IsChargedHadron(ReconHit& hit);
   Bool_t IsChargedParticle(ReconHit& hit);
   Bool_t FitTrack(std::vector<ReconHit>& hitsOnTrack, TVector3& fitMom);
+  Double_t CalculatePhotoEdep(ReconHit& hit);
   
   std::string feventData;//!<!
   std::string foutputRootFile;//!<!

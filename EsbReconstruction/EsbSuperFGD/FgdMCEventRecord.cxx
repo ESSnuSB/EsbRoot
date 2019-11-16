@@ -26,7 +26,7 @@ FgdMCEventRecord::FgdMCEventRecord(std::string eventData)
         , fPrimaryElectronMom(TVector3(0,0,0)), fMuonTrackLength(0.)
         , fIsMuonExiting(false), fMuonExitMomentum(TVector3(0,0,0))
         , fMuonPolarAngle(0.), fMuonAzumAngle(0.), fElectronNumOfExitingParticles(0)
-        , fGenfitMom(TVector3(0,0,0)), fMC_GentFitError(0.)
+        , fGenfitMom(TVector3(0,0,0)), fMC_GentFitError(0.), fProtonEdep(0.)
 {
     Init();
 }

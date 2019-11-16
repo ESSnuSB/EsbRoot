@@ -1,6 +1,7 @@
 #include "EsbReconstruction/EsbSuperFGD/FgdMCLeptonStats.h"
 #include "EsbReconstruction/EsbSuperFGD/FgdReconTemplate.h"
 //#include "EsbData/EsbSuperFGD/FgdDetectorPoint.h"
+#include "EsbDigitizer/EsbSuperFGD/FgdDigitizer.h"
 
 // FairRoot headers
 #include "FairGeoBuilder.h"
@@ -331,6 +332,29 @@ Bool_t FgdMCLeptonStats::ProcessStats(std::vector<std::vector<ReconHit>>& foundT
         }
     }
 
+    // 6. Calculate proton energy loss from the generated photons
+    if(mcEventRecord.IsPrimaryLeptonMuon() || mcEventRecord.IsPrimaryLeptonElectron())
+    {
+        for(size_t i = 0; i <  foundTracks.size() ; ++i)
+        {
+            std::vector<ReconHit>& hitsOnTrack = foundTracks[i];
+            if(hitsOnTrack.empty()) continue;
+
+            Int_t& pdgPar = hitsOnTrack[0].fpdg;
+            if(genie::pdg::IsProton(pdgPar))
+            {
+                Double_t sumEdep = 0;
+                for(size_t j = 0; j < hitsOnTrack.size(); ++j)
+                {   
+                    ReconHit& hit = hitsOnTrack[j];
+                    sumEdep += CalculatePhotoEdep(hit);
+                }
+                mcEventRecord.SetProtonEdep(sumEdep);
+                break;
+            }
+        }
+    }
+
     ++eventNum;
 }
 
@@ -361,6 +385,55 @@ Bool_t FgdMCLeptonStats::IsChargedParticle(ReconHit& hit)
     rc = (tPdg!=nullptr) && (tPdg->Charge()!=0);
 
     return rc;
+}
+
+Double_t FgdMCLeptonStats::CalculatePhotoEdep(ReconHit& hit)
+{
+    using namespace esbroot::digitizer::superfgd;
+
+    TVector3& pe_1_dir = hit.fph1;
+    TVector3& dist_1 = hit.fmppc1;
+    TVector3& pe_2_dir = hit.fph2;
+    TVector3& dist_2 = hit.fmppc2;
+
+    double& time = hit.ftime;
+    double charge = 1.0; // not used, but is a parameter from legacy
+
+
+    double pe_1_x = FgdDigitizer::RevertyMPPCResponse(pe_1_dir.X());
+    double pe_1_y = FgdDigitizer::RevertyMPPCResponse(pe_1_dir.Y());
+    double pe_1_Z = FgdDigitizer::RevertyMPPCResponse(pe_1_dir.Z());
+
+    double pe_2_x = FgdDigitizer::RevertyMPPCResponse(pe_2_dir.X());
+    double pe_2_y = FgdDigitizer::RevertyMPPCResponse(pe_2_dir.Y());
+    double pe_2_z = FgdDigitizer::RevertyMPPCResponse(pe_2_dir.Z());
+
+    FgdDigitizer::RevertFiberResponse(pe_1_x, time, dist_1.X());
+    FgdDigitizer::RevertFiberResponse(pe_1_y, time, dist_1.Y());
+    FgdDigitizer::RevertFiberResponse(pe_1_Z, time, dist_1.Z());
+
+    FgdDigitizer::RevertFiberResponse(pe_2_x, time, dist_2.X());
+    FgdDigitizer::RevertFiberResponse(pe_2_y, time, dist_2.Y());
+    FgdDigitizer::RevertFiberResponse(pe_2_z, time, dist_2.Z());
+
+    // Deposited energy hit.fEdep and tracklength hit.ftrackLength
+    // are used to calculate the CBIRKS coefficients together with dedx (energy losses)
+    // to be able to revert from the photons
+
+    Double_t x_1 = FgdDigitizer::RevertScintiResponse(hit.fEdep, hit.ftrackLength, charge, pe_1_x);
+    Double_t y_1 = FgdDigitizer::RevertScintiResponse(hit.fEdep, hit.ftrackLength, charge, pe_1_y);
+    Double_t z_1 = FgdDigitizer::RevertScintiResponse(hit.fEdep, hit.ftrackLength, charge, pe_1_Z);
+
+    Double_t x_2 = FgdDigitizer::RevertScintiResponse(hit.fEdep, hit.ftrackLength, charge, pe_2_x);
+    Double_t y_2 = FgdDigitizer::RevertScintiResponse(hit.fEdep, hit.ftrackLength, charge, pe_2_y);
+    Double_t z_2 = FgdDigitizer::RevertScintiResponse(hit.fEdep, hit.ftrackLength, charge, pe_2_z);
+
+    Double_t x = x_1 + x_2;
+    Double_t y = y_1 + y_2;
+    Double_t z = z_1 + z_2;
+
+    Double_t totalEdep =  x + y + z;
+    return totalEdep;
 }
 
 Bool_t FgdMCLeptonStats::FitTrack(std::vector<ReconHit>& hitsOnTrack, TVector3& fitMom)

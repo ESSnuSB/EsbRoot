@@ -56,6 +56,9 @@ public:
     void SetMomError(Double_t err){fMC_GentFitError = err;}
     Double_t GetMomError(){return fMC_GentFitError;}
 
+    void SetProtonEdep(Double_t e){fProtonEdep = e;} // in [MeV]
+    Double_t GetProtonEdep(){return fProtonEdep;}
+
     Bool_t IsPrimaryLeptonElectron();
     TVector3 GetElectronMom();
     Int_t GetNumOfExitingPar(){return fElectronNumOfExitingParticles;}
@@ -104,7 +107,6 @@ protected:
     TVector3 fGenfitMom;
     Double_t fMC_GentFitError;
 
-
     Bool_t fIsPrimaryElectron;
     std::vector<Int_t> fElectronExitingPdg;//!<!
     Int_t fElectronNumOfExitingParticles;
@@ -113,6 +115,8 @@ protected:
     TVector3 fPrimaryElectronMom;
 
     Double_t fMuonTrackLength;
+
+    Double_t fProtonEdep;
 
     
     std::vector<std::string> fDataTokens;
