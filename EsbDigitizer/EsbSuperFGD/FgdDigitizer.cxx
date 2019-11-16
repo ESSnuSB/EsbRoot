@@ -199,7 +199,7 @@ void FgdDigitizer::Exec(Option_t* opt)
                                                             , point->GetTrackLenght()
                                                             , TVector3(peX1, peY1, peZ1), TVector3(mppcX, mppcY, mppcZ)
                                                             , TVector3(peX2, peY2, peZ2), TVector3(mppcX_2ndSide, mppcY_2ndSide, mppcZ_2ndSide)
-                                                            , point->GetPdg(), point->GetTrackID());
+                                                            , point->GetPdg(), point->GetTrackID(), point->GetEnergyLoss());
     }
   }
 }
@@ -224,6 +224,15 @@ double FgdDigitizer::ApplyScintiResponse(double edep, double trackLength, double
     return edep_birk * EdepToPhotConv_SuperFGD;  
 }
 
+double FgdDigitizer::RevertScintiResponse(double edep, double trackLength, double charge, double pe)
+{
+  double dedx = edep/trackLength;
+  double edep_birk = (pe/EdepToPhotConv_SuperFGD);
+  double rec_Edep = edep_birk * (1. + CBIRKS*dedx);
+
+  return rec_Edep;
+}
+
 void FgdDigitizer::ApplyFiberResponse(double& numPhotons, double& time, double distance)
 {
     double temp_np = numPhotons;
@@ -231,6 +240,12 @@ void FgdDigitizer::ApplyFiberResponse(double& numPhotons, double& time, double d
 
     double temp_time = time;
     time = ApplyFiberTime(temp_time, distance);
+}
+
+void FgdDigitizer::RevertFiberResponse(double &numPhotons, double &time, double distance)
+{
+    double temp_np = numPhotons;
+    numPhotons = RevertFiberAttenuation(temp_np, distance);
 }
 
 const double FgdDigitizer::DistMPPCscint_FGD = 41*CLHEP::mm;
@@ -265,11 +280,39 @@ double FgdDigitizer::ApplyFiberAttenuation(double Nphot0,double x)
     return Nphot;
 }
 
+double FgdDigitizer::RevertFiberAttenuation(double Nphot0,double x)
+{
+    double a=0.;        // long attenuation component fraction
+    double d=0.;        // distance MPPC-scint outside the bar
+    double LongAtt=0.;  // long attenuation length
+    double ShortAtt=0.; // short attenuation length
+    double Ldecay=0.;   // decay length
+    double Lbar=0.;     // bar length
+
+    a = LongCompFrac_FGD;
+    d = DistMPPCscint_FGD; 
+    LongAtt = LongAtt_FGD;
+    ShortAtt = ShortAtt_FGD;  
+    Ldecay= DecayLength_FGD;
+    Lbar = Lbar_FGD;
+  
+    double Nphot = Nphot0;
+    Nphot /= ( a*exp((-x-d)/LongAtt) + (1-a)*exp((-x-d)/ShortAtt) );
+
+    return Nphot;
+}
+
 const double FgdDigitizer::TransTimeInFiber = 1./28.;  //  1cm/2.8e10[cm/s] * 1e9 [ns]
 
 double FgdDigitizer::ApplyFiberTime(double& time, double x)
 {
   double fiberTime = time + TransTimeInFiber*x;
+  return fiberTime;
+}
+
+double FgdDigitizer::RevertFiberTime(double &time, double x)
+{
+  double fiberTime = time - TransTimeInFiber*x;
   return fiberTime;
 }
 

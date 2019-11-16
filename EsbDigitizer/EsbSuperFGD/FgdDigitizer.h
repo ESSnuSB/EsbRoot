@@ -45,6 +45,13 @@ class FgdDigitizer : public FairTask
   /** Virtual method Exec **/
   virtual void Exec(Option_t* opt) override;
 
+  /** Methods to calculate the revert response from detector physical characteristics **/
+  double RevertScintiResponse(double edep, double trackLength, double charge, double pe);
+  void RevertFiberResponse(double &numPhotons, double &time, double distance);
+  double RevertFiberAttenuation(double Nphot0,double x);
+  double RevertFiberTime(double &time, double x);
+  void RevertyMPPCResponse(double &npe);
+
 
 private:
 
