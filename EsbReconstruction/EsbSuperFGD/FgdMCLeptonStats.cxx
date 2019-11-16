@@ -148,12 +148,24 @@ void FgdMCLeptonStats::Exec(Option_t* opt)
   try
   {
     std::vector<ReconHit> allhits;
+    std::vector<std::vector<ReconHit>> foundTracks;
 
-    bool rc = FgdMCGenFitRecon::GetHits(allhits);
+    bool rc = GetHits(allhits);
 
     if(rc)
     { 
-      
+      LOG(debug) <<" Hits to retrieve stats from " << allhits.size();
+      SplitTrack(allhits, foundTracks);
+    }
+
+    if(rc)
+    {
+      LOG(debug) <<" Found tracks to process " << foundTracks.size();
+      ProcessStats(foundTracks);
+    }
+    else
+    {
+      LOG(error) << " Could not find clean hits or tracks! ";
     }
   }
   catch(genfit::Exception& e)
@@ -161,6 +173,21 @@ void FgdMCLeptonStats::Exec(Option_t* opt)
       LOG(fatal) << "Exception, when tryng to fit track";
       LOG(fatal) << e.what();
   }
+}
+
+Bool_t FgdMCLeptonStats::ProcessStats(std::vector<std::vector<ReconHit>>& foundTracks)
+{
+    for(size_t i = 0; i <  foundTracks.size() ; ++i)
+    {
+      std::vector<ReconHit>& hitsOnTrack = foundTracks[i];
+      // Sort by time, the 1st hit in time is the start of the track
+      std::sort(hitsOnTrack.begin(), hitsOnTrack.end(), [](ReconHit& bh1, ReconHit& bh2){return bh1.ftime<bh2.ftime;});
+    }
+
+    for(size_t i = 0; i <  foundTracks.size() ; ++i)
+    {
+      std::vector<ReconHit>& hitsOnTrack = foundTracks[i];
+    }
 }
 
 void FgdMCLeptonStats::FinishTask()

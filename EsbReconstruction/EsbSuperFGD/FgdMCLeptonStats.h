@@ -52,6 +52,8 @@ class FgdMCLeptonStats : public FgdMCGenFitRecon
 
 protected:
 
+  Bool_t ProcessStats(std::vector<std::vector<ReconHit>>& foundTracks);
+  
   std::string feventData;//!<!
   std::string foutputRootFile;//!<!
 
