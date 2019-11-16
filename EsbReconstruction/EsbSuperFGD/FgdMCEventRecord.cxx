@@ -1,6 +1,6 @@
 #include "EsbReconstruction/EsbSuperFGD/FgdMCEventRecord.h"
 
-
+#include "Framework/ParticleData/PDGCodes.h"
 #include "FairLogger.h"
 
 #include <vector>
@@ -20,8 +20,10 @@ namespace superfgd {
 
 FgdMCEventRecord::FgdMCEventRecord(std::string eventData) 
     : TObject(), feventData(eventData), fnuPdg(0)
-        , fNuEnergy(0.), fvertex (TVector3(0,0,0)), fIsWeakCC(false)
-        , fIsWeakNC(false), fIsQuasiElastic(false)
+        , fNuEnergy(0.), fvertex(TVector3(0,0,0)), fIsWeakCC(false)
+        , fIsWeakNC(false), fIsQuasiElastic(false), fIsPrimaryMuon(false)
+        , fIsPrimaryElectron(false), fPrimaryMuonMom(TVector3(0,0,0))
+        , fPrimaryElectronMom(TVector3(0,0,0))
 {
     Init();
 }
@@ -78,6 +80,27 @@ Bool_t FgdMCEventRecord::IsWeakNC(void)
 Bool_t FgdMCEventRecord::IsQuasiElastic(void)
 {
     return fIsQuasiElastic;
+}
+
+
+Bool_t FgdMCEventRecord::IsPrimaryLeptonMuon()
+{
+    return fIsPrimaryMuon;
+}
+
+TVector3 FgdMCEventRecord::GetMuonMom()
+{
+    return fPrimaryMuonMom;
+}
+
+Bool_t FgdMCEventRecord::IsPrimaryLeptonElectron()
+{
+    return fIsPrimaryElectron;
+}
+
+TVector3 FgdMCEventRecord::GetElectronMom()
+{
+    return fPrimaryElectronMom;
 }
 
 FgdMCEventRecord& FgdMCEventRecord::operator=(const FgdMCEventRecord& c)
@@ -171,6 +194,24 @@ void FgdMCEventRecord::InitMembers()
         fPrimaryParticles.push_back(
                             std::pair<Int_t, TVector3>( pdg,    TVector3(momX , momY, momZ) )
                             );
+    }
+
+    for(size_t i = 0; i< fPrimaryParticles.size(); ++i)
+    {
+        std::pair<Int_t, TVector3>& particle = fPrimaryParticles[i];
+        if(particle.first == genie::kPdgMuon || particle.first == genie::kPdgAntiMuon)
+        {
+            fIsPrimaryMuon = true;
+            fPrimaryMuonMom = particle.second;
+            break;
+        }
+
+        if(particle.first == genie::kPdgElectron || particle.first == genie::kPdgPositron)
+        {
+            fIsPrimaryElectron = true;
+            fPrimaryElectronMom = particle.second;
+            break;
+        }
     }
 }
 

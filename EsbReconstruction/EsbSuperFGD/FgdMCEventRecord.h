@@ -37,6 +37,11 @@ public:
     Bool_t IsQuasiElastic(void);
     const std::vector<std::pair<Int_t, TVector3>>& GetPrimaryParticles();
 
+    Bool_t IsPrimaryLeptonMuon();
+    TVector3 GetMuonMom();
+    Bool_t IsPrimaryLeptonElectron();
+    TVector3 GetElectronMom();
+
     std::string GetEventData(){return feventData; }
 
     void PrintData(std::ostream & stream);
@@ -68,6 +73,12 @@ protected:
     Bool_t fIsWeakCC;
     Bool_t fIsWeakNC;
     Bool_t fIsQuasiElastic;
+
+    Bool_t fIsPrimaryMuon;
+    Bool_t fIsPrimaryElectron;
+
+    TVector3 fPrimaryMuonMom;
+    TVector3 fPrimaryElectronMom;
 
     
     std::vector<std::string> fDataTokens;
