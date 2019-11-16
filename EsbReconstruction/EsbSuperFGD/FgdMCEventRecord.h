@@ -51,6 +51,10 @@ public:
     TVector3 GetMuonMom();
     Double_t SetMuonTrackLength(Double_t ml) {fMuonTrackLength = ml;}
     Double_t GetMuonTrackLength();
+    TVector3 GetGenfitMom(){return fGenfitMom;}
+    void SetGenfitMom(TVector3 genfitMom){fGenfitMom = genfitMom;}
+    void SetMomError(Double_t err){fMC_GentFitError = err;}
+    Double_t GetMomError(){return fMC_GentFitError;}
 
     Bool_t IsPrimaryLeptonElectron();
     TVector3 GetElectronMom();
@@ -97,6 +101,8 @@ protected:
     Double_t fMuonPolarAngle;
     Double_t fMuonAzumAngle;
     Double_t fHadronEdep;
+    TVector3 fGenfitMom;
+    Double_t fMC_GentFitError;
 
 
     Bool_t fIsPrimaryElectron;

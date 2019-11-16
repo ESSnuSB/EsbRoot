@@ -26,6 +26,29 @@
 #include "Framework/ParticleData/PDGCodes.h"
 #include "Framework/ParticleData/PDGUtils.h"
 
+// Genfit headers
+#include "AbsBField.h"
+#include "AbsMeasurement.h"
+#include "ConstField.h"
+#include <Exception.h>
+#include <EventDisplay.h>
+#include <FieldManager.h>
+#include "FitStatus.h"
+#include <KalmanFitterRefTrack.h>
+#include "MaterialEffects.h"
+#include "MeasuredStateOnPlane.h"
+#include <PlanarMeasurement.h>
+#include <RKTrackRep.h>
+#include "SpacepointMeasurement.h"
+#include <StateOnPlane.h>
+#include "TDatabasePDG.h"
+#include <TGeoMaterialInterface.h>
+#include <Track.h>
+#include <TrackCand.h>
+#include <TrackPoint.h>
+#include <TRandom.h>
+#include <TVector3.h>
+
 
 
 // STL headers
@@ -54,11 +77,9 @@ FgdMCLeptonStats::FgdMCLeptonStats(const char* name
                           , const char* eventData
                           , const char* outputRootFile
                           , Int_t verbose
-                          , double debugLlv
-                          , bool visualize
-                          , std::string visOption) :
+                          , double debugLlv) :
   FgdMCGenFitRecon(name, geoConfigFile, mediaFile, verbose, 
-                    debugLlv, visualize, visOption)
+                    debugLlv, false /* no visualization */, "D")
     , feventData(eventData), foutputRootFile(outputRootFile)
 { 
     fpdgDB = make_shared<TDatabasePDG>();
@@ -287,6 +308,29 @@ Bool_t FgdMCLeptonStats::ProcessStats(std::vector<std::vector<ReconHit>>& foundT
         mcEventRecord.SetPdgOfExitingPars(pdgCodes);
     }
 
+    // 5. Fit the muon momentum
+    if(mcEventRecord.IsPrimaryLeptonMuon())
+    {
+        for(size_t i = 0; i <  foundTracks.size() ; ++i)
+        {
+            std::vector<ReconHit>& hitsOnTrack = foundTracks[i];
+            if(hitsOnTrack.empty()) continue;
+            if(hitsOnTrack[0].fpdg == genie::kPdgMuon || hitsOnTrack[0].fpdg == genie::kPdgAntiMuon)
+            {
+                TVector3 fitMom;
+                if(FitTrack(hitsOnTrack, fitMom))
+                {
+                    mcEventRecord.SetGenfitMom(fitMom);
+
+                    TVector3 mcMom = mcEventRecord.GetMuonMom();
+                    Double_t err = mcMom.Mag() - fitMom.Mag();
+                    mcEventRecord.SetMomError(err);
+                }
+                break;
+            }
+        }
+    }
+
     ++eventNum;
 }
 
@@ -319,6 +363,113 @@ Bool_t FgdMCLeptonStats::IsChargedParticle(ReconHit& hit)
     return rc;
 }
 
+Bool_t FgdMCLeptonStats::FitTrack(std::vector<ReconHit>& hitsOnTrack, TVector3& fitMom)
+{
+    bool rc(true);
+
+    // init geometry and mag. field
+    TVector3 magField = fgdConstructor.GetMagneticField(); // values are in kGauss
+    genfit::FieldManager::getInstance()->init(new genfit::ConstField(magField.X(),magField.Y(), magField.Z())); 
+    genfit::MaterialEffects::getInstance()->init(new genfit::TGeoMaterialInterface());
+    genfit::MaterialEffects::getInstance()->setDebugLvl(fDebuglvl_genfit);
+
+    // init fitter
+    std::shared_ptr<genfit::AbsKalmanFitter> fitter = make_shared<genfit::KalmanFitterRefTrack>();
+    fitter->setMinIterations(fminGenFitInterations);
+    fitter->setMaxIterations(fmaxGenFitIterations);
+    fitter->setDebugLvl(fDebuglvl_genfit);
+
+    int detId(1); // Detector id, it is the same, we only have one detector
+
+    const int pdg = hitsOnTrack[0].fpdg;
+    TVector3 posM(hitsOnTrack[0].fmppcLoc);
+    TVector3 momM(hitsOnTrack[0].fmom);
+
+    if(isParticleNeutral(pdg))
+    {
+        LOG(debug) << "Track is of neutral particle ["<< pdg << "] continue with next track.";
+        return false;
+    }
+
+    // approximate covariance
+    double resolution = 0.1;
+    TMatrixDSym hitCov(3);
+    hitCov(0,0) = resolution*resolution;
+    hitCov(1,1) = resolution*resolution;
+    hitCov(2,2) = resolution*resolution;
+
+    TMatrixDSym covM(6);
+    for (int ci = 0; ci < 3; ++ci)
+        covM(ci,ci) = resolution*resolution;
+    for (int ci = 3; ci < 6; ++ci)
+        covM(ci,ci) = covM(ci,ci) = pow(  ((resolution / hitsOnTrack.size()) / sqrt(3)), 2); 
+
+    // trackrep
+    genfit::AbsTrackRep* rep = new genfit::RKTrackRep(pdg);
+
+    // smeared start state
+    genfit::MeasuredStateOnPlane stateSmeared(rep);
+    stateSmeared.setPosMomCov(posM, momM, covM);
+
+    // create track
+    TVectorD seedState(6);
+    TMatrixDSym seedCov(6);
+    stateSmeared.get6DStateCov(seedState, seedCov);
+
+    genfit::Track* toFitTrack = new genfit::Track(rep, seedState, seedCov);
+
+    LOG(debug) << "******************************************* ";
+    LOG(debug) << " \tPdg code " << pdg;
+    LOG(debug) << " \tHits in track "<< hitsOnTrack.size();
+    LOG(debug) << " \tTrack Momentum [" << momM.Mag() << "]" << "(" << momM.X() << "," << momM.Y() << "," << momM.Z() << ")";
+    
+    for(Int_t bh = 0; bh < hitsOnTrack.size(); ++bh)
+    {
+    TVectorD hitPos(3);
+    hitPos(0) = hitsOnTrack[bh].fmppcLoc.X();
+    hitPos(1) = hitsOnTrack[bh].fmppcLoc.Y();
+    hitPos(2) = hitsOnTrack[bh].fmppcLoc.Z();
+
+    genfit::AbsMeasurement* measurement = new genfit::SpacepointMeasurement(hitPos, hitCov, detId, 0, nullptr);
+    std::vector<genfit::AbsMeasurement*> measurements{measurement};
+
+    toFitTrack->insertPoint(new genfit::TrackPoint(measurements, toFitTrack));
+    }
+
+    try
+    {
+        //check
+        toFitTrack->checkConsistency();
+
+        // do the fit
+        fitter->processTrack(toFitTrack, true);
+
+        //check
+        toFitTrack->checkConsistency();
+
+        PrintFitTrack(*toFitTrack);
+        genfit::FitStatus* fiStatuStatus = toFitTrack->getFitStatus();
+
+        // WriteOutput(  pdg
+        //             , (*toFitTrack).getFittedState().getMom()
+        //             , momM
+        //             , *toFitTrack
+        //             , fiStatuStatus);
+
+        fitMom = (*toFitTrack).getFittedState().getMom();
+
+        LOG(debug) <<"******************************************* ";
+    }
+    catch(genfit::Exception& e)
+    {
+        LOG(error) <<"Exception, when tryng to fit track";
+        LOG(error) << e.what();
+        LOG(error) << e.getExcString();
+        rc = false;
+    }
+
+    return rc;
+}
 
 void FgdMCLeptonStats::FinishTask()
 {

@@ -25,8 +25,6 @@ class FgdMCLeptonStats : public FgdMCGenFitRecon
    *@param outputRootFile - full path to the output root file
    *@param verbose  - Verbosity level
    *@param debugLlv - debug level for genfit
-   *@param visualize -  to visualize the event using genfit::EventDisplay
-   *@param visOption -  option to be passed to genfit::EventDisplay
   **/  
   FgdMCLeptonStats(const char* name
               , const char* geoConfigFile
@@ -34,9 +32,7 @@ class FgdMCLeptonStats : public FgdMCGenFitRecon
               , const char* eventData
               , const char* outputRootFile
               , Int_t verbose = 1
-              , double debugLlv = 0
-              , bool visualize = false
-              , std::string visOption ="D");
+              , double debugLlv = 0);
 
   /** Destructor **/
   virtual ~FgdMCLeptonStats();
@@ -57,6 +53,7 @@ protected:
   Bool_t IsHitExiting(ReconHit& hit);
   Bool_t IsChargedHadron(ReconHit& hit);
   Bool_t IsChargedParticle(ReconHit& hit);
+  Bool_t FitTrack(std::vector<ReconHit>& hitsOnTrack, TVector3& fitMom);
   
   std::string feventData;//!<!
   std::string foutputRootFile;//!<!
