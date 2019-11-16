@@ -19,13 +19,15 @@ namespace superfgd {
 // -----   Constructors and Destructors  -----------------------------------
 
 FgdMCEventRecord::FgdMCEventRecord(std::string eventData) 
-    : feventData(eventData), fIsInit(false)
+    : TObject(), feventData(eventData), fnuPdg(0)
+        , fNuEnergy(0.), fvertex (TVector3(0,0,0)), fIsWeakCC(false)
+        , fIsWeakNC(false), fIsQuasiElastic(false)
 {
     Init();
 }
 
 FgdMCEventRecord::FgdMCEventRecord() 
-    : feventData(""), fIsInit(false)
+    : feventData("")
 {
 }
 
@@ -44,46 +46,38 @@ FgdMCEventRecord::~FgdMCEventRecord()
 
 void FgdMCEventRecord::SetEventData(std::string data)
 {
-    fIsInit = false;
     feventData = data;
     Init();
 }
 
 Int_t FgdMCEventRecord::GetNuPdg(void)
 {
-    return std::stoi(fDataTokens[Data::NEUTRINO_PDG]);
+    return fnuPdg;
 }
 
 Double_t FgdMCEventRecord::GetNuE(void)
 {
-    return std::stod(fDataTokens[Data::NEUTRINO_ENERGY]);
+    return fNuEnergy;
 }
 
 TVector3 FgdMCEventRecord::GetVertex(void)
 {
-    Double_t x = std::stod(fDataTokens[Data::VERTEX_POSTION_X]);
-    Double_t y = std::stod(fDataTokens[Data::VERTEX_POSTION_Y]);
-    Double_t z = std::stod(fDataTokens[Data::VERTEX_POSTION_Z]);
-
-    return TVector3(x,y,z);
+    return fvertex;
 }
 
 Bool_t FgdMCEventRecord::IsWeakCC(void)
 {
-    Int_t val = std::stoi(fDataTokens[Data::IS_WEAK_CC]);
-    return (val==1);
+    return fIsWeakCC;
 }
 
 Bool_t FgdMCEventRecord::IsWeakNC(void)
 {
-    Int_t val = std::stoi(fDataTokens[Data::IS_WEACK_NC]);
-    return (val==1);
+    return fIsWeakNC;
 }
 
 Bool_t FgdMCEventRecord::IsQuasiElastic(void)
 {
-    Int_t val = std::stoi(fDataTokens[Data::IS_QUASI_ELASTIC]);
-    return (val==1);
+    return fIsQuasiElastic;
 }
 
 FgdMCEventRecord& FgdMCEventRecord::operator=(const FgdMCEventRecord& c)
@@ -93,28 +87,14 @@ FgdMCEventRecord& FgdMCEventRecord::operator=(const FgdMCEventRecord& c)
     return *this;
 }
 
-std::vector<std::pair<Int_t, TVector3>> FgdMCEventRecord::GetPrimaryParticles()
+const std::vector<std::pair<Int_t, TVector3>>& FgdMCEventRecord::GetPrimaryParticles()
 {
-    size_t particleDataSize = 4;
-
-    size_t particlePdg = 0;
-    size_t particleMomX = 1;
-    size_t particleMomY = 2;
-    size_t particleMomZ = 3;
-
-    std::vector<std::pair<Int_t, TVector3>> particles;
-    for(size_t i = Data::PRIMARY_PARTICLES; i < fDataTokens.size(); i+=particleDataSize)
+    if(fPrimaryParticles.empty()) // primary particles is a transient value
     {
-        Int_t pdg = std::stoi(fDataTokens[i + particlePdg]);
-        Double_t momX = std::stod(fDataTokens[i + particleMomX]);
-        Double_t momY = std::stod(fDataTokens[i + particleMomY]);
-        Double_t momZ = std::stod(fDataTokens[i + particleMomZ]);
-
-        particles.push_back(
-                            std::pair<Int_t, TVector3>( pdg,    TVector3(momX , momY, momZ) )
-                            );
+        Init();
     }
-    return particles;
+
+    return fPrimaryParticles;
 }
 
 void FgdMCEventRecord::PrintData(std::ostream & stream)
@@ -128,9 +108,6 @@ void FgdMCEventRecord::PrintData(std::ostream & stream)
 // -----   Protected methods   ---------------------------------------------
 void FgdMCEventRecord::Init()
 {
-    if(fIsInit) return;
-
-    fIsInit = true;
     fDataTokens.clear();
 
     try
@@ -146,11 +123,54 @@ void FgdMCEventRecord::Init()
                 fDataTokens.push_back(token);
             }
         }
+        InitMembers();
     }
     catch(const std::exception& e)
     {
         LOG(fatal) << e.what();
-        fIsInit = false;
+    }
+}
+
+void FgdMCEventRecord::InitMembers()
+{
+    fnuPdg = std::stoi(fDataTokens[Data::NEUTRINO_PDG]);
+    fNuEnergy = std::stod(fDataTokens[Data::NEUTRINO_ENERGY]);
+
+    Double_t x = std::stod(fDataTokens[Data::VERTEX_POSTION_X]);
+    Double_t y = std::stod(fDataTokens[Data::VERTEX_POSTION_Y]);
+    Double_t z = std::stod(fDataTokens[Data::VERTEX_POSTION_Z]);
+
+    fvertex = TVector3(x,y,z);
+
+    Int_t isWeakCC = std::stoi(fDataTokens[Data::IS_WEAK_CC]);
+    fIsWeakCC = (isWeakCC==1);
+
+    Int_t isWeakNC = std::stoi(fDataTokens[Data::IS_WEACK_NC]);
+    fIsWeakNC = (isWeakNC==1);
+
+    Int_t isQuasiElastic = std::stoi(fDataTokens[Data::IS_QUASI_ELASTIC]);
+    fIsQuasiElastic = (isQuasiElastic==1);
+
+
+    // Initalize primary particles
+    size_t particleDataSize = 4;
+
+    size_t particlePdg = 0;
+    size_t particleMomX = 1;
+    size_t particleMomY = 2;
+    size_t particleMomZ = 3;
+
+    fPrimaryParticles.clear();
+    for(size_t i = Data::PRIMARY_PARTICLES; i < fDataTokens.size(); i+=particleDataSize)
+    {
+        Int_t pdg = std::stoi(fDataTokens[i + particlePdg]);
+        Double_t momX = std::stod(fDataTokens[i + particleMomX]);
+        Double_t momY = std::stod(fDataTokens[i + particleMomY]);
+        Double_t momZ = std::stod(fDataTokens[i + particleMomZ]);
+
+        fPrimaryParticles.push_back(
+                            std::pair<Int_t, TVector3>( pdg,    TVector3(momX , momY, momZ) )
+                            );
     }
 }
 

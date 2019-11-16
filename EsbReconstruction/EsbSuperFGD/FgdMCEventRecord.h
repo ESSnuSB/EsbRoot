@@ -35,7 +35,7 @@ public:
     Bool_t IsWeakCC(void);
     Bool_t IsWeakNC(void);
     Bool_t IsQuasiElastic(void);
-    std::vector<std::pair<Int_t, TVector3>> GetPrimaryParticles();
+    const std::vector<std::pair<Int_t, TVector3>>& GetPrimaryParticles();
 
     std::string GetEventData(){return feventData; }
 
@@ -58,13 +58,22 @@ protected:
     };
 
     void Init();
-    Bool_t fIsInit;
-
+    void InitMembers();
     std::string feventData;
 
-    std::vector<std::string> fDataTokens;//!<!
+    
+    Int_t fnuPdg;
+    Double_t fNuEnergy;
+    TVector3 fvertex;
+    Bool_t fIsWeakCC;
+    Bool_t fIsWeakNC;
+    Bool_t fIsQuasiElastic;
 
-    ClassDef(FgdMCEventRecord, 2);
+    
+    std::vector<std::string> fDataTokens;
+    std::vector<std::pair<Int_t, TVector3>> fPrimaryParticles;
+
+    ClassDef(FgdMCEventRecord, 1);
 
 };
 
