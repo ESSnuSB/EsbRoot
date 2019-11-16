@@ -13,7 +13,7 @@
 
 void simulate_3_MC_lepton_stats(TString inFile = "fgd_dig.root", 
 	      TString parFile = "params.root",
-	      TString outFile = "fgd_mc_recon.root",
+	      TString outFile = "fgd_mc_recon_stats.root",
               Int_t nStartEvent = 0, Int_t nEvents = 50)
 {
   using namespace esbroot;
@@ -45,6 +45,7 @@ void simulate_3_MC_lepton_stats(TString inFile = "fgd_dig.root",
     ,"../../EsbGeometry/EsbSuperFGD/EsbConfig/fgdconfig"  //File with detector configuration
     ,"../../geometry/media.geo"       // Media file with defined materials
     ,"../../EsbMacro/tests/eventsData.dat"       // events data file
+    ,"../../EsbMacro/tests/statsRoot.root"       // output root file
     , 1                               // Verbose level
     , debugLvl                        // debug level of genfit (0 - little, 1 - debug info, 2 - detailed)
     , false                            // To visualize the tracks using genfit::Eventdisplay
@@ -56,5 +57,5 @@ void simulate_3_MC_lepton_stats(TString inFile = "fgd_dig.root",
   fRun->AddTask(recon);   
   fRun->Init(); // initializing
   fRun->Run(nStartEvent, nStartEvent + nEvents);
-  fRun->CreateGeometryFile("geo_recon.root");  // for additional full geometry file
+  fRun->CreateGeometryFile("geo_recon_mc_lepton.root");  // for additional full geometry file
 }
