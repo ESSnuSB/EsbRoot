@@ -27,6 +27,7 @@ public:
             , Double_t trackLength
             , Int_t pdg
             , Int_t trackId
+            , Double_t edep
             , TVector3 ph1
             , TVector3 mppc1
             , TVector3 ph2
@@ -59,6 +60,7 @@ public:
     TVector3 fmom;
     TVector3 fmomExit;
     Double_t ftrackLength;
+    Double_t fEdep;
     Int_t fpdg;
     Int_t ftrackId;
     Bool_t fIsLeaf;

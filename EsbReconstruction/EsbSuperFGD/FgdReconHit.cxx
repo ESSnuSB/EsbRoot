@@ -23,6 +23,7 @@ ReconHit::ReconHit(TVector3 mppcLoc
             , Double_t trackLength
             , Int_t pdg
             , Int_t trackId
+            , Double_t edep
             , TVector3 ph1
             , TVector3 mppc1
             , TVector3 ph2
@@ -36,6 +37,7 @@ ReconHit::ReconHit(TVector3 mppcLoc
         , ftrackLength(trackLength)
         , fpdg(pdg)
         , ftrackId(trackId)
+        , fEdep(edep)
         , fph1(ph1)
         , fmppc1(mppc1)
         , fph2(ph2)
@@ -67,6 +69,7 @@ ReconHit::ReconHit(const ReconHit& c)
         , ftrackLength(c.ftrackLength)
         , fpdg(c.fpdg)
         , ftrackId(c.ftrackId)
+        , fEdep(c.fEdep)
         , fAllHits(c.fAllHits)
         , fIsVisited(c.fIsVisited)
         , fIsLeaf(c.fIsLeaf)
@@ -91,6 +94,7 @@ ReconHit& ReconHit::operator=(const ReconHit& c)
     ftrackLength = c.ftrackLength;
     fpdg = c.fpdg;
     ftrackId = c.ftrackId;
+    fEdep = c.fEdep;
     fAllHits = c.fAllHits;
     fIsVisited = c.fIsVisited;
     fIsLeaf = c.fIsLeaf;
