@@ -1,6 +1,6 @@
 #include "EsbReconstruction/EsbSuperFGD/FgdMCLeptonStats.h"
 #include "EsbReconstruction/EsbSuperFGD/FgdReconTemplate.h"
-#include "EsbData/EsbSuperFGD/FgdDetectorPoint.h"
+//#include "EsbData/EsbSuperFGD/FgdDetectorPoint.h"
 
 // FairRoot headers
 #include "FairGeoBuilder.h"
@@ -17,6 +17,8 @@
 #include <TEveManager.h>
 #include <TGeoElement.h>
 #include <TGeoManager.h>
+#include <TFile.h>
+#include <TTree.h>
 
 // Genie headers
 #include "Framework/ParticleData/PDGCodes.h"
@@ -48,13 +50,14 @@ FgdMCLeptonStats::FgdMCLeptonStats(const char* name
                           , const char* geoConfigFile
                           , const char* mediaFile
                           , const char* eventData
+                          , const char* outputRootFile
                           , Int_t verbose
                           , double debugLlv
                           , bool visualize
                           , std::string visOption) :
   FgdMCGenFitRecon(name, geoConfigFile, mediaFile, verbose, 
                     debugLlv, visualize, visOption)
-    , feventData(eventData)
+    , feventData(eventData), foutputRootFile(outputRootFile)
 { 
 }
 // -------------------------------------------------------------------------
@@ -64,6 +67,11 @@ FgdMCLeptonStats::FgdMCLeptonStats(const char* name
 // -----   Destructor   ----------------------------------------------------
 FgdMCLeptonStats::~FgdMCLeptonStats() 
 {
+    if(fTracksArray) 
+    {
+        fTracksArray->Delete();
+        delete fTracksArray;
+    }
 }
 // -------------------------------------------------------------------------
 
@@ -121,11 +129,12 @@ InitStatus FgdMCLeptonStats::Init()
 
 void FgdMCLeptonStats::OutputFileInit(FairRootManager* manager)
 {
-  // Create and register output array
-  fTracksArray = new TClonesArray(genfit::Track::Class(), 1000);
-  manager->Register(geometry::superfgd::DP::FGD_FIT_TRACK.c_str()
-                    , geometry::superfgd::DP::FGD_BRANCH_FIT.c_str()
-                    , fTracksArray, kTRUE);
+    FgdMCGenFitRecon::OutputFileInit(manager);
+    // Create and register output array
+    // fEventsArray = new TClonesArray(esbroot::reconstruction::superfgd::FgdMCEventRecord::Class(), 1000);
+    // manager->Register(esbroot::geometry::superfgd::DP::FGD_MC_LEPTON_RECONSTRUCTION_ROOT_FILE.c_str()
+    //                     , esbroot::geometry::superfgd::DP::FGD_MC_LEPTON_RECONSTRUCTION_BRANCH.c_str()
+    //                     , fEventsArray, kTRUE);
 }
 
 // -------------------------------------------------------------------------
@@ -152,6 +161,37 @@ void FgdMCLeptonStats::Exec(Option_t* opt)
       LOG(fatal) << "Exception, when tryng to fit track";
       LOG(fatal) << e.what();
   }
+}
+
+void FgdMCLeptonStats::FinishTask()
+{
+    TFile * outFile = new TFile(foutputRootFile.c_str(), "RECREATE", "Reconstruction data from Fgd Detector");
+    outFile->SetCompressionLevel(9);
+
+    FgdMCEventRecord* data = nullptr;
+    TTree * outTree = new TTree(esbroot::geometry::superfgd::DP::FGD_MC_LEPTON_RECONSTRUCTION_TTREE.c_str()
+                                ,esbroot::geometry::superfgd::DP::FGD_MC_LEPTON_RECONSTRUCTION_ROOT_FILE.c_str());
+    outTree->Branch(esbroot::geometry::superfgd::DP::FGD_MC_LEPTON_RECONSTRUCTION_BRANCH.c_str(), &data);
+
+
+    // TClonesArray& clref = *fEventsArray;
+
+    for(size_t ind = 0 ; ind < feventRecords.size(); ind++)
+    {
+        // LOG(info) << "writing to output file " << ind;
+        // auto test = new(clref[clref.GetEntries()]) esbroot::reconstruction::superfgd::FgdMCEventRecord(feventRecords[ind]);
+        // LOG(info) << "Is null " << (test == nullptr);
+
+        data = &feventRecords[ind];
+        outTree->Fill();
+    }
+
+    outFile->WriteTObject(outTree);
+    outFile->Close();
+    
+    delete outFile;
+
+    FgdMCGenFitRecon::FinishTask();
 }
 // -------------------------------------------------------------------------
 

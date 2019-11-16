@@ -22,6 +22,7 @@ class FgdMCLeptonStats : public FgdMCGenFitRecon
    *@param geoConfigFile  - Configuration file detector
    *@param mediaFile  - Configuration file for the used mediums
    *@param eventData  - events data file (generated from fgd generator)
+   *@param outputRootFile - full path to the output root file
    *@param verbose  - Verbosity level
    *@param debugLlv - debug level for genfit
    *@param visualize -  to visualize the event using genfit::EventDisplay
@@ -31,6 +32,7 @@ class FgdMCLeptonStats : public FgdMCGenFitRecon
               , const char* geoConfigFile
               , const char* mediaFile
               , const char* eventData
+              , const char* outputRootFile
               , Int_t verbose = 1
               , double debugLlv = 0
               , bool visualize = false
@@ -46,11 +48,16 @@ class FgdMCLeptonStats : public FgdMCGenFitRecon
   /** Virtual method Exec **/
   virtual void Exec(Option_t* opt) override;
 
+  virtual void FinishTask() override;
+
 protected:
 
   std::string feventData;//!<!
+  std::string foutputRootFile;//!<!
 
   std::vector<FgdMCEventRecord> feventRecords;//!<!
+
+  TClonesArray* fEventsArray;     //! 
   	   
   ClassDef(FgdMCLeptonStats, 2);
 
