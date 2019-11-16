@@ -43,6 +43,10 @@ namespace DP
     static const string FGD_BRANCH_FIT = "FgdGenFitBranch";
     static const string FGD_FIT_TRACK = "FgdGenFitTrack";
 
+    static const string FGD_MC_LEPTON_RECONSTRUCTION_TTREE = "FgdMCLeptonStatsReconstructionData";
+    static const string FGD_MC_LEPTON_RECONSTRUCTION_BRANCH = "FgdMCLeptonStatsBranch";
+    static const string FGD_MC_LEPTON_RECONSTRUCTION_ROOT_FILE = "FgdMCLeptonStatsRootFile";
+
     static const string FGD_GRAD_DIST = "gradDist";
     static const string FGD_GRAD_INTERVAL_DIST = "gradIntervalDist";
     static const string FGD_GRAD_ALLOWABLE_DIFF = "gradDiff";
