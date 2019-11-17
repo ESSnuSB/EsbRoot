@@ -48,8 +48,7 @@ void simulate_3_MC_lepton_stats(TString inFile = "fgd_dig.root",
     ,"../../EsbMacro/tests/statsRoot.root"       // output root file
     , 1                               // Verbose level
     , debugLvl                        // debug level of genfit (0 - little, 1 - debug info, 2 - detailed)
-    , false                            // To visualize the tracks using genfit::Eventdisplay
-    , "D");                           // Option to be passed for genfit::Eventdisplay if used
+    );                           
 
   ((reconstruction::superfgd::FgdMCLeptonStats*)recon)->SetMinHits(3);
 
