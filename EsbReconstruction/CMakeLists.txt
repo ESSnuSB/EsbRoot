@@ -71,7 +71,7 @@ Set(HEADERS
 Set(LINKDEF ${CMAKE_SOURCE_DIR}/EsbReconstruction/ReconLinkDef.h)
 Set(LIBRARY_NAME EsbReconstruction)
 Set(DEPENDENCIES
-    Base EsbData EsbGeometry
+    Base EsbData EsbGeometry EsbDigitizer
 )
 
 file(GLOB genfit_libs $ENV{GENFIT_LIBRARY}/lib/*)
