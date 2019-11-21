@@ -120,7 +120,7 @@ protected:
 
     
     std::vector<std::string> fDataTokens;
-    std::vector<std::pair<Int_t, TVector3>> fPrimaryParticles;
+    std::vector<std::pair<Int_t, TVector3>> fPrimaryParticles;//!<!
 
     ClassDef(FgdMCEventRecord, 1);
 
