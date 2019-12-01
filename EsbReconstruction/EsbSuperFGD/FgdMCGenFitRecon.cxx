@@ -385,7 +385,7 @@ void FgdMCGenFitRecon::FitTracks(std::vector<std::vector<ReconHit>>& foundTracks
       //std::sort(hitsOnTrack.begin(), hitsOnTrack.end(), [](ReconHit& bh1, ReconHit& bh2){return bh1.ftime<bh2.ftime;});
       
       const int pdg = hitsOnTrack[0].fpdg;
-      TVector3 posM(hitsOnTrack[0].fmppcLoc);
+      TVector3 posM(hitsOnTrack[0].fHitPos);
       TVector3 momM(hitsOnTrack[0].fmom);
 
       if(isParticleNeutral(pdg))
@@ -431,9 +431,9 @@ void FgdMCGenFitRecon::FitTracks(std::vector<std::vector<ReconHit>>& foundTracks
       for(Int_t bh = 0; bh < hitsOnTrack.size(); ++bh)
       {
         TVectorD hitPos(3);
-        hitPos(0) = hitsOnTrack[bh].fmppcLoc.X();
-        hitPos(1) = hitsOnTrack[bh].fmppcLoc.Y();
-        hitPos(2) = hitsOnTrack[bh].fmppcLoc.Z();
+        hitPos(0) = hitsOnTrack[bh].fHitPos.X();
+        hitPos(1) = hitsOnTrack[bh].fHitPos.Y();
+        hitPos(2) = hitsOnTrack[bh].fHitPos.Z();
 
         genfit::AbsMeasurement* measurement = new genfit::SpacepointMeasurement(hitPos, hitCov, detId, 0, nullptr);
         std::vector<genfit::AbsMeasurement*> measurements{measurement};
