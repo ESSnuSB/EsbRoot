@@ -41,9 +41,11 @@ class FgdDetectorPoint : public FairMCPoint
      *@param edep     total energy loss [GeV]
      *@param trackLenght     tracklenght till the active volume
      *@param pdg     pdg code of particle
+     *@param trackLenghtFromOrigin     tracklength from origin of track
      **/
     FgdDetectorPoint(Int_t trackID, Int_t detID, TVector3 detectorPos, TVector3 pos, TVector3 posExit, TVector3 mom
-		       , TVector3 momExit, Double_t tof,  Double_t edep, Double_t trackLenght, Int_t pdg);
+		       , TVector3 momExit, Double_t tof,  Double_t edep, Double_t trackLenght, Int_t pdg
+           , Double_t trackLenghtFromOrigin);
     
     /** Destructor **/
     virtual ~FgdDetectorPoint();
@@ -70,6 +72,8 @@ class FgdDetectorPoint : public FairMCPoint
     // Get the track lenght 
     Double_t GetTrackLenght(){return ftrackLenght;}
 
+    Double_t GetTrackLengthOrigin(){return ftrackLenghtFromOrigin;}
+
     /** Output to screen **/
     virtual void Print(const Option_t* opt) const;
 
@@ -82,6 +86,7 @@ class FgdDetectorPoint : public FairMCPoint
     TVector3 fdetectorPos;
     TVector3 fmomExit;
     Double_t ftrackLenght;
+    Double_t ftrackLenghtFromOrigin;
     Int_t fpdg;
 
     ClassDef(FgdDetectorPoint,2)

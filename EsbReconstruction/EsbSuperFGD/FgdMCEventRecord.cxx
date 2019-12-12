@@ -121,6 +121,12 @@ Double_t FgdMCEventRecord::GetMuonTrackLength()
     return fMuonTrackLength;
 }
 
+
+Double_t FgdMCEventRecord::GetMuonTrackLengthOrigin()
+{
+    return fMuonTrackLengthOrigin;
+}
+
 Bool_t FgdMCEventRecord::IsPrimaryLeptonElectron()
 {
     return fIsPrimaryElectron;

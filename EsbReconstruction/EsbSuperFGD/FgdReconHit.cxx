@@ -21,6 +21,7 @@ ReconHit::ReconHit(TVector3 mppcLoc
             , TVector3 mom
             , TVector3 momExit
             , Double_t trackLength
+            , Double_t trackLengthOrigin
             , Int_t pdg
             , Int_t trackId
             , Double_t edep
@@ -35,6 +36,7 @@ ReconHit::ReconHit(TVector3 mppcLoc
         , fmom(mom)
         , fmomExit(momExit)
         , ftrackLength(trackLength)
+        , ftrackLengthOrigin(trackLengthOrigin)
         , fpdg(pdg)
         , ftrackId(trackId)
         , fEdep(edep)
@@ -67,6 +69,7 @@ ReconHit::ReconHit(const ReconHit& c)
         , fmom(c.fmom)
         , fmomExit(c.fmomExit)
         , ftrackLength(c.ftrackLength)
+        , ftrackLengthOrigin(c.ftrackLengthOrigin)
         , fpdg(c.fpdg)
         , ftrackId(c.ftrackId)
         , fEdep(c.fEdep)
@@ -92,6 +95,7 @@ ReconHit& ReconHit::operator=(const ReconHit& c)
     fmom = c.fmom;
     fmomExit = c.fmomExit;
     ftrackLength = c.ftrackLength;
+    ftrackLengthOrigin = c.ftrackLengthOrigin;
     fpdg = c.fpdg;
     ftrackId = c.ftrackId;
     fEdep = c.fEdep;

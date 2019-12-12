@@ -25,6 +25,7 @@ public:
             , TVector3 mom
             , TVector3 momExit
             , Double_t trackLength
+            , Double_t trackLengthOrigin
             , Int_t pdg
             , Int_t trackId
             , Double_t edep
@@ -60,6 +61,7 @@ public:
     TVector3 fmom;
     TVector3 fmomExit;
     Double_t ftrackLength;
+    Double_t ftrackLengthOrigin;
     Double_t fEdep;
     Int_t fpdg;
     Int_t ftrackId;

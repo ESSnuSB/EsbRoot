@@ -236,6 +236,8 @@ Bool_t FgdMCLeptonStats::ProcessStats(std::vector<std::vector<ReconHit>>& foundT
                     sumTrackLenght += hit.ftrackLength;
                 }
                 mcEventRecord.SetMuonTrackLength(sumTrackLenght);
+                Double_t trOrg = hitsOnTrack[hitsOnTrack.size()-1].ftrackLengthOrigin;
+                mcEventRecord.SetMuonTrackLengthOrigin(trOrg);
                 break;
             }
         }
@@ -581,6 +583,8 @@ void FgdMCLeptonStats::FinishTask()
     // {
     //     LOG(info) << feventRecords[i].IsPrimaryLeptonMuon();
     //     LOG(info) << feventRecords[i].GetMuonTrackLength();
+    //     LOG(info) << feventRecords[i].GetMuonTrackLengthOrigin();
+    //     LOG(info) << feventRecords[i].IsMuonExiting();
     //     LOG(info) << feventRecords[i].HasHits();
     //     LOG(info) << " ==================== ";
     // }

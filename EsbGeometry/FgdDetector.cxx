@@ -166,7 +166,8 @@ Bool_t  FgdDetector::ProcessHits(FairVolume* vol)
           ,TVector3(fPosExit.X(),   fPosExit.Y(),   fPosExit.Z())
           ,TVector3(fMom.Px(),      fMom.Py(),      fMom.Pz())
           ,TVector3(fMomExit.Px(),      fMomExit.Py(),      fMomExit.Pz())
-          ,fTime, fELoss, fLength, TVirtualMC::GetMC()->TrackPid()); 
+          ,fTime, fELoss, fLength, TVirtualMC::GetMC()->TrackPid()
+          , TVirtualMC::GetMC()->TrackLength()); 
 
     fpdgCodes.clear();
   }    
@@ -234,7 +235,8 @@ void FgdDetector::ConstructGeometry()
 //___________________________________________________________________
 data::superfgd::FgdDetectorPoint* FgdDetector::AddHit(Int_t trackID, Int_t detID, 
 					  TVector3 detectorPos, TVector3 pos , TVector3 posExit, TVector3 mom,
-					  TVector3 momExit , Double32_t time, Double32_t edep, Double32_t trackLength, Int_t pdg)
+					  TVector3 momExit , Double32_t time, Double32_t edep, Double32_t trackLength, Int_t pdg
+            , Double32_t trackLengthFromOrigin )
 {
     LOG(debug) << "FgdDetector::AddHit";
     LOG(debug) << "trackID " << trackID;
@@ -249,7 +251,7 @@ data::superfgd::FgdDetectorPoint* FgdDetector::AddHit(Int_t trackID, Int_t detID
   Int_t size = clref.GetEntriesFast();
 
   return new(clref[size]) data::superfgd::FgdDetectorPoint(trackID, detID, detectorPos, pos, posExit, mom, 
-					     momExit, time, edep, trackLength, pdg);
+					     momExit, time, edep, trackLength, pdg, trackLengthFromOrigin);
 }
 
 void  FgdDetector::SetSpecialPhysicsCuts()

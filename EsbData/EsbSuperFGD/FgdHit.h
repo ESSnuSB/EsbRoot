@@ -37,7 +37,8 @@ class FgdHit : public FairHit
    *@param time      time of entering of the particle inside the cube
    *@param mom      particle momentum
    *@param momExit      particle exit momentum
-   *@param trackLength      tracklength till this moment
+   *@param trackLength      tracklength till this moment in steps
+   *@param trackLengthOrigin      tracklength till this moment from origin of track
    *@param photoE_direction1      generated photons on +x,+y,+z direction
    *@param distance_to_mppcLoc1      distance to mppc to +x,+y,+z direction
    *@param photoE_direction2      generated photons on -x,-y, z direction
@@ -48,7 +49,7 @@ class FgdHit : public FairHit
    **/
   FgdHit(Double_t x, Double_t y, Double_t z, TVector3 mppcLoc
         , TVector3 photoE, TVector3 dpos, Double_t time, TVector3 mom, TVector3 momExit
-        , Double_t trackLength , TVector3 photoE_direction1, TVector3 distance_to_mppcLoc1
+        , Double_t trackLength, Double_t trackLengthOrigin , TVector3 photoE_direction1, TVector3 distance_to_mppcLoc1
         , TVector3 photoE_direction2, TVector3 distance_to_mppcLoc2
         , Int_t pdg, Int_t trackId, Double_t edep);
   
@@ -70,6 +71,7 @@ class FgdHit : public FairHit
   Int_t GetPgd(){return fpdg;}
   Int_t GetTrackId(){return ftrackId;}
   Double_t GetTrackLenght(){return ftrackLength;}
+  Double_t GetTrackLengthOrigin(){return ftrackLengthOrigin;}
   Double_t GetEdep() {return fedep;}
 
   /** Modifiers **/
@@ -99,6 +101,7 @@ class FgdHit : public FairHit
   TVector3 fmom;
   TVector3 fmomExit;
   Double_t ftrackLength;
+  Double_t ftrackLengthOrigin;
 
   TVector3 fphotoE_dist1;
   TVector3 fmppcLoc_dist1;

@@ -41,7 +41,7 @@ public:
     void SetHasHits(Bool_t h){fHasHits = h;}
 
     Bool_t IsPrimaryLeptonMuon();
-    Bool_t IsMuonExiting();
+    Bool_t IsMuonExiting(){return fIsMuonExiting;}
     void SetMuonExiting(Bool_t muonExit) {fIsMuonExiting = muonExit;}
     TVector3 GetMuonExitMom() {return fMuonExitMomentum;}
     void SetMuonExitMom(TVector3 exitMom);
@@ -54,6 +54,8 @@ public:
     TVector3 GetMuonMom();
     Double_t SetMuonTrackLength(Double_t ml) {fMuonTrackLength = ml;}
     Double_t GetMuonTrackLength();
+    Double_t SetMuonTrackLengthOrigin(Double_t ml) {fMuonTrackLengthOrigin = ml;}
+    Double_t GetMuonTrackLengthOrigin();
     TVector3 GetGenfitMom(){return fGenfitMom;}
     void SetGenfitMom(TVector3 genfitMom){fGenfitMom = genfitMom;}
     void SetMomError(Double_t err){fMC_GentFitError = err;}
@@ -120,6 +122,7 @@ protected:
     TVector3 fPrimaryElectronMom;
 
     Double_t fMuonTrackLength;
+    Double_t fMuonTrackLengthOrigin;
 
     Double_t fProtonEdep;
 
