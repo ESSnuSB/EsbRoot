@@ -130,9 +130,9 @@ void GenieFluxDriver::CalculateNext4position()
     f4AbsPos.SetT(0);
 
     /* For the moment the 4position is all zeros, till we know how to convert from genie units to ours? */
-    f4position.SetX(x_det);
-    f4position.SetY(y_det);
-    f4position.SetZ(z_det);
+    f4position.SetX(0.);
+    f4position.SetY(0.);
+    f4position.SetZ(0.);
     f4position.SetT(0.);
 }
 

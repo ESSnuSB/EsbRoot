@@ -53,12 +53,12 @@ void FgdGenieGenerator::PostProcessEvent(/*IN OUT*/ genie::GHepRecord* event)
 	GenieFluxDriver* fluxD = dynamic_cast<GenieFluxDriver*>(GetFluxI().get());
 	if(fUseRandomVertex && fluxD!=nullptr)
 	{	
-		*v += fluxD->AbsPosition();	
+		*v = fluxD->AbsPosition();	
 		event->SetVertex(*v);
 	}
 	else
 	{
-		*v += TLorentzVector(fdetPos,0);	
+		*v = TLorentzVector(fdetPos,0);	
 		event->SetVertex(*v);
 	}
 	

@@ -37,6 +37,9 @@ public:
     Bool_t IsQuasiElastic(void);
     const std::vector<std::pair<Int_t, TVector3>>& GetPrimaryParticles();
 
+    Bool_t HasHits(void);
+    void SetHasHits(Bool_t h){fHasHits = h;}
+
     Bool_t IsPrimaryLeptonMuon();
     Bool_t IsMuonExiting();
     void SetMuonExiting(Bool_t muonExit) {fIsMuonExiting = muonExit;}
@@ -97,6 +100,8 @@ protected:
     Bool_t fIsWeakCC;
     Bool_t fIsWeakNC;
     Bool_t fIsQuasiElastic;
+
+    Bool_t fHasHits;
 
     Bool_t fIsPrimaryMuon;
     Bool_t fIsMuonExiting;

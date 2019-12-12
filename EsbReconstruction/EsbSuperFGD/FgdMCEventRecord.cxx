@@ -27,6 +27,7 @@ FgdMCEventRecord::FgdMCEventRecord(std::string eventData)
         , fIsMuonExiting(false), fMuonExitMomentum(TVector3(0,0,0))
         , fMuonPolarAngle(0.), fMuonAzumAngle(0.), fElectronNumOfExitingParticles(0)
         , fGenfitMom(TVector3(0,0,0)), fMC_GentFitError(0.), fProtonEdep(0.)
+        , fHasHits(false)
 {
     Init();
 }
@@ -39,6 +40,19 @@ FgdMCEventRecord::FgdMCEventRecord()
 FgdMCEventRecord::FgdMCEventRecord(const FgdMCEventRecord& c)
 {
     this->feventData = c.feventData;
+    
+    this->fMuonTrackLength = c.fMuonTrackLength;
+    this->fIsMuonExiting = c.fIsMuonExiting;
+    this->fMuonExitMomentum = c.fMuonExitMomentum;
+    this->fMuonPolarAngle = c.fMuonPolarAngle;
+    this->fMuonAzumAngle = c.fMuonAzumAngle;
+    this->fHadronEdep = c.fHadronEdep;
+    this->fElectronNumOfExitingParticles = c.fElectronNumOfExitingParticles;
+    this->fGenfitMom = c.fGenfitMom;
+    this->fMC_GentFitError = c.fMC_GentFitError;
+    this->fProtonEdep = c.fProtonEdep;
+    this->fHasHits = c.fHasHits;
+
     this->Init();
 }
 
@@ -52,6 +66,7 @@ FgdMCEventRecord::~FgdMCEventRecord()
 void FgdMCEventRecord::SetEventData(std::string data)
 {
     feventData = data;
+
     Init();
 }
 
@@ -83,6 +98,11 @@ Bool_t FgdMCEventRecord::IsWeakNC(void)
 Bool_t FgdMCEventRecord::IsQuasiElastic(void)
 {
     return fIsQuasiElastic;
+}
+
+Bool_t FgdMCEventRecord::HasHits(void)
+{
+    return fHasHits;
 }
 
 
@@ -134,6 +154,19 @@ void FgdMCEventRecord::SetMuonExitMom(TVector3 exitMom)
 FgdMCEventRecord& FgdMCEventRecord::operator=(const FgdMCEventRecord& c)
 {
     this->feventData = c.feventData;
+
+    this->fMuonTrackLength = c.fMuonTrackLength;
+    this->fIsMuonExiting = c.fIsMuonExiting;
+    this->fMuonExitMomentum = c.fMuonExitMomentum;
+    this->fMuonPolarAngle = c.fMuonPolarAngle;
+    this->fMuonAzumAngle = c.fMuonAzumAngle;
+    this->fHadronEdep = c.fHadronEdep;
+    this->fElectronNumOfExitingParticles = c.fElectronNumOfExitingParticles;
+    this->fGenfitMom = c.fGenfitMom;
+    this->fMC_GentFitError = c.fMC_GentFitError;
+    this->fProtonEdep = c.fProtonEdep;
+    this->fHasHits = c.fHasHits;
+
     this->Init();
     return *this;
 }

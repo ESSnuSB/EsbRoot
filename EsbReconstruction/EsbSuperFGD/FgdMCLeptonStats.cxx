@@ -66,7 +66,7 @@ namespace reconstruction {
 namespace superfgd {
 
 // -----   Default constructor   -------------------------------------------
-FgdMCLeptonStats::FgdMCLeptonStats() : FgdMCGenFitRecon()
+FgdMCLeptonStats::FgdMCLeptonStats() : FgdMCGenFitRecon(), feventNum(0)
 {
 }
 // -------------------------------------------------------------------------
@@ -82,6 +82,7 @@ FgdMCLeptonStats::FgdMCLeptonStats(const char* name
   FgdMCGenFitRecon(name, geoConfigFile, mediaFile, verbose, 
                     debugLlv, false /* no visualization */, "D")
     , feventData(eventData), foutputRootFile(outputRootFile)
+    , feventNum(0)
 { 
     fpdgDB = make_shared<TDatabasePDG>();
 }
@@ -191,6 +192,7 @@ void FgdMCLeptonStats::Exec(Option_t* opt)
     else
     {
       LOG(error) << " Could not find clean hits or tracks! ";
+      ++feventNum;
     }
   }
   catch(genfit::Exception& e)
@@ -202,15 +204,13 @@ void FgdMCLeptonStats::Exec(Option_t* opt)
 
 Bool_t FgdMCLeptonStats::ProcessStats(std::vector<std::vector<ReconHit>>& foundTracks)
 {
-    static int eventNum = 0;
-    
-    if(eventNum >= feventRecords.size())
+    if(feventNum >= feventRecords.size())
     {
         LOG(fatal) << "EventData reconrds are less than the passed events!";
         throw "EventData reconrds are less than the passed events!";
     }
 
-    FgdMCEventRecord& mcEventRecord = feventRecords[eventNum];
+    FgdMCEventRecord& mcEventRecord = feventRecords[feventNum];
 
 
     for(size_t i = 0; i <  foundTracks.size() ; ++i)
@@ -355,7 +355,8 @@ Bool_t FgdMCLeptonStats::ProcessStats(std::vector<std::vector<ReconHit>>& foundT
         }
     }
 
-    ++eventNum;
+    feventRecords[feventNum].SetHasHits(true);
+    ++feventNum; // Increment to next event from eventData read from simulation`s genie export
 }
 
 Bool_t FgdMCLeptonStats::IsHitExiting(ReconHit& hit)
@@ -573,6 +574,16 @@ void FgdMCLeptonStats::FinishTask()
     delete outFile;
 
     FgdMCGenFitRecon::FinishTask();
+
+
+
+    // for(size_t i =0; i< feventRecords.size();++i)
+    // {
+    //     LOG(info) << feventRecords[i].IsPrimaryLeptonMuon();
+    //     LOG(info) << feventRecords[i].GetMuonTrackLength();
+    //     LOG(info) << feventRecords[i].HasHits();
+    //     LOG(info) << " ==================== ";
+    // }
 }
 // -------------------------------------------------------------------------
 

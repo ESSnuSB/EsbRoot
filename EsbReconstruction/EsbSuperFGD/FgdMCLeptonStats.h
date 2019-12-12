@@ -64,6 +64,8 @@ protected:
   TClonesArray* fEventsArray;     //! 
 
   std::shared_ptr<TDatabasePDG> fpdgDB;//!<!
+
+  int feventNum;//!<!
   	   
   ClassDef(FgdMCLeptonStats, 2);
 
