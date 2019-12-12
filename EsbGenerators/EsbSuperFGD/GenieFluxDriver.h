@@ -35,7 +35,10 @@ public:
                   , const char* nuFluxFile
                   , unsigned int seed
                   , TVector3 detPos
+                  , Int_t maxEvents = 1
                   , Double_t maxEnergy = 2. /* GeV */);
+
+    GenieFluxDriver(const GenieFluxDriver& gf);
 
     class FLuxNeutrino
     {
@@ -69,18 +72,21 @@ public:
     double                  MaxEnergy     (void) { return  fMaxEv;}   ///< declare the max flux neutrino energy that can be generated (for init. purposes)
 
 
-    virtual bool            GenerateNext  (void);                        ///< generate the next flux neutrino (return false in err)
+    virtual bool            GenerateNext  (void) override;                        ///< generate the next flux neutrino (return false in err)
     int                     PdgCode       (void) { return  fpdgCode;}   ///< returns the flux neutrino pdg code
     double                  Weight        (void) { return  1.0;/* No idea what this is */} ///< returns the flux neutrino weight (if any)
     const TLorentzVector&   Momentum      (void) { return  f4momentum;}  ///< returns the flux neutrino 4-momentum
     const TLorentzVector&   Position      (void) { return  f4position;}  ///< returns the flux neutrino 4-position (note: expect SI rather than physical units)
     virtual bool            End           (void) { return  false;}       ///< true if no more flux nu's can be thrown (eg reaching end of beam sim ntuples)
     virtual long int        Index         (void){return fcurrentEvent;}  ///< returns corresponding index for current flux neutrino (e.g. for a flux ntuple returns the current entry number)
-    virtual void            Clear            (Option_t * opt   ) {}      ///< reset state variables based on opt
+    virtual void            Clear            (Option_t * opt   ) {fcurrentEvent = 0; }      ///< reset state variables based on opt
     virtual void            GenerateWeighted (bool gen_weighted) {}      ///< set whether to generate weighted or unweighted neutrinos
 
     void                    SetMaxEnergy  (Double_t eMax) {fMaxEv = eMax;}
     const TLorentzVector&   AbsPosition      (void) { return  f4AbsPos;}
+    void                    SetMaxEvents(Int_t e){fmaxEvents = e;}
+
+    GenieFluxDriver& operator=(const GenieFluxDriver& gf);
 
 protected:
     virtual void CalculateNext4Momentum(Double_t energyOfNeutrino);
@@ -113,6 +119,7 @@ protected:
     
     Double_t fMaxEv; // in [GeV]
     int fcurrentEvent;
+    Int_t fmaxEvents;
 
     Double_t f_total_X;
     Double_t f_total_Y;

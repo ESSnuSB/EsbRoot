@@ -10,6 +10,8 @@
 #include "Framework/Interaction/Interaction.h"
 #include "Framework/Interaction/InitialState.h"
 
+#include <Tools/Geometry/ROOTGeomAnalyzer.h>
+
 namespace esbroot {
 namespace generators {
 namespace superfgd {
@@ -77,7 +79,6 @@ Bool_t FgdGenieGenerator::Configure()
 	geomAnalyzer->SetScannerFlux(GetFluxI().get());
 
 	GenieGenerator::Configure();
-
 	GenerateEvents();
 	
 	geomAnalyzer->Reset();	// Revert initial Top Volume Geometry

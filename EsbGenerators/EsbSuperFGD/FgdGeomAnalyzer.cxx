@@ -1,4 +1,5 @@
 #include "EsbGenerators/EsbSuperFGD/FgdGeomAnalyzer.h"
+#include "EsbGenerators/EsbSuperFGD/GenieFluxDriver.h"
 #include "EsbGeometry/EsbSuperFGD/Names.h"
 
 #include <TGeoNode.h>
@@ -7,6 +8,7 @@
 #include "FairLogger.h"
 
 #include "Framework/ParticleData/PDGCodeList.h"
+#include "Framework/EventGen/GFluxI.h"
 
 #include <sstream>
 #include <iostream>
@@ -20,10 +22,10 @@ FgdGeomAnalyzer::FgdGeomAnalyzer(const char* geoConfigFile , TVector3 detPos, TG
                     , fFgdVol(nullptr), fTopVol(nullptr), fGm(gm) 
 {
     fdetectorParams.LoadPartParams(geoConfigFile);
-    Initialize();
+    this->Initialize();
 
-    ROOTGeomAnalyzer::SetLengthUnits(genie::units::centimeter);
-	ROOTGeomAnalyzer::SetTopVolName((esbroot::geometry::superfgd::fgdnames::superFGDName));
+    //ROOTGeomAnalyzer::SetLengthUnits(genie::units::centimeter);
+	//ROOTGeomAnalyzer::SetTopVolName((esbroot::geometry::superfgd::fgdnames::superFGDName));
 }
 
 
@@ -36,14 +38,30 @@ void FgdGeomAnalyzer::Reset()
 {
     if(fGm!=nullptr && fTopVol!=nullptr)
     {
-        ROOTGeomAnalyzer::SetLengthUnits(genie::units::meter);
-        ROOTGeomAnalyzer::SetTopVolName(fTopVol->GetName());
+        //ROOTGeomAnalyzer::SetLengthUnits(genie::units::meter);
+        //ROOTGeomAnalyzer::SetTopVolName(fTopVol->GetName());
     }
 }
 
+#include <iostream>
 const genie::PathLengthList & FgdGeomAnalyzer::ComputePathLengths(const TLorentzVector & x, const TLorentzVector & p)
 {
-  return *flengthList;
+    esbroot::generators::superfgd::GenieFluxDriver* fDriver = dynamic_cast<esbroot::generators::superfgd::GenieFluxDriver*>(fFlux);
+    TLorentzVector tDist = fDriver->AbsPosition();
+    //std::cout << "TLorentzVector tDist " <<  tDist.X() << " " << tDist.Y() << " " << tDist.Z() << " " << tDist.T() << std::endl;
+    // std::cout << "fdetPos " <<  fdetPos.X() << " " << fdetPos.Y() << " " << fdetPos.Z() << " " << std::endl;
+    // std::cout << "x " <<  x.X() << " " << x.Y() << " " << x.Z() << " " << std::endl;
+
+    //TLorentzVector distx = x +  TLorentzVector(fdetPos, 0);
+
+    const genie::PathLengthList& pl = ROOTGeomAnalyzer::ComputePathLengths(tDist, p);
+
+    if(pl.AreAllZero())
+    {
+        return *flengthList;
+    }
+
+    return pl;
 }
 
 

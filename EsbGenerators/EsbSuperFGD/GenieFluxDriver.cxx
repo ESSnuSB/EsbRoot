@@ -5,6 +5,7 @@
 
 #include "FairLogger.h"
 
+#include <iostream>
 
 using namespace std;
 
@@ -16,6 +17,7 @@ GenieFluxDriver::GenieFluxDriver(const char* geoConfigFile
                             , const char* nuFluxFile
                             , unsigned int seed
                             , TVector3 detPos
+                            , Int_t maxEvents
                             , Double_t maxEnergy)
     :   fnuFluXFile(nuFluxFile)
         , fdetPos(detPos)
@@ -24,6 +26,7 @@ GenieFluxDriver::GenieFluxDriver(const char* geoConfigFile
         , fpdgCode(0)
         , fMaxEv(maxEnergy)
         , fcurrentEvent(0)
+        , fmaxEvents(maxEvents)
 { 
     InitDetectorParams(geoConfigFile);
     InitPDGList();
@@ -34,10 +37,59 @@ GenieFluxDriver::GenieFluxDriver(const char* geoConfigFile
     CalculateProbability();
 }
 
+GenieFluxDriver::GenieFluxDriver(const GenieFluxDriver& gf)
+{
+    this->fnuFluXFile = gf.fnuFluXFile;
+    this->fdetPos = gf.fdetPos;
+    this->frndGen = gf.frndGen;
+    this->fdis = gf.fdis;
+    this->fMaxEv = gf.fMaxEv;
+    this->fpdgCode = gf.fpdgCode;
+    this->fcurrentEvent = gf.fcurrentEvent;
+
+    this->fdetectorParams = const_cast<esbroot::geometry::superfgd::FgdDetectorParameters&>(gf.fdetectorParams);
+    this->fPdgCList = gf.fPdgCList;
+    this->f4momentum = gf.f4momentum;
+    this->f4position = gf.f4position;
+    this->f4AbsPos = gf.f4AbsPos;
+
+    this->f_total_X = gf.f_total_X;
+    this->f_total_Y = gf.f_total_Y;
+    this->f_total_Z = gf.f_total_Z;
+    this->fnuFluXFile = gf.fnuFluXFile;
+    this->fFlux = gf.fFlux;
+    this->fmaxEvents = fmaxEvents;
+}
+
+GenieFluxDriver& GenieFluxDriver::operator=(const GenieFluxDriver& gf)
+{
+    this->fnuFluXFile = gf.fnuFluXFile;
+    this->fdetPos = gf.fdetPos;
+    this->frndGen = gf.frndGen;
+    this->fdis = gf.fdis;
+    this->fMaxEv = gf.fMaxEv;
+    this->fpdgCode = gf.fpdgCode;
+    this->fcurrentEvent = gf.fcurrentEvent;
+
+    this->fdetectorParams = const_cast<esbroot::geometry::superfgd::FgdDetectorParameters&>(gf.fdetectorParams);
+    this->fPdgCList = gf.fPdgCList;
+    this->f4momentum = gf.f4momentum;
+    this->f4position = gf.f4position;
+    this->f4AbsPos = gf.f4AbsPos;
+
+    this->f_total_X = gf.f_total_X;
+    this->f_total_Y = gf.f_total_Y;
+    this->f_total_Z = gf.f_total_Z;
+    this->fnuFluXFile = gf.fnuFluXFile;
+    this->fFlux = gf.fFlux;
+    this->fmaxEvents = fmaxEvents;
+}
+
 bool GenieFluxDriver::GenerateNext(void)
 {
     int nuPdg(0);
     Double_t nuEnergy(0.);
+    int ret = 0;
 
     for(size_t i = 0; i < fFlux.size(); ++i)
     {
@@ -63,10 +115,14 @@ bool GenieFluxDriver::GenerateNext(void)
 //-------------------------------------------------------
 void GenieFluxDriver::CalculateNext4position()
 {
+    Double_t x_det = (f_total_X * fdis(frndGen) - f_total_X/2);
+    Double_t y_det = (f_total_Y * fdis(frndGen) - f_total_Y/2);
+    Double_t z_det = (f_total_Z * fdis(frndGen) - f_total_Z/2);;
+
     // Set the Position of the event
-    Double_t rndm_X = fdetPos.X() + (f_total_X * fdis(frndGen) - f_total_X/2);
-    Double_t rndm_Y = fdetPos.Y() + (f_total_Y * fdis(frndGen) - f_total_Y/2);
-    Double_t rndm_Z = fdetPos.Z() + (f_total_Z * fdis(frndGen) - f_total_Z/2);
+    Double_t rndm_X = fdetPos.X() + x_det;
+    Double_t rndm_Y = fdetPos.Y() + y_det;
+    Double_t rndm_Z = fdetPos.Z() + z_det;
 
     f4AbsPos.SetX(rndm_X);
     f4AbsPos.SetY(rndm_Y);
@@ -74,9 +130,9 @@ void GenieFluxDriver::CalculateNext4position()
     f4AbsPos.SetT(0);
 
     /* For the moment the 4position is all zeros, till we know how to convert from genie units to ours? */
-    f4position.SetX(0.);
-    f4position.SetY(0.);
-    f4position.SetZ(0.);
+    f4position.SetX(x_det);
+    f4position.SetY(y_det);
+    f4position.SetZ(z_det);
     f4position.SetT(0.);
 }
 
