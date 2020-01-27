@@ -211,6 +211,7 @@ Bool_t FgdMCLeptonStats::ProcessStats(std::vector<std::vector<ReconHit>>& foundT
     }
 
     FgdMCEventRecord& mcEventRecord = feventRecords[feventNum];
+    mcEventRecord.ReadEventData();
 
 
     for(size_t i = 0; i <  foundTracks.size() ; ++i)
@@ -578,16 +579,27 @@ void FgdMCLeptonStats::FinishTask()
     FgdMCGenFitRecon::FinishTask();
 
 
-
+    // int zeroLenghtMuionTracks = 0;
+    // double z_min = 100000.f;
+    // double z_max = -100000.f;
     // for(size_t i =0; i< feventRecords.size();++i)
     // {
+    //     if(feventRecords[i].IsPrimaryLeptonMuon() && feventRecords[i].GetMuonTrackLengthOrigin() == 0)
+    //     {
+    //         ++zeroLenghtMuionTracks;
+    //     }   
     //     LOG(info) << feventRecords[i].IsPrimaryLeptonMuon();
     //     LOG(info) << feventRecords[i].GetMuonTrackLength();
     //     LOG(info) << feventRecords[i].GetMuonTrackLengthOrigin();
     //     LOG(info) << feventRecords[i].IsMuonExiting();
     //     LOG(info) << feventRecords[i].HasHits();
+    //     LOG(info) << "X " << feventRecords[i].GetVertex().X() << " Y " << feventRecords[i].GetVertex().Y() << " Z " << feventRecords[i].GetVertex().Z();
     //     LOG(info) << " ==================== ";
+
+    //     if(z_min > feventRecords[i].GetVertex().Z()) z_min = feventRecords[i].GetVertex().Z();
+    //     if(z_max < feventRecords[i].GetVertex().Z()) z_max = feventRecords[i].GetVertex().Z();
     // }
+    // LOG(info) << "Zero length muons tracks " << zeroLenghtMuionTracks;
 }
 // -------------------------------------------------------------------------
 

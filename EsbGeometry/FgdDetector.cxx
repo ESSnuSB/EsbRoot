@@ -134,7 +134,7 @@ Bool_t  FgdDetector::ProcessHits(FairVolume* vol)
   // Sum energy loss for all steps in the active volume
   fELoss += TVirtualMC::GetMC()->Edep();
   fLength += TVirtualMC::GetMC()->TrackStep();
-  
+
   // Create FairTutorialDet1Point at exit of active volume
   if ( TVirtualMC::GetMC()->IsTrackExiting()    ||
        TVirtualMC::GetMC()->IsTrackStop()       ||
@@ -151,6 +151,7 @@ Bool_t  FgdDetector::ProcessHits(FairVolume* vol)
     LOG(debug) << "  TrackCharge " << TVirtualMC::GetMC()->TrackCharge();
     LOG(debug) << "  Is track entering " << TVirtualMC::GetMC()->IsTrackEntering();
     LOG(debug) << "  Is track exiting " << TVirtualMC::GetMC()->IsTrackExiting();
+    LOG(debug) << "  Is track disappearing " << TVirtualMC::GetMC()->IsTrackDisappeared();
     LOG(debug) << "  vol->getCopyNo() " << vol->getCopyNo();
     LOG(debug) << "  vol->getVolumeId() " << vol->getVolumeId();
     LOG(debug) << "  fPos.X() " << fPos.X();

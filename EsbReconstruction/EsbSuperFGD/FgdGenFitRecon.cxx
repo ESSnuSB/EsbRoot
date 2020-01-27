@@ -290,6 +290,11 @@ Bool_t FgdGenFitRecon::GetHits(std::vector<ReconHit>& allHits)
     Int_t&& x = mppcLoc.X();
     Int_t&& y = mppcLoc.Y();
     Int_t&& z = mppcLoc.Z();
+
+    LOG(debug) << "TrackId " << hit->GetTrackId();
+    LOG(debug) << "GetPgd " << hit->GetPgd();
+    LOG(debug) << "GetTrackLengthOrigin " << hit->GetTrackLengthOrigin();
+    LOG(debug) << "GetTrackLenght " << hit->GetTrackLenght();
     
     Int_t ind = ArrInd(x,y,z);
     if(visited[ind])
@@ -332,7 +337,7 @@ Bool_t FgdGenFitRecon::GetHits(std::vector<ReconHit>& allHits)
     }
   }
 
-  LOG(debug) << "allHits.size()" << allHits.size();
+  LOG(debug) << "allHits.size() " << allHits.size();
 
   return (allHits.size() > 0);
 }

@@ -271,20 +271,29 @@ Bool_t FgdMCGenFitRecon::GetHits(std::vector<ReconHit>& allHits)
     Int_t&& x = mppcLoc.X();
     Int_t&& y = mppcLoc.Y();
     Int_t&& z = mppcLoc.Z();
+
+    // LOG(debug2) << "TrackId " << hit->GetTrackId();
+    // LOG(debug2) << "GetPgd " << hit->GetPgd();
+    // LOG(debug2) << "GetTrackLengthOrigin " << hit->GetTrackLengthOrigin();
+    // LOG(debug2) << "GetTrackLenght " << hit->GetTrackLenght();
+    // LOG(debug2) << "Photons " <<"(errLimit = " << errPhotoLimit << ") " << photoE.X() << " " << photoE.Y()<< " " << photoE.Z();
+    // LOG(debug2) << "Pos "  << x << " " << y << " " << z;
     
-    Int_t ind = ArrInd(x,y,z);
-    if(visited[ind])
-    {
-      // TODO: fix, causes "free(): invalid next size (fast)""
-      // If already exists, add the photons
-      // ReconHit toFind;
-      // toFind.fmppcLoc = mppcLoc;
-      // std::vector<ReconHit>::iterator recHit = find(allHits.begin(), allHits.end(), toFind);
-      // ReconHit& foundHit = *recHit;
-      // foundHit.fphotons = foundHit.fphotons + photoE;
-      continue;
-    }
-    visited[ind] = true;
+    // Int_t ind = ArrInd(x,y,z);
+    // LOG(debug2) << "ArrInd " << ind;
+    // if(visited[ind])
+    // {
+    //   // TODO: fix, causes "free(): invalid next size (fast)""
+    //   // If already exists, add the photons
+    //   // ReconHit toFind;
+    //   // toFind.fmppcLoc = mppcLoc;
+    //   // std::vector<ReconHit>::iterator recHit = find(allHits.begin(), allHits.end(), toFind);
+    //   // ReconHit& foundHit = *recHit;
+    //   // foundHit.fphotons = foundHit.fphotons + photoE;
+    //   LOG(debug) << "isvisited ";
+    //   continue;
+    // }
+    // visited[ind] = true;
 
     Double_t totalPhotons = photoE.X() + photoE.Y() + photoE.Z();
     if(totalPhotons >= errPhotoLimit)
@@ -314,7 +323,7 @@ Bool_t FgdMCGenFitRecon::GetHits(std::vector<ReconHit>& allHits)
     }
   }
 
-  LOG(debug) << "allHits.size()" << allHits.size();
+  LOG(debug) << "allHits.size() " << allHits.size();
 
   return (allHits.size() > 0);
 }
