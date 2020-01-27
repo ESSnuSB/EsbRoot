@@ -74,6 +74,7 @@ public:
     std::string GetEventData(){return feventData; }
 
     void PrintData(std::ostream & stream);
+    void ReadEventData();
 
 protected:
 

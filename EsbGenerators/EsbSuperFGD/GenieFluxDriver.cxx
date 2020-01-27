@@ -117,7 +117,7 @@ void GenieFluxDriver::CalculateNext4position()
 {
     Double_t x_det = (f_total_X * fdis(frndGen) - f_total_X/2);
     Double_t y_det = (f_total_Y * fdis(frndGen) - f_total_Y/2);
-    Double_t z_det = (f_total_Z * fdis(frndGen) - f_total_Z/2);;
+    Double_t z_det = (f_total_Z * fdis(frndGen) - f_total_Z/2);
 
     // Set the Position of the event
     Double_t rndm_X = fdetPos.X() + x_det;

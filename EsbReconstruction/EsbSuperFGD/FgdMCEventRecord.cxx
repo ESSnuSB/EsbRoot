@@ -179,10 +179,7 @@ FgdMCEventRecord& FgdMCEventRecord::operator=(const FgdMCEventRecord& c)
 
 const std::vector<std::pair<Int_t, TVector3>>& FgdMCEventRecord::GetPrimaryParticles()
 {
-    if(fPrimaryParticles.empty()) // primary particles is a transient value
-    {
-        Init();
-    }
+    Init();
 
     return fPrimaryParticles;
 }
@@ -190,6 +187,11 @@ const std::vector<std::pair<Int_t, TVector3>>& FgdMCEventRecord::GetPrimaryParti
 void FgdMCEventRecord::PrintData(std::ostream & stream)
 {
     stream << feventData;
+}
+
+void FgdMCEventRecord::ReadEventData()
+{
+    this->Init();
 }
 
 // -------------------------------------------------------------------------
