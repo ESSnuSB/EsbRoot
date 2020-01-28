@@ -43,17 +43,19 @@ void FgdGeomAnalyzer::Reset()
     }
 }
 
-#include <iostream>
 const genie::PathLengthList & FgdGeomAnalyzer::ComputePathLengths(const TLorentzVector & x, const TLorentzVector & p)
 {
     esbroot::generators::superfgd::GenieFluxDriver* fDriver = dynamic_cast<esbroot::generators::superfgd::GenieFluxDriver*>(fFlux);
-    TLorentzVector tDist = fDriver->AbsPosition();
-    //std::cout << "TLorentzVector tDist " <<  tDist.X() << " " << tDist.Y() << " " << tDist.Z() << " " << tDist.T() << std::endl;
-    // std::cout << "fdetPos " <<  fdetPos.X() << " " << fdetPos.Y() << " " << fdetPos.Z() << " " << std::endl;
-    // std::cout << "x " <<  x.X() << " " << x.Y() << " " << x.Z() << " " << std::endl;
+    //TLorentzVector tDist = fDriver->AbsPosition();
 
-    //TLorentzVector distx = x +  TLorentzVector(fdetPos, 0);
+    // Rescale the coordinates. Genie works in meters, while the Fgd uses centimeters
+    static const double CM_TO_M_SCALE = 100.;
 
+    const TLorentzVector absPos = fDriver->AbsPosition();
+    TVector3 rescaled(absPos.X()/CM_TO_M_SCALE 
+                        , absPos.Y()/CM_TO_M_SCALE 
+                        , absPos.Z()/CM_TO_M_SCALE );
+    TLorentzVector tDist(rescaled,0);
     const genie::PathLengthList& pl = ROOTGeomAnalyzer::ComputePathLengths(tDist, p);
 
     if(pl.AreAllZero())
