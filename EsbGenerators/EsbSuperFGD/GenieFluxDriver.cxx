@@ -43,6 +43,7 @@ GenieFluxDriver::GenieFluxDriver(const GenieFluxDriver& gf)
     this->fdetPos = gf.fdetPos;
     this->frndGen = gf.frndGen;
     this->fdis = gf.fdis;
+    
     this->fMaxEv = gf.fMaxEv;
     this->fpdgCode = gf.fpdgCode;
     this->fcurrentEvent = gf.fcurrentEvent;
@@ -67,6 +68,7 @@ GenieFluxDriver& GenieFluxDriver::operator=(const GenieFluxDriver& gf)
     this->fdetPos = gf.fdetPos;
     this->frndGen = gf.frndGen;
     this->fdis = gf.fdis;
+
     this->fMaxEv = gf.fMaxEv;
     this->fpdgCode = gf.fpdgCode;
     this->fcurrentEvent = gf.fcurrentEvent;
@@ -90,12 +92,13 @@ bool GenieFluxDriver::GenerateNext(void)
     int nuPdg(0);
     Double_t nuEnergy(0.);
     int ret = 0;
+    Double_t nextNu = fdis(frndGen);
 
     for(size_t i = 0; i < fFlux.size(); ++i)
     {
         GenieFluxDriver::FLuxNeutrino& neutrino = fFlux[i];
         
-        if(neutrino.GetNeutrino(fdis(frndGen), nuPdg, nuEnergy))
+        if(neutrino.GetNeutrino(nextNu, nuPdg, nuEnergy))
         {
             CalculateNext4position();
             CalculateNext4Momentum(nuEnergy);
@@ -104,7 +107,7 @@ bool GenieFluxDriver::GenerateNext(void)
             fcurrentEvent++;
 
             return true;
-        }
+        }        
     }
 
     return false;
