@@ -21,7 +21,10 @@ namespace superfgd {
 FgdMCEventRecord::FgdMCEventRecord(std::string eventData) 
     : TObject(), feventData(eventData), fnuPdg(0)
         , fNuEnergy(0.), fvertex(TVector3(0,0,0)), fIsWeakCC(false)
-        , fIsWeakNC(false), fIsQuasiElastic(false), fIsPrimaryMuon(false)
+        , fIsWeakNC(false), fIsQuasiElastic(false), fIsDeepInElastic(false)
+        , fIsResonant(false), fIsCoherentProduction(false), fIsMEC(false)
+        , fIsNuElectronElastic(false), fIsElectronScattering(false)
+        , fIsPrimaryMuon(false)
         , fIsPrimaryElectron(false), fPrimaryMuonMom(TVector3(0,0,0))
         , fPrimaryElectronMom(TVector3(0,0,0)), fMuonTrackLength(0.)
         , fIsMuonExiting(false), fMuonExitMomentum(TVector3(0,0,0))
@@ -98,6 +101,36 @@ Bool_t FgdMCEventRecord::IsWeakNC(void)
 Bool_t FgdMCEventRecord::IsQuasiElastic(void)
 {
     return fIsQuasiElastic;
+}
+
+Bool_t FgdMCEventRecord::IsDeepInElastic(void)
+{
+    return fIsDeepInElastic;
+}
+
+Bool_t FgdMCEventRecord::IsResonant(void)
+{
+    return fIsResonant;
+}
+
+Bool_t FgdMCEventRecord::IsCoherentProduction(void)
+{
+    return fIsCoherentProduction;
+}
+
+Bool_t FgdMCEventRecord::IsMEC(void)
+{
+    return fIsMEC;
+}
+
+Bool_t FgdMCEventRecord::IsNuElectronElastic(void)
+{
+    return fIsNuElectronElastic;
+}  
+
+Bool_t FgdMCEventRecord::IsElectronScattering(void)
+{
+    return fIsElectronScattering;
 }
 
 Bool_t FgdMCEventRecord::HasHits(void)
@@ -243,6 +276,23 @@ void FgdMCEventRecord::InitMembers()
     Int_t isQuasiElastic = std::stoi(fDataTokens[Data::IS_QUASI_ELASTIC]);
     fIsQuasiElastic = (isQuasiElastic==1);
 
+    Int_t isDIS = std::stoi(fDataTokens[Data::IS_DEEP_INELASRIC]);
+    fIsDeepInElastic = (isDIS==1);
+
+    Int_t isResonant = std::stoi(fDataTokens[Data::IS_RESONANT]);
+    fIsResonant = (isResonant==1);
+
+    Int_t isCohPro = std::stoi(fDataTokens[Data::IS_COHERENT_PRODUCTION]);
+    fIsCoherentProduction = (isCohPro==1);
+
+    Int_t isMec = std::stoi(fDataTokens[Data::IS_MEC]);
+    fIsMEC = (isMec==1);
+
+    Int_t isNuElEl = std::stoi(fDataTokens[Data::IS_NuElectron_Elastic]);
+    fIsNuElectronElastic = (isNuElEl==1); 
+
+    Int_t isElEl = std::stoi(fDataTokens[Data::IS_ELECTRON_SCATTERING]);
+    fIsElectronScattering = (isElEl==1); 
 
     // Initalize primary particles
     size_t particleDataSize = 4;

@@ -192,10 +192,18 @@ void FgdGenieGenerator::WriteToOutputFile(const genie::EventRecord* event, Bool_
 
 		const InitialState& initSt = inter->InitState();
 
-		// Write the Neutrino energy to be used in the reconstruction for analysis
-		// outputFile << initSt.ProbePdg() << " " << initSt.ProbeE(kRfLab) << " IsWeakCC " << procInfo.IsWeakCC() << " IsWeakNC " << procInfo.IsWeakNC() << endl;
-		outputFile << initSt.ProbePdg() << " " << initSt.ProbeE(kRfLab) << " " <<  procInfo.IsWeakCC() 
-					<< " " <<  procInfo.IsWeakNC() << " " << procInfo.IsQuasiElastic();
+		// Write the interaction info to be used in alter analysis
+		outputFile << initSt.ProbePdg() 
+					<< " " << initSt.ProbeE(kRfLab) 
+					<< " " << procInfo.IsWeakCC() 
+					<< " " << procInfo.IsWeakNC() 
+					<< " " << procInfo.IsQuasiElastic()
+					<< " " << procInfo.IsDeepInelastic()
+					<< " " << procInfo.IsResonant()
+					<< " " << procInfo.IsCoherent()
+					<< " " << procInfo.IsMEC()
+					<< " " << procInfo.IsNuElectronElastic()
+					<< " " << procInfo.IsElectronScattering();
 
 		TLorentzVector* v = event->Vertex();
 

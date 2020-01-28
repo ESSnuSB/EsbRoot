@@ -35,6 +35,15 @@ public:
     Bool_t IsWeakCC(void);
     Bool_t IsWeakNC(void);
     Bool_t IsQuasiElastic(void);
+
+    Bool_t IsDeepInElastic(void);
+    Bool_t IsResonant(void);
+    Bool_t IsCoherentProduction(void);
+    Bool_t IsMEC(void);
+    Bool_t IsNuElectronElastic(void);
+    Bool_t IsElectronScattering(void);
+
+
     const std::vector<std::pair<Int_t, TVector3>>& GetPrimaryParticles();
 
     Bool_t HasHits(void);
@@ -85,11 +94,19 @@ protected:
         IS_WEAK_CC = 2,
         IS_WEACK_NC = 3,
         IS_QUASI_ELASTIC = 4,
-        VERTEX_POSTION_X = 5,
-        VERTEX_POSTION_Y = 6,
-        VERTEX_POSTION_Z = 7,
-        PRIMARY_PARTICLES = 8   // The primary particles are written as 4 values - 1st pdg then momentum X, momentum Y, momentum Z
-                                // all data above 8th position are primary particle data
+
+        IS_DEEP_INELASRIC = 5,
+        IS_RESONANT = 6,
+        IS_COHERENT_PRODUCTION = 7,
+        IS_MEC = 8,
+        IS_NuElectron_Elastic = 9,
+        IS_ELECTRON_SCATTERING = 10,
+
+        VERTEX_POSTION_X = 11,
+        VERTEX_POSTION_Y = 12,
+        VERTEX_POSTION_Z = 13,
+        PRIMARY_PARTICLES = 14   // The primary particles are written as 4 values - 1st pdg then momentum X, momentum Y, momentum Z
+                                // all data above 14th position are primary particle data
     };
 
     void Init();
@@ -103,6 +120,13 @@ protected:
     Bool_t fIsWeakCC;
     Bool_t fIsWeakNC;
     Bool_t fIsQuasiElastic;
+
+    Bool_t fIsDeepInElastic;
+    Bool_t fIsResonant;
+    Bool_t fIsCoherentProduction;
+    Bool_t fIsMEC;
+    Bool_t fIsNuElectronElastic;
+    Bool_t fIsElectronScattering;
 
     Bool_t fHasHits;
 
