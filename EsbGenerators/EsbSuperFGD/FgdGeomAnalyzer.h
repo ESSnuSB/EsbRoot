@@ -28,7 +28,7 @@ class FgdGeomAnalyzer : public genie::geometry::ROOTGeomAnalyzer
 
 public:
 
-    FgdGeomAnalyzer(const char* geoConfigFile , TVector3 detPos, TGeoManager* gm);
+    FgdGeomAnalyzer(TGeoManager* gm);
     ~FgdGeomAnalyzer();
 
     virtual const genie::PathLengthList& ComputePathLengths(const TLorentzVector & x, const TLorentzVector & p) override;
@@ -36,17 +36,7 @@ public:
     void Reset();
 
 private:
-    void Initialize();  // Retrieve the fgd and top volumes
-
-    TVector3 fFluxDirection;//!<!
-    esbroot::geometry::superfgd::FgdDetectorParameters fdetectorParams;//!<!
-    TVector3 fdetPos;
-
-    TGeoVolume* fFgdVol;
     TGeoVolume* fTopVol;
-    TGeoManager* fGm;
-
-    genie::PathLengthList * flengthList;
 
     ClassDef(FgdGeomAnalyzer,6)
 };
