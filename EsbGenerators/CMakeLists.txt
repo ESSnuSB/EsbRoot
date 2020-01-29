@@ -7,12 +7,14 @@ set(INCLUDE_DIRECTORIES
     ${SIMPATH}/include
     ${BASE_INCLUDE_DIRECTORIES} 
     ${CMAKE_SOURCE_DIR}
+	${CLHEP_INCLUDE_DIR}
 )
 
 set(LINK_DIRECTORIES
     ${ROOT_LIBRARY_DIR}
     ${FAIRROOT_LIBRARY_DIR}
     ${SIMPATH}/lib
+	${CLHEP_LIB_DIR}
 )
  
 set(SRCS
@@ -25,16 +27,22 @@ set(DEPENDENCIES Base EsbData EsbGeometry)
 
 if(WITH_GENIE)
 	list(APPEND SRCS
-	  GenieGenerator.cxx
-		SimpleGenieGenerator.cxx
+	  	GenieGenerator.cxx
 		GenieNtpFluxV1.cxx
+		SimpleGenieGenerator.cxx
+		EsbSuperFGD/GenieFluxDriver.cxx
+		EsbSuperFGD/FgdGeomAnalyzer.cxx
+		EsbSuperFGD/FgdGenieGenerator.cxx
 	)	
 
 	list(APPEND HEADERS
-    ${CMAKE_SOURCE_DIR}/EsbGenerators/GenieGenerator.h
-    ${CMAKE_SOURCE_DIR}/EsbGenerators/SimpleGenieGenerator.h	
-    ${CMAKE_SOURCE_DIR}/EsbGenerators/GenieNtpFluxV1.h
-	)
+    	${CMAKE_SOURCE_DIR}/EsbGenerators/GenieGenerator.h
+    	${CMAKE_SOURCE_DIR}/EsbGenerators/SimpleGenieGenerator.h	
+		${CMAKE_SOURCE_DIR}/EsbGenerators/GenieNtpFluxV1.h
+		${CMAKE_SOURCE_DIR}/EsbGenerators/EsbSuperFGD/GenieFluxDriver.h
+		${CMAKE_SOURCE_DIR}/EsbGenerators/EsbSuperFGD/FgdGeomAnalyzer.h
+		${CMAKE_SOURCE_DIR}/EsbGenerators/EsbSuperFGD/FgdGenieGenerator.h
+	)	
 	
 	#~ message(FATAL_ERROR "Genie include directory "${GENIE_INC_DIR})
 

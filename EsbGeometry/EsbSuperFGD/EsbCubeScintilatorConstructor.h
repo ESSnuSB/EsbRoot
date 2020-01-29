@@ -210,7 +210,13 @@ public:
       bool GetVisibility(void) {return false; /*fIsVisible;*/}
 
       /** Construct the TGeoVolume geometry for the cube **/
-      void Construct(void);
+      TGeoVolume* Construct(void);
+
+      /** Return a pointer to the cube geometry **/
+      TGeoVolume* GetCubeVolume() {return fcubeTVol;}
+
+      /** Return a pointer to the sensitive volume of the cube**/
+      TGeoVolume* GetSensitiveVolume(){return fcubeScntVol;}
 
 private:
 
@@ -266,6 +272,12 @@ private:
 
       /// The WLS fiber radius
       double fFiberRadius;
+
+      //! pointer to the constructed cubeVolume
+      TGeoVolume* fcubeTVol;
+
+      //! pointer to the scintilator (sensitive) volume of the cube
+      TGeoVolume* fcubeScntVol;
 
       ClassDef(CubeScintConstructor,2)
 };

@@ -40,6 +40,37 @@ namespace DP
     static const string FGD_BRANCH = "EsbFgdDetectorPoint";
     static const string FGD_DETECTOR_NAME = "EsbFgdDetector";
     static const string FGD_HIT = "FgdHit";
+    static const string FGD_BRANCH_FIT = "FgdGenFitBranch";
+    static const string FGD_FIT_TRACK = "FgdGenFitTrack";
+
+    static const string FGD_MC_LEPTON_RECONSTRUCTION_TTREE = "FgdMCLeptonStatsReconstructionData";
+    static const string FGD_MC_LEPTON_RECONSTRUCTION_BRANCH = "FgdMCLeptonStatsBranch";
+    static const string FGD_MC_LEPTON_RECONSTRUCTION_ROOT_FILE = "FgdMCLeptonStatsRootFile";
+
+    static const string FGD_GRAD_DIST = "gradDist";
+    static const string FGD_GRAD_INTERVAL_DIST = "gradIntervalDist";
+    static const string FGD_GRAD_ALLOWABLE_DIFF = "gradDiff";
+
+    static const string FGD_TRACK_MOMENTUM_SEGMENT = "momTrackSegment";
+    static const string FGD_INITIAL_TRACK_POINTS_MOMENTUM = "avgTrackMomentum";
+
+    static const string FGD_ERR_PHOTO_LIMIT = "errPhotoLimit";
+
+    static const string PF_USE_VERTEX = "use_vertex";
+    static const string PF_VERTEXX = "vertexX";
+    static const string PF_VERTEXY = "vertexY";
+    static const string PF_MAXDISTXY = "maxdistxy";
+    static const string PF_MAXDISTSZ = "maxdistsz";
+    static const string PF_MAXDISTXYFIT = "maxdistxyfit";
+    static const string PF_MAXDISTSZFIT = "maxdistszfit";
+    static const string PF_MINHITNUMBER = "minhitnumber";
+    static const string PF_XYTHETABINS = "xythetabins";
+
+    static const string PF_XYD0BINS = "xyd0bins";
+    static const string PF_XYOMEGABINS = "xyomegabins";
+    static const string PF_SZTHETABINS = "szthetabins";
+    static const string PF_SZD0BINS = "szd0bins";
+    static const string PF_SEACHINTHENEIGHBORHOOD = "searchneighborhood";
 }
 
 class FgdDetectorParameters : public TObject

@@ -97,7 +97,53 @@ make megalib
 ```
 Genie should now be built.
 
-## 4. Install EsbRoot
+```
+NOTE: to use Genie, the cross sections have to be downloaded (see: http://scisoft.fnal.gov/scisoft/packages/genie_xsec/).
+The following variable has to be defined in the macro files 
+generators::GenieGenerator::GlobalState.fXsecSplineFileName = "PATH_TO_CROSS_SECTION.xml"; 
+```
+
+## 4 Install GenFit and PathFinder (optional for now)
+
+Install the prerequisites for GenFit:
+
+sudo apt-get install libeigen3-dev
+```
+Download the getfit git repository from 
+https://github.com/GenFit/GenFit
+```
+Follow the build instructions from 
+https://github.com/GenFit/GenFit/blob/master/README.build
+
+```
+NOTE: the following environmental variables have to be exported
+export ROOTSYS=/** PATH TO FAIRSOFT **/fairsoft
+export GENFIT_INCLUDE=/** PATH TO Downloaded GenFit directory **/
+export GENFIT_LIBRARY=/** PATH TO the build directory in the used build folder**/
+```
+
+Download PathFinder from 
+```
+https://svnsrv.desy.de/websvn/wsvn/General.pathfinder/trunk
+```
+
+The only prerequisite is to have CERN ROOT installed (which should be installed with Fairsoft installation).
+Create a folder and execute 
+```
+$cmake PATH_TO_PATHFINDERSOURCES
+$make
+```
+After the build is successdull two enviormental variables have to be defined.
+One to the include directory which is located 'include' folder of the downloaded Pathdinder source 
+directory, and the second environemntal variable is to the 'lib' folder in the Pathfinder build directory (the used cmake folder).
+```
+export PATHFINDER_INC=/** PATHFINDER_SOURCES **/include
+export PATHFINDER_LIB=/** PATHFINDER_BUILD_DIR **/lib
+```
+When building the EsbRoot application with the -DWITH_GENFIT=ON option, both 
+Genfit and Pathfinder will be included in EsbRoot.
+
+## 5. Install EsbRoot
 Go to FairRoot install dir, source the config script and set FAIRROOTPATH:
 ```
 cd $INSTALL_PATH/fairroot
@@ -124,6 +170,17 @@ export GENIE=$INSTALL_PATH/GENIE
 cmake -DWITH_GENIE=ON ..
 make
 ```
+To compile with Genie and GenFit support, do
+```
+export GENIE=$INSTALL_PATH/GENIE
+export GENFIT_INCLUDE=/** PATH TO Downloaded GenFit directory **/
+export GENFIT_LIBRARY=/** PATH TO the bin directory in the used build folder**/
+export PATHFINDER_INC=/** PATHFINDER_SOURCES **/include
+export PATHFINDER_LIB=/** PATHFINDER_BUILD_DIR **/lib
+cmake -DWITH_GENIE=ON -DWITH_GENFIT=ON ..
+make
+```
+
 The software should now be compiled!
 
 # How to use
@@ -141,3 +198,9 @@ Go to EsbMacro directory, try running:
 - diplay_event_ND.C - simple display of hits on walls of the detector
 - eventDisplay.C - full 3D event display, still not working properly
 - ess_sim_genie.C - example how to run with Genie generator. You will need to download the Genie cross-sections, see the code for comments.
+
+3. Since there are many environmental variables there is a helper file description for all the required environemntal variables located in
+```
+cd [EsbRoot directory]/EsbGeometry/EsbSuperFGD/EsbConfig/envs
+```
+Inside you will find description how to set and run them

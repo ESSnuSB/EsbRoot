@@ -11,10 +11,10 @@
   
 */
 
-void ess_generate_pics_3(TString inFile = "fgd_dig.root", 
+void simulate_5_generate_pics(TString inFile = "fgd_dig.root", 
 	      TString parFile = "params.root",
 	      TString outFile = "fgd_dig_gen_pics.root",
-              Int_t nStartEvent = 0, Int_t nEvents = 1)
+              Int_t nStartEvent = 0, Int_t nEvents = 25)
 {
   using namespace esbroot;
 
@@ -36,7 +36,7 @@ void ess_generate_pics_3(TString inFile = "fgd_dig.root",
   rtdb->saveOutput();
 
   // Set Tasks for Reconstruction
-  FairTask* digitizer = new digitizer::superfgd::FgdMppcDisplay("Granular Task","../EsbGeometry/EsbSuperFGD/EsbConfig/geometry",0,0,0);
+  FairTask* digitizer = new digitizer::superfgd::FgdMppcDisplay("Granular Task","../../EsbGeometry/EsbSuperFGD/EsbConfig/fgdconfig",0,0,0);
   fRun->AddTask(digitizer);   
   fRun->Init(); // initializing
   fRun->Run(nStartEvent, nStartEvent + nEvents);

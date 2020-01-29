@@ -13,6 +13,7 @@
 #include "Framework/Utils/AppInit.h" //For Random Seed
 
 #include <iostream>
+#include <fstream>
 #include <cstdlib>
 #include <cassert>
 
@@ -43,6 +44,17 @@ GenieGenerator::GenieGenerator(genie::GFluxI *fluxI, genie::GeomAnalyzerI *geomI
 	
 	genie::RunOpt::Instance()->SetTuneName(GlobalState.fGenieTune);
 	genie::RunOpt::Instance()->BuildTune();
+
+	// Clear content of previous file
+	if(!GlobalState.fOutputFileName.empty())
+	{
+		std::ofstream outFile;
+  		outFile.open(GlobalState.fOutputFileName, std::ios::trunc);
+		if(outFile.is_open())
+		{
+			outFile.close();
+		}
+	}
 	
 	fGlobalStateInit = true;
 }
@@ -79,36 +91,81 @@ GenieGenerator::GenieGenerator(genie::GFluxI *fluxI, genie::GeomAnalyzerI *geomI
     //!to FairRoot's "vertex coordinate (0,0,0)", so in the end simulation works as required.
     //!This is due to limitations of FairRoot. We can live with this for now,
     //!but it definitely needs to be fixed in the future.
-    
-    //flag indicates that an event has been generated
-    Bool_t rc(false);
 
-    genie::EventRecord* event = fmcj_driver->GenerateEvent();
-    if(event == nullptr) return false;
+	Bool_t flaGkeepThrowing(true); // Flag to indicate when to stop generating events if there is a condition for the generated particles
 
-    PostProcessEvent(event);
-    
-    event->Print(std::cout);
-		TLorentzVector* v = event->Vertex();
+	while(flaGkeepThrowing)
+	{
+		genie::EventRecord* event = fmcj_driver->GenerateEvent();
+		if(event == nullptr) return false;
+
+		PostProcessEvent(event);
+
+		std::vector<genie::GHepParticle*> eventParticles;
 		
+		event->Print(std::cout);
+		TLorentzVector* v = event->Vertex();
+			
 		// Fire other final state particles
 		int nParticles = event->GetEntries();
 		for (int i = 0; i < nParticles; i++) 
 		{
-				genie::GHepParticle *p = event->Particle(i);
-				// kIStStableFinalState - Genie documentation: generator-level final state
-				// particles to be tracked by the detector-level MC
-				if ((p->Status() == genie::EGHepStatus::kIStStableFinalState)) 
+			genie::GHepParticle *p = event->Particle(i);
+			// kIStStableFinalState - Genie documentation: generator-level final state
+			// particles to be tracked by the detector-level MC
+			if ((p->Status() == genie::EGHepStatus::kIStStableFinalState)) 
+			{
+				if(IsPdgAllowed(p->Pdg()))
 				{
-						//Workaround for GENIE bug (or "feature") that treats nuclear energy as trackable particle
-						if(p->Pdg() >= 2000000000) continue;
-						primGen->AddTrack(p->Pdg(), p->Px(), p->Py(), p->Pz(), v->X(), v->Y(), v->Z());
+					primGen->AddTrack(p->Pdg(), p->Px(), p->Py(), p->Pz(), v->X(), v->Y(), v->Z());
+					eventParticles.push_back(p);
 				}
+			}
 		}
-		
+
+		flaGkeepThrowing = KeepThrowing(eventParticles);
+
+		if(!GlobalState.fOutputFileName.empty())
+		{
+			WriteToOutputFile(event, flaGkeepThrowing);
+		}
+
 		delete event;
+	}
+	
     
     return true;
+}
+
+
+Bool_t GenieGenerator::IsPdgAllowed(int pdg)
+{
+	
+	// Workaround for GENIE bug (or "feature") that treats nuclear energy as trackable particle
+	if(pdg >= 2000000000)
+	{
+		return false;
+	}
+
+	// If there are no codes to filter any valid pdg is allowed to be tracked
+	if(fpdgCodesAllowed.empty())
+	{
+		return true;
+	}
+
+	Bool_t isAllowed = std::find(fpdgCodesAllowed.begin(), fpdgCodesAllowed.end(), pdg) != fpdgCodesAllowed.end();
+	return isAllowed;
+}
+
+Bool_t GenieGenerator::KeepThrowing(std::vector<genie::GHepParticle*>& eventParticles )
+{
+	// No implementation - decendent should decide
+	return false;
+}
+
+void GenieGenerator::WriteToOutputFile(const genie::EventRecord* event, Bool_t flaGkeepThrowing )
+{
+	// No implementation required in base class
 }
 
 FairGenerator* GenieGenerator::CloneGenerator() const

@@ -1,0 +1,53 @@
+#Lenght is given in dimetion of meters [cm] 
+#for cube all should have the same value!!!
+length_X=1
+length_Y=1
+length_Z=1
+
+#number of cubes
+number_cubes_X=100
+number_cubes_Y=100
+number_cubes_Z=100
+
+#magnetic field [1 kGauss = 0.1 T]
+magField_X=0    #in [kG] 
+magField_Y=20    #in [kG] 
+magField_Z=0    #in [kG] 
+
+#visualization
+visdetail=0 #1 is for true
+
+# Settings for PATHFINDER desy package
+# Please refer to the PATHFINDER documentation for more detail explanation of the below settings
+use_vertex=0
+vertexX=0
+vertexY=0
+maxdistxy=2
+maxdistsz=2
+maxdistxyfit=1.5
+maxdistszfit=1.5
+minhitnumber=15
+xythetabins=1000
+xyd0bins=1000
+xyomegabins=300
+szthetabins=1000
+szd0bins=1000
+searchneighborhood=0
+
+# setting for lower photon limit
+errPhotoLimit=0   
+
+# The belog settings for graph traversal
+
+# The grad in angle is calculated as the angle between two vectors.
+#   1st vector is the vector distance between 2 cubes at gradDist apart
+#   2nd vector is the vector distance between 2 cubes shifter gradIntervalDist number of cubes from the 1st one
+gradDist=7              # Distance in number of cubes for track to calculate the grad
+gradIntervalDist=4      # Interval between two distance vectors to calculate grad
+gradDiff=25             # Allowable difference between grad to consider a different track
+
+# Calculate momentum from the segment with length 'momTrackSegment' by averaging the calculated momentum from 3 points (the 1st of the segment,
+# the second and for each point in between). Since the are energy losses and the momentum decreases, take the particle momentum from as the average from the 
+# first'avgTrackMomentum' points
+momTrackSegment=15
+avgTrackMomentum=3

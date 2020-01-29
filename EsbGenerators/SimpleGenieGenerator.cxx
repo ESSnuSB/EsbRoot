@@ -9,7 +9,7 @@ namespace generators {
 //! @param[in] dir_nu		Direction of incoming neutrino (normalization of this vector does not matter)
 //! @param[in] x4_nu		4-position of neutrino interaction vertex (cm)
 SimpleGenieGenerator::SimpleGenieGenerator(int pdg_tgt, int pdg_nu, double e_nu,
-		TVector3 const& dir_nu, TLorentzVector const& x4_nu) : fVertexX4(x4_nu)
+		TVector3 const& dir_nu, TLorentzVector const& x4_nu) : GenieGenerator(), fVertexX4(x4_nu)
 {
 		auto mono_flux = std::make_shared<genie::flux::GMonoEnergeticFlux>(e_nu, pdg_nu);
 		mono_flux->SetDirectionCos(dir_nu.X(), dir_nu.Y(), dir_nu.Z());

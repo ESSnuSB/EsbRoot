@@ -45,6 +45,7 @@ public:
 	static struct GlobalState_t {
 		std::string fGenieTune = ""; //!< Genie tune to be used
 		std::string fXsecSplineFileName = ""; //!< Path to XML file with GENIE cross sections
+		std::string fOutputFileName = ""; //!< Path to file used by genie generators if they want to write data output
 		long int fRandomSeed = -1; //!< Random seed for GENIE (NOT IMPLEMENTED YET)
 	} GlobalState; //!< Global state of Genie generator
 	
@@ -57,7 +58,7 @@ public:
 	GenieGenerator(genie::GFluxI *fluxI, genie::GeomAnalyzerI *geomI);
 
 	//! Empty destructor
-  virtual ~GenieGenerator() {};
+  	virtual ~GenieGenerator() {};
 
 	//Setters
 	//! Set Genie flux driver. Can't set if object already configured.
@@ -71,12 +72,12 @@ public:
 	//! Get Genie geometry driver
 	std::shared_ptr<genie::GeomAnalyzerI> const& GetGeomI() const {return(fGeomI);};
 
-  //!Method which initializes the Genie generator
+  	//!Method which initializes the Genie generator
   
-  //!FairRoot runs this from FairRunSim::Init().
-  //!Empty because we might want to init Genie after FairRunSim::Init()
-  //!e.g to pass the geometry
-  virtual Bool_t Init(void) {return true;};
+  	//!FairRoot runs this from FairRunSim::Init().
+  	//!Empty because we might want to init Genie after FairRunSim::Init()
+  	//!e.g to pass the geometry
+  	virtual Bool_t Init(void) {return true;};
 
 	//!Configure the Genie backend
 	virtual Bool_t Configure(); 
@@ -84,36 +85,67 @@ public:
 	//!Check if Genie backend is configured
 	Bool_t IsConfigured() const {return fIsConfigured;};
 
-  //!Implementation of the base method which generates the vertex particles
-  virtual Bool_t ReadEvent(FairPrimaryGenerator* primGen);
+ 	 //!Implementation of the base method which generates the vertex particles
+  	virtual Bool_t ReadEvent(FairPrimaryGenerator* primGen);
 	
 	//!Method to post process the genie event record
 	virtual void PostProcessEvent(/*IN OUT*/ genie::GHepRecord* event) {};
 
-  /** Clone this object (used in MT mode only) */
-  virtual FairGenerator* CloneGenerator() const;
+  	/** Clone this object (used in MT mode only) */
+  	virtual FairGenerator* CloneGenerator() const;
+
+	
+	void AddPdgCode(int pdg){fpdgCodesAllowed.push_back(pdg);}
+	void AddPdgCode(std::vector<int> pdgCodes){fpdgCodesAllowed.insert(fpdgCodesAllowed.end(), pdgCodes.begin(), pdgCodes.end());}
+	void ClearPfgCodes(){fpdgCodesAllowed.clear();}
 
 
-private:
+protected:
 
 	//These static members are initialized in the .cxx file so that
 	//RootCint does not complain
 	//! Tracks if global state has been initialized
 	static bool fGlobalStateInit;
 
-  //! Driver for generating neutrino events
-  std::shared_ptr<genie::GMCJDriver> fmcj_driver;
+  	//! Driver for generating neutrino events
+	//! NOTE: DO NOT remove the //!<! comment! This is flag
+	//! to indicate to ROOT that this member is transient and should not be
+	//! written to a root file!
+  	std::shared_ptr<genie::GMCJDriver> fmcj_driver;//!<!
     
-  //! Flux driver for GMCJDriver
-  std::shared_ptr<genie::GFluxI> fFluxI;
+  	//! Flux driver for GMCJDriver
+	//! NOTE: DO NOT remove the //!<! comment! This is flag
+	//! to indicate to ROOT that this member is transient and should not be
+	//! written to a root file!
+  	std::shared_ptr<genie::GFluxI> fFluxI;//!<!
    
-  //! Geometry dirver for GMCJDriver
-  std::shared_ptr<genie::GeomAnalyzerI> fGeomI;
+  	//! Geometry dirver for GMCJDriver
+	//! NOTE: DO NOT remove the //!<! comment! This is flag
+	//! to indicate to ROOT that this member is transient and should not be
+	//! written to a root file!
+  	std::shared_ptr<genie::GeomAnalyzerI> fGeomI;//!<!
 
-  //! Tracks if object has been configured
-  Bool_t fIsConfigured = false;
+	//! During simulation some particles may be exluded from the analysis
+	//! for Monte Carlo analysis add the particle pdg code which is inluded 
+	//! from the neutrino event interactions
+	std::vector<int> fpdgCodesAllowed;//!<!
 
-  ClassDef(GenieGenerator,6)
+  	//! Tracks if object has been configured
+  	Bool_t fIsConfigured = false;
+
+	//! Check if the event particle is allowed by the chosen criteria fo the generator
+	virtual Bool_t IsPdgAllowed(int pdg);
+
+	//!This method checks if to try to generate a new event
+	//!if the particles in the event have certain criteria
+	virtual Bool_t KeepThrowing(std::vector<genie::GHepParticle*>& eventParticles );
+
+	//!Write data from the event for further analysis if required
+	//! *@param event    generated event
+	//! *@param flaGkeepThrowing    flag indicating if this event is rejected and a new one will be generated
+	virtual void WriteToOutputFile(const genie::EventRecord* event, Bool_t flaGkeepThrowing );
+
+  	ClassDef(GenieGenerator,6)
 };
 
 } //namespace generators

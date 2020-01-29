@@ -24,6 +24,10 @@
 	#pragma link C++ class  esbroot::generators::GenieGenerator+;
 	#pragma link C++ class  esbroot::generators::GenieGenerator::GlobalState_t+;
 	#pragma link C++ class  esbroot::generators::SimpleGenieGenerator+;
+
+	#pragma link C++ class  esbroot::generators::superfgd::GenieFluxDriver+;
+	#pragma link C++ class  esbroot::generators::superfgd::FgdGeomAnalyzer+;
+	#pragma link C++ class  esbroot::generators::superfgd::FgdGenieGenerator+;
 	#pragma link C++ class  esbroot::generators::GenieNtpFluxV1+;
 #endif
 

@@ -22,7 +22,7 @@ namespace superfgd {
 
 // -----   Default constructor   -------------------------------------------
 FgdDigitizer::FgdDigitizer() :
-  FairTask(), fX(0), fY(0), fZ(0)
+  FairTask(), fX(0), fY(0), fZ(0), fdPoints(nullptr), fHitArray(nullptr)
 { 
 }
 // -------------------------------------------------------------------------
@@ -32,7 +32,8 @@ FgdDigitizer::FgdDigitizer(const char* name
                           ,const char* geoConfigFile
                           ,double x, double y, double z
                           , Int_t verbose) :
-  FairTask(name, verbose), fX(x), fY(y), fZ(z)
+  FairTask(name, verbose), fX(x), fY(y), fZ(z),
+  fdPoints(nullptr), fHitArray(nullptr)
 { 
   fParams.LoadPartParams(geoConfigFile);
 }
@@ -43,6 +44,10 @@ FgdDigitizer::FgdDigitizer(const char* name
 // -----   Destructor   ----------------------------------------------------
 FgdDigitizer::~FgdDigitizer() 
 {
+  if(fHitArray) {
+    fHitArray->Delete();
+    delete fHitArray;
+  }
 }
 // -------------------------------------------------------------------------
 
@@ -96,7 +101,11 @@ InitStatus FgdDigitizer::Init()
 // -----   Public method Exec   --------------------------------------------
 void FgdDigitizer::Exec(Option_t* opt) 
 {
+  // Reset output array
+  fHitArray->Delete();
+  
   const Int_t points = fdPoints->GetEntries();
+  int nextPoint(0);
   for(Int_t i =0; i < points; i++)
   {
     data::superfgd::FgdDetectorPoint* point = (data::superfgd::FgdDetectorPoint*)fdPoints->At(i);
@@ -132,7 +141,7 @@ void FgdDigitizer::Exec(Option_t* opt)
     //=============================================
     //====    Scintilation Response        ========
     //=============================================
-    double pe = ApplyScintiResponse(point->GetEnergyLoss()*1e3 // EnergyLoss is returned in [GeV], we use [eV]
+    double pe = ApplyScintiResponse(point->GetEnergyLoss()*1e3 // EnergyLoss is returned in [GeV], we use [MeV]
                                     ,point->GetTrackLenght() // TrackLength
                                     ,1.0                // Charge, for the moment it is not used
                                     );
@@ -169,8 +178,30 @@ void FgdDigitizer::Exec(Option_t* opt)
     TVector3 photoElectrons(peX,peY,peZ);
 
     // Write the mppc location in terms of cube number position in x,y,z
-    TVector3 mppcLocalPosition(bin_pos_x,bin_pos_y,bin_pos_z);
-    new((*fHitArray)[i]) data::superfgd::FgdHit(pos_x, pos_y, pos_z, mppcLocalPosition, photoElectrons);
+    if(peX!=0 || peY!=0 || peZ!=0)
+    {
+      TVector3 mppcLocalPosition(bin_pos_x,bin_pos_y,bin_pos_z);
+      TVector3 cubeCoordinatesRelToDetector(pos_x, pos_y ,pos_z);
+
+      double center_coor_x = (bin_pos_x*f_step_X - f_total_X/2 + f_step_X/2) + dpos.X(); 
+      double center_coor_y = (bin_pos_y*f_step_Y - f_total_Y/2 + f_step_Y/2) + dpos.Y(); 
+      double center_coor_z = (bin_pos_z*f_step_Z - f_total_Z/2 + f_step_Z/2) + dpos.Z(); 
+
+      TVector3 mom(point->GetPx(), point->GetPy(), point->GetPz());
+
+      new((*fHitArray)[nextPoint++]) data::superfgd::FgdHit(center_coor_x, center_coor_y, center_coor_z
+                                                            , mppcLocalPosition
+                                                            , photoElectrons
+                                                            , cubeCoordinatesRelToDetector
+                                                            , point->GetTime()
+                                                            , mom
+                                                            , point->GetMomExit()
+                                                            , point->GetTrackLenght()
+                                                            , point->GetTrackLengthOrigin()
+                                                            , TVector3(peX1, peY1, peZ1), TVector3(mppcX, mppcY, mppcZ)
+                                                            , TVector3(peX2, peY2, peZ2), TVector3(mppcX_2ndSide, mppcY_2ndSide, mppcZ_2ndSide)
+                                                            , point->GetPdg(), point->GetTrackID(), point->GetEnergyLoss());
+    }
   }
 }
 // -------------------------------------------------------------------------
@@ -194,6 +225,15 @@ double FgdDigitizer::ApplyScintiResponse(double edep, double trackLength, double
     return edep_birk * EdepToPhotConv_SuperFGD;  
 }
 
+double FgdDigitizer::RevertScintiResponse(double edep, double trackLength, double charge, double pe)
+{
+  double dedx = edep/trackLength;
+  double edep_birk = (pe/EdepToPhotConv_SuperFGD);
+  double rec_Edep = edep_birk * (1. + CBIRKS*dedx);
+
+  return rec_Edep;
+}
+
 void FgdDigitizer::ApplyFiberResponse(double& numPhotons, double& time, double distance)
 {
     double temp_np = numPhotons;
@@ -201,6 +241,12 @@ void FgdDigitizer::ApplyFiberResponse(double& numPhotons, double& time, double d
 
     double temp_time = time;
     time = ApplyFiberTime(temp_time, distance);
+}
+
+void FgdDigitizer::RevertFiberResponse(double &numPhotons, double &time, double distance)
+{
+    double temp_np = numPhotons;
+    numPhotons = RevertFiberAttenuation(temp_np, distance);
 }
 
 const double FgdDigitizer::DistMPPCscint_FGD = 41*CLHEP::mm;
@@ -235,11 +281,39 @@ double FgdDigitizer::ApplyFiberAttenuation(double Nphot0,double x)
     return Nphot;
 }
 
+double FgdDigitizer::RevertFiberAttenuation(double Nphot0,double x)
+{
+    double a=0.;        // long attenuation component fraction
+    double d=0.;        // distance MPPC-scint outside the bar
+    double LongAtt=0.;  // long attenuation length
+    double ShortAtt=0.; // short attenuation length
+    double Ldecay=0.;   // decay length
+    double Lbar=0.;     // bar length
+
+    a = LongCompFrac_FGD;
+    d = DistMPPCscint_FGD; 
+    LongAtt = LongAtt_FGD;
+    ShortAtt = ShortAtt_FGD;  
+    Ldecay= DecayLength_FGD;
+    Lbar = Lbar_FGD;
+  
+    double Nphot = Nphot0;
+    Nphot /= ( a*exp((-x-d)/LongAtt) + (1-a)*exp((-x-d)/ShortAtt) );
+
+    return Nphot;
+}
+
 const double FgdDigitizer::TransTimeInFiber = 1./28.;  //  1cm/2.8e10[cm/s] * 1e9 [ns]
 
 double FgdDigitizer::ApplyFiberTime(double& time, double x)
 {
   double fiberTime = time + TransTimeInFiber*x;
+  return fiberTime;
+}
+
+double FgdDigitizer::RevertFiberTime(double &time, double x)
+{
+  double fiberTime = time - TransTimeInFiber*x;
   return fiberTime;
 }
 
@@ -262,6 +336,11 @@ void FgdDigitizer::ApplyMPPCResponse(double& npe)
 
     npe =  npe_passed;
     return;
+}
+
+double FgdDigitizer::RevertyMPPCResponse(double npe)
+{
+  return (npe/MPPCEff_SuperFGD);
 }
 // -------------------------------------------------------------------------
 
