@@ -30,7 +30,7 @@ class CoordinateSystem : public TObject
 	CoordinateSystem(Matrix_t const& rot, Vector_t const& vec, double float_delta = 1e-6) :
 			fRotation(rot), fInverseRotation(rot.Inverse()), fTranslation(vec),
 			fFloatDelta(float_delta) {IsProperOrDie();}
-	
+		
 	//! Empty virtual destructor
 	virtual ~CoordinateSystem() {};
 	

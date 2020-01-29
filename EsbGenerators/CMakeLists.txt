@@ -23,11 +23,12 @@ set(SRCS
 set(HEADERS 
 )
 
-set(DEPENDENCIES Base EsbData)
+set(DEPENDENCIES Base EsbData EsbGeometry)
 
 if(WITH_GENIE)
 	list(APPEND SRCS
 	  	GenieGenerator.cxx
+		GenieNtpFluxV1.cxx
 		SimpleGenieGenerator.cxx
 		EsbSuperFGD/GenieFluxDriver.cxx
 		EsbSuperFGD/FgdGeomAnalyzer.cxx
@@ -37,10 +38,11 @@ if(WITH_GENIE)
 	list(APPEND HEADERS
     	${CMAKE_SOURCE_DIR}/EsbGenerators/GenieGenerator.h
     	${CMAKE_SOURCE_DIR}/EsbGenerators/SimpleGenieGenerator.h	
+		${CMAKE_SOURCE_DIR}/EsbGenerators/GenieNtpFluxV1.h
 		${CMAKE_SOURCE_DIR}/EsbGenerators/EsbSuperFGD/GenieFluxDriver.h
 		${CMAKE_SOURCE_DIR}/EsbGenerators/EsbSuperFGD/FgdGeomAnalyzer.h
 		${CMAKE_SOURCE_DIR}/EsbGenerators/EsbSuperFGD/FgdGenieGenerator.h
-	)
+	)	
 	
 	#~ message(FATAL_ERROR "Genie include directory "${GENIE_INC_DIR})
 
