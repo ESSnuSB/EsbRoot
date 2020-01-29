@@ -52,7 +52,6 @@ GenieFluxDriver::GenieFluxDriver(const GenieFluxDriver& gf)
     this->fPdgCList = gf.fPdgCList;
     this->f4momentum = gf.f4momentum;
     this->f4position = gf.f4position;
-    this->f4AbsPos = gf.f4AbsPos;
 
     this->f_total_X = gf.f_total_X;
     this->f_total_Y = gf.f_total_Y;
@@ -77,7 +76,6 @@ GenieFluxDriver& GenieFluxDriver::operator=(const GenieFluxDriver& gf)
     this->fPdgCList = gf.fPdgCList;
     this->f4momentum = gf.f4momentum;
     this->f4position = gf.f4position;
-    this->f4AbsPos = gf.f4AbsPos;
 
     this->f_total_X = gf.f_total_X;
     this->f_total_Y = gf.f_total_Y;
@@ -116,12 +114,10 @@ bool GenieFluxDriver::GenerateNext(void)
 //-------------------------------------------------------
 //                  Private methods
 //-------------------------------------------------------
+
+// Calculate the starting position of the neutrino
 void GenieFluxDriver::CalculateNext4position()
 {
-    // Double_t x_det = (f_total_X * fdis(frndGen) - f_total_X/2);
-    // Double_t y_det = (f_total_Y * fdis(frndGen) - f_total_Y/2);
-    // Double_t z_det = (f_total_Z * fdis(frndGen) - f_total_Z/2);
-
     static std::uniform_real_distribution<Double_t> ldis(-0.5,0.5);
     Double_t x_det = f_total_X * ldis(frndGen);
     Double_t y_det = f_total_Y * ldis(frndGen);
@@ -132,15 +128,9 @@ void GenieFluxDriver::CalculateNext4position()
     Double_t rndm_Y = fdetPos.Y() + y_det;
     Double_t rndm_Z = fdetPos.Z() + z_det;
 
-    f4AbsPos.SetX(rndm_X);
-    f4AbsPos.SetY(rndm_Y);
-    f4AbsPos.SetZ(rndm_Z);
-    f4AbsPos.SetT(0);
-
-    /* For the moment the 4position is all zeros, till we know how to convert from genie units to ours? */
-    f4position.SetX(0.);
-    f4position.SetY(0.);
-    f4position.SetZ(0.);
+    f4position.SetX(rndm_X);
+    f4position.SetY(rndm_Y);
+    f4position.SetZ(fdetPos.Z() - f_total_Z/2 - 10);
     f4position.SetT(0.);
 }
 
@@ -204,11 +194,6 @@ void GenieFluxDriver::Init4Position(void)
     f4position.SetY(0.);
     f4position.SetZ(0.);
     f4position.SetT(0);
-
-    f4AbsPos.SetX(0.);
-    f4AbsPos.SetY(0.);
-    f4AbsPos.SetZ(0.);
-    f4AbsPos.SetT(0);
 }
 
 void GenieFluxDriver::ReadNuFluxFile(const char* fluxFile)

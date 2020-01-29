@@ -46,22 +46,7 @@ FgdGenieGenerator::FgdGenieGenerator(const char* geoConfigFile
 
 void FgdGenieGenerator::PostProcessEvent(/*IN OUT*/ genie::GHepRecord* event)
 {
-	// Move each vertex to the global geometry coordinate system
-	TLorentzVector* v = event->Vertex();
-	
 
-	GenieFluxDriver* fluxD = dynamic_cast<GenieFluxDriver*>(GetFluxI().get());
-	if(fUseRandomVertex && fluxD!=nullptr)
-	{	
-		*v = fluxD->AbsPosition();	
-		event->SetVertex(*v);
-	}
-	else
-	{
-		*v = TLorentzVector(fdetPos,0);	
-		event->SetVertex(*v);
-	}
-	
 }
 
 
@@ -74,7 +59,7 @@ Bool_t FgdGenieGenerator::Configure()
 
 	SetFluxI(std::make_shared<GenieFluxDriver>(fgeoConfigFile.c_str(), fnuFluxFile.c_str(), fseed, fdetPos));
 
-	SetGeomI(std::make_shared<FgdGeomAnalyzer>(fgeoConfigFile.c_str(), fdetPos, fgm));
+	SetGeomI(std::make_shared<FgdGeomAnalyzer>(fgm));
 	FgdGeomAnalyzer* geomAnalyzer = dynamic_cast<FgdGeomAnalyzer*>(GetGeomI().get());
 	geomAnalyzer->SetScannerFlux(GetFluxI().get());
 
