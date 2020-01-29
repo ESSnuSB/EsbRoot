@@ -110,10 +110,10 @@ Install the prerequisites for GenFit:
 sudo apt-get install libeigen3-dev
 ```
 Download the getfit git repository from 
-https://github.com/GenFit/GenFit
+https://github.com/ESSnuSB/GenFit
 ```
 Follow the build instructions from 
-https://github.com/GenFit/GenFit/blob/master/README.build
+https://github.com/ESSnuSB/GenFit/blob/master/README.build
 
 ```
 NOTE: the following environmental variables have to be exported
@@ -124,7 +124,7 @@ export GENFIT_LIBRARY=/** PATH TO the build directory in the used build folder**
 
 Download PathFinder from 
 ```
-https://svnsrv.desy.de/websvn/wsvn/General.pathfinder/trunk
+https://github.com/ESSnuSB/PathFinder
 ```
 
 The only prerequisite is to have CERN ROOT installed (which should be installed with Fairsoft installation).
