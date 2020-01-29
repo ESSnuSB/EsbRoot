@@ -30,6 +30,7 @@ public:
 									, unsigned int seed
 									, TVector3 detPos
 									, Int_t numEvents
+									, genie::GFluxI* extFlux = nullptr
 									, TGeoManager* gm = nullptr);
 
 	//! Destructor
@@ -61,6 +62,7 @@ private:
 	Int_t fnumEvents;//!<!
 	Int_t fCurrentEvent;//!<!
 	Bool_t fUseRandomVertex;//!<!
+	genie::GFluxI* fExtFlux;//!<!
 
 	std::vector<genie::EventRecord> fGenieEvents;//!<!
 	void GenerateEvents();
