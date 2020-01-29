@@ -30,6 +30,7 @@ FgdGenieGenerator::FgdGenieGenerator(const char* geoConfigFile
 									, unsigned int seed
 									, TVector3 detPos
 									, Int_t numEvents
+									, genie::GFluxI* extFlux
 									, TGeoManager* gm)
 	 : GenieGenerator()
 	 	, fgeoConfigFile(geoConfigFile)
@@ -38,6 +39,7 @@ FgdGenieGenerator::FgdGenieGenerator(const char* geoConfigFile
 		, fdetPos(detPos)
 		, fnumEvents(numEvents)
 		, fgm(gm)
+		, fExtFlux(extFlux)
 		, fCurrentEvent(0)
 		, fUseRandomVertex(false)
 {
@@ -46,22 +48,7 @@ FgdGenieGenerator::FgdGenieGenerator(const char* geoConfigFile
 
 void FgdGenieGenerator::PostProcessEvent(/*IN OUT*/ genie::GHepRecord* event)
 {
-	// Move each vertex to the global geometry coordinate system
-	TLorentzVector* v = event->Vertex();
-	
 
-	GenieFluxDriver* fluxD = dynamic_cast<GenieFluxDriver*>(GetFluxI().get());
-	if(fUseRandomVertex && fluxD!=nullptr)
-	{	
-		*v = fluxD->AbsPosition();	
-		event->SetVertex(*v);
-	}
-	else
-	{
-		*v = TLorentzVector(fdetPos,0);	
-		event->SetVertex(*v);
-	}
-	
 }
 
 
@@ -72,11 +59,20 @@ Bool_t FgdGenieGenerator::Configure()
 		fgm = gGeoManager;
 	}
 
-	SetFluxI(std::make_shared<GenieFluxDriver>(fgeoConfigFile.c_str(), fnuFluxFile.c_str(), fseed, fdetPos));
-
-	SetGeomI(std::make_shared<FgdGeomAnalyzer>(fgeoConfigFile.c_str(), fdetPos, fgm));
+	SetGeomI(std::make_shared<FgdGeomAnalyzer>(fgm));
 	FgdGeomAnalyzer* geomAnalyzer = dynamic_cast<FgdGeomAnalyzer*>(GetGeomI().get());
-	geomAnalyzer->SetScannerFlux(GetFluxI().get());
+
+	if(fExtFlux!=nullptr)
+	{
+		LOG(info) << "Using external flux driver ";
+		SetFluxI(shared_ptr<genie::GFluxI>(fExtFlux));
+	}
+	else
+	{
+		LOG(info) << "Using flux driver - GenieFluxDriver [Fdg implementation]";
+		SetFluxI(std::make_shared<GenieFluxDriver>(fgeoConfigFile.c_str(), fnuFluxFile.c_str(), fseed, fdetPos));
+		geomAnalyzer->SetScannerFlux(GetFluxI().get()); // Force to use MaxPathLengthsFluxMethod, otherwise it uses MaxPathLengthsBoxMethod
+	}
 
 	GenieGenerator::Configure();
 	GenerateEvents();

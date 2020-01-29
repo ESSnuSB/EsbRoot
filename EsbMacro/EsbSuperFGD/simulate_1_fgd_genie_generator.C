@@ -6,7 +6,7 @@
 
 void simulate_1_fgd_genie_generator(TString outFileName = "evetest.root",
              Int_t nStartEvent = 0, 
-	     Int_t nEvents = 25)
+	     Int_t nEvents = 250)
 {
   using namespace esbroot;
   
@@ -30,8 +30,8 @@ void simulate_1_fgd_genie_generator(TString outFileName = "evetest.root",
   fRun->AddModule(cave);
   
   // Add Detectors
-  // FairDetector *nearWc = new geometry::WCDetector("NearWcDetector", 300, 500, kTRUE);
-  // fRun->AddModule(nearWc);
+  //FairDetector *nearWc = new geometry::WCDetector("NearWcDetector", 300, 500, kTRUE);
+  //fRun->AddModule(nearWc);
 
   TVector3 fgdPosition(0,0,-550);
 
@@ -72,14 +72,36 @@ void simulate_1_fgd_genie_generator(TString outFileName = "evetest.root",
   fair::Logger::SetConsoleSeverity(fair::Severity::info);
   fair::Logger::SetConsoleColor(true);
 
+
+  //Define TS coordinate system, here it is at a centre of global CS
+	esbroot::geometry::CoordinateSystem tscs(
+		ROOT::Math::Rotation3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0),
+		ROOT::Math::XYZVector(0,0,0)
+	);
+
+	//Define ND coordinate system
+	//No rotation, just translation 250m from the proton target
+	esbroot::geometry::CoordinateSystem ndcs(
+		ROOT::Math::Rotation3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0),
+		ROOT::Math::XYZVector(0,0, 4500)
+	);
+
+	//Create GenieNtpFlux object
+	//Parameters: name of the file with the flux, name of the tree within the file, neutrino PDG,
+	//						TS coordinate system, ND coordinate system
+	auto external_fluxDriver = new esbroot::generators::GenieNtpFluxV1("nuData_4x10e6_plus.root", "numuVtx", 14, tscs, ndcs);
+
+
   auto partGen = new generators::superfgd::FgdGenieGenerator(
 		"../../EsbGeometry/EsbSuperFGD/EsbConfig/fgdconfig"  //File with detector configuration
-		,"../../EsbMacro/tests/nuFlux/nuFlux100km_250kAm.txt"  //File with neutrino flux
+		//,"../../EsbMacro/tests/nuFlux/nuFlux100km_250kAm.txt"  // File with neutrino flux to use if the external flux driver is not passed
+    ,"../../EsbMacro/tests/nuFlux/nuFluxTest.txt"  // File with neutrino flux to use if the external flux driver is not passed
 		, seed // uniform random number generator seed
     , fgdPosition
     , nEvents
+    , external_fluxDriver
   );
-  partGen->SetRandomVertex(false);
+  partGen->SetRandomVertex(true);
 
   //Add to list of generators
   primGen->AddGenerator(partGen);

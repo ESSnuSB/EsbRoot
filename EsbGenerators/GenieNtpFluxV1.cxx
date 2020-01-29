@@ -45,15 +45,17 @@ GenieNtpFluxV1::GenieNtpFluxV1(
 	TVector3 mom(fPx, fPy, fPz);
 	mom = esbroot::geometry::cstransforms::l2l_vec(mom, fTSCS, fDTCS);
 
-	TVector3 pos(fX, fY, fZ);
+	TVector3 pos(fX , fY, fZ);
 	pos = esbroot::geometry::cstransforms::l2l_pos(pos, fTSCS, fDTCS);
-	pos *= 1.0/100.0; //Genie wants SI units for coordinates
+	//pos *= 1.0/100.0; //Genie wants SI units for coordinates
 
 	fMomentum.SetVect(mom);
 	fMomentum.SetT(TMath::Sqrt(fPx*fPx + fPy*fPy + fPz*fPz));
-	
+
 	fPosition.SetVect(pos);
 	fPosition.SetT(0.0);
+
+	std::cout << " X " << pos.X() << " Y " << pos.Y()<< " Z " << pos.Z() << std::endl;
 	
 	++fCurrIndex;
 	return(true);
