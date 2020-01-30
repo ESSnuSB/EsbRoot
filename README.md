@@ -70,6 +70,11 @@ Install the prerequisites for Genie: log4cpp, libxml2, and LHAPDF. On Ubuntu bas
 sudo apt-get install liblog4cpp5-dev libxml2-dev liblhapdf-dev
 ```
 
+Source the FairRoot configuration script to get all the environmental variables.
+```
+source $INSTALL_PATH/fairroot/bin/FairRootConfig.sh
+```
+
 The build system of Genie-Generator has been modified so that the entire Genie generator is compiled into a single library. This allows easy linking and usage from ROOT. So, you need to get Genie from the ESSnuSB repository
 ```
 cd $INSTALL_PATH/src
