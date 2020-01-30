@@ -59,25 +59,38 @@ Bool_t FgdGenieGenerator::Configure()
 		fgm = gGeoManager;
 	}
 
-	SetGeomI(std::make_shared<FgdGeomAnalyzer>(fgm));
-	FgdGeomAnalyzer* geomAnalyzer = dynamic_cast<FgdGeomAnalyzer*>(GetGeomI().get());
+	FgdGeomAnalyzer* geomAnalyzer = nullptr;
+	bool useDefaultFlux = (fExtFlux==nullptr);
 
-	if(fExtFlux!=nullptr)
+
+	if(useDefaultFlux)
 	{
-		LOG(info) << "Using external flux driver ";
-		SetFluxI(shared_ptr<genie::GFluxI>(fExtFlux));
+		LOG(info) 	<< "Using flux driver - GenieFluxDriver [Fdg implementation], with top volume : " 
+					<< esbroot::geometry::superfgd::fgdnames::superFGDName;
+
+		SetGeomI(std::make_shared<FgdGeomAnalyzer>(fgm));
+		SetFluxI(std::make_shared<GenieFluxDriver>(fgeoConfigFile.c_str(), fnuFluxFile.c_str(), fseed, fdetPos));
+
+		geomAnalyzer = dynamic_cast<FgdGeomAnalyzer*>(GetGeomI().get());
+		geomAnalyzer->SetScannerFlux(GetFluxI().get()); // Force to use MaxPathLengthsFluxMethod, otherwise it uses MaxPathLengthsBoxMethod
 	}
 	else
 	{
-		LOG(info) << "Using flux driver - GenieFluxDriver [Fdg implementation]";
-		SetFluxI(std::make_shared<GenieFluxDriver>(fgeoConfigFile.c_str(), fnuFluxFile.c_str(), fseed, fdetPos));
-		geomAnalyzer->SetScannerFlux(GetFluxI().get()); // Force to use MaxPathLengthsFluxMethod, otherwise it uses MaxPathLengthsBoxMethod
+		LOG(info) << "Using external flux driver with top volume : " << (fgm->GetTopVolume())->GetName();
+
+		SetGeomI(std::make_shared<genie::geometry::ROOTGeomAnalyzer>(fgm));
+		SetFluxI(shared_ptr<genie::GFluxI>(fExtFlux));
 	}
 
 	GenieGenerator::Configure();
 	GenerateEvents();
 	
-	geomAnalyzer->Reset();	// Revert initial Top Volume Geometry
+	if(useDefaultFlux && geomAnalyzer!=nullptr)
+	{
+		geomAnalyzer->Reset();	// Revert initial Top Volume Geometry
+	}
+
+	return true;
 }
 
 Bool_t FgdGenieGenerator::ReadEvent(FairPrimaryGenerator* primGen)
