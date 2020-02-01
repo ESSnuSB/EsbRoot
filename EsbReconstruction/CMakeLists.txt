@@ -51,6 +51,7 @@ set(SRCS
 	EsbSuperFGD/FgdMCGenFitRecon.cxx
 	EsbSuperFGD/FgdMCLeptonStats.cxx
 	EsbSuperFGD/FgdMCEventRecord.cxx
+	EsbSuperFGD/FgdGraphStats.cxx
 	EsbSuperFGD/FgdReconHit.cxx
 	EsbSuperFGD/FgdReconTemplate.cxx
 	EsbSuperFGD/PdgFromMomentumLoss.cxx
@@ -62,6 +63,7 @@ Set(HEADERS
 	${CMAKE_SOURCE_DIR}/EsbReconstruction/EsbSuperFGD/FgdMCGenFitRecon.h
 	${CMAKE_SOURCE_DIR}/EsbReconstruction/EsbSuperFGD/FgdMCLeptonStats.h
 	${CMAKE_SOURCE_DIR}/EsbReconstruction/EsbSuperFGD/FgdMCEventRecord.h
+	${CMAKE_SOURCE_DIR}/EsbReconstruction/EsbSuperFGD/FgdGraphStats.h
 	${CMAKE_SOURCE_DIR}/EsbReconstruction/EsbSuperFGD/FgdReconHit.h
 	${CMAKE_SOURCE_DIR}/EsbReconstruction/EsbSuperFGD/FgdReconTemplate.h
 	${CMAKE_SOURCE_DIR}/EsbReconstruction/EsbSuperFGD/PdgFromMomentumLoss.h

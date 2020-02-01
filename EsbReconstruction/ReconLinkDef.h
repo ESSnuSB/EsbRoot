@@ -21,6 +21,7 @@
 #pragma link C++ class esbroot::reconstruction::superfgd::FgdMCGenFitRecon+;
 #pragma link C++ class esbroot::reconstruction::superfgd::FgdMCLeptonStats+;
 #pragma link C++ class esbroot::reconstruction::superfgd::FgdMCEventRecord+;
+#pragma link C++ class esbroot::reconstruction::superfgd::FgdGraphStats+;
 #pragma link C++ class esbroot::reconstruction::superfgd::ReconHit+;
 #pragma link C++ class esbroot::reconstruction::superfgd::FgdReconTemplate+;
 #pragma link C++ class esbroot::reconstruction::superfgd::PdgFromMomentumLoss+;
