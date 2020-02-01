@@ -56,6 +56,7 @@ class FgdGraphStats : public FairTask
 
 protected:
 
+    void CompareTracks(std::vector<std::vector<ReconHit>>& mcTracks, std::vector<std::vector<ReconHit*>>& grTracks);
     /** Get all hits **/
     Bool_t GetMCHits(std::vector<ReconHit>& allHits);
     Bool_t GetGraphHits(std::vector<ReconHit>& allHits);
@@ -73,6 +74,8 @@ protected:
     Double_t GetRadius(const TVector3& p1, const TVector3& p2, const TVector3& p3);
 
     Bool_t IsChargedParticle(ReconHit& hit);
+    Double_t CmpGrToMCTrack(std::vector<ReconHit>& mc, std::vector<ReconHit*>& gr);
+    Bool_t ContainsHit(std::vector<ReconHit>& mctrack, ReconHit& hit);
 
     /** Define materials used in the reconstruction phase **/
     void DefineMaterials();

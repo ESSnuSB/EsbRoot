@@ -101,7 +101,7 @@ FgdGraphStats::~FgdGraphStats()
 
 InitStatus FgdGraphStats::Init()
 {
-    DefineMaterials();
+  DefineMaterials();
   fsuperFgdVol = fgdConstructor.Construct();
   gGeoManager->SetTopVolume(fsuperFgdVol); 
 
@@ -145,8 +145,11 @@ void FgdGraphStats::FinishTask()
 
 void FgdGraphStats::Exec(Option_t* opt)
 {
+    static int event = 0;
     try
     {
+        LOG(info) << " Event " << event++;
+        LOG(info) << " ======================== ";
         std::vector<ReconHit> allMChits;
         std::vector<std::vector<ReconHit>> foundMCTracks;
 
@@ -177,8 +180,10 @@ void FgdGraphStats::Exec(Option_t* opt)
 
         if(rc)
         {
+            LOG(info) << "==============================";
             LOG(info) <<" MC tracks found " << foundMCTracks.size();
             LOG(info) <<" Graph tracks found " << foundGRTracks.size();
+            CompareTracks(foundMCTracks, foundGRTracks);
         }
         else
         {
@@ -192,6 +197,89 @@ void FgdGraphStats::Exec(Option_t* opt)
     }
 }
 
+void FgdGraphStats::CompareTracks(std::vector<std::vector<ReconHit>>& mcTracks, std::vector<std::vector<ReconHit*>>& grTracks)
+{
+    static int TRACK_MIN_SIZE = 3;
+    // 1. Calculate number of trakcs in Graph
+    int numOfGRTracksBigThan3 = 0;
+    for(Int_t grInd = 0 ; grInd < grTracks.size(); ++grInd)
+    {
+        std::vector<ReconHit*>& track = grTracks[grInd];
+        if(track.size() > TRACK_MIN_SIZE) numOfGRTracksBigThan3++;
+    }
+
+    // 2. Calculate number of tracks in MC (charged particles only)
+    int numOfMCTracksBigThan3 = 0;
+    for(Int_t mcInd = 0 ; mcInd < mcTracks.size(); ++mcInd)
+    {
+        std::vector<ReconHit> track = mcTracks[mcInd];
+        if(track.size() > TRACK_MIN_SIZE
+            && IsChargedParticle(track[0])) 
+        {
+           numOfMCTracksBigThan3++; 
+        }
+    }
+
+    LOG(info) << "+++++++++++++++++++++++++++++++++";
+    LOG(info) << " Graph tracks [3 cubes at least] = " << numOfGRTracksBigThan3;
+    LOG(info) << " MC tracks [3 cubes at least/ charge is not zero of the particle] = " << numOfMCTracksBigThan3;
+    LOG(info) << " Number of Graph tracks / Number of MC tracks = " << (1.0 * numOfGRTracksBigThan3) / numOfMCTracksBigThan3;
+    LOG(info) << "+++++++++++++++++++++++++++++++++";
+
+    // 3. Calculate the best match for GR track to MC track
+    for(Int_t grInd = 0 ; grInd < grTracks.size(); ++grInd)
+    {
+        std::vector<ReconHit*>& grtrack = grTracks[grInd];
+        if(grtrack.size() <= TRACK_MIN_SIZE) continue;
+
+        Double_t maxFit = 0;
+        Int_t indOfMcMaxFit = 0;
+
+        for(Int_t mcInd = 0 ; mcInd < mcTracks.size(); ++mcInd)
+        {
+            std::vector<ReconHit> mctrack = mcTracks[mcInd];
+            if(mctrack.size() > TRACK_MIN_SIZE
+                && IsChargedParticle(mctrack[0])) 
+            {
+                Double_t res = CmpGrToMCTrack(mctrack, grtrack);
+                if(res > maxFit) 
+                {
+                    maxFit = res;
+                    indOfMcMaxFit = mcInd;
+                }
+            }
+        }
+
+        LOG(info) << "+++++++++++++++++++++++++++++++++";
+        LOG(info) << " Graph track" << "[ " << grInd << " (size " << grtrack.size() << ")] best fit is " << maxFit;
+        LOG(info) << " MC trakc length for best fit = " << mcTracks[indOfMcMaxFit].size();
+        LOG(info) << "+++++++++++++++++++++++++++++++++";
+    }
+}
+
+Double_t FgdGraphStats::CmpGrToMCTrack(std::vector<ReconHit>& mc, std::vector<ReconHit*>& gr)
+{
+    Int_t isInMC = 0;
+    for(Int_t i = 0; i < gr.size(); ++i)
+    {
+        if(ContainsHit(mc, *gr[i]))
+        {
+            ++isInMC;
+        } 
+    }
+    return (1.0 * isInMC) / mc.size();
+}
+
+Bool_t FgdGraphStats::ContainsHit(std::vector<ReconHit>& mctrack, ReconHit& hit)
+{
+    bool rc(false); 
+    for(Int_t i = 0 ; !rc && (i < mctrack.size()); ++i)
+    {
+        rc = (mctrack[i] == hit);
+    }
+
+    return rc;
+}
 
 Bool_t FgdGraphStats::GetMCHits(std::vector<ReconHit>& allHits)
 {
