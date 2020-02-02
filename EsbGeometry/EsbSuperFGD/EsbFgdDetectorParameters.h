@@ -47,6 +47,8 @@ namespace DP
     static const string FGD_MC_LEPTON_RECONSTRUCTION_BRANCH = "FgdMCLeptonStatsBranch";
     static const string FGD_MC_LEPTON_RECONSTRUCTION_ROOT_FILE = "FgdMCLeptonStatsRootFile";
 
+    static const string FGD_MIN_TRACK_LENGTH = "min_track_lenght";
+
     static const string FGD_GRAD_DIST = "gradDist";
     static const string FGD_GRAD_INTERVAL_DIST = "gradIntervalDist";
     static const string FGD_GRAD_ALLOWABLE_DIFF = "gradDiff";
