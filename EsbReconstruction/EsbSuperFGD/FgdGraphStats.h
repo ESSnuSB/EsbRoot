@@ -121,12 +121,8 @@ protected:
     /** Path to the used media.geo file - containing definitions of materials **/
     std::string fmediaFile;//!<!
 
-    /** Path to the events file containing Monte carlo simulation data - pdg codes, momentums etc. **/
-    std::string feventFile;//!<!
+    Int_t fMinTrackLenght;
 
-    Int_t fminGenFitInterations;
-    Int_t fmaxGenFitIterations;
-    Int_t fminHits;
 
     /** Are materials already defined **/
     bool isDefinedMaterials;

@@ -11,7 +11,7 @@ number_cubes_Z=100
 
 #magnetic field [1 kGauss = 0.1 T]
 magField_X=0    #in [kG] 
-magField_Y=20    #in [kG] 
+magField_Y=10    #in [kG] 
 magField_Z=0    #in [kG] 
 
 #visualization
@@ -37,17 +37,20 @@ searchneighborhood=0
 # setting for lower photon limit
 errPhotoLimit=0   
 
+#exclude tracks below minimum track Lenght
+min_track_lenght=15
+
 # The belog settings for graph traversal
 
 # The grad in angle is calculated as the angle between two vectors.
 #   1st vector is the vector distance between 2 cubes at gradDist apart
 #   2nd vector is the vector distance between 2 cubes shifter gradIntervalDist number of cubes from the 1st one
-gradDist=7              # Distance in number of cubes for track to calculate the grad
-gradIntervalDist=4      # Interval between two distance vectors to calculate grad
+gradDist=6              # Distance in number of cubes for track to calculate the grad
+gradIntervalDist=3      # Interval between two distance vectors to calculate grad
 gradDiff=25             # Allowable difference between grad to consider a different track
 
 # Calculate momentum from the segment with length 'momTrackSegment' by averaging the calculated momentum from 3 points (the 1st of the segment,
 # the second and for each point in between). Since the are energy losses and the momentum decreases, take the particle momentum from as the average from the 
 # first'avgTrackMomentum' points
-momTrackSegment=15
-avgTrackMomentum=3
+momTrackSegment=11
+avgTrackMomentum=5
