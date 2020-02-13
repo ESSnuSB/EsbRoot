@@ -12,4 +12,7 @@ fi
 if [ "@WITH_GENFIT@" = "ON" ]; then
 	export LD_LIBRARY_PATH=@GENFIT_LIBRARY_DIR@:$LD_LIBRARY_PATH
 	export LD_LIBRARY_PATH=@GENFIT_LIBRARY_DIR@/lib:$LD_LIBRARY_PATH
+
+	# Add all prerequisites to build Genfit and Pathfinder
+	source @PROJECT_SOURCE_DIR@/EsbGeometry/EsbSuperFGD/EsbConfig/envs
 fi

@@ -269,6 +269,7 @@ add_subdirectory (EsbDigitizer)
 add_subdirectory (EsbTools)
 
 if(WITH_GENFIT)
+	message("Source diretcory is ${PROJECT_SOURCE_DIR}")	
 	add_subdirectory (EsbReconstruction)
 endif(WITH_GENFIT)
 
