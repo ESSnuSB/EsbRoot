@@ -16,6 +16,9 @@ using std::endl;
 namespace esbroot {
 namespace data {
 
+// Sortoption = 0 (time, default), 1 (charge)
+Int_t PMTubeHit::sortOption = 0;
+
 // -----   Default constructor   -------------------------------------------
 PMTubeHit::PMTubeHit()
   : FairHit(),
@@ -47,6 +50,32 @@ PMTubeHit::PMTubeHit(Double_t x, Double_t y, Double_t z, Double_t r,
 // -----   Destructor   ----------------------------------------------------
 PMTubeHit::~PMTubeHit() { }
 // -------------------------------------------------------------------------
+
+// -------------------------------------------------------------------------
+Int_t PMTubeHit::Compare(const TObject *obj) const {
+  
+  PMTubeHit* pmt_obj = (PMTubeHit*)obj;
+  if(pmt_obj == 0)
+    return 0;
+
+  if(sortOption == 0) {
+
+    if(fTime > pmt_obj->GetTime())
+      return 1;
+    else if(fTime < pmt_obj->GetTime())
+      return -1;
+    else
+      return 0;
+  } else {
+
+    if(fCharge < pmt_obj->GetCharge())
+      return 1;
+    else if(fCharge > pmt_obj->GetCharge())
+      return -1;
+    else
+      return 0;
+  }
+}
 
 // -----   Public method Print   -------------------------------------------
 void PMTubeHit::Print(const Option_t* /*opt*/) const

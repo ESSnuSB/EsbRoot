@@ -26,6 +26,9 @@ namespace data {
 class PMTubeHit : public FairHit
 {
  public:
+
+  /** @param sortOption      0 (time, default), 1 (charge) **/
+  static Int_t sortOption;
   
   /** Default constructor **/
   PMTubeHit();
@@ -56,6 +59,12 @@ class PMTubeHit : public FairHit
    
   /** Output to screen **/
   virtual void Print(const Option_t* opt) const;
+
+  /// Make ROOT aware that the class is sortable
+  Bool_t IsSortable() const { return kTRUE; }
+
+  /// To be able to sort the PMT hits according to their time or charge
+  Int_t Compare(const TObject *obj) const;
   
  protected:
   
