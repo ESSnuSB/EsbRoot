@@ -7,3 +7,35 @@ if [ "@WITH_GENIE@" = "ON" ]; then
 	export LD_LIBRARY_PATH=@GENIE_LIB_DIR@:$LD_LIBRARY_PATH
 	export LHAPATH=$GENIE/data/evgen/pdfs
 fi 
+
+
+#If WITH_GENFIT is was to ON during cmake
+if [ "@WITH_GENFIT@" = "ON" ]; then
+
+	#==================================================================
+	#==========			Genfit 				===========================
+	#==================================================================
+	# Genfit include loops all folders and adds "folder"/include to included folders
+	export GENFIT_INCLUDE=@GENFIT_INCLUDE@ 
+
+	# Genfit folder contains the root dictionary. 
+	# the subfolder /lib is later used to include *.so library files
+	export GENFIT_LIBRARY=@GENFIT_LIBRARY@
+
+	export PATH=@GENFIT_LIBRARY@/bin:$PATH
+
+	# Add root dictionaries. ALso used in the bin examples (if build)
+	export LD_LIBRARY_PATH=@GENFIT_LIBRARY@:$LD_LIBRARY_PATH
+	# Add Genfit libs
+	export LD_LIBRARY_PATH=@GENFIT_LIBRARY@/lib:$LD_LIBRARY_PATH
+
+	#==================================================================
+	#==========			PATHFINDER      		=======================
+	#==================================================================
+
+	export PATHFINDER_INC=@PATHFINDER_INC@/include
+	export PATHFINDER_LIB=@PATHFINDER_LIB@/lib
+
+	export PATH=@PATHFINDER_LIB@/bin:$PATH
+	export LD_LIBRARY_PATH=@PATHFINDER_LIB@/lib:$LD_LIBRARY_PATH
+fi 
