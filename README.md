@@ -123,8 +123,8 @@ https://github.com/ESSnuSB/GenFit/blob/master/README.build
 ```
 NOTE: the following environmental variables have to be exported
 export ROOTSYS=/** PATH TO FAIRSOFT **/fairsoft
-export GENFIT_INCLUDE=/** PATH TO Downloaded GenFit directory **/
-export GENFIT_LIBRARY=/** PATH TO the build directory in the used build folder**/
+export GENFIT_HOME=/** PATH TO Downloaded GenFit directory **/
+export GENFIT_BUILD=/** PATH TO the build directory in the used build folder**/
 ```
 
 Download PathFinder from 
@@ -142,8 +142,8 @@ After the build is successdull two enviormental variables have to be defined.
 One to the include directory which is located 'include' folder of the downloaded Pathdinder source 
 directory, and the second environemntal variable is to the 'lib' folder in the Pathfinder build directory (the used cmake folder).
 ```
-export PATHFINDER_INC=/** PATHFINDER_SOURCES **/include
-export PATHFINDER_LIB=/** PATHFINDER_BUILD_DIR **/lib
+export PATHFINDER_HOME=/** PATHFINDER extracted directory containing the sources **/
+export PATHFINDER_BUILD=/** PATHFINDER build directory **/
 ```
 When building the EsbRoot application with the -DWITH_GENFIT=ON option, both 
 Genfit and Pathfinder will be included in EsbRoot.
@@ -204,8 +204,3 @@ Go to EsbMacro directory, try running:
 - eventDisplay.C - full 3D event display, still not working properly
 - ess_sim_genie.C - example how to run with Genie generator. You will need to download the Genie cross-sections, see the code for comments.
 
-3. Since there are many environmental variables there is a helper file description for all the required environemntal variables located in
-```
-cd [EsbRoot directory]/EsbGeometry/EsbSuperFGD/EsbConfig/envs
-```
-Inside you will find description how to set and run them
