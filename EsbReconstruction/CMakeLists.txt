@@ -70,7 +70,7 @@ Set(DEPENDENCIES
     Base EsbData EsbGeometry EsbDigitizer
 )
 
-file(GLOB genfit_libs ${GENFIT_LIBRARY}/lib/*)
+file(GLOB genfit_libs ${GENFIT_LIBRARY}/lib/*.so)
 
 #Add shared library to be run in root interpreter (macro files)
 FOREACH(glib ${genfit_libs})
