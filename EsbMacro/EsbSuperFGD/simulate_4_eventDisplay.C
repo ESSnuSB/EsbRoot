@@ -15,7 +15,7 @@
 
  */
 
-FairEventManager* eventDisplay_4(Bool_t addTracks=kTRUE, 
+FairEventManager* simulate_4_eventDisplay(Bool_t addTracks=kTRUE, 
 			       Bool_t addPoints=kTRUE /* kFALSE*/ )
 {
 

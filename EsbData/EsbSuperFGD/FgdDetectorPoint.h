@@ -33,13 +33,19 @@ class FgdDetectorPoint : public FairMCPoint
      *@param trackID  Index of MCTrack
      *@param detID    Detector ID
      *@param detectorPos      Coordinates of the detector [cm]
-     *@param pos      Ccoordinates at entrance to active volume [cm]
+     *@param pos      Coordinates at entrance to active volume [cm]
+     *@param posExit      Coordinates at exit of active volume [cm]
      *@param mom      Momentum of track at entrance [GeV]
+     *@param momExit      Momentum of track at exit [GeV]
      *@param tof      Time since event start [ns]
      *@param edep     total energy loss [GeV]
+     *@param trackLenght     tracklenght till the active volume
+     *@param pdg     pdg code of particle
+     *@param trackLenghtFromOrigin     tracklength from origin of track
      **/
-    FgdDetectorPoint(Int_t trackID, Int_t detID, TVector3 detectorPos, TVector3 pos, TVector3 posExit, TVector3 mom,
-		       Double_t tof,  Double_t edep, Double_t trackLenght);
+    FgdDetectorPoint(Int_t trackID, Int_t detID, TVector3 detectorPos, TVector3 pos, TVector3 posExit, TVector3 mom
+		       , TVector3 momExit, Double_t tof,  Double_t edep, Double_t trackLenght, Int_t pdg
+           , Double_t trackLenghtFromOrigin);
     
     /** Destructor **/
     virtual ~FgdDetectorPoint();
@@ -56,11 +62,17 @@ class FgdDetectorPoint : public FairMCPoint
     // Get a copy of the exit position
     TVector3 GetposExit(){return fposExit;};
 
+    TVector3 GetMomExit(){return fmomExit;};
+
     // Get the detector position
     TVector3 GetDetectorpos(){return fdetectorPos;};
 
+    Int_t GetPdg(){return fpdg;} 
+
     // Get the track lenght 
     Double_t GetTrackLenght(){return ftrackLenght;}
+
+    Double_t GetTrackLengthOrigin(){return ftrackLenghtFromOrigin;}
 
     /** Output to screen **/
     virtual void Print(const Option_t* opt) const;
@@ -72,7 +84,10 @@ class FgdDetectorPoint : public FairMCPoint
 
     TVector3 fposExit;  // Member to hold the position of the particle when it exits the sensitive volume
     TVector3 fdetectorPos;
+    TVector3 fmomExit;
     Double_t ftrackLenght;
+    Double_t ftrackLenghtFromOrigin;
+    Int_t fpdg;
 
     ClassDef(FgdDetectorPoint,2)
 };

@@ -24,7 +24,9 @@ namespace superfgd {
 
 // -----   Default constructor   -------------------------------------------
 FgdMppcDisplay::FgdMppcDisplay() :
-  FairTask(), fX(0), fY(0), fZ(0),fevNum(0)
+  FairTask(), fX(0), fY(0), fZ(0),fevNum(0),
+  f_xy_hist(nullptr), f_yz_hist(nullptr), f_xz_hist(nullptr), fHitArray(nullptr)
+  , f_photo_ave(0.),f_photo_count(0)
 { 
 }
 // -------------------------------------------------------------------------
@@ -34,7 +36,9 @@ FgdMppcDisplay::FgdMppcDisplay(const char* name
                           ,const char* geoConfigFile
                           ,double x, double y, double z
                           , Int_t verbose) :
-  FairTask(name, verbose), fX(x), fY(y), fZ(z),fevNum(0)
+  FairTask(name, verbose), fX(x), fY(y), fZ(z),fevNum(0),
+  f_xy_hist(nullptr), f_yz_hist(nullptr), f_xz_hist(nullptr), fHitArray(nullptr)
+  , f_photo_ave(0.), f_photo_count(0)
 { 
   fParams.LoadPartParams(geoConfigFile);
 }
@@ -45,6 +49,10 @@ FgdMppcDisplay::FgdMppcDisplay(const char* name
 // -----   Destructor   ----------------------------------------------------
 FgdMppcDisplay::~FgdMppcDisplay() 
 {
+  if(fHitArray) {
+    fHitArray->Delete();
+    delete fHitArray;
+  }
 }
 // -------------------------------------------------------------------------
 
@@ -122,6 +130,7 @@ void FgdMppcDisplay::FinishEvent()
   {
     fcanvas->ResetDrawn();
   }
+  fevNum++;
 }
 
 void FgdMppcDisplay::FinishTask()
@@ -142,7 +151,10 @@ void FgdMppcDisplay::Exec(Option_t* opt)
       if(f_xy_hist) f_xy_hist->Fill(mppcLoc.X(), mppcLoc.Y(), photoE.Z());
       if(f_yz_hist) f_yz_hist->Fill(mppcLoc.Y(), mppcLoc.Z(), photoE.X());
       if(f_xz_hist) f_xz_hist->Fill(mppcLoc.X(), mppcLoc.Z(), photoE.Y());
+      
   }
+  cout  << endl;
+  cout  << endl;
 }
 // -------------------------------------------------------------------------
   
@@ -156,7 +168,6 @@ void FgdMppcDisplay::WriteCanvas(string hist)
     strb<< "hist_" << hist << fevNum << ".gif";
     fcanvas->SaveAs((strb.str()).c_str());
     fcanvas->ResetDrawn();
-    fevNum++;
 }
 
 }// namespace superfgd

@@ -1,4 +1,4 @@
-#include "EsbGeometry/EsbSuperFGD/EsbCubeScintilatorConstructor.h"
+  #include "EsbGeometry/EsbSuperFGD/EsbCubeScintilatorConstructor.h"
 #include "EsbGeometry/EsbSuperFGD/EsbSuperFGDConstructor.h"
 
 #include "EsbGeometry/EsbSuperFGD/EsbFgdDetectorParameters.h"
@@ -13,7 +13,12 @@ namespace esbroot {
 namespace geometry {
 namespace superfgd {
 
-CubeScintConstructor::CubeScintConstructor() 
+CubeScintConstructor::CubeScintConstructor() : fLength(0.), fBase(0.), fHeight(0.), fHoleRadius(0.)
+      , fHolePositionX(0.,0.,0.), fHolePositionY(0.,0.,0.), fHolePositionZ(0.,0.,0.)
+      , fHoleRotX(0.,0.,0.), fHoleRotY(0.,0.,0.), fHoleRotZ(0.,0.,0.)
+      , fCoatingThickness(0.), fGap(0.), fIsVisible(false), fCoatingMaterial("")
+      , fScintillatorMaterial(""), fUseFGDScint(false), fFiberMaterial(""), fFiberRadius(0.)
+      , fcubeTVol(nullptr), fcubeScntVol(nullptr)
 {
 }
   
@@ -22,7 +27,7 @@ CubeScintConstructor::~CubeScintConstructor()
 }
 
 
-void CubeScintConstructor::Construct() 
+TGeoVolume* CubeScintConstructor::Construct() 
 {
   // Base is X direction
   // Height is Y direction
@@ -166,7 +171,7 @@ void CubeScintConstructor::Construct()
   TGeoMedium *scnt = gGeoManager->GetMedium(materials::scintillator);
   TGeoMedium *prt = gGeoManager->GetMedium(materials::paraterphnyl);
 
-  TGeoMixture *scintillatorMixMat = new TGeoMixture(materials::scintilatorMix,2, 1.050);
+  TGeoMixture *scintillatorMixMat = new TGeoMixture(materials::scintilatorMix,2, 1.050); 
   scintillatorMixMat->AddElement(scnt->GetMaterial(), 0.985);
   scintillatorMixMat->AddElement(prt->GetMaterial(), 0.015);
 
@@ -180,19 +185,30 @@ void CubeScintConstructor::Construct()
   // Place the coating
   TGeoCompositeShape* coating = new TGeoCompositeShape("coating","CubeCoating - Cube - FX:locationX - FY:locationY - FY:locationZ");
   TGeoVolume* coatingVolume = new TGeoVolume(fgdnames::coatingVolume,coating, coatingMedium);
-  cubeWithCoatingVolume->AddNodeOverlap(coatingVolume, 1 /* One Element*/ /*, Identity matrix is by default used for location*/);
+  cubeWithCoatingVolume->AddNode(coatingVolume, 1 /* One Element*/ /*, Identity matrix is by default used for location*/);
 
   // Place the scintilator cube into the cube coating
   TGeoVolume* cubeScntVol = new TGeoVolume(fgdnames::scintilatorVolume, cubeComp, scintillatorMixMedium);
-  cubeWithCoatingVolume->AddNodeOverlap(cubeScntVol, 1 /* One Element*/ /*, Identity matrix is by default used for location*/);
+  fcubeScntVol = cubeScntVol;
+  // NOTE: using AddNodeOverlap may lead to exception when using materialInterface_->findNextBoundary
+  // in genfit::MaterialEffects::stepper
+  cubeWithCoatingVolume->AddNode(cubeScntVol, 1 /* One Element*/ /*, Identity matrix is by default used for location*/); 
 
   // Place the fiber coatings with fiber core
-  cubeWithCoatingVolume->AddNodeOverlap(fiberXCoatVolume, 1 /* One Element*/, locationX);
-  cubeWithCoatingVolume->AddNodeOverlap(fiberYCoatVolume, 1 /* One Element*/, locationY);
-  cubeWithCoatingVolume->AddNodeOverlap(fiberZCoatVolume, 1 /* One Element*/, locationZ);
-  
+  // NOTE: using AddNodeOverlap may lead to exception when using materialInterface_->findNextBoundary
+  // in genfit::MaterialEffects::stepper
+  cubeWithCoatingVolume->AddNode(fiberXCoatVolume, 1 /* One Element*/, locationX);
+  cubeWithCoatingVolume->AddNode(fiberYCoatVolume, 1 /* One Element*/, locationY);
+  cubeWithCoatingVolume->AddNode(fiberZCoatVolume, 1 /* One Element*/, locationZ);
+
+  fcubeTVol = cubeWithCoatingVolume;
+  return fcubeTVol;
+
+  // NOTE: adding the volume with gGeoManager->AddVolume
+  // Causes segmentation fault later on in fairroot
+  // not a showstopper, but can lead to unexpected results
   // Add the cube volume with coating to the list of the geoManager
-  gGeoManager->AddVolume(cubeWithCoatingVolume);
+  //gGeoManager->AddVolume(cubeWithCoatingVolume);
 }
 
 }   //superfgd

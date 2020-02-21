@@ -10,6 +10,7 @@ namespace superfgd {
 
 
 SuperFGDDetectorConstruction::SuperFGDDetectorConstruction(std::string detectorFile)
+  : fSuperVol(nullptr), fSensVolume(nullptr)
 {
   fParams.LoadPartParams(detectorFile);
 }
@@ -18,10 +19,10 @@ SuperFGDDetectorConstruction::~SuperFGDDetectorConstruction()
 {
 }
 
-void SuperFGDDetectorConstruction::Construct()
+TGeoVolume* SuperFGDDetectorConstruction::Construct()
 {
-    SuperFGDConstructor fSuperFGDConstructor1;
-    fSuperFGDConstructor1.SetVisibility(fParams.ParamAsBool(DP::visdetail));
+    SuperFGDConstructor fSuperFGDConstructor;
+    fSuperFGDConstructor.SetVisibility(fParams.ParamAsBool(DP::visdetail));
 
     Double_t lunit = fParams.GetLenghtUnit(); 
     // Detector is made of cubes 
@@ -32,12 +33,14 @@ void SuperFGDDetectorConstruction::Construct()
     Int_t cube_Y_N = fParams.ParamAsInt(DP::number_cubes_Y);
     Int_t cube_Z_N = fParams.ParamAsInt(DP::number_cubes_Z);
 
-    fSuperFGDConstructor1.SetEdge(edge);
-    fSuperFGDConstructor1.SetCubeNumX(cube_X_N);
-    fSuperFGDConstructor1.SetCubeNumY(cube_Y_N);
-    fSuperFGDConstructor1.SetCubeNumZ(cube_Z_N);
+    fSuperFGDConstructor.SetEdge(edge);
+    fSuperFGDConstructor.SetCubeNumX(cube_X_N);
+    fSuperFGDConstructor.SetCubeNumY(cube_Y_N);
+    fSuperFGDConstructor.SetCubeNumZ(cube_Z_N);
 
-    fSuperFGDConstructor1.Construct(); 
+    fSuperVol = fSuperFGDConstructor.Construct(); 
+    fSensVolume = fSuperFGDConstructor.GetSensitiveVolume();
+    return fSuperVol;
 }
 
 TVector3 SuperFGDDetectorConstruction::GetMagneticField()

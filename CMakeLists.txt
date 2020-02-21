@@ -13,6 +13,7 @@ option (BUILD_DOC "Build documentation using Doxygen" OFF)
 option (BUILD_ONLY_DOC "Build only the documentation" OFF)
 
 option (WITH_GENIE "Build Genie generator interface" OFF)
+option (WITH_GENFIT "Build GenFit generator interface" OFF)
 
 if(BUILD_DOC)
 	find_package(Doxygen)
@@ -232,6 +233,48 @@ if(WITH_GENIE)
 	add_definitions(-DWITH_GENIE)
 endif(WITH_GENIE)
 
+
+if(WITH_GENFIT)
+	message("Searching for Genfit")
+	
+	if(NOT DEFINED ENV{GENFIT_HOME})
+		message(FATAL_ERROR "GENFIT_HOME environment variable not found")
+	endif()
+
+	if(NOT DEFINED ENV{GENFIT_BUILD})
+		message(FATAL_ERROR "GENFIT_BUILD environment variable not found")
+	endif()
+	
+	set(GENFIT_LIBRARY $ENV{GENFIT_BUILD})
+	set(GENFIT_INCLUDE $ENV{GENFIT_HOME})
+	
+	list(APPEND LD_LIBRARY_PATH ${GENFIT_LIBRARY})
+	list(APPEND LD_LIBRARY_PATH ${GENFIT_LIBRARY}/lib)
+
+	message("GENFIT environment variables are set")
+
+
+	if(NOT DEFINED ENV{PATHFINDER_HOME})
+		message(FATAL_ERROR "PATHFINDER_HOME environment variable not found")
+	endif()
+
+	if(NOT DEFINED ENV{PATHFINDER_BUILD})
+		message(FATAL_ERROR "PATHFINDER_BUILD environment variable not found")
+	endif()
+
+	set(PATHFINDER_LIB $ENV{PATHFINDER_BUILD}/lib)
+	set(PATHFINDER_INC $ENV{PATHFINDER_HOME}/include)
+
+	message("PATHFINDER environment variables are set")
+
+
+	#Definition for rootcling
+	list(APPEND DEFINITIONS -DWITH_GENFIT)
+	
+	#Definition for gcc	
+	add_definitions(-DWITH_GENFIT)
+endif(WITH_GENFIT)
+
 # Recurse into the given subdirectories.  This does not actually
 # cause another cmake executable to run.  The same process will walk through
 # the project's entire directory structure.
@@ -240,6 +283,11 @@ add_subdirectory (EsbGeometry)
 add_subdirectory (EsbGenerators)
 add_subdirectory (EsbDigitizer)
 add_subdirectory (EsbTools)
+
+if(WITH_GENFIT)
+	message("Source diretcory is ${PROJECT_SOURCE_DIR}")	
+	add_subdirectory (EsbReconstruction)
+endif(WITH_GENFIT)
 
 SET(ROOT_INCLUDE_PATH "${ROOT_INCLUDE_PATH}:${CMAKE_SOURCE_DIR}")
 SET(GEOPATH "${CMAKE_SOURCE_DIR}/EsbGeometry")

@@ -18,7 +18,7 @@ namespace fgdnames
     static const char* superFGDName = "Esb/SuperFGD"; // name of the constructed detector volume
     static const char* scintilatorVolume = "cubeScntVol"; // name of just the scintilator volume in the cube
     static const char* coatingVolume = "cubeCoatingVol"; // name of just the scintilator volume in the cube
-;}   // fgdnames
+}   // fgdnames
 }   // superfgd
 }   // geometry
 }   // esbroot

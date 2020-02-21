@@ -15,7 +15,9 @@ namespace superfgd {
 
 const char* SuperFGDConstructor::SuperFgdName = fgdnames::superFGDName;
 
-SuperFGDConstructor::SuperFGDConstructor()
+SuperFGDConstructor::SuperFGDConstructor() :  fWidth(0.),fHeight(0.),fLength(0.),fIsVisible(false),fEdge(0.)
+  ,fCubeNumX(0),fCubeNumY(0),fCubeNumZ(0),fPosX(0.),fPosY(0.),fPosZ(0.)
+  ,fFiberRadius(0.),fFiberMaterial(""), fSuperGVol(nullptr), fSensVol(nullptr)
 {
 }
   
@@ -24,7 +26,7 @@ SuperFGDConstructor::~SuperFGDConstructor()
 }
 
 
-void SuperFGDConstructor::Construct()
+TGeoVolume* SuperFGDConstructor::Construct()
 {
   // All dimentions are in cm (root default dimention length)
 
@@ -65,6 +67,7 @@ void SuperFGDConstructor::Construct()
   cube.SetHoleRot_Z(rotZZ);
 
   cube.Construct();
+  fSensVol = cube.GetSensitiveVolume();
 
   TGeoMedium *air = gGeoManager->GetMedium(esbroot::geometry::superfgd::materials::air);
   //========================================
@@ -72,7 +75,8 @@ void SuperFGDConstructor::Construct()
   TGeoBBox* rowX = new TGeoBBox("rowX", TotWidth/2, fEdge/2, fEdge/2);
   TGeoVolume* rowXVol = new TGeoVolume("rowXVol",rowX,air);
 
-  TGeoVolume* cube_vol = gGeoManager->GetVolume(fgdnames::cubeName);
+  //TGeoVolume* cube_vol = gGeoManager->GetVolume(fgdnames::cubeName);
+  TGeoVolume* cube_vol = cube.GetCubeVolume();
   double startPosX = -TotWidth/2 + fEdge/2;
 
   for(int i=0; i < fCubeNumX; i++)
@@ -110,7 +114,9 @@ void SuperFGDConstructor::Construct()
   }
   //========================================
 
-  gGeoManager->AddVolume(nameSuperFGD);
+  fSuperGVol = nameSuperFGD;
+  return fSuperGVol;
+  //gGeoManager->AddVolume(nameSuperFGD);
 }
 
 

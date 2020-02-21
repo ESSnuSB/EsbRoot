@@ -4,9 +4,9 @@
 
 */
 
-void ess_simulate_1(TString outFileName = "evetest.root",
+void simulate_1_simple_genie_generator(TString outFileName = "evetest.root",
              Int_t nStartEvent = 0, 
-	     Int_t nEvents = 1)
+	     Int_t nEvents = 25)
 {
   using namespace esbroot;
   
@@ -30,10 +30,10 @@ void ess_simulate_1(TString outFileName = "evetest.root",
   fRun->AddModule(cave);
   
   // Add Detectors
-  //FairDetector *nearWc = new geometry::WCDetector("NearWcDetector", 300, 500, kTRUE);
-  //fRun->AddModule(nearWc);
+  // FairDetector *nearWc = new geometry::WCDetector("NearWcDetector", 300, 500, kTRUE);
+  // fRun->AddModule(nearWc);
 
-  FairDetector* fgd = new geometry::FgdDetector("Granular Detector","../EsbGeometry/EsbSuperFGD/EsbConfig/geometry",0,0,0, kTRUE);
+  FairDetector* fgd = new geometry::FgdDetector("Granular Detector","../../EsbGeometry/EsbSuperFGD/EsbConfig/fgdconfig",0,0,-550, kTRUE);
   fRun->AddModule(fgd);
 
   double Bx(0), By(0), Bz(0);
@@ -45,18 +45,30 @@ void ess_simulate_1(TString outFileName = "evetest.root",
   fgdField->SetFieldRegion(xMin, xMax, yMin, yMax, zMin, zMax);
   fRun->SetField(fgdField);
   
-  
   // Far Detector
-  // FairDetector *farWc = new EsbWCDetector("FarWcDetector", 1000, 2000, kTRUE);
-  // fRun->AddModule(farWc);
+  //FairDetector *farWc = new EsbWCDetector("FarWcDetector", 300, 500, kTRUE);
+  //fRun->AddModule(farWc);
   
   // Create and Set Event Generator
   FairPrimaryGenerator* primGen = new FairPrimaryGenerator();
   fRun->SetGenerator(primGen);
-  
-  //~ FairParticleGenerator* partGen = new FairParticleGenerator(2212, 1, 0, 0, 1, 0, 0, 0);
-  //FairParticleGenerator* partGen = new FairParticleGenerator(13, 1, 0, 0, 0.4, 0, 0, 150);
-  FairParticleGenerator* partGen = new FairParticleGenerator(-13, 1, 0, 0, 0.5, 0.5, 0.5, -50);
+
+  // *** Set global genie parameters ***
+	//Genie tune, this is the recommended one
+  generators::GenieGenerator::GlobalState.fGenieTune = "G18_10a_00_000";
+  //File with cross-section splines (see: http://scisoft.fnal.gov/scisoft/packages/genie_xsec/)
+  generators::GenieGenerator::GlobalState.fXsecSplineFileName = "../../EsbGenerators/xsec/xsec_essnusb.xml"; 
+ 
+	//Create simple genie generator
+	auto partGen = new generators::SimpleGenieGenerator(
+		1000080160, //Target PDG (O16)
+		14, //Neutrino PDG (nu_mu)
+		0.6, //Neutrino energy (GeV)
+		TVector3(0.0,0.0,1.0), //Neutrino directon (normalization of this vector is not important)
+		TLorentzVector(0.0, 0.0, -550., 0.0) //4-position of the neutrino vertex (x, y, z, t) (cm, s)
+  );
+
+  //Add to list of generators
   primGen->AddGenerator(partGen);
 
   fRun->SetOutputFile(outFileName.Data()); // set output file

@@ -77,8 +77,9 @@ namespace geometry {
 		*/
 		data::superfgd::FgdDetectorPoint* AddHit(Int_t trackID, Int_t detID,
 								 TVector3 detectorPos,
-								 TVector3 pos, TVector3 posExit, TVector3 mom,
-								 Double32_t time, Double32_t edep, Double32_t trackLength);
+								 TVector3 pos, TVector3 posExit, TVector3 mom, TVector3 momExit,
+								 Double32_t time, Double32_t edep, Double32_t trackLength, Int_t pdg
+								 ,Double32_t trackLengthFromOrigin );
 
 		/** The following methods can be implemented if you need to make
 		 *  any optional action in your detector during the transport.
@@ -92,6 +93,8 @@ namespace geometry {
 		virtual void   PostTrack() {;}
 		virtual void   PreTrack() {;}
 		virtual void   BeginEvent() {;}
+
+		TGeoVolume* GetVolume(){return fsuperFgdVol;}
 
 
 	  private:
@@ -110,6 +113,7 @@ namespace geometry {
 		TLorentzVector fPos;               //!  position at entrance
 		TLorentzVector fPosExit;           //!  position at exit
 		TLorentzVector fMom;               //!  momentum at entrance
+		TLorentzVector fMomExit;               //!  momentum at entrance
 		Double32_t     fTime;              //!  time
 		Double32_t     fLength;            //!  length
 		Double32_t     fELoss;             //!  energy loss
@@ -118,6 +122,10 @@ namespace geometry {
 		double fposX;
 		double fposY;
 		double fposZ;
+
+		std::set<Int_t> fpdgCodes;//!<!
+
+		TGeoVolume* fsuperFgdVol;//!<!
 
 		esbroot::geometry::superfgd::SuperFGDDetectorConstruction    fgdConstructor;	   //! SuperFgd Detector Constructor
 		/** container for data points */

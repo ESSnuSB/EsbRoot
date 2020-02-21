@@ -23,7 +23,7 @@ class SimpleGenieGenerator : public GenieGenerator
 {
 	public:
 	//! Empty constructor
-	SimpleGenieGenerator() {};
+	SimpleGenieGenerator(): GenieGenerator() {};
 	
 	//! Basic constructor
 	SimpleGenieGenerator(int pdg_tgt, int pdg_nu, double e_nu,
