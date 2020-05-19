@@ -1,4 +1,4 @@
-source @CMAKE_BINARY_DIR@/fairroot_config.sh
+source @CMAKE_BINARY_DIR@/fairroot_config.sh -p
 
 #If WITH_GENIE is was to ON during cmake
 if [ "@WITH_GENIE@" = "ON" ]; then
