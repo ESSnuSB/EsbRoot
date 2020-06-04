@@ -190,9 +190,9 @@ void WCDetector::ConstructGeometry()
 	FairGeoMedia *geoMedia = geoFace->getMedia();
 	FairGeoBuilder* geoBuild = geoLoad->getGeoBuilder();
 	
-	FairGeoMedium* mWC = geoMedia->getMedium("H2O_ESSnuSB");
+	FairGeoMedium* mWC = geoMedia->getMedium("WCSim_Water");
 	geoBuild->createMedium(mWC);
-  TGeoMedium *WC_med = gGeoManager->GetMedium("H2O_ESSnuSB");
+  TGeoMedium *WC_med = gGeoManager->GetMedium("WCSim_Water");
   
 	//TODO: Change this to use media.geo file
   TGeoMaterial *Al_mat = new TGeoMaterial("Al", 26.98, 13, 2.7);
