@@ -17,6 +17,9 @@
 #pragma link C++ namespace esbroot;
 
 #pragma link C++ class esbroot::tools::PMTubeGeoCreator+;
+#pragma link C++ class esbroot::tools::THStackPlus+;
+#pragma link C++ class esbroot::tools::GenieAnaEventData+;
+#pragma link C++ class esbroot::tools::fiTQunAnaEventData+;
 
 #endif
 
